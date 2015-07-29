@@ -1,0 +1,47 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btnAsync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="An async request" />
+
+        <Button
+            android:id="@+id/btnSync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="A sync request(In thread)" />
+
+        <Button
+            android:id="@+id/btnUrlFilename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Get dynamic filename from URL" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Like:http://cdn3.ops.baidu.com?request_id=1438133342_2816171802&amp;type=static" />
+
+        <Button
+            android:id="@+id/btnUrlFilename2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Get static filename from URL" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Like:http://ota.53iq.com/static/file/kitchen_14379835129655595.apk" />
+    </LinearLayout>
+
+</ScrollView>
