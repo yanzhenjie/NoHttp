@@ -1,17 +1,31 @@
 # NoHttp
-It provides very simple API for developers to access the HTTP, support asynchronous and synchronous request, you will never have to touch the complex HttpURLConnection, so Its name is NoHttp
+开发这个项目的宗旨就是让API使用简单起来
 
-Using an asynchronous request, within the response method can update the UI directly, not to use Handler
+它为开发人员提供了非常简单的API来访问HTTP/HTTPS、异步请求、同步请求、文件上传、自定义请求头、自定义参数，你不用理睬复杂的HttpURLConnection,所以它的名字是NoHttp。
 
-API is almost consistent with OKHttp, support in the future image cache, the HTTP request and download files
-Request can support:
-The Get, Post, file upload, custom request header, custom parameters
-The returned result includes:
-If successful, the response data, length, bytes data collection, the HTTP response headers
+使用异步请求,在响应方法可以直接更新UI,不用再使用Handler。
 
-API is a bit simple, a few requests to provide all the request parameters, provides all of the response.And you want to get unexpected results
+API与OKHttp几乎是一致的,在未来支持图像缓存、文件下载。
 
-Here is a simple to use, there are a lot of usage need yourself to explore:
+目前的功能有：Get、Post、文件上传、自定义请求头、自定义参数，响应结果包括:是否成功、响应数据、数据长度、HTTP响应头集合。
+
+API非常样简单，一个Request对象提供所有请求参数，一个Response对象提供了所有响应。
+
+这是一个简单的Demo，有很多用法需要自己去探索:
+
+Development of the project objective is to make the API is simple to use
+
+A very simple API for developers to access the HTTP/HTTPS, support asynchronous and synchronous request, You will not ignore complex HttpURLConnection, so its name is NoHttp.
+
+When you use an asynchronous request, in the response method can update the UI directly, need not use Handler.
+
+API and OKHttp is almost consistent, Future will support image cache file download.
+
+Now is the function of: Get, Post, file upload, custom request header.Response results including: Success and failure, response data, the length of the byte data, the HTTP response headers collection,…….
+
+API is very simple, a Request object provides all of the Request parameters, a Response object provides all the response information.
+
+This is a simple Demo, Need to go to explore other use method:
 ```
 public class MainActivity implements OnResponseListener {
 	
