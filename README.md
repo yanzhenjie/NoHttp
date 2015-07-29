@@ -1,5 +1,17 @@
 # NoHttp
-It provides super convenient API for developers to APP access to the network, it is a secondary packaging of java.net.URL, here you will never see HTTP, so I called the project NoHttp
+It provides very simple API for developers to access the HTTP, support asynchronous and synchronous request, you will never have to touch the complex HttpURLConnection, so Its name is NoHttp
+
+Using an asynchronous request, within the response method can update the UI directly, not to use Handler
+
+API is almost consistent with OKHttp, support in the future image cache, the HTTP request and download files
+Request can support:
+The Get, Post, file upload, custom request header, custom parameters
+The returned result includes:
+If successful, the response data, length, bytes data collection, the HTTP response headers
+
+API is a bit simple, a few requests to provide all the request parameters, provides all of the response.And you want to get unexpected results
+
+Here is a simple to use, there are a lot of usage need yourself to explore:
 ```
 public class MainActivity implements OnResponseListener {
 	
