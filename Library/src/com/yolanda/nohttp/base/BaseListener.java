@@ -13,31 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
-
-import java.io.Serializable;
+package com.yolanda.nohttp.base;
 
 /**
- * Created in Jul 28, 2015 7:31:22 PM
+ * Created in Jul 31, 2015 10:55:22 AM
  * 
  * @author YOLANDA
  */
-class Executor implements Serializable {
+public interface BaseListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 103L;
-	/**
-	 * What content from the HTTP request
-	 */
-	int command;
-	/**
-	 * Used to mark a request
-	 */
-	int what;
-	/**
-	 * Listen to the results of a request
-	 */
-	OnResponseListener responseListener;
 }

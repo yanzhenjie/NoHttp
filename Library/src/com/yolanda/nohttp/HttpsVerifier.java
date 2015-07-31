@@ -15,7 +15,15 @@
  */
 package com.yolanda.nohttp;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
@@ -23,26 +31,54 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
+import android.content.Context;
 
 /**
  * Created in Jul 28, 2015 7:31:45 PM
  * 
  * @author YOLANDA
  */
-class HttpsVerifier {
+public class HttpsVerifier {
+
+	private static SSLContext mContext;
 
 	private HttpsVerifier() {
 	}
 
 	/**
-	 * Initialize the HTTPS support
+	 * Open an asset using ACCESS_STREAMING mode. This provides access to
+	 * files that have been bundled with an application as assets -- that is,
+	 * files placed in to the "assets" directory.
 	 * 
-	 * @param httpsURLConnection HttpsURLConnection object
+	 * @param assetManager Used to read files in the assets
+	 * @param fileName The name of the asset to open. This name can be hierarchical.Like
+	 *        file:///android_asset/yolanda.crt
+	 * @throws CertificateException .
+	 * @throws IOException .
+	 * @throws KeyStoreException .
+	 * @throws NoSuchAlgorithmException .
+	 * @throws KeyManagementException .
 	 */
-	static void init(HttpsURLConnection httpsURLConnection) {
-		HttpsVerifier _HttpsSupport = new HttpsVerifier();
-		_HttpsSupport.initSSLALL(httpsURLConnection);
+	public static void initVerify(Context context, String fileName) throws CertificateException, IOException,
+			KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		InputStream in = context.getAssets().open(fileName);
+		Certificate ca = cf.generateCertificate(in);
+
+		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keystore.load(null, null);
+		keystore.setCertificateEntry("ca", ca);
+
+		String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+		tmf.init(keystore);
+
+		// Create an SSLContext that uses our TrustManager
+		mContext = SSLContext.getInstance("TLS");
+		mContext.init(null, tmf.getTrustManagers(), null);
 	}
 
 	/**
@@ -50,7 +86,18 @@ class HttpsVerifier {
 	 * 
 	 * @param httpsURLConnection
 	 */
-	private void initSSLALL(HttpsURLConnection httpsURLConnection) {
+	public static void verify(HttpsURLConnection httpsURLConnection) {
+		if (NoHttp.isVerify() && mContext != null) {
+			httpsURLConnection.setSSLSocketFactory(mContext.getSocketFactory());
+		} else {
+			dotVerify(httpsURLConnection);
+		}
+	}
+
+	/**
+	 * Don't CRT certificate validation
+	 */
+	private static void dotVerify(HttpsURLConnection httpsURLConnection) {
 		try {
 			SSLContext sslContext = SSLContext.getInstance("TLS");
 			TrustManager[] managers = { trustManager };
@@ -65,7 +112,7 @@ class HttpsVerifier {
 			});
 			httpsURLConnection.setSSLSocketFactory(ssf);
 		} catch (Throwable e) {
-			if (NoHttp.welldebug)
+			if (NoHttp.isDebug())
 				e.printStackTrace();
 		}
 	}
@@ -92,38 +139,4 @@ class HttpsVerifier {
 			return certificates;
 		}
 	};
-
-	/**
-	 * 支持指定load-der.crt证书验证，此种方式Android官方建议
-	 * 
-	 * @author YOLANDA
-	 * @throws CertificateException
-	 * @throws IOException
-	 * @throws KeyStoreException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
-	 */
-	/*
-	 * public void get() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException,
-	 * KeyManagementException{
-	 * CertificateFactory cf = CertificateFactory.getInstance("X.509");
-	 * InputStream in = Application.getInstance().getAssets().open("load-der.crt");
-	 * Certificate ca = cf.generateCertificate(in);
-	 * 
-	 * KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-	 * keystore.load(null, null);
-	 * keystore.setCertificateEntry("ca", ca);
-	 * 
-	 * String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-	 * TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-	 * tmf.init(keystore);
-	 * 
-	 * // Create an SSLContext that uses our TrustManager
-	 * SSLContext context = SSLContext.getInstance("TLS");
-	 * context.init(null, tmf.getTrustManagers(), null);
-	 * URL url = new URL("https://certs.cac.washington.edu/CAtest/");
-	 * HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-	 * urlConnection.setSSLSocketFactory(context.getSocketFactory());
-	 * }
-	 */
 }

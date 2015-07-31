@@ -25,11 +25,8 @@ import java.util.Set;
  * 
  * @author YOLANDA
  */
-public class Response extends BaseResponse implements Serializable {
+public class Response extends ResponseBase implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 101L;
 	/**
 	 * Response head map
@@ -120,7 +117,7 @@ public class Response extends BaseResponse implements Serializable {
 		try {
 			result = new String(bytes, decoderCharset);
 		} catch (Throwable e) {
-			if (NoHttp.welldebug)
+			if (NoHttp.isDebug())
 				e.printStackTrace();
 		}
 		return result;

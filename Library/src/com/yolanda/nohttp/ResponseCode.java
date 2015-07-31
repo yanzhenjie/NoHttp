@@ -24,49 +24,29 @@ public enum ResponseCode {
 	/**
 	 * The Request is successful
 	 */
-	CODE_SUCCESSFUL(1),
+	CODE_SUCCESSFUL,
 	/**
 	 * Is not a correct url returns
 	 */
-	CODE_ERROR_URL(2),
+	CODE_ERROR_URL,
 	/**
 	 * Return when the server response timeout
 	 */
-	CODE_ERROR_TIMEOUT(3),
+	CODE_ERROR_TIMEOUT,
 	/**
 	 * Can't find the server
 	 */
-	CODE_ERROR_NOSERVER(4),
+	CODE_ERROR_NOSERVER,
 	/**
 	 * The Manifest. XML lack Intnet permissions
 	 */
-	CODE_ERROR_INTNET_PERMISSION(5),
+	CODE_ERROR_INTNET_PERMISSION,
 	/**
 	 * Other abnormal returns
 	 */
-	CODE_ERROR_OTHER(6),
+	CODE_ERROR_OTHER,
 	/**
 	 * No CODE_ occurs
 	 */
-	NONE(0);
-	/**
-	 * value sign
-	 */
-	private int value;
-
-	/**
-	 * @param value value sign
-	 */
-	private ResponseCode(int value) {
-		this.value = value;
-	}
-
-	/**
-	 * Determine whether two enumeration values
-	 * 
-	 * @param code enum value
-	 */
-	public boolean is(ResponseCode code) {
-		return this.value == code.value;
-	}
+	NONE
 }

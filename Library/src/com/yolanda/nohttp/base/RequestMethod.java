@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
+package com.yolanda.nohttp.base;
 
 /**
- * Created in Jul 28, 2015 7:30:47 PM
+ * Created in Jul 28, 2015 7:33:10 PM
  * 
  * @author YOLANDA
  */
-class Command {
-
-	/**
-	 * From the HTTP address request data
-	 */
-	static final int REQUEST_HTTP = 0;
-	/**
-	 * From a url file name, including the extension
-	 */
-	static final int REQUEST_FILENAME = 1;
+public enum RequestMethod {
+	DELETE, HEAD, GET, OPTIONS, PATCH, POST, PUT, TRACE
 
 }

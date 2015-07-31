@@ -22,6 +22,9 @@ import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import com.yolanda.nohttp.base.BaseRequest;
+import com.yolanda.nohttp.base.RequestMethod;
+
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
@@ -33,14 +36,6 @@ import android.text.TextUtils;
 public class Request extends BaseRequest implements Serializable {
 
 	private static final long serialVersionUID = 100L;
-	/**
-	 * connect timeout
-	 */
-	private int mConnectTimeout = 10 * 1000;
-	/**
-	 * read timeout
-	 */
-	private int mReadTimeout = 10 * 1000;
 	/**
 	 * keep alive
 	 */
@@ -75,42 +70,6 @@ public class Request extends BaseRequest implements Serializable {
 	 */
 	public Request(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
-	}
-
-	/**
-	 * Get the connection timeout time
-	 * 
-	 * @return Integer time
-	 */
-	int getConnectTimeout() {
-		return mConnectTimeout;
-	}
-
-	/**
-	 * Sets the connection timeout time
-	 * 
-	 * @param connectTimeout timeout number
-	 */
-	public void setConnectTimeout(int connectTimeout) {
-		this.mConnectTimeout = connectTimeout;
-	}
-
-	/**
-	 * Get the read timeout time
-	 * 
-	 * @return Integer time
-	 */
-	int getReadTimeout() {
-		return mReadTimeout;
-	}
-
-	/**
-	 * Sets the read timeout time
-	 * 
-	 * @param readTimeout timeout number
-	 */
-	public void setReadTimeout(int readTimeout) {
-		this.mReadTimeout = readTimeout;
 	}
 
 	/**
@@ -381,7 +340,7 @@ public class Request extends BaseRequest implements Serializable {
 					paramBuilder.append("=");
 					paramBuilder.append(URLEncoder.encode(param, mCharset));
 				} catch (Throwable e) {
-					if (NoHttp.welldebug)
+					if (NoHttp.isDebug())
 						e.printStackTrace();
 				}
 			}
@@ -390,7 +349,7 @@ public class Request extends BaseRequest implements Serializable {
 	}
 
 	/**
-	 * Set charset of analytical data
+	 * Set charset of analytical data,The default value is utf-8
 	 * 
 	 * @param the charset, such as:"utf-8"、"gbk"、"gb2312"
 	 */

@@ -16,50 +16,40 @@
 package com.yolanda.nohttp;
 
 /**
- * Created in Jul 28, 2015 7:29:26 PM
+ * Created in Jul 28, 2015 7:30:27 PM
  * 
  * @author YOLANDA
  */
-abstract class BaseRequest {
+public abstract class ResponseBase {
 
 	/**
-	 * Target adress
+	 * requst code
 	 */
-	private String url;
-	/**
-	 * Request method
-	 */
-	private RequestMethod requestMethod;
+	private ResponseCode responseCode = ResponseCode.NONE;
 
 	/**
-	 * Create reuqest params
+	 * The request is successful
 	 * 
-	 * @param context Application context
-	 * @param url Target adress
-	 * @param requestMethod Request method
+	 * @return
 	 */
-	BaseRequest(String url, RequestMethod requestMethod) {
-		super();
-		this.url = url;
-		this.requestMethod = requestMethod;
+	public boolean isSuccessful() {
+		return responseCode == ResponseCode.CODE_SUCCESSFUL;
 	}
 
 	/**
-	 * Get URL
-	 * 
-	 * @return the url
+	 * Returns the response code returned by the remote HTTP server.
 	 */
-	String getUrl() {
-		return url;
+	public ResponseCode getResponseCode() {
+		return responseCode;
 	}
 
 	/**
-	 * Get request method
+	 * Set the response code
 	 * 
-	 * @return the requestMethod
+	 * @param responseCode the responseCode to set
 	 */
-	RequestMethod getRequestMethod() {
-		return requestMethod;
+	void setResponseCode(ResponseCode responseCode) {
+		this.responseCode = responseCode;
 	}
 
 }

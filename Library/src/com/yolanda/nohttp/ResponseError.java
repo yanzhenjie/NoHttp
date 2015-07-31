@@ -22,7 +22,7 @@ import java.io.Serializable;
  * 
  * @author YOLANDA
  */
-public class ResponseError extends BaseResponse implements Serializable {
+public class ResponseError extends ResponseBase implements Serializable {
 
 	/**
 	 * 

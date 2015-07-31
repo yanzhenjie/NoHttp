@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,18 +17,19 @@ package com.yolanda.nohttp;
 
 /**
  * Created in Jul 28, 2015 7:32:05 PM
+ * 
  * @author YOLANDA
  */
-class Logger {
+public class Logger {
 
 	/**
 	 * red error message
 	 * 
 	 * @param msg
 	 */
-	static void e(String msg) {
-		if (NoHttp.welldebug) {
-			android.util.Log.e(NoHttp.nohttptag, msg);
+	public static void e(String msg) {
+		if (NoHttp.isDebug()) {
+			android.util.Log.e(NoHttp.getTag(), msg);
 		}
 	}
 
@@ -37,9 +38,9 @@ class Logger {
 	 * 
 	 * @param msg
 	 */
-	static void w(String msg) {
-		if (NoHttp.welldebug) {
-			android.util.Log.w(NoHttp.nohttptag, msg);
+	public static void w(String msg) {
+		if (NoHttp.isDebug()) {
+			android.util.Log.w(NoHttp.getTag(), msg);
 		}
 	}
 
@@ -48,9 +49,9 @@ class Logger {
 	 * 
 	 * @param msg
 	 */
-	static void i(String msg) {
-		if (NoHttp.welldebug) {
-			android.util.Log.i(NoHttp.nohttptag, msg);
+	public static void i(String msg) {
+		if (NoHttp.isDebug()) {
+			android.util.Log.i(NoHttp.getTag(), msg);
 		}
 	}
 
@@ -59,11 +60,10 @@ class Logger {
 	 * 
 	 * @param msg
 	 */
-	static void d(String msg) {
-		if (NoHttp.welldebug) {
-			android.util.Log.d(NoHttp.nohttptag, msg);
+	public static void d(String msg) {
+		if (NoHttp.isDebug()) {
+			android.util.Log.d(NoHttp.getTag(), msg);
 		}
 	}
 
 }
-

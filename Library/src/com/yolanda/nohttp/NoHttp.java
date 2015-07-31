@@ -15,6 +15,8 @@
  */
 package com.yolanda.nohttp;
 
+import android.content.Context;
+
 /**
  * Created in Jul 28, 2015 7:32:22 PM
  * 
@@ -25,20 +27,65 @@ public class NoHttp {
 	/**
 	 * library debug sign
 	 */
-	static Boolean welldebug = false;
+	private static Boolean noHttpDebug = false;
 	/**
 	 * library debug tag
 	 */
-	static String nohttptag = "NoHttp";
+	private static String noHttpTag = "NoHttp";
+	/**
+	 * Don't do the CRT certificate check by default
+	 */
+	private static boolean verify = false;
 	/**
 	 * silge model
 	 */
 	private static NoHttp _NoHttp;
 
 	/**
-	 * lock public
+	 * To create a singleton pattern, set the task pool concurrency
+	 * 
+	 * @param concurrentCount Task concurrency
 	 */
 	private NoHttp() {
+		RequestPoster.buildPoster(5);
+	}
+
+	/**
+	 * Open the HTTPS, CRT certificate verification
+	 * 
+	 * @param context Users get AssetManager, load your certificate of CRT
+	 * @param fileName Path and name of your certificate of CRT in assets, like file:///android_asset/yolanda.crt
+	 * @throws IOException .
+	 * @throws NoSuchAlgorithmException .
+	 * @throws KeyStoreException .
+	 * @throws CertificateException .
+	 * @throws KeyManagementException .
+	 */
+	public static void openHttpsVerify(Context context, String fileName) {
+		verify = true;
+		if (verify) {
+			try {
+				HttpsVerifier.initVerify(context, fileName);
+			} catch (Exception e) {
+				verify = false;
+				if (noHttpDebug)
+					e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Close the Http yes CRT certificate of calibration
+	 */
+	public static void closeHttpsVerify() {
+		verify = false;
+	}
+
+	/**
+	 * Whether or not to do the CRT for Https certificate validation
+	 */
+	public static boolean isVerify() {
+		return verify;
 	}
 
 	/**
@@ -47,7 +94,7 @@ public class NoHttp {
 	 * @param debug Set to debug mode is introduced into true, introduced to false otherwise
 	 */
 	public static void setDebug(Boolean debug) {
-		welldebug = debug;
+		noHttpDebug = debug;
 	}
 
 	/**
@@ -56,7 +103,21 @@ public class NoHttp {
 	 * @param tag The incoming string will be NoHttp logtag, also is in development tools logcat tag bar to see
 	 */
 	public static void setTag(String tag) {
-		nohttptag = tag;
+		noHttpTag = tag;
+	}
+
+	/**
+	 * If debug mode
+	 */
+	public static boolean isDebug() {
+		return noHttpDebug;
+	}
+
+	/**
+	 * To get the tag of the log
+	 */
+	public static String getTag() {
+		return noHttpTag;
 	}
 
 	/**
@@ -72,16 +133,6 @@ public class NoHttp {
 	}
 
 	/**
-	 * The enforcement request
-	 * 
-	 * @param executor Packaging good executor
-	 */
-	private void execut(Executor executor, Request request) {
-		RequestControler controler = new RequestControler(executor);
-		controler.execute(request);
-	}
-
-	/**
 	 * Packaging the request
 	 * 
 	 * @param command Operation command
@@ -90,12 +141,9 @@ public class NoHttp {
 	 *        one is the request
 	 * @param responseListener Accept the request as a result, no matter wrong or right will be returned to you
 	 */
-	private void reqeust(int command, Request request, int what, OnResponseListener responseListener) {
-		Executor executor = new Executor();
-		executor.command = command;
-		executor.what = what;
-		executor.responseListener = responseListener;
-		execut(executor, request);
+	private void execute(int command, Request request, int what, OnResponseListener responseListener) {
+		RequestPoster asyncPoster = new RequestPoster(command, request, new Messenger(what, responseListener));
+		asyncPoster.execute();
 	}
 
 	/**
@@ -109,7 +157,7 @@ public class NoHttp {
 	 * @param responseListener Accept the request as a result, no matter wrong or right will be returned to you
 	 */
 	public void requestAsync(Request request, int what, OnResponseListener responseListener) {
-		reqeust(Command.REQUEST_HTTP, request, what, responseListener);
+		execute(RequestPoster.COMMAND_REQUEST_HTTP, request, what, responseListener);
 	}
 
 	/**
@@ -118,7 +166,7 @@ public class NoHttp {
 	 * @param request The packaging of the HTTP request parameter
 	 * @return The response of the packaging
 	 */
-	public BaseResponse requestSync(Request request) {
+	public ResponseBase requestSync(Request request) {
 		return HttpExecutor.getInstance().request(request);
 	}
 
@@ -132,7 +180,7 @@ public class NoHttp {
 	 * @param responseListener Accept the request as a result, no matter wrong or right will be returned to you
 	 */
 	public void requestFilenameAsync(Request request, int what, OnResponseListener responseListener) {
-		reqeust(Command.REQUEST_FILENAME, request, what, responseListener);
+		execute(RequestPoster.COMMAND_REQUEST_FILENAME, request, what, responseListener);
 	}
 
 	/**
@@ -141,7 +189,14 @@ public class NoHttp {
 	 * @param request The packaging of the HTTP request parameter
 	 * @return The response of the packaging
 	 */
-	public BaseResponse requestFilenameSync(Request request) {
+	public ResponseBase requestFilenameSync(Request request) {
 		return HttpExecutor.getInstance().requestFilename(request);
+	}
+
+	/**
+	 * Cancel all requests
+	 */
+	public void cancelAllRequest() {
+		RequestPoster.cancelAll();
 	}
 }

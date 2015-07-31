@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,19 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
+package com.yolanda.nohttp.download;
 
 /**
- * Created in Jul 28, 2015 7:33:10 PM
+ * Created in Jul 31, 2015 9:28:56 AM
+ * 
  * @author YOLANDA
  */
-public enum RequestMethod {
-    /**
-     * GET
-     */
-    GET,
-    /**
-     * POST
-     */
-    POST
+public enum StatusCode {
+
+	/**
+	 * No Network permission
+	 */
+	ERROR_PERMISSION,
+	/**
+	 * No Network
+	 */
+	ERROR_NETWORK,
+	/**
+	 * URL Adress error
+	 */
+	ERROR_URL,
+	/**
+	 * There is insufficient space on the SD card
+	 */
+	ERROR_SDCARD_NOSPACE ,
+	/**
+	 * File integrity verification failed
+	 */
+	ERROR_FILE_DAMAGE,
+	/**
+	 * Could not find a server
+	 */
+	ERROR_NOSERVER,
+	/**
+	 * Download the timeout
+	 */
+	ERROR_TIMEOUT,
+	/**
+	 * Other errors
+	 */
+	ERROR_OTHER
+
 }

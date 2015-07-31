@@ -80,9 +80,9 @@ class HttpExecutor {
 	 * 
 	 * @param request request parameters
 	 */
-	public BaseResponse request(Request request) {
+	public ResponseBase request(Request request) {
 		Logger.d("---------------Reuqest start---------------");
-		BaseResponse baseResponse = null;
+		ResponseBase baseResponse = null;
 		if (!URLUtil.isValidUrl(request.getUrl())) {
 			baseResponse = new ResponseError();
 			baseResponse.setResponseCode(ResponseCode.CODE_ERROR_URL);
@@ -98,22 +98,22 @@ class HttpExecutor {
 			} catch (SecurityException e) {
 				responseCode = ResponseCode.CODE_ERROR_INTNET_PERMISSION;
 				throwable = e;
-				if (NoHttp.welldebug)
+				if (NoHttp.isDebug())
 					e.printStackTrace();
 			} catch (SocketTimeoutException e) {
 				responseCode = ResponseCode.CODE_ERROR_TIMEOUT;
 				throwable = e;
-				if (NoHttp.welldebug)
+				if (NoHttp.isDebug())
 					e.printStackTrace();
 			} catch (UnknownHostException e) {
 				responseCode = ResponseCode.CODE_ERROR_NOSERVER;
 				throwable = e;
-				if (NoHttp.welldebug)
+				if (NoHttp.isDebug())
 					e.printStackTrace();
 			} catch (Throwable e) {
 				responseCode = ResponseCode.CODE_ERROR_OTHER;
 				throwable = e;
-				if (NoHttp.welldebug)
+				if (NoHttp.isDebug())
 					e.printStackTrace();
 			}
 			if (baseResponse.isSuccessful()) {
@@ -135,22 +135,15 @@ class HttpExecutor {
 	 * @return
 	 */
 	private HttpURLConnection buildHttpAttribute(Request request) throws Throwable {
-		HttpURLConnection httpURLConnection = null;
 		String urlStr = request.getUrl();
-		if (request.getRequestMethod() == RequestMethod.GET && request.hasParam()) {
-			urlStr += ("?" + request.buildParam());
-		} else if (request.getRequestMethod() == RequestMethod.POST && null != request.getPostData() && request.hasParam()) {
+		if (request.isOutPut() && request.hasParam()) {
 			urlStr += ("?" + request.buildParam());
 		}
 		Logger.d("Reuqest adress:" + urlStr);
 		URL url = new URL(urlStr);
-		if (urlStr.startsWith("https")) {
-			HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
-			HttpsVerifier.init(httpsURLConnection);
-			httpURLConnection = httpsURLConnection;
-		} else {
-			httpURLConnection = (HttpURLConnection) url.openConnection();
-		}
+		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+		if (urlStr.startsWith("https"))
+			HttpsVerifier.verify((HttpsURLConnection) httpURLConnection);
 		String requestMethod = request.getRequestMethod().toString();
 		Logger.d("Request method:" + requestMethod);
 		httpURLConnection.setRequestMethod(requestMethod);
@@ -183,14 +176,22 @@ class HttpExecutor {
 	 * @throws Throwable Other unpredictable exceptions occur
 	 */
 	private void sendRequestParam(HttpURLConnection httpURLConnection, Request request) throws Throwable {
-		if (request.isKeepAlive())
-			System.setProperty("http.keepAlive", "true");
+		/*
+		 * if (request.isKeepAlive())
+		 * System.setProperty("http.keepAlive", "true");
+		 */
 		switch (request.getRequestMethod()) {
-		case GET:// get
-			httpURLConnection.setDoOutput(false);
+		case DELETE:
+		case GET:
+		case HEAD:
+		case OPTIONS:
+		case TRACE:
 			httpURLConnection.connect();
 			break;
-		default:// post
+		case PATCH:
+		case POST:
+		case PUT:
+		default:
 			OutputStream outputStream = null;
 			if (request.hasBinaryData()) {// 如果有文件或者图片
 				httpURLConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
@@ -202,8 +203,8 @@ class HttpExecutor {
 				httpURLConnection.setDoOutput(true);
 				outputStream = httpURLConnection.getOutputStream();
 				StringBuilder postParam = new StringBuilder();
-				Object postObj = request.getPostData();
-				if (null == postObj) {
+				String postObj = request.getPostData();
+				if (TextUtils.isEmpty(postObj)) {
 					postParam = request.buildParam();
 				} else {
 					postParam.append(postObj);
@@ -229,14 +230,18 @@ class HttpExecutor {
 			int statusCode = httpURLConnection.getResponseCode();
 			Logger.d("Http responseCode:" + statusCode);
 			// 200,201,304;成功，创建，没有修改
-			if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
+			if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED
+					|| statusCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
 				Logger.d("Http read start");
-				response.setContentLength(httpURLConnection.getContentLength());
-				response.setContentType(httpURLConnection.getContentType());
+				int contentLength = httpURLConnection.getContentLength();
+				response.setContentLength(contentLength);
+				String contentType = httpURLConnection.getContentType();
+				response.setContentType(contentType);
 				response.setHeaders(httpURLConnection.getHeaderFields());
 				InputStream inputStream = httpURLConnection.getInputStream();
 				String contentEncode = httpURLConnection.getHeaderField("Content-Encoding");// connection.getContentEncoding();
-				if (!TextUtils.isEmpty(contentEncode) && (contentEncode.toLowerCase(Locale.getDefault()).contains("gzip"))) {
+				if (!TextUtils.isEmpty(contentEncode)
+						&& (contentEncode.toLowerCase(Locale.getDefault()).contains("gzip"))) {
 					inputStream = new GZIPInputStream(inputStream);
 				}
 				int readBytes;
@@ -324,7 +329,8 @@ class HttpExecutor {
 	private String createFileInfo(String key, String fileName, String charset) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(START_BOUNDARY).append("\r\n");
-		sb.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"" + fileName + "\"\r\n");
+		sb.append("Content-Disposition: form-data; name=\"").append(key)
+				.append("\"; filename=\"" + fileName + "\"\r\n");
 		sb.append("Content-Type: application/octet-stream; charset=" + charset + "\r\n\r\n");// application/octet-stream、multipart/form-data
 		return sb.toString();
 	}
@@ -335,7 +341,7 @@ class HttpExecutor {
 	 * @param url taget url
 	 * @return filename
 	 */
-	public BaseResponse requestFilename(Request request) {
+	public ResponseBase requestFilename(Request request) {
 		Response responseResult = new Response();
 		responseResult.setCharset(request.getCharset());
 		String urlStr = request.getUrl();
@@ -368,19 +374,19 @@ class HttpExecutor {
 			}
 		} catch (SecurityException e) {
 			responseCode = ResponseCode.CODE_ERROR_INTNET_PERMISSION;
-			if (NoHttp.welldebug)
+			if (NoHttp.isDebug())
 				e.printStackTrace();
 		} catch (SocketTimeoutException e) {
 			responseCode = ResponseCode.CODE_ERROR_TIMEOUT;
-			if (NoHttp.welldebug)
+			if (NoHttp.isDebug())
 				e.printStackTrace();
 		} catch (UnknownHostException e) {
 			responseCode = ResponseCode.CODE_ERROR_NOSERVER;
-			if (NoHttp.welldebug)
+			if (NoHttp.isDebug())
 				e.printStackTrace();
 		} catch (Throwable e) {
 			responseCode = ResponseCode.CODE_ERROR_OTHER;
-			if (NoHttp.welldebug)
+			if (NoHttp.isDebug())
 				e.printStackTrace();
 		} finally {
 			if (httpURLConnection != null) {
@@ -408,7 +414,7 @@ class HttpExecutor {
 				responseResult.setBytes(fileName.getBytes(request.getCharset()));
 				responseResult.setResponseCode(ResponseCode.CODE_SUCCESSFUL);
 			} catch (UnsupportedEncodingException e) {
-				if (NoHttp.welldebug)
+				if (NoHttp.isDebug())
 					e.printStackTrace();
 				responseResult.setResponseCode(ResponseCode.CODE_ERROR_OTHER);
 			}

@@ -15,12 +15,15 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.base.BaseListener;
+
 /**
  * Created in Jul 28, 2015 7:32:53 PM
  * 
  * @author YOLANDA
  */
-public interface OnResponseListener {
+public interface OnResponseListener extends BaseListener {
+
 	/**
 	 * Server correct response to callback when an HTTP request
 	 * 

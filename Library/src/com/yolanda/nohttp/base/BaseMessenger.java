@@ -13,43 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
+package com.yolanda.nohttp.base;
+
+import android.os.Message;
 
 /**
- * Created in Jul 28, 2015 7:30:27 PM
+ * Created in Jul 31, 2015 10:43:32 AM
  * 
  * @author YOLANDA
  */
-public abstract class BaseResponse {
+public abstract class BaseMessenger {
 
-	/**
-	 * requst code
-	 */
-	private ResponseCode responseCode = ResponseCode.NONE;
+	private int what;
 
-	/**
-	 * The request is successful
-	 * 
-	 * @return
-	 */
-	public boolean isSuccessful() {
-		return responseCode.is(ResponseCode.CODE_SUCCESSFUL);
+	private BaseListener mResponseListener;
+
+	public BaseMessenger(int what, BaseListener baseListener) {
+		super();
+		this.what = what;
+		this.mResponseListener = baseListener;
 	}
 
-	/**
-	 * Returns the response code returned by the remote HTTP server.
-	 */
-	public ResponseCode getResponseCode() {
-		return responseCode;
+	public int getWhat() {
+		return what;
 	}
 
-	/**
-	 * Set the response code
-	 * 
-	 * @param responseCode the responseCode to set
-	 */
-	void setResponseCode(ResponseCode responseCode) {
-		this.responseCode = responseCode;
+	public BaseListener getResponseListener() {
+		return mResponseListener;
 	}
+
+	public abstract Message obtain();
+
+	public abstract void callback();
 
 }
