@@ -15,6 +15,9 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.base.BaseResponse;
+import com.yolanda.nohttp.base.HttpsVerifier;
+
 import android.content.Context;
 
 /**
@@ -33,10 +36,6 @@ public class NoHttp {
 	 */
 	private static String noHttpTag = "NoHttp";
 	/**
-	 * Don't do the CRT certificate check by default
-	 */
-	private static boolean verify = false;
-	/**
 	 * silge model
 	 */
 	private static NoHttp _NoHttp;
@@ -47,7 +46,6 @@ public class NoHttp {
 	 * @param concurrentCount Task concurrency
 	 */
 	private NoHttp() {
-		RequestPoster.buildPoster(5);
 	}
 
 	/**
@@ -62,15 +60,11 @@ public class NoHttp {
 	 * @throws KeyManagementException .
 	 */
 	public static void openHttpsVerify(Context context, String fileName) {
-		verify = true;
-		if (verify) {
-			try {
-				HttpsVerifier.initVerify(context, fileName);
-			} catch (Exception e) {
-				verify = false;
-				if (noHttpDebug)
-					e.printStackTrace();
-			}
+		try {
+			HttpsVerifier.initVerify(context, fileName);
+		} catch (Exception e) {
+			if (noHttpDebug)
+				e.printStackTrace();
 		}
 	}
 
@@ -78,14 +72,7 @@ public class NoHttp {
 	 * Close the Http yes CRT certificate of calibration
 	 */
 	public static void closeHttpsVerify() {
-		verify = false;
-	}
-
-	/**
-	 * Whether or not to do the CRT for Https certificate validation
-	 */
-	public static boolean isVerify() {
-		return verify;
+		HttpsVerifier.closeVerify();
 	}
 
 	/**
@@ -142,8 +129,8 @@ public class NoHttp {
 	 * @param responseListener Accept the request as a result, no matter wrong or right will be returned to you
 	 */
 	private void execute(int command, Request request, int what, OnResponseListener responseListener) {
-		RequestPoster asyncPoster = new RequestPoster(command, request, new Messenger(what, responseListener));
-		asyncPoster.execute();
+		RequestPoster asyncPoster = new RequestPoster(what, command, responseListener);
+		asyncPoster.execute(request);
 	}
 
 	/**
@@ -166,7 +153,7 @@ public class NoHttp {
 	 * @param request The packaging of the HTTP request parameter
 	 * @return The response of the packaging
 	 */
-	public ResponseBase requestSync(Request request) {
+	public BaseResponse requestSync(Request request) {
 		return HttpExecutor.getInstance().request(request);
 	}
 
@@ -189,14 +176,7 @@ public class NoHttp {
 	 * @param request The packaging of the HTTP request parameter
 	 * @return The response of the packaging
 	 */
-	public ResponseBase requestFilenameSync(Request request) {
+	public BaseResponse requestFilenameSync(Request request) {
 		return HttpExecutor.getInstance().requestFilename(request);
-	}
-
-	/**
-	 * Cancel all requests
-	 */
-	public void cancelAllRequest() {
-		RequestPoster.cancelAll();
 	}
 }

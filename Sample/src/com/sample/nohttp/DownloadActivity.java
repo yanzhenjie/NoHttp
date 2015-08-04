@@ -50,13 +50,14 @@ public class DownloadActivity extends Activity implements OnClickListener, Downl
 
 	@Override
 	public void onClick(View v) {
-		String url = "http://p.gdown.baidu.com/e43c614f00648be2c1250aa4f4faf9719290bcab0dc2180b205be68e7175109e0cf420bf"
-				+ "ca4756deff77b42f4609acee22b084f82484670a3eb8bab725ed2b8bcc1796ad7eb9d59019fe08a783d65667d9a1b04f7595"
-				+ "5ebfb8420f96f1a4d67c";
+		String url = "http://p.gdown.baidu.com/bd163bef80e2074cdba62af336c33103a781d0491eed87974"
+				+ "90b26cf2fc282ec98c19f5bad62ef5b141cf0cf4368df615a45e8a21f98fe72b45ea25e7e91dac"
+				+ "6c950f9041c8a9a010662cc15852f93ee9a8958105629ca37694557fbdfd05555f32bfbbf3e5c5f"
+				+ "e450dfb989495ccfe3bf47bf0a34f40d8cb8420f96f1a4d67c";
 		DownloadRequest downloadRequest = new DownloadRequest(url, RequestMethod.GET);
 		String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
-		String filename = "yolanda.apk";
-		downloadRequest.setDownloadAttribute(dir, filename, true, true);
+		String filename = "微信.apk";
+		downloadRequest.setDownloadAttribute(dir, filename, false);
 		DownloadManager.getInstance(this).download(downloadRequest, 1, this);
 	}
 

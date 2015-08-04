@@ -26,27 +26,7 @@ class DownloadResponse implements Serializable {
 
 	private static final long serialVersionUID = 202L;
 	/**
-	 * error code
-	 */
-	static final int ERROR = 0;
-	/**
-	 * download start
-	 */
-	static final int START = 1;
-	/**
-	 * download progress change
-	 */
-	static final int PROGRESS = 2;
-	/**
-	 * download finish
-	 */
-	static final int FINISH = 3;
-	/**
 	 * status change
-	 * {@link #ERROR}
-	 * {@link #START}
-	 * {@link #PROGRESS}
-	 * {@link #FINISH}
 	 */
 	private int command;
 	/**
@@ -69,56 +49,56 @@ class DownloadResponse implements Serializable {
 	/**
 	 * @return the command
 	 */
-	public int getCommand() {
+	int getCommand() {
 		return command;
 	}
 
 	/**
 	 * @param command the command to set
 	 */
-	public void setCommand(int command) {
+	void setCommand(int command) {
 		this.command = command;
 	}
 
 	/**
 	 * @return the statusCode
 	 */
-	public StatusCode getStatusCode() {
+	StatusCode getStatusCode() {
 		return statusCode;
 	}
 
 	/**
 	 * @param statusCode the statusCode to set
 	 */
-	public void setStatusCode(StatusCode statusCode) {
+	void setStatusCode(StatusCode statusCode) {
 		this.statusCode = statusCode;
 	}
 
 	/**
 	 * @return the progress
 	 */
-	public int getProgress() {
+	int getProgress() {
 		return progress;
 	}
 
 	/**
 	 * @param progress the progress to set
 	 */
-	public void setProgress(int progress) {
+	void setProgress(int progress) {
 		this.progress = progress;
 	}
 
 	/**
 	 * @return the filepath
 	 */
-	public String getFilepath() {
+	String getFilepath() {
 		return filepath;
 	}
 
 	/**
 	 * @param filepath the filepath to set
 	 */
-	public void setFilepath(String filepath) {
+	void setFilepath(String filepath) {
 		this.filepath = filepath;
 	}
 }

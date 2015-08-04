@@ -26,7 +26,6 @@ import com.yolanda.nohttp.base.BaseRequest;
 import com.yolanda.nohttp.base.RequestMethod;
 
 import android.graphics.Bitmap;
-import android.text.TextUtils;
 
 /**
  * Created in Jul 28, 2015 7:33:52 PM
@@ -37,10 +36,6 @@ public class Request extends BaseRequest implements Serializable {
 
 	private static final long serialVersionUID = 100L;
 	/**
-	 * keep alive
-	 */
-	private boolean mKeepAlive = true;
-	/**
 	 * Param collection
 	 */
 	private LinkedHashMap<String, Object> mParamSets = new LinkedHashMap<>();
@@ -49,17 +44,9 @@ public class Request extends BaseRequest implements Serializable {
 	 */
 	private LinkedHashMap<String, String> mFileNames = new LinkedHashMap<>();
 	/**
-	 * Request head collection
-	 */
-	private LinkedHashMap<String, String> mHeads = new LinkedHashMap<>();
-	/**
 	 * Post data
 	 */
 	private String mPostData;
-	/**
-	 * Analytical data charset
-	 */
-	private String mCharset = "utf-8";
 
 	/**
 	 * Create reuqest params
@@ -70,53 +57,6 @@ public class Request extends BaseRequest implements Serializable {
 	 */
 	public Request(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
-	}
-
-	/**
-	 * http.keepAlive
-	 * 
-	 * @return Keep alive, return true, otherwise it returns false
-	 */
-	boolean isKeepAlive() {
-		return mKeepAlive;
-	}
-
-	/**
-	 * Set whether to keep alive
-	 * 
-	 * @param keepAlive
-	 */
-	public void setKeppAlive(boolean keepAlive) {
-		this.mKeepAlive = keepAlive;
-	}
-
-	/**
-	 * Add request head
-	 * 
-	 * @param key The head name
-	 * @param value The head value
-	 */
-	public void addHeader(String key, String value) {
-		mHeads.put(key, value);
-	}
-
-	/**
-	 * Get the heads set
-	 * 
-	 * @return The head key set
-	 */
-	Set<String> getHeadKeys() {
-		return mHeads.keySet();
-	}
-
-	/**
-	 * Get a head key corresponding to the value
-	 * 
-	 * @param key The head key
-	 * @return The head value
-	 */
-	String getHead(String key) {
-		return mHeads.get(key);
 	}
 
 	/**
@@ -134,7 +74,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * 
 	 * @return User post data
 	 */
-	String getPostData() {
+	public String getPostData() {
 		return mPostData;
 	}
 
@@ -269,7 +209,8 @@ public class Request extends BaseRequest implements Serializable {
 	 * 
 	 * @return Have returns true, no returns false
 	 */
-	boolean hasParam() {
+	@Override
+	public boolean hasParam() {
 		return mParamSets.size() > 0;
 	}
 
@@ -278,7 +219,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * 
 	 * @return Have returns true, no returns false
 	 */
-	boolean hasBinaryData() {
+	public boolean hasBinaryData() {
 		Set<String> keys = mParamSets.keySet();
 		for (String key : keys) {
 			Object value = mParamSets.get(key);
@@ -294,7 +235,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * 
 	 * @return The param key set
 	 */
-	Set<String> getParamKeys() {
+	public Set<String> getParamKeys() {
 		return mParamSets.keySet();
 	}
 
@@ -304,7 +245,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key The param key
 	 * @return The param value
 	 */
-	Object getParam(String key) {
+	public Object getParam(String key) {
 		return mParamSets.get(key);
 	}
 
@@ -314,7 +255,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key The param key
 	 * @return filename
 	 */
-	String getFileName(String key) {
+	public String getFileName(String key) {
 		return mFileNames.get(key);
 	}
 
@@ -323,7 +264,8 @@ public class Request extends BaseRequest implements Serializable {
 	 * 
 	 * @return Such as:sex=man&age=12
 	 */
-	StringBuilder buildParam() {
+	@Override
+	public StringBuilder buildParam() {
 		StringBuilder paramBuilder = new StringBuilder();
 		boolean first = true;
 		for (String key : mParamSets.keySet()) {
@@ -336,9 +278,9 @@ public class Request extends BaseRequest implements Serializable {
 			if (value instanceof CharSequence) {
 				String param = value.toString();
 				try {
-					paramBuilder.append(URLEncoder.encode(key, mCharset));
+					paramBuilder.append(URLEncoder.encode(key, getCharset()));
 					paramBuilder.append("=");
-					paramBuilder.append(URLEncoder.encode(param, mCharset));
+					paramBuilder.append(URLEncoder.encode(param, getCharset()));
 				} catch (Throwable e) {
 					if (NoHttp.isDebug())
 						e.printStackTrace();
@@ -346,24 +288,5 @@ public class Request extends BaseRequest implements Serializable {
 			}
 		}
 		return paramBuilder;
-	}
-
-	/**
-	 * Set charset of analytical data,The default value is utf-8
-	 * 
-	 * @param the charset, such as:"utf-8"、"gbk"、"gb2312"
-	 */
-	public void setCharset(String charset) {
-		if (!TextUtils.isEmpty(charset))
-			this.mCharset = charset;
-	}
-
-	/**
-	 * Get the charset analytical data
-	 * 
-	 * @return Returns the encoding type
-	 */
-	String getCharset() {
-		return mCharset;
 	}
 }

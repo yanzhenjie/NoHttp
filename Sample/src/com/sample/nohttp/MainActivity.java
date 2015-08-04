@@ -19,8 +19,8 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.OnResponseListener;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
-import com.yolanda.nohttp.ResponseBase;
 import com.yolanda.nohttp.ResponseError;
+import com.yolanda.nohttp.base.BaseResponse;
 import com.yolanda.nohttp.base.RequestMethod;
 
 import android.app.Activity;
@@ -181,7 +181,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnRe
 			@Override
 			public void run() {
 				Request request = buildRequest();
-				ResponseBase baseResponse = noHttp.requestSync(request);
+				BaseResponse baseResponse = noHttp.requestSync(request);
 				if (baseResponse.isSuccessful()) {
 					Response response = (Response) baseResponse;
 					Logger.i("Sync Request Result:" + response);

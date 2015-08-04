@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
+package com.yolanda.nohttp.base;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +33,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
+import com.yolanda.nohttp.NoHttp;
 
 import android.content.Context;
 
@@ -81,13 +83,17 @@ public class HttpsVerifier {
 		mContext.init(null, tmf.getTrustManagers(), null);
 	}
 
+	public static void closeVerify() {
+		mContext = null;
+	}
+
 	/**
 	 * By default, all the certification is not recommended
 	 * 
 	 * @param httpsURLConnection
 	 */
 	public static void verify(HttpsURLConnection httpsURLConnection) {
-		if (NoHttp.isVerify() && mContext != null) {
+		if (mContext != null) {
 			httpsURLConnection.setSSLSocketFactory(mContext.getSocketFactory());
 		} else {
 			dotVerify(httpsURLConnection);
@@ -97,7 +103,7 @@ public class HttpsVerifier {
 	/**
 	 * Don't CRT certificate validation
 	 */
-	private static void dotVerify(HttpsURLConnection httpsURLConnection) {
+	public static void dotVerify(HttpsURLConnection httpsURLConnection) {
 		try {
 			SSLContext sslContext = SSLContext.getInstance("TLS");
 			TrustManager[] managers = { trustManager };

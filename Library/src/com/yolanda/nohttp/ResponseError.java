@@ -17,12 +17,14 @@ package com.yolanda.nohttp;
 
 import java.io.Serializable;
 
+import com.yolanda.nohttp.base.BaseResponse;
+
 /**
  * Created in Jul 28, 2015 9:37:22 PM
  * 
  * @author YOLANDA
  */
-public class ResponseError extends ResponseBase implements Serializable {
+public class ResponseError extends BaseResponse implements Serializable {
 
 	/**
 	 * 

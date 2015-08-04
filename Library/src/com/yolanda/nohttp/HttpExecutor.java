@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Locale;
@@ -31,7 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-import javax.net.ssl.HttpsURLConnection;
+import com.yolanda.nohttp.base.BaseExecutor;
+import com.yolanda.nohttp.base.BaseResponse;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -43,7 +43,7 @@ import android.webkit.URLUtil;
  * 
  * @author YOLANDA
  */
-class HttpExecutor {
+class HttpExecutor extends BaseExecutor {
 
 	/**
 	 * border sign
@@ -80,9 +80,9 @@ class HttpExecutor {
 	 * 
 	 * @param request request parameters
 	 */
-	public ResponseBase request(Request request) {
+	public BaseResponse request(Request request) {
 		Logger.d("---------------Reuqest start---------------");
-		ResponseBase baseResponse = null;
+		BaseResponse baseResponse = null;
 		if (!URLUtil.isValidUrl(request.getUrl())) {
 			baseResponse = new ResponseError();
 			baseResponse.setResponseCode(ResponseCode.CODE_ERROR_URL);
@@ -126,43 +126,6 @@ class HttpExecutor {
 		}
 		Logger.d("---------------Reqeust Finish---------------");
 		return baseResponse;
-	}
-
-	/**
-	 * Build request before written request attributes, such as url, head
-	 * 
-	 * @param request Request parameters, which is used to set the request header information
-	 * @return
-	 */
-	private HttpURLConnection buildHttpAttribute(Request request) throws Throwable {
-		String urlStr = request.getUrl();
-		if (request.isOutPut() && request.hasParam()) {
-			urlStr += ("?" + request.buildParam());
-		}
-		Logger.d("Reuqest adress:" + urlStr);
-		URL url = new URL(urlStr);
-		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-		if (urlStr.startsWith("https"))
-			HttpsVerifier.verify((HttpsURLConnection) httpURLConnection);
-		String requestMethod = request.getRequestMethod().toString();
-		Logger.d("Request method:" + requestMethod);
-		httpURLConnection.setRequestMethod(requestMethod);
-		httpURLConnection.setDoInput(true);
-		httpURLConnection.setUseCaches(false);// 不许有缓存
-		httpURLConnection.setConnectTimeout(request.getConnectTimeout());
-		httpURLConnection.setReadTimeout(request.getReadTimeout());
-		/* =====请求头===== */
-		httpURLConnection.setRequestProperty("Charset", request.getCharset());
-		if (request.isKeepAlive())
-			httpURLConnection.setRequestProperty("Connection", "Keep-Alive");
-		httpURLConnection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
-		httpURLConnection.setRequestProperty("Cache-Control", "no-cache");
-
-		Set<String> headKeys = request.getHeadKeys();
-		for (String headKey : headKeys) {
-			httpURLConnection.setRequestProperty(headKey, request.getHead(headKey));
-		}
-		return httpURLConnection;
 	}
 
 	/**
@@ -341,7 +304,7 @@ class HttpExecutor {
 	 * @param url taget url
 	 * @return filename
 	 */
-	public ResponseBase requestFilename(Request request) {
+	public BaseResponse requestFilename(Request request) {
 		Response responseResult = new Response();
 		responseResult.setCharset(request.getCharset());
 		String urlStr = request.getUrl();

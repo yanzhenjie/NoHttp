@@ -28,13 +28,15 @@ public class DownloadManager {
 	private Context mContext;
 
 	private DownloadManager(Context context) {
-		DownloadPoster.buildPoster(2);
 		this.mContext = context;
 	}
 
 	public static DownloadManager getInstance(Context context) {
+		if (context == null) {
+			throw new NullPointerException("Context isn't null");
+		}
 		if (_DownloadManager == null) {
-			_DownloadManager = new DownloadManager(context.getApplicationContext());
+			_DownloadManager = new DownloadManager(context);
 		}
 		return _DownloadManager;
 	}
@@ -47,9 +49,9 @@ public class DownloadManager {
 	 * @param downloadListener Download status callback
 	 */
 	public void download(DownloadRequest downloadRequest, int what, DownloadListener downloadListener) {
-		DownloadPoster downloadPoster = new DownloadPoster(mContext, DownloadPoster.COMMAND_DOWNLOAD_DYNAMIC,
-				downloadRequest, new Messenger(what, downloadListener));
-		downloadPoster.execute();
+		DownloadPoster downloadPoster = new DownloadPoster(mContext, what, DownloadPoster.COMMAND_DOWNLOAD_DYNAMIC,
+				downloadListener);
+		downloadPoster.execute(downloadRequest);
 	}
 
 	/**
@@ -59,15 +61,7 @@ public class DownloadManager {
 	 * @param downloadRequest Download parameters
 	 */
 	public void download(DownloadRequest downloadRequest) {
-		DownloadPoster downloadPoster = new DownloadPoster(mContext, DownloadPoster.COMMAND_DOWNLOAD_STATIC,
-				downloadRequest, null);
-		downloadPoster.execute();
-	}
-
-	/**
-	 * Cancel all downloads
-	 */
-	public void cancelAllDownload() {
-		DownloadPoster.cancelAll();
+		DownloadPoster downloadPoster = new DownloadPoster(mContext, 0, DownloadPoster.COMMAND_DOWNLOAD_STATIC, null);
+		downloadPoster.execute(downloadRequest);
 	}
 }

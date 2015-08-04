@@ -20,12 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.yolanda.nohttp.base.BaseResponse;
+
 /**
  * Created in Jul 28, 2015 7:34:35 PM
  * 
  * @author YOLANDA
  */
-public class Response extends ResponseBase implements Serializable {
+public class Response extends BaseResponse implements Serializable {
 
 	private static final long serialVersionUID = 101L;
 	/**

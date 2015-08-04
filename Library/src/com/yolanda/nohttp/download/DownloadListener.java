@@ -15,14 +15,12 @@
  */
 package com.yolanda.nohttp.download;
 
-import com.yolanda.nohttp.base.BaseListener;
-
 /**
  * Created in Jul 31, 2015 9:12:55 AM
  * 
  * @author YOLANDA
  */
-public interface DownloadListener extends BaseListener {
+public interface DownloadListener {
 
 	/**
 	 * An error occurred while downloading

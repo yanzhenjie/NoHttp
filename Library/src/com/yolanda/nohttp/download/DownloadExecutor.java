@@ -23,16 +23,13 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import com.yolanda.nohttp.HttpsVerifier;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.base.BaseExecutor;
 import com.yolanda.nohttp.util.FileUtil;
 import com.yolanda.nohttp.util.NetUtil;
 
@@ -45,37 +42,26 @@ import android.webkit.URLUtil;
  * 
  * @author YOLANDA
  */
-public class Downloader {
+public class DownloadExecutor extends BaseExecutor {
 
-	/**
-	 * out time
-	 */
-	private static int TIME_OUT = 10 * 1000;
 	/**
 	 * sigle model
 	 */
-	private static Downloader _Downloader;
+	private static DownloadExecutor _Downloader;
 	/**
 	 * context
 	 */
 	private Context mContext;
 
-	private Downloader(Context context) {
+	private DownloadExecutor(Context context) {
 		this.mContext = context;
 	}
 
-	public static Downloader getInstance(Context context) {
+	public static DownloadExecutor getInstance(Context context) {
 		if (_Downloader == null) {
-			_Downloader = new Downloader(context);
+			_Downloader = new DownloadExecutor(context);
 		}
 		return _Downloader;
-	}
-
-	/**
-	 * Set connect outtime nad read outtime
-	 */
-	public static void setOutTime(int outTime) {
-		TIME_OUT = outTime;
 	}
 
 	/**
@@ -83,22 +69,13 @@ public class Downloader {
 	 * @param filePath save path, like: sdcard/download/yolanda.png
 	 * @return Successful returns true, otherwise return false
 	 */
-	public boolean download(String urlAdress, String filePath) {
+	public boolean download(DownloadRequest request, String filePath) {
 		try {
 			File file = new File(filePath);
 			if (file.exists()) {
 				file.delete();
 			}
-			Logger.i("Download Adress：" + urlAdress);
-			URL url = new URL(urlAdress);
-			HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-			if (urlAdress.startsWith("https"))
-				HttpsVerifier.verify((HttpsURLConnection) urlConnection);
-			urlConnection.setRequestMethod("GET");
-			urlConnection.setRequestProperty("Connection", "Keep-Alive");
-			urlConnection.setDoInput(true);
-			urlConnection.setConnectTimeout(TIME_OUT);
-			urlConnection.setReadTimeout(TIME_OUT);
+			HttpURLConnection urlConnection = buildHttpAttribute(request);
 			if (urlConnection.getResponseCode() == 200) {
 				InputStream inputStream = urlConnection.getInputStream();
 				String contentEncode = urlConnection.getHeaderField("Content-Encoding");// connection.getContentEncoding();
@@ -114,9 +91,10 @@ public class Downloader {
 				}
 				outputStream.close();
 				inputStream.close();
+				urlConnection.disconnect();
 				return true;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			if (NoHttp.isDebug())
 				e.printStackTrace();
 		}
@@ -152,41 +130,27 @@ public class Downloader {
 			File lastFile = new File(savePathDir, request.getFileName());
 			Logger.i("Download file save path：" + lastFile.getAbsolutePath());
 			if (lastFile.exists()) {// 已存在，删除
-				if (request.isDeleteOld())
-					lastFile.delete();
-				else
+				if (request.isRange())
 					downloadListener.onFinish(0, lastFile.getAbsolutePath());
+				else
+					lastFile.delete();
 			}
 
 			tempFile = new File(request.getFileDir(), request.getFileName() + ".temp");
 			// 临时文件判断，断点续
 			long tempFileLength = 0L;// 临时文件大小记录,文件已经下载的大小，开始处
-			if (tempFile.exists()) {
-				if (request.isRange()) {
+			if (tempFile.exists())
+				if (request.isRange())
 					tempFileLength = tempFile.length();
-				} else {
+				else {
 					tempFile.delete();
 					tempFile.createNewFile();
 				}
-			} else {
+			else
 				tempFile.createNewFile();
-			}
 
-			String urlStr = request.getUrl();
-			Logger.i("Download Adress：" + urlStr);
-			URL url = new URL(urlStr);
-			httpURLConnection = (HttpURLConnection) url.openConnection();
-			if (urlStr.startsWith("https"))
-				HttpsVerifier.verify((HttpsURLConnection) httpURLConnection);
-			httpURLConnection.setRequestMethod("GET");
-			httpURLConnection.setDoInput(true);
-			httpURLConnection.setUseCaches(false);// 不许有缓存
-			httpURLConnection.setConnectTimeout(TIME_OUT);
-			httpURLConnection.setReadTimeout(TIME_OUT);
-			/* =====请求头===== */
+			httpURLConnection = buildHttpAttribute(request);
 			httpURLConnection.setRequestProperty("Connection", "Keep-Alive");
-			httpURLConnection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
-			httpURLConnection.setRequestProperty("Cache-Control", "no-cache");
 			if (request.isRange()) {
 				httpURLConnection.setRequestProperty("RANGE", "bytes=" + tempFileLength + "-");// 从断点开始下载，事例：Range:bytes=0-801
 			}

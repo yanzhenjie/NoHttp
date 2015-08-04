@@ -40,10 +40,6 @@ public class DownloadRequest extends BaseRequest implements Serializable {
 	 * If is to download a file, whether the breakpoint continuingly
 	 */
 	private boolean isRange = false;
-	/**
-	 * Whether to delete the old file
-	 */
-	private boolean isDeleteOld;
 
 	public DownloadRequest(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
@@ -56,11 +52,10 @@ public class DownloadRequest extends BaseRequest implements Serializable {
 	 * @param filename The filename
 	 * @param isRange whether breakpoint continuingly
 	 */
-	public void setDownloadAttribute(String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
+	public void setDownloadAttribute(String fileFloder, String filename, boolean isRange) {
 		this.mFileDir = fileFloder;
 		this.mFileName = filename;
 		this.isRange = isRange;
-		this.isDeleteOld = isDeleteOld;
 	}
 
 	/**
@@ -103,19 +98,5 @@ public class DownloadRequest extends BaseRequest implements Serializable {
 	 */
 	public void setRange(boolean isRange) {
 		this.isRange = isRange;
-	}
-
-	/**
-	 * @return the isDeleteOld
-	 */
-	public boolean isDeleteOld() {
-		return isDeleteOld;
-	}
-
-	/**
-	 * @param isDeleteOld the isDeleteOld to set
-	 */
-	public void setDeleteOld(boolean isDeleteOld) {
-		this.isDeleteOld = isDeleteOld;
 	}
 }

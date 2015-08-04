@@ -16,9 +16,8 @@
 package com.yolanda.nohttp.download;
 
 import java.io.File;
-import java.io.Serializable;
 
-import com.yolanda.nohttp.base.BasePoster;
+import com.yolanda.multiasynctask.MultiAsynctask;
 
 import android.content.Context;
 
@@ -27,9 +26,8 @@ import android.content.Context;
  * 
  * @author YOLANDA
  */
-class DownloadPoster extends BasePoster implements DownloadListener, Serializable {
+class DownloadPoster extends MultiAsynctask<DownloadRequest, DownloadResponse, Void>implements DownloadListener {
 
-	private static final long serialVersionUID = 200L;
 	/**
 	 * From the HTTP address request data
 	 */
@@ -39,79 +37,122 @@ class DownloadPoster extends BasePoster implements DownloadListener, Serializabl
 	 */
 	static final int COMMAND_DOWNLOAD_DYNAMIC = 1;
 	/**
+	 * error code
+	 */
+	static final int ERROR = 0;
+	/**
+	 * download start
+	 */
+	static final int START = 1;
+	/**
+	 * download progress change
+	 */
+	static final int PROGRESS = 2;
+	/**
+	 * download finish
+	 */
+	static final int FINISH = 3;
+	/**
 	 * Used to access the network
 	 */
 	private Context mContext;
+	/**
+	 * Make download task
+	 */
+	private int what;
 	/**
 	 * Need to monitor or don't need to listen
 	 */
 	private int command;
 	/**
-	 * Download parameters
+	 * Download listener
 	 */
-	private DownloadRequest mDownloadRequest;
+	private DownloadListener mDownloadListener;
 	/**
-	 * messenger
+	 * Maintain response object
 	 */
-	private Messenger messenger;
-	/**
-	 * Download process response
-	 */
-	private DownloadResponse downloadResponse;
+	private DownloadResponse mDownloadResponse;
 
-	public DownloadPoster(Context context, int command, DownloadRequest downloadRequest, Messenger messenger) {
-		this.mContext = context;
+	public DownloadPoster(Context context, int what, int command, DownloadListener downloadListener) {
+		this.mContext = context.getApplicationContext();
+		this.what = what;
 		this.command = command;
-		this.mDownloadRequest = downloadRequest;
-		this.messenger = messenger;
+		this.mDownloadListener = downloadListener;
 	}
 
 	@Override
-	public void run() {
-		if (command == COMMAND_DOWNLOAD_STATIC) {
-			String url = mDownloadRequest.getUrl();
-			String path = mDownloadRequest.getFileDir() + File.separator + mDownloadRequest.getFileName();
-			Downloader.getInstance(mContext).download(url, path);
-		} else
-			Downloader.getInstance(mContext).download(mDownloadRequest, this);
+	public Void onTask(DownloadRequest... params) {
+		DownloadRequest request = params[0];
+		switch (command) {
+		case COMMAND_DOWNLOAD_STATIC:
+			String path = request.getFileDir() + File.separator + request.getFileName();
+			DownloadExecutor.getInstance(mContext).download(request, path);
+			break;
+		default:
+			DownloadExecutor.getInstance(mContext).download(request, this);
+			break;
+		}
+		return null;
 	}
 
-	private DownloadResponse createResponse(int command) {
-		if (downloadResponse == null) {
-			downloadResponse = new DownloadResponse();
+	@Override
+	public void onUpdate(DownloadResponse update) {
+		if (this.mDownloadListener != null) {
+			int command = update.getCommand();
+			switch (command) {
+			case ERROR:
+				mDownloadListener.onDownloadError(what, update.getStatusCode());
+				break;
+			case START:
+				mDownloadListener.onStart(what);
+				break;
+			case PROGRESS:
+				mDownloadListener.onProgress(what, update.getProgress());
+				break;
+			default:
+				mDownloadListener.onFinish(what, update.getFilepath());
+				break;
+			}
 		}
-		downloadResponse.setCommand(command);
-		return downloadResponse;
+	}
+
+	/**
+	 * create response object
+	 * 
+	 * @param command status command
+	 */
+	private DownloadResponse createResponse(int command) {
+		if (mDownloadResponse == null) {
+			mDownloadResponse = new DownloadResponse();
+		}
+		mDownloadResponse.setCommand(command);
+		return mDownloadResponse;
 	}
 
 	@Override
 	public void onDownloadError(int what, StatusCode statusCode) {
-		createResponse(DownloadResponse.ERROR);
-		downloadResponse.setStatusCode(statusCode);
-		messenger.setDownloadResponse(downloadResponse);
-		postMessenger(messenger);
+		createResponse(ERROR);
+		mDownloadResponse.setStatusCode(statusCode);
+		postUpdate(mDownloadResponse);
 	}
 
 	@Override
 	public void onStart(int what) {
-		createResponse(DownloadResponse.START);
-		messenger.setDownloadResponse(downloadResponse);
-		postMessenger(messenger);
+		createResponse(START);
+		postUpdate(mDownloadResponse);
 	}
 
 	@Override
 	public void onProgress(int what, int progress) {
-		createResponse(DownloadResponse.PROGRESS);
-		downloadResponse.setProgress(progress);
-		messenger.setDownloadResponse(downloadResponse);
-		postMessenger(messenger);
+		createResponse(PROGRESS);
+		mDownloadResponse.setProgress(progress);
+		postUpdate(mDownloadResponse);
 	}
 
 	@Override
 	public void onFinish(int what, String filePath) {
-		createResponse(DownloadResponse.FINISH);
-		downloadResponse.setFilepath(filePath);
-		messenger.setDownloadResponse(downloadResponse);
-		postMessenger(messenger);
+		createResponse(FINISH);
+		mDownloadResponse.setFilepath(filePath);
+		postUpdate(mDownloadResponse);
 	}
 }

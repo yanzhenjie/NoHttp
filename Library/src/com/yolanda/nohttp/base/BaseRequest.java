@@ -15,6 +15,9 @@
  */
 package com.yolanda.nohttp.base;
 
+import java.util.LinkedHashMap;
+import java.util.Set;
+
 import android.text.TextUtils;
 
 /**
@@ -33,6 +36,10 @@ public abstract class BaseRequest {
 	 */
 	private RequestMethod requestMethod;
 	/**
+	 * Analytical data charset
+	 */
+	private String mCharset = "utf-8";
+	/**
 	 * Connect http timeout
 	 */
 	private int mConnectTimeout;
@@ -40,6 +47,14 @@ public abstract class BaseRequest {
 	 * Read data timeout
 	 */
 	private int mReadTimeout;
+	/**
+	 * keep alive
+	 */
+	private boolean mKeepAlive = true;
+	/**
+	 * Request head collection
+	 */
+	private LinkedHashMap<String, String> mHeads = new LinkedHashMap<>();
 
 	/**
 	 * Create reuqest params
@@ -72,6 +87,43 @@ public abstract class BaseRequest {
 	 */
 	public RequestMethod getRequestMethod() {
 		return requestMethod;
+	}
+
+	/**
+	 * http.keepAlive
+	 * 
+	 * @return Keep alive, return true, otherwise it returns false
+	 */
+	public boolean isKeepAlive() {
+		return mKeepAlive;
+	}
+
+	/**
+	 * Set whether to keep alive
+	 * 
+	 * @param keepAlive
+	 */
+	public void setKeppAlive(boolean keepAlive) {
+		this.mKeepAlive = keepAlive;
+	}
+
+	/**
+	 * Set charset of analytical data,The default value is utf-8
+	 * 
+	 * @param the charset, such as:"utf-8"、"gbk"、"gb2312"
+	 */
+	public void setCharset(String charset) {
+		if (!TextUtils.isEmpty(charset))
+			this.mCharset = charset;
+	}
+
+	/**
+	 * Get the charset analytical data
+	 * 
+	 * @return Returns the encoding type
+	 */
+	public String getCharset() {
+		return mCharset;
 	}
 
 	/**
@@ -108,6 +160,48 @@ public abstract class BaseRequest {
 	 */
 	public void setReadTimeout(int readTimeout) {
 		this.mReadTimeout = readTimeout;
+	}
+
+	/**
+	 * Add request head
+	 * 
+	 * @param key The head name
+	 * @param value The head value
+	 */
+	public void addHeader(String key, String value) {
+		mHeads.put(key, value);
+	}
+
+	/**
+	 * Get the heads set
+	 * 
+	 * @return The head key set
+	 */
+	public Set<String> getHeadKeys() {
+		return mHeads.keySet();
+	}
+
+	/**
+	 * Get a head key corresponding to the value
+	 * 
+	 * @param key The head key
+	 * @return The head value
+	 */
+	public String getHead(String key) {
+		return mHeads.get(key);
+	}
+
+	/**
+	 * Whether the request have parameter
+	 * 
+	 * @return Have returns true, no returns false
+	 */
+	public boolean hasParam() {
+		return false;
+	}
+
+	public StringBuilder buildParam() {
+		return new StringBuilder();
 	}
 
 	/**
