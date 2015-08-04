@@ -72,7 +72,7 @@ public class MainActivity extends Activity implements View.OnClickListener, OnRe
 		findViewById(R.id.btnUrlFilename2).setOnClickListener(this);
 
 		NoHttp.setDebug(true);
-		NoHttp.setTag(Logger.TAG);
+		NoHttp.setTag(LogUtil.TAG);
 		// 1. 打开对Http证书的支持，证书文件(.cer, .crt)在assets文件夹下
 		// 2. 打开后，如果是Https的请求，会自动加上证书
 		// 3. 如果不需要证书，则不用打开，NoHttp会自动允许所有Http的请求
@@ -101,14 +101,14 @@ public class MainActivity extends Activity implements View.OnClickListener, OnRe
 			break;
 		}
 		Toast.makeText(this, sign + response.string(), Toast.LENGTH_SHORT).show();
-		Logger.e("what：" + what + "；length：" + response.contentLength());
-		Logger.i("request：" + response.string());
+		LogUtil.e("what：" + what + "；length：" + response.contentLength());
+		LogUtil.i("request：" + response.string());
 
 	}
 
 	@Override
 	public void onNoHttpError(int what, ResponseError responseError) {
-		Logger.e("Error：" + responseError.getErrorInfo());
+		LogUtil.e("Error：" + responseError.getErrorInfo());
 		Toast.makeText(this, "Error：" + responseError.getErrorInfo(), Toast.LENGTH_LONG).show();
 	}
 
@@ -184,10 +184,10 @@ public class MainActivity extends Activity implements View.OnClickListener, OnRe
 				BaseResponse baseResponse = noHttp.requestSync(request);
 				if (baseResponse.isSuccessful()) {
 					Response response = (Response) baseResponse;
-					Logger.i("Sync Request Result:" + response);
+					LogUtil.i("Sync Request Result:" + response);
 				} else {
 					ResponseError responseError = (ResponseError) baseResponse;
-					Logger.i("Sync Request filed:" + responseError.getErrorInfo());
+					LogUtil.i("Sync Request filed:" + responseError.getErrorInfo());
 				}
 			};
 		}.start();

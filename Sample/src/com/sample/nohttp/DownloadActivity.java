@@ -63,25 +63,25 @@ public class DownloadActivity extends Activity implements OnClickListener, Downl
 
 	@Override
 	public void onDownloadError(int what, StatusCode statusCode) {
-		Logger.i("下载出错(download error)");
+		LogUtil.i("下载出错(download error)");
 		mTxtProgress.setText("下载出错(download error)");
 	}
 
 	@Override
 	public void onStart(int what) {
-		Logger.i("开始下载(start download)");
+		LogUtil.i("开始下载(start download)");
 		mTxtProgress.setText("开始下载(start download)");
 	}
 
 	@Override
 	public void onProgress(int what, int progress) {
-		Logger.i("已下载(Have downloaded)：" + progress + "%");
+		LogUtil.i("已下载(Have downloaded)：" + progress + "%");
 		mTxtProgress.setText("已下载(Have downloaded)：" + progress + "%");
 	}
 
 	@Override
 	public void onFinish(int what, String filePath) {
-		Logger.i("下载完成");
+		LogUtil.i("下载完成");
 		mTxtProgress.setText("下载完成");
 	}
 
