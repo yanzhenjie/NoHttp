@@ -142,14 +142,15 @@ public class MainActivity extends Activity implements View.OnClickListener, OnRe
 	private Request buildRequest() {
 		// 1. 初始化请求参数，添加请求地址和请求方式
 		// 1. Initializes the request parameters, add the address and request
-		Request request = new Request("http://www.baidu.com/s", RequestMethod.GET);
+		Request request = new Request("http://www.baidu.com/s", RequestMethod.POST);
 
 		// 2. 添加请求头，一般不需要添加请求头，这一步可以省略
 		// 2. Add request header, Generally do not need to add the request header, this step can be omitted
 		request.addHeader("Accept-Encoding", "gzip,deflate,sdch");
 
 		// 3.添加请求参数
-		// 4. Add the request parameters
+		// 3. Add the request parameters
+		request.add("ie", "utf-8");
 		request.add("wd", "钢铁是怎样练成的");
 
 		// 如果有文件上传，也像参数一样传进去即可

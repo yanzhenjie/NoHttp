@@ -29,6 +29,8 @@ public abstract class BaseResponse {
 	 */
 	private ResponseCode responseCode = ResponseCode.NONE;
 
+	private int statusCode = -1;
+
 	/**
 	 * The request is successful
 	 * 
@@ -52,6 +54,20 @@ public abstract class BaseResponse {
 	 */
 	public void setResponseCode(ResponseCode responseCode) {
 		this.responseCode = responseCode;
+	}
+
+	/**
+	 * @return the statusCode
+	 */
+	public int getStatusCode() {
+		return statusCode;
+	}
+
+	/**
+	 * @param statusCode the statusCode to set
+	 */
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
 	}
 
 }

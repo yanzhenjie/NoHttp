@@ -83,6 +83,7 @@ class HttpExecutor extends BaseExecutor {
 	public BaseResponse request(Request request) {
 		Logger.d("---------------Reuqest start---------------");
 		BaseResponse baseResponse = null;
+		HttpURLConnection httpURLConnection = null;
 		if (!URLUtil.isValidUrl(request.getUrl())) {
 			baseResponse = new ResponseError();
 			baseResponse.setResponseCode(ResponseCode.CODE_ERROR_URL);
@@ -92,7 +93,7 @@ class HttpExecutor extends BaseExecutor {
 			ResponseCode responseCode = ResponseCode.NONE;
 			Throwable throwable = null;
 			try {
-				HttpURLConnection httpURLConnection = buildHttpAttribute(request);
+				httpURLConnection = buildHttpAttribute(request);
 				sendRequestParam(httpURLConnection, request);
 				readResponseResult(httpURLConnection, (Response) baseResponse);
 			} catch (SecurityException e) {
@@ -115,13 +116,23 @@ class HttpExecutor extends BaseExecutor {
 				throwable = e;
 				if (NoHttp.isDebug())
 					e.printStackTrace();
+			} finally {
+				if (httpURLConnection != null) {
+					httpURLConnection.disconnect();
+				}
 			}
 			if (baseResponse.isSuccessful()) {
 				((Response) baseResponse).setCharset(request.getCharset());
-			} else {
+			} else if (throwable != null) {
 				baseResponse = new ResponseError();
+				baseResponse.setStatusCode(baseResponse.getStatusCode());
 				((ResponseError) baseResponse).setErrorInfo(throwable.getMessage());
 				baseResponse.setResponseCode(responseCode);
+			} else {
+				baseResponse = new ResponseError();
+				baseResponse.setStatusCode(baseResponse.getStatusCode());
+				baseResponse.setResponseCode(ResponseCode.CODE_ERROR_OTHER);
+				((ResponseError) baseResponse).setErrorInfo("");
 			}
 		}
 		Logger.d("---------------Reqeust Finish---------------");
@@ -191,6 +202,7 @@ class HttpExecutor extends BaseExecutor {
 	private void readResponseResult(HttpURLConnection httpURLConnection, Response response) throws Throwable {
 		if (httpURLConnection != null) {
 			int statusCode = httpURLConnection.getResponseCode();
+			response.setStatusCode(statusCode);
 			Logger.d("Http responseCode:" + statusCode);
 			// 200,201,304;成功，创建，没有修改
 			if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED
@@ -219,7 +231,6 @@ class HttpExecutor extends BaseExecutor {
 				response.setResponseCode(ResponseCode.CODE_SUCCESSFUL);
 				Logger.d("Http read finish");
 			}
-			httpURLConnection.disconnect();
 		}
 	}
 

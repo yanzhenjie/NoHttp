@@ -38,8 +38,11 @@ public abstract class BaseExecutor {
 	 */
 	protected HttpURLConnection buildHttpAttribute(BaseRequest request) throws Throwable {
 		String urlStr = request.getUrl();
-		if (request.isOutPut() && request.hasParam()) {
-			urlStr += ("?" + request.buildParam());
+		if (!request.isOutPut() && request.hasParam()) {
+			if (urlStr.contains("?") && urlStr.contains("="))
+				urlStr += ("&" + request.buildParam());
+			else
+				urlStr += ("?" + request.buildParam());
 		}
 		Logger.d("Reuqest adress:" + urlStr);
 		URL url = new URL(urlStr);
