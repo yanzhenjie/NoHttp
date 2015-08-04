@@ -4,7 +4,7 @@
 它为开发人员提供了非常简单的API来访问HTTP/HTTPS、异步请求、同步请求、文件上传、自定义请求头、自定义参数，
 你不用理睬复杂的HttpURLConnection,所以它的名字是NoHttp。
 
-使用了我的另一个开源项目MultiAsynctask(https://github.com/Y0LANDA/MultiAsynctask)，支持高并发的异步任务框架，在响应方法可以直接更新UI,不用再使用Handler。
+使用了我的另一个开源项目MultiAsynctask，支持高并发的异步任务框架，在响应方法可以直接更新UI,不用再使用Handler。Github地址：https://github.com/Y0LANDA/MultiAsynctask
 
 目前的功能有：Get、Post、文件上传、文件下载、自定义请求头、自定义参数，响应结果包括:是否成功、响应数据、数据长度、HTTP响应头集合。
 
