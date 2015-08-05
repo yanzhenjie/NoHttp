@@ -25,10 +25,6 @@ import android.os.Message;
 
 /**
  * 
- * 这是一个开源项目，支持多任务并发的异步任务(Asynctask)，源码托管在：https://github.com/Y0LANDA/MultiAsynctask
- * This is an open source project to support multi task concurrent asynchronous task (Asynctask), source code
- * in:https://github.com/Y0LANDA/MultiAsynctask </br>
- * </br>
  * Created in Aug 3, 2015 11:06:14 AM
  * 
  * @author YOLANDA
@@ -59,10 +55,9 @@ public abstract class MultiAsynctask<Param, Update, Result> {
 		this(5);
 	}
 
-	public MultiAsynctask(int taskCount) {
-		if (MAIN_THREAD_POOL_EXECUTOR == null)
-			MAIN_THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(taskCount, taskCount, 0L, TimeUnit.MILLISECONDS,
-					new LinkedBlockingQueue<Runnable>());
+	public MultiAsynctask(int count) {
+		MAIN_THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(count, count, 0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>());
 	}
 
 	/**
@@ -108,7 +103,6 @@ public abstract class MultiAsynctask<Param, Update, Result> {
 	 * Before executing the child thread is called, you can now some <code>Dialog</code>
 	 */
 	public void onPrepare() {
-
 	}
 
 	/**

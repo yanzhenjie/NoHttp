@@ -107,7 +107,7 @@ class HttpExecutor extends BaseExecutor {
 				if (NoHttp.isDebug())
 					e.printStackTrace();
 			} catch (UnknownHostException e) {
-				responseCode = ResponseCode.CODE_ERROR_NOSERVER;
+				responseCode = ResponseCode.CODE_ERROR_NOFIND_SERVER;
 				throwable = e;
 				if (NoHttp.isDebug())
 					e.printStackTrace();
@@ -121,18 +121,20 @@ class HttpExecutor extends BaseExecutor {
 					httpURLConnection.disconnect();
 				}
 			}
-			if (baseResponse.isSuccessful()) {
+			if (baseResponse.isSuccessful())
 				((Response) baseResponse).setCharset(request.getCharset());
-			} else if (throwable != null) {
+			else if (throwable != null) {
+				int statusCode = baseResponse.getStatusCode();
 				baseResponse = new ResponseError();
-				baseResponse.setStatusCode(baseResponse.getStatusCode());
+				baseResponse.setStatusCode(statusCode);
 				((ResponseError) baseResponse).setErrorInfo(throwable.getMessage());
 				baseResponse.setResponseCode(responseCode);
 			} else {
+				int statusCode = baseResponse.getStatusCode();
 				baseResponse = new ResponseError();
-				baseResponse.setStatusCode(baseResponse.getStatusCode());
-				baseResponse.setResponseCode(ResponseCode.CODE_ERROR_OTHER);
-				((ResponseError) baseResponse).setErrorInfo("");
+				baseResponse.setStatusCode(statusCode);
+				baseResponse.setResponseCode(ResponseCode.CODE_ERROR_SERVER);
+				((ResponseError) baseResponse).setErrorInfo("Server error, Please check the status code");
 			}
 		}
 		Logger.d("---------------Reqeust Finish---------------");
@@ -355,7 +357,7 @@ class HttpExecutor extends BaseExecutor {
 			if (NoHttp.isDebug())
 				e.printStackTrace();
 		} catch (UnknownHostException e) {
-			responseCode = ResponseCode.CODE_ERROR_NOSERVER;
+			responseCode = ResponseCode.CODE_ERROR_NOFIND_SERVER;
 			if (NoHttp.isDebug())
 				e.printStackTrace();
 		} catch (Throwable e) {

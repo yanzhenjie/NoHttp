@@ -22,31 +22,43 @@ package com.yolanda.nohttp;
  */
 public enum ResponseCode {
 	/**
-	 * The Request is successful
+	 * The Request is successful</br>
+	 * 请求成功
 	 */
 	CODE_SUCCESSFUL,
 	/**
-	 * Is not a correct url returns
+	 * Is not a correct url returns</br>
+	 * URL是错误的
 	 */
 	CODE_ERROR_URL,
 	/**
-	 * Return when the server response timeout
+	 * Return when the server response timeout</br>
+	 * 连接服务器或者读取数据超时
 	 */
 	CODE_ERROR_TIMEOUT,
 	/**
-	 * Can't find the server
+	 * Can't find the server</br>
+	 * 在网络上没有发现服务器
 	 */
-	CODE_ERROR_NOSERVER,
+	CODE_ERROR_NOFIND_SERVER,
 	/**
-	 * The Manifest. XML lack Intnet permissions
+	 * The server is error</br>
+	 * 服务器错误
+	 */
+	CODE_ERROR_SERVER,
+	/**
+	 * The Manifest. XML lack Intnet permissions</br>
+	 * 没有访问网络的权限
 	 */
 	CODE_ERROR_INTNET_PERMISSION,
 	/**
-	 * Other abnormal returns
+	 * Other abnormal returns</br>
+	 * 其它错误
 	 */
 	CODE_ERROR_OTHER,
 	/**
-	 * No CODE_ occurs
+	 * No CODE_ occurs</br>
+	 * 状态
 	 */
 	NONE
 }
