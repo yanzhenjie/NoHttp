@@ -32,6 +32,11 @@ public enum ResponseCode {
 	 */
 	CODE_ERROR_URL,
 	/**
+	 * 网络有问题</br>
+	 * Network error
+	 */
+	CODE_ERROR_NETWORK,
+	/**
 	 * Return when the server response timeout</br>
 	 * 连接服务器或者读取数据超时
 	 */

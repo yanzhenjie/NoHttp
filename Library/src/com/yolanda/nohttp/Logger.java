@@ -28,8 +28,8 @@ public class Logger {
 	 * @param msg
 	 */
 	public static void e(String msg) {
-		if (NoHttp.isDebug()) {
-			android.util.Log.e(NoHttp.getTag(), msg);
+		if (NoHttp.isDebug) {
+			android.util.Log.e(NoHttp.logTag, msg);
 		}
 	}
 
@@ -39,8 +39,8 @@ public class Logger {
 	 * @param msg
 	 */
 	public static void w(String msg) {
-		if (NoHttp.isDebug()) {
-			android.util.Log.w(NoHttp.getTag(), msg);
+		if (NoHttp.isDebug) {
+			android.util.Log.w(NoHttp.logTag, msg);
 		}
 	}
 
@@ -50,8 +50,8 @@ public class Logger {
 	 * @param msg
 	 */
 	public static void i(String msg) {
-		if (NoHttp.isDebug()) {
-			android.util.Log.i(NoHttp.getTag(), msg);
+		if (NoHttp.isDebug) {
+			android.util.Log.i(NoHttp.logTag, msg);
 		}
 	}
 
@@ -61,8 +61,8 @@ public class Logger {
 	 * @param msg
 	 */
 	public static void d(String msg) {
-		if (NoHttp.isDebug()) {
-			android.util.Log.d(NoHttp.getTag(), msg);
+		if (NoHttp.isDebug) {
+			android.util.Log.d(NoHttp.logTag, msg);
 		}
 	}
 

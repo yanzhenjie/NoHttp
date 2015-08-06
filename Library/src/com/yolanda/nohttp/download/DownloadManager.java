@@ -25,10 +25,17 @@ import android.content.Context;
 public class DownloadManager {
 
 	private static DownloadManager _DownloadManager;
+
 	private Context mContext;
 
+	static boolean isDebug;
+
+	public static void setDebug(boolean debug) {
+		isDebug = debug;
+	}
+
 	private DownloadManager(Context context) {
-		this.mContext = context;
+		this.mContext = context.getApplicationContext();
 	}
 
 	public static DownloadManager getInstance(Context context) {

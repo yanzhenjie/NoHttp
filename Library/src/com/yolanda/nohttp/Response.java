@@ -119,7 +119,7 @@ public class Response extends BaseResponse implements Serializable {
 		try {
 			result = new String(bytes, decoderCharset);
 		} catch (Throwable e) {
-			if (NoHttp.isDebug())
+			if (NoHttp.isDebug)
 				e.printStackTrace();
 		}
 		return result;

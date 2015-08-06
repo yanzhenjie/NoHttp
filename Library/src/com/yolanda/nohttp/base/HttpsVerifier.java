@@ -34,8 +34,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import com.yolanda.nohttp.NoHttp;
-
 import android.content.Context;
 
 /**
@@ -118,8 +116,6 @@ public class HttpsVerifier {
 			});
 			httpsURLConnection.setSSLSocketFactory(ssf);
 		} catch (Throwable e) {
-			if (NoHttp.isDebug())
-				e.printStackTrace();
 		}
 	}
 

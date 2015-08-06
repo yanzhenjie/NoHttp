@@ -32,6 +32,7 @@ import java.util.zip.GZIPInputStream;
 
 import com.yolanda.nohttp.base.BaseExecutor;
 import com.yolanda.nohttp.base.BaseResponse;
+import com.yolanda.nohttp.util.NetUtil;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -88,33 +89,44 @@ class HttpExecutor extends BaseExecutor {
 			baseResponse = new ResponseError();
 			baseResponse.setResponseCode(ResponseCode.CODE_ERROR_URL);
 			((ResponseError) baseResponse).setErrorInfo("URL address is wrong");
+		} else if (NoHttp.sContext != null && !NetUtil.isNetworkAvailable(NoHttp.sContext)) {
+			baseResponse = new ResponseError();
+			baseResponse.setResponseCode(ResponseCode.CODE_ERROR_NETWORK);
+			((ResponseError) baseResponse).setErrorInfo("Network error");
 		} else {
 			baseResponse = new Response();
 			ResponseCode responseCode = ResponseCode.NONE;
 			Throwable throwable = null;
 			try {
+				
+//				if (request.isCache()) {
+//					if (NoHttp.sContext == null)
+//						throw new NullPointerException(
+//								"Context is null, You need call method NoHttp.setApplicationContext(Context)");
+//					enableHttpResponseCache(NoHttp.sContext);
+//				}
 				httpURLConnection = buildHttpAttribute(request);
 				sendRequestParam(httpURLConnection, request);
 				readResponseResult(httpURLConnection, (Response) baseResponse);
 			} catch (SecurityException e) {
 				responseCode = ResponseCode.CODE_ERROR_INTNET_PERMISSION;
 				throwable = e;
-				if (NoHttp.isDebug())
+				if (NoHttp.isDebug)
 					e.printStackTrace();
 			} catch (SocketTimeoutException e) {
 				responseCode = ResponseCode.CODE_ERROR_TIMEOUT;
 				throwable = e;
-				if (NoHttp.isDebug())
+				if (NoHttp.isDebug)
 					e.printStackTrace();
 			} catch (UnknownHostException e) {
 				responseCode = ResponseCode.CODE_ERROR_NOFIND_SERVER;
 				throwable = e;
-				if (NoHttp.isDebug())
+				if (NoHttp.isDebug)
 					e.printStackTrace();
 			} catch (Throwable e) {
 				responseCode = ResponseCode.CODE_ERROR_OTHER;
 				throwable = e;
-				if (NoHttp.isDebug())
+				if (NoHttp.isDebug)
 					e.printStackTrace();
 			} finally {
 				if (httpURLConnection != null) {
@@ -152,10 +164,6 @@ class HttpExecutor extends BaseExecutor {
 	 * @throws Throwable Other unpredictable exceptions occur
 	 */
 	private void sendRequestParam(HttpURLConnection httpURLConnection, Request request) throws Throwable {
-		/*
-		 * if (request.isKeepAlive())
-		 * System.setProperty("http.keepAlive", "true");
-		 */
 		switch (request.getRequestMethod()) {
 		case DELETE:
 		case GET:
@@ -350,19 +358,19 @@ class HttpExecutor extends BaseExecutor {
 			}
 		} catch (SecurityException e) {
 			responseCode = ResponseCode.CODE_ERROR_INTNET_PERMISSION;
-			if (NoHttp.isDebug())
+			if (NoHttp.isDebug)
 				e.printStackTrace();
 		} catch (SocketTimeoutException e) {
 			responseCode = ResponseCode.CODE_ERROR_TIMEOUT;
-			if (NoHttp.isDebug())
+			if (NoHttp.isDebug)
 				e.printStackTrace();
 		} catch (UnknownHostException e) {
 			responseCode = ResponseCode.CODE_ERROR_NOFIND_SERVER;
-			if (NoHttp.isDebug())
+			if (NoHttp.isDebug)
 				e.printStackTrace();
 		} catch (Throwable e) {
 			responseCode = ResponseCode.CODE_ERROR_OTHER;
-			if (NoHttp.isDebug())
+			if (NoHttp.isDebug)
 				e.printStackTrace();
 		} finally {
 			if (httpURLConnection != null) {
@@ -390,7 +398,7 @@ class HttpExecutor extends BaseExecutor {
 				responseResult.setBytes(fileName.getBytes(request.getCharset()));
 				responseResult.setResponseCode(ResponseCode.CODE_SUCCESSFUL);
 			} catch (UnsupportedEncodingException e) {
-				if (NoHttp.isDebug())
+				if (NoHttp.isDebug)
 					e.printStackTrace();
 				responseResult.setResponseCode(ResponseCode.CODE_ERROR_OTHER);
 			}

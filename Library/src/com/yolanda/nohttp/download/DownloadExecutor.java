@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
 import com.yolanda.nohttp.Logger;
-import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.base.BaseExecutor;
 import com.yolanda.nohttp.util.FileUtil;
 import com.yolanda.nohttp.util.NetUtil;
@@ -95,7 +94,7 @@ public class DownloadExecutor extends BaseExecutor {
 				return true;
 			}
 		} catch (Throwable e) {
-			if (NoHttp.isDebug())
+			if (DownloadManager.isDebug)
 				e.printStackTrace();
 		}
 		return false;
@@ -239,19 +238,19 @@ public class DownloadExecutor extends BaseExecutor {
 			}
 		} catch (SecurityException e) {
 			downloadListener.onDownloadError(0, StatusCode.ERROR_PERMISSION);
-			if (NoHttp.isDebug())
+			if (DownloadManager.isDebug)
 				e.printStackTrace();
 		} catch (SocketTimeoutException e) {
 			downloadListener.onDownloadError(0, StatusCode.ERROR_TIMEOUT);
-			if (NoHttp.isDebug())
+			if (DownloadManager.isDebug)
 				e.printStackTrace();
 		} catch (UnknownHostException e) {
 			downloadListener.onDownloadError(0, StatusCode.ERROR_NOSERVER);
-			if (NoHttp.isDebug())
+			if (DownloadManager.isDebug)
 				e.printStackTrace();
 		} catch (Throwable e) {
 			downloadListener.onDownloadError(0, StatusCode.ERROR_OTHER);
-			if (NoHttp.isDebug())
+			if (DownloadManager.isDebug)
 				e.printStackTrace();
 		} finally {
 			if (!request.isRange() && tempFile != null && tempFile.exists()) {

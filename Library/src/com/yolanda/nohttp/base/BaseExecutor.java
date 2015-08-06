@@ -15,6 +15,7 @@
  */
 package com.yolanda.nohttp.base;
 
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Set;
@@ -22,6 +23,8 @@ import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
 
 import com.yolanda.nohttp.Logger;
+
+import android.content.Context;
 
 /**
  * Created in Aug 4, 2015 10:12:38 AM
@@ -45,6 +48,8 @@ public abstract class BaseExecutor {
 				urlStr += ("?" + request.buildParam());
 		}
 		Logger.d("Reuqest adress:" + urlStr);
+		if (android.os.Build.VERSION.SDK_INT <= 9)
+			System.setProperty("http.keepAlive", "false");
 		URL url = new URL(urlStr);
 		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
 		if (urlStr.startsWith("https"))
@@ -53,15 +58,14 @@ public abstract class BaseExecutor {
 		Logger.d("Request method:" + requestMethod);
 		httpURLConnection.setRequestMethod(requestMethod);
 		httpURLConnection.setDoInput(true);
-		httpURLConnection.setUseCaches(false);// 不许有缓存
+		boolean isCache = request.isCache();
+		httpURLConnection.setUseCaches(isCache);
 		httpURLConnection.setConnectTimeout(request.getConnectTimeout());
 		httpURLConnection.setReadTimeout(request.getReadTimeout());
-		/* =====请求头===== */
 		httpURLConnection.setRequestProperty("Charset", request.getCharset());
-		if (request.isKeepAlive())
-			httpURLConnection.setRequestProperty("Connection", "Keep-Alive");
-		httpURLConnection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
-		httpURLConnection.setRequestProperty("Cache-Control", "no-cache");
+		httpURLConnection.setRequestProperty("Connection", "Keep-Alive");// default Keep-Alive
+		httpURLConnection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");// default gzip
+		// httpURLConnection.setRequestProperty("Cache-Control", "no-cache");// no-cache、no-store
 
 		Set<String> headKeys = request.getHeadKeys();
 		for (String headKey : headKeys) {
@@ -70,4 +74,16 @@ public abstract class BaseExecutor {
 		return httpURLConnection;
 	}
 
+	/**
+	 * Open Http cache
+	 */
+	public void enableHttpResponseCache(Context context) {
+		try {
+			long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+			File httpCacheDir = new File(context.getCacheDir(), "http");
+			Class.forName("android.net.http.HttpResponseCache").getMethod("install", File.class, long.class)
+					.invoke(null, httpCacheDir, httpCacheSize);
+		} catch (Exception e) {// httpResponseCacheNotAvailable
+		}
+	}
 }

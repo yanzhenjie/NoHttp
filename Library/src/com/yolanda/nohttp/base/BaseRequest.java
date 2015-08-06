@@ -48,6 +48,10 @@ public abstract class BaseRequest {
 	 */
 	private int mReadTimeout;
 	/**
+	 * cache, default value: false
+	 */
+	private boolean isCache;
+	/**
 	 * keep alive
 	 */
 	private boolean mKeepAlive = true;
@@ -87,6 +91,22 @@ public abstract class BaseRequest {
 	 */
 	public RequestMethod getRequestMethod() {
 		return requestMethod;
+	}
+
+	/**
+	 * @return the isCache
+	 */
+	public boolean isCache() {
+		return isCache;
+	}
+
+	/**
+	 * set open cache, defalut value: false
+	 * 
+	 * @param isCache the isCache to set
+	 */
+	public void setCache(boolean isCache) {
+		this.isCache = isCache;
 	}
 
 	/**

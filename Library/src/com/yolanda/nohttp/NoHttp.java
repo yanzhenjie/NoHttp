@@ -28,13 +28,17 @@ import android.content.Context;
 public class NoHttp {
 
 	/**
+	 * ApplicationContext
+	 */
+	static Context sContext;
+	/**
 	 * library debug sign
 	 */
-	private static Boolean noHttpDebug = false;
+	static Boolean isDebug = false;
 	/**
 	 * library debug tag
 	 */
-	private static String noHttpTag = "NoHttp";
+	static String logTag = "NoHttp";
 	/**
 	 * silge model
 	 */
@@ -49,21 +53,49 @@ public class NoHttp {
 	}
 
 	/**
+	 * Set context, this is very necessary for your program, of course, do not set will not affect what
+	 * 
+	 * @param context
+	 */
+	public static void setApplicationContext(Context context) {
+		if (context == null)
+			throw new NullPointerException("context can't be null");
+		sContext = context.getApplicationContext();
+	}
+
+	/**
+	 * Set is a debug mode, if it is a debug mode, you can see NoHttp Log information
+	 * 
+	 * @param debug Set to debug mode is introduced into true, introduced to false otherwise
+	 */
+	public static void setDebug(Boolean debug) {
+		isDebug = debug;
+	}
+
+	/**
+	 * Set the log of the tag
+	 * 
+	 * @param tag The incoming string will be NoHttp logtag, also is in development tools logcat tag bar to see
+	 */
+	public static void setTag(String tag) {
+		logTag = tag;
+	}
+
+	/**
 	 * Open the HTTPS, CRT certificate verification
 	 * 
 	 * @param context Users get AssetManager, load your certificate of CRT
 	 * @param fileName Path and name of your certificate of CRT in assets, like file:///android_asset/yolanda.crt
-	 * @throws IOException .
-	 * @throws NoSuchAlgorithmException .
-	 * @throws KeyStoreException .
-	 * @throws CertificateException .
-	 * @throws KeyManagementException .
 	 */
-	public static void openHttpsVerify(Context context, String fileName) {
+	public static void openHttpsVerify(String fileName) {
+		if (sContext == null) {
+			throw new NullPointerException(
+					"NoHttp context can't be null, You need Call NoHttp.setApplicationContext(Context) method");
+		}
 		try {
-			HttpsVerifier.initVerify(context, fileName);
+			HttpsVerifier.initVerify(sContext, fileName);
 		} catch (Exception e) {
-			if (noHttpDebug)
+			if (isDebug)
 				e.printStackTrace();
 		}
 	}
@@ -73,38 +105,6 @@ public class NoHttp {
 	 */
 	public static void closeHttpsVerify() {
 		HttpsVerifier.closeVerify();
-	}
-
-	/**
-	 * Set is a debug mode, if it is a debug mode, you can see NoHttp Log information
-	 * 
-	 * @param debug Set to debug mode is introduced into true, introduced to false otherwise
-	 */
-	public static void setDebug(Boolean debug) {
-		noHttpDebug = debug;
-	}
-
-	/**
-	 * Set the log of the tag
-	 * 
-	 * @param tag The incoming string will be NoHttp logtag, also is in development tools logcat tag bar to see
-	 */
-	public static void setTag(String tag) {
-		noHttpTag = tag;
-	}
-
-	/**
-	 * If debug mode
-	 */
-	public static boolean isDebug() {
-		return noHttpDebug;
-	}
-
-	/**
-	 * To get the tag of the log
-	 */
-	public static String getTag() {
-		return noHttpTag;
 	}
 
 	/**

@@ -282,7 +282,7 @@ public class Request extends BaseRequest implements Serializable {
 					paramBuilder.append("=");
 					paramBuilder.append(URLEncoder.encode(param, getCharset()));
 				} catch (Throwable e) {
-					if (NoHttp.isDebug())
+					if (NoHttp.isDebug)
 						e.printStackTrace();
 				}
 			}
