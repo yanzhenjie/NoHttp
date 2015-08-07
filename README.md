@@ -59,7 +59,8 @@ if (baseResponse.isSuccessful()) {
 **下载文件**
 ```
 //下载文件
-String url = "http://p.gdown.baidu.com/bd163bef80e2074cdba62af336c33103a781d0491eed87c";
+String url = "http://p.gdown.baidu.com/bd163bef80e2074cdba62af336c33103a7"
++ "81d0491eed87c";
 DownloadRequest downloadRequest = new DownloadRequest(url, RequestMethod.GET);
 String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
 String filename = "YOLANDA.apk";
@@ -74,7 +75,7 @@ DownloadManager.getInstance(this).download(downloadRequest, 1, this);
 // 静态链接
 String url = "http://ota.53iq.com/static/file/kitchen_14379835129655595.apk";
 // 动态链接
-String url = "http://www.baidu.com/app?request_id=1438133342_2816171802&amp;type=static";
+String url = "http://www.baidu.com/app?request_id=1438133342_2816171802&amp";
 Request request = new Request("http://www.baidu.com", RequestMethod.GET);
 NoHttp.getInstance().requestAsync(request, REQUEST_FILENAME, responseListener);
 ```
