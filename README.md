@@ -59,8 +59,7 @@ if (baseResponse.isSuccessful()) {
 **下载文件**
 ```
 //下载文件
-String url = "http://p.gdown.baidu.com/bd163bef80e2074cdba62af336c33103a7"
-+ "81d0491eed87c";
+String url = "http://p.gdown.baidu.com/bd163bef80e2074cdba62af336c33103a7";
 DownloadRequest downloadRequest = new DownloadRequest(url, RequestMethod.GET);
 String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
 String filename = "YOLANDA.apk";
