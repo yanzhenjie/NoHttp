@@ -57,7 +57,7 @@ API非常样简单，一个Request对象提供所有请求参数，一个Respons
 	}
 ```
 
-## 下载文件
+**下载文件**
 ```
 	//下载文件
 	String url = "http://p.gdown.baidu.com/bd163bef80e2074cdba62af336c33103a781d0491eed87c";
@@ -68,7 +68,7 @@ API非常样简单，一个Request对象提供所有请求参数，一个Respons
 	DownloadManager.getInstance(this).download(downloadRequest, 1, this);
 ```
 
-## 从一个下载URL中获取真实文件名称
+**从一个下载URL中获取真实文件名称**
 ```
 	// 从URL获取文件名称，支持静态链接和动态链接
 	
