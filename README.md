@@ -76,5 +76,5 @@ String url = "http://ota.53iq.com/static/file/kitchen_14379835129655595.apk";
 // 动态链接
 String url = "http://www.baidu.com/app?request_id=1438133342_2816171802&amp";
 Request request = new Request("http://www.baidu.com", RequestMethod.GET);
-NoHttp.getInstance().requestAsync(request, REQUEST_FILENAME, responseListener);
+NoHttp.getInstance().requestFilenameAsync(request, REQUEST_FILENAME, responseListener);
 ```
