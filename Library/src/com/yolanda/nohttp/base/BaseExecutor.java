@@ -48,24 +48,35 @@ public abstract class BaseExecutor {
 				urlStr += ("?" + request.buildParam());
 		}
 		Logger.d("Reuqest adress:" + urlStr);
-		if (android.os.Build.VERSION.SDK_INT <= 9)
+		if (android.os.Build.VERSION.SDK_INT < 9)
 			System.setProperty("http.keepAlive", "false");
 		URL url = new URL(urlStr);
 		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-		if (urlStr.startsWith("https"))
+		if ("https".equals(url.getProtocol()))
 			HttpsVerifier.verify((HttpsURLConnection) httpURLConnection);
 		String requestMethod = request.getRequestMethod().toString();
 		Logger.d("Request method:" + requestMethod);
 		httpURLConnection.setRequestMethod(requestMethod);
 		httpURLConnection.setDoInput(true);
-		boolean isCache = request.isCache();
-		httpURLConnection.setUseCaches(isCache);
+		httpURLConnection.setDoOutput(request.isOutPut());
+		httpURLConnection.setUseCaches(request.isCache());
 		httpURLConnection.setConnectTimeout(request.getConnectTimeout());
 		httpURLConnection.setReadTimeout(request.getReadTimeout());
-		httpURLConnection.setRequestProperty("Charset", request.getCharset());
-		httpURLConnection.setRequestProperty("Connection", "Keep-Alive");// default Keep-Alive
+
+		// Accept:text/html
+		// Authorization:
+		// Accept-Language:zh-CN,zh;q=0.8
+		
+		httpURLConnection.setRequestProperty("Accept-Charset", request.getCharset());
 		httpURLConnection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");// default gzip
-		// httpURLConnection.setRequestProperty("Cache-Control", "no-cache");// no-cache、no-store
+		
+		// 请求时：no-cache、no-store、max-age、max-stale、min-fresh、only-if-cached
+		// 响应时：public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age、s-maxage
+		// httpURLConnection.setRequestProperty("Cache-Control", "no-cache");
+		
+		httpURLConnection.setRequestProperty("Connection", "Keep-Alive");// default Keep-Alive
+		
+		// User-Agent
 
 		Set<String> headKeys = request.getHeadKeys();
 		for (String headKey : headKeys) {

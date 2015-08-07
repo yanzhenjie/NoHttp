@@ -98,13 +98,13 @@ class HttpExecutor extends BaseExecutor {
 			ResponseCode responseCode = ResponseCode.NONE;
 			Throwable throwable = null;
 			try {
-				
-//				if (request.isCache()) {
-//					if (NoHttp.sContext == null)
-//						throw new NullPointerException(
-//								"Context is null, You need call method NoHttp.setApplicationContext(Context)");
-//					enableHttpResponseCache(NoHttp.sContext);
-//				}
+
+				if (request.isCache()) {
+					if (NoHttp.sContext == null)
+						throw new NullPointerException(
+								"Context is null, You need call method NoHttp.setApplicationContext(Context)");
+					enableHttpResponseCache(NoHttp.sContext);
+				}
 				httpURLConnection = buildHttpAttribute(request);
 				sendRequestParam(httpURLConnection, request);
 				readResponseResult(httpURLConnection, (Response) baseResponse);
@@ -164,27 +164,14 @@ class HttpExecutor extends BaseExecutor {
 	 * @throws Throwable Other unpredictable exceptions occur
 	 */
 	private void sendRequestParam(HttpURLConnection httpURLConnection, Request request) throws Throwable {
-		switch (request.getRequestMethod()) {
-		case DELETE:
-		case GET:
-		case HEAD:
-		case OPTIONS:
-		case TRACE:
-			httpURLConnection.connect();
-			break;
-		case PATCH:
-		case POST:
-		case PUT:
-		default:
+		if (request.isOutPut()) {
 			OutputStream outputStream = null;
 			if (request.hasBinaryData()) {// 如果有文件或者图片
 				httpURLConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
-				httpURLConnection.setDoOutput(true);
 				outputStream = httpURLConnection.getOutputStream();
 				buildParams(outputStream, request);
 			} else {// 如果只是普通参数
 				httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-				httpURLConnection.setDoOutput(true);
 				outputStream = httpURLConnection.getOutputStream();
 				StringBuilder postParam = new StringBuilder();
 				String postObj = request.getPostData();
@@ -196,8 +183,8 @@ class HttpExecutor extends BaseExecutor {
 				Logger.d("Post data :" + postParam);
 				outputStream.write(postParam.toString().getBytes(request.getCharset()));
 			}
-			break;
-		}
+		} else
+			httpURLConnection.connect();
 		Logger.d("Http send data finish");
 	}
 

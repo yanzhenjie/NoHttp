@@ -52,10 +52,6 @@ public abstract class BaseRequest {
 	 */
 	private boolean isCache;
 	/**
-	 * keep alive
-	 */
-	private boolean mKeepAlive = true;
-	/**
 	 * Request head collection
 	 */
 	private LinkedHashMap<String, String> mHeads = new LinkedHashMap<>();
@@ -101,30 +97,14 @@ public abstract class BaseRequest {
 	}
 
 	/**
-	 * set open cache, defalut value: false
-	 * 
-	 * @param isCache the isCache to set
+	 * Sets the flag indicating whether this connection allows to use caches or not</br>
+	 * Default value is <code>false</code>
+	 *
+	 * @param isCache the value of the flag to be set.
+	 * @see #isCache
 	 */
 	public void setCache(boolean isCache) {
 		this.isCache = isCache;
-	}
-
-	/**
-	 * http.keepAlive
-	 * 
-	 * @return Keep alive, return true, otherwise it returns false
-	 */
-	public boolean isKeepAlive() {
-		return mKeepAlive;
-	}
-
-	/**
-	 * Set whether to keep alive
-	 * 
-	 * @param keepAlive
-	 */
-	public void setKeppAlive(boolean keepAlive) {
-		this.mKeepAlive = keepAlive;
 	}
 
 	/**
