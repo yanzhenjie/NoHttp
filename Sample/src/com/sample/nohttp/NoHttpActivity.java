@@ -37,22 +37,18 @@ public class NoHttpActivity extends Activity implements View.OnClickListener, On
 
 	/**
 	 * 标志异步请求
-	 * Mark the asynchronous request
 	 */
 	private static final int BTN_ASYNC = 0;
 	/**
 	 * 标志Https请求
-	 * Mark the Https requests
 	 */
 	private static final int BTN_HTTPS = 1;
 	/**
 	 * 标志从动态URL获取文件名
-	 * Mark from dynamic URL for the file name
 	 */
 	private static final int BTN_URLFILENAME = 3;
 	/**
 	 * 标志懂静态URL获取文件名
-	 * Mark understand static URL for the file name
 	 */
 	private static final int BTN_URLFILENAME2 = 4;
 
@@ -71,52 +67,20 @@ public class NoHttpActivity extends Activity implements View.OnClickListener, On
 		findViewById(R.id.btnUrlFilename).setOnClickListener(this);
 		findViewById(R.id.btnUrlFilename2).setOnClickListener(this);
 
+		NoHttp.setApplicationContext(this.getApplicationContext());
 		NoHttp.setDebug(true);
 		NoHttp.setTag(LogUtil.TAG);
-		// 1. 打开对Http证书的支持，证书文件(.cer, .crt)在assets文件夹下
-		// 2. 打开后，如果是Https的请求，会自动加上证书
-		// 3. 如果不需要证书，则不用打开，NoHttp会自动允许所有Http的请求
-		// Open support for Https, Certificate file (. CRT,. Cer) in the assets folder
-		// After opening, If it is Https requests, automatically add the certificate
-		NoHttp.openHttpsVerify(this, "srca.cer");
-	}
-
-	@Override
-	public void onNoHttpResponse(int what, Response response) {
-		// "what" 用来标志是哪个请求
-		// "what" which is used to mark the request
-		String sign = "";
-		switch (what) {
-		case BTN_ASYNC:
-			sign = "Async request：";
-			break;
-		case BTN_HTTPS:
-			sign = "Https Request：";
-			break;
-		case BTN_URLFILENAME:
-		case BTN_URLFILENAME2:
-			sign = "file name：";
-			break;
-		default:
-			break;
-		}
-		Toast.makeText(this, sign + response.string(), Toast.LENGTH_SHORT).show();
-		LogUtil.e("what：" + what + "；length：" + response.contentLength());
-		LogUtil.i("request：" + response.string());
-
-	}
-
-	@Override
-	public void onNoHttpError(int what, ResponseError responseError) {
-		LogUtil.e("Error：" + responseError.getErrorInfo());
-		Toast.makeText(this, "Error：" + responseError.getErrorInfo(), Toast.LENGTH_LONG).show();
+		// 打开对Http证书的支持，证书文件(.cer, .crt)在assets文件夹下
+		// 打开后，如果是Https的请求，会自动加上证书
+		// 如果不需要证书，则不用打开，NoHttp会自动允许所有Http的请求
+		NoHttp.openHttpsVerify("srca.cer");
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnAsync:
-			asyncRequest();
+			requestAsync();
 			break;
 		case R.id.btnSync:
 			syncRequest();
@@ -136,59 +100,43 @@ public class NoHttpActivity extends Activity implements View.OnClickListener, On
 	}
 
 	/**
-	 * 创建一个请求者
-	 * Build an HTTP request
-	 */
-	private Request buildRequest() {
-		// 1. 初始化请求参数，添加请求地址和请求方式
-		// 1. Initializes the request parameters, add the address and request
-		Request request = new Request("http://www.baidu.com/s", RequestMethod.POST);
-
-		// 2. 添加请求头，一般不需要添加请求头，这一步可以省略
-		// 2. Add request header, Generally do not need to add the request header, this step can be omitted
-		request.addHeader("Accept-Encoding", "gzip,deflate,sdch");
-
-		// 3.添加请求参数
-		// 3. Add the request parameters
-		request.add("ie", "utf-8");
-		request.add("wd", "钢铁是怎样练成的");
-
-		// 如果有文件上传，也像参数一样传进去即可
-		// If there is a file upload, also like parameters just walk
-		// Bitmap bitmap = null;
-		// request.add("picture", bitmap, "head.jpg");
-
-		return request;
-	}
-
-	/**
 	 * 异步请求
-	 * ——————————
-	 * An asynchronous request
 	 */
-	private void asyncRequest() {
-		Request request = buildRequest();
+	private void requestAsync() {
+		// 1. 初始化请求参数，添加请求地址和请求方式
+		Request request = new Request("http://www.baidu.com/s", RequestMethod.GET);
+		// 2. 添加请求头，一般不需要添加请求头，这一步可以省略
+		request.addHeader("Accept-Encoding", "gzip,deflate,sdch");
+		// 3.添加请求参数
+		request.add("wd", "钢铁是怎样练成的");
+		// 文件上传
+		// request.add("picture", bitmap, "head.jpg");
 		noHttp.requestAsync(request, BTN_ASYNC, this);
 	}
 
 	/**
 	 * 同步请求
-	 * ——————————
-	 * An synchronous request
 	 */
 	private void syncRequest() {
 		Toast.makeText(this, "请看Logcat(See Loacat)", Toast.LENGTH_SHORT).show();
 		new Thread() {
 			@Override
 			public void run() {
-				Request request = buildRequest();
+				// 1. 初始化请求参数，添加请求地址和请求方式
+				Request request = new Request("http://www.baidu.com/s", RequestMethod.GET);
+				// 2. 添加请求头，一般不需要添加请求头，这一步可以省略
+				request.addHeader("Accept-Encoding", "gzip,deflate,sdch");
+				// 3.添加请求参数
+				request.add("wd", "钢铁是怎样练成的");
+				// 文件上传
+				// request.add("picture", bitmap, "head.jpg");
 				BaseResponse baseResponse = noHttp.requestSync(request);
 				if (baseResponse.isSuccessful()) {
 					Response response = (Response) baseResponse;
-					LogUtil.i("Sync Request Result:" + response);
+					LogUtil.i("同步请求结果:" + response);
 				} else {
 					ResponseError responseError = (ResponseError) baseResponse;
-					LogUtil.i("Sync Request filed:" + responseError.getErrorInfo());
+					LogUtil.i("同步请求失败:" + responseError.getErrorInfo());
 				}
 			};
 		}.start();
@@ -196,8 +144,6 @@ public class NoHttpActivity extends Activity implements View.OnClickListener, On
 
 	/**
 	 * 一个Https请求
-	 * ———————————
-	 * A Https Request
 	 */
 	private void httpsRequest() {
 		Request request1 = new Request("https://kyfw.12306.cn/otn/", RequestMethod.GET);
@@ -206,8 +152,6 @@ public class NoHttpActivity extends Activity implements View.OnClickListener, On
 
 	/**
 	 * 从动态URL获取文件名
-	 * ————————————————————
-	 * From a dynamic URL dynamic
 	 */
 	private void dynamicFilename() {
 		String url = "http://cdn3.ops.baidu.com/new-repackonline/appsearch/AndroidPhone/1.0.31.191/1/1012271a/"
@@ -220,12 +164,38 @@ public class NoHttpActivity extends Activity implements View.OnClickListener, On
 
 	/**
 	 * 从静态URL获取文件名
-	 * ————————————————
-	 * From a static URL
 	 */
 	private void staticFilename() {
 		String url = "http://ota.53iq.com/static/file/kitchen_14379835129655595.apk";
 		Request request = new Request(url, RequestMethod.GET);
 		noHttp.requestFilenameAsync(request, BTN_URLFILENAME2, this);
+	}
+
+	@Override
+	public void onNoHttpResponse(int what, Response response) {
+		// "what" 用来标志是哪个请求
+		switch (what) {
+		case BTN_ASYNC:
+			Toast.makeText(this, "异步请求结果：" + response.string(), Toast.LENGTH_SHORT).show();
+			break;
+		case BTN_HTTPS:
+			Toast.makeText(this, "Https请求结果：" + response.string(), Toast.LENGTH_SHORT).show();
+			break;
+		case BTN_URLFILENAME:
+		case BTN_URLFILENAME2:
+			Toast.makeText(this, "文件名：" + response.string(), Toast.LENGTH_SHORT).show();
+			break;
+		default:
+			break;
+		}
+		LogUtil.e("what：" + what + "；length：" + response.contentLength());
+		LogUtil.i("request：" + response.string());
+
+	}
+
+	@Override
+	public void onNoHttpError(int what, ResponseError responseError) {
+		LogUtil.e("Error：" + responseError.getErrorInfo());
+		Toast.makeText(this, "Error：" + responseError.getErrorInfo(), Toast.LENGTH_LONG).show();
 	}
 }
