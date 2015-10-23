@@ -82,6 +82,12 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 		} else {
 			String fileFloder = Environment.getExternalStorageDirectory().getAbsolutePath();
 			String filename = "123.apk";
+			// what 区分下载
+			// url 下载地址
+			// fileFloader 保存的文件夹
+			// fileName 文件名
+			// isRange 是否断点续传下载
+			// DownloadListener 下载状态接受
 			downloadRequest = new DownloadRequestor(0, url, fileFloder, filename, true, this);
 			mDownloadQueue.add(downloadRequest);
 		}

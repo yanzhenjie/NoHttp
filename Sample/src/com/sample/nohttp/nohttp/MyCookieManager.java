@@ -39,7 +39,7 @@ public class MyCookieManager extends CookieManager {
 		Map<String, List<String>> map = new HashMap<>();
 		List<String> lists = new ArrayList<>();
 		lists.add(cookieString);
-		map.put("Cookie", lists);
+		map.put("Set-Cookie", lists);
 		try {
 			put(new URI("http://www.baidu.com"), map);
 		} catch (IOException e) {

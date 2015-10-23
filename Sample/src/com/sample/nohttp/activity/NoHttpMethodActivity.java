@@ -123,9 +123,6 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 		// 设置这个请求的tag，NoHttp的请求会为你保持这个tag，在成功或者失败时返回给你
 		// mRequest.setTag(object);
 
-		// 设置取消时的sign, CallServer.getInstance().cancelBySign(sign);
-		// mRequest.cancelBySign(sign);
-
 		// what: 用来区分请求，当多个请求使用同一个OnResponseListener时，在回调方法中会返回这个what，相当于handler的what一样
 		// request: 请求对象，包涵Cookie、Head、请求参数、URL、请求方法
 		// responseListener 请求结果监听，回调时把what原样返回

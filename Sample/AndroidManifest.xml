@@ -48,6 +48,12 @@
         <activity
             android:name=".activity.NoHttpDefineRequestActivity"
             android:label="@string/app_name" />
+        <activity
+            android:name=".activity.NoHttpCancelActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".activity.NoHttpSyncActivity"
+            android:label="@string/app_name" />
     </application>
 
 </manifest>

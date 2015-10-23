@@ -43,32 +43,44 @@ public class StartActivity extends Activity implements View.OnClickListener {
 		findViewById(R.id.btn_upload_activity).setOnClickListener(this);
 		findViewById(R.id.btn_iamge_activity).setOnClickListener(this);
 		findViewById(R.id.btn_define_activity).setOnClickListener(this);
+		findViewById(R.id.btn_cancel_activity).setOnClickListener(this);
+		findViewById(R.id.btn_sync_activity).setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.btn_method_activity) {
+		if (v.getId() == R.id.btn_method_activity) {// 演示请求方法
 			Intent intent = new Intent(this, NoHttpMethodActivity.class);
 			startActivity(intent);
 		}
 
-		if (v.getId() == R.id.btn_download_activity) {
+		if (v.getId() == R.id.btn_download_activity) {// 演示下载
 			Intent intent = new Intent(this, NoHttpDownloadActivity.class);
 			startActivity(intent);
 		}
 
-		if (v.getId() == R.id.btn_upload_activity) {
+		if (v.getId() == R.id.btn_upload_activity) {// 演示上传
 			Intent intent = new Intent(this, NoHttpUploadFileActivity.class);
 			startActivity(intent);
 		}
 
-		if (v.getId() == R.id.btn_iamge_activity) {
+		if (v.getId() == R.id.btn_iamge_activity) {// 演示请求图片
 			Intent intent = new Intent(this, NoHttpImageActivity.class);
 			startActivity(intent);
 		}
 
-		if (v.getId() == R.id.btn_define_activity) {
+		if (v.getId() == R.id.btn_define_activity) {// 演示自定义请求对象
 			Intent intent = new Intent(this, NoHttpDefineRequestActivity.class);
+			startActivity(intent);
+		}
+
+		if (v.getId() == R.id.btn_cancel_activity) {// 演示取消请求，取消请求队列，取消所有请求
+			Intent intent = new Intent(this, NoHttpCancelActivity.class);
+			startActivity(intent);
+		}
+
+		if (v.getId() == R.id.btn_sync_activity) {// 演示同步请求
+			Intent intent = new Intent(this, NoHttpSyncActivity.class);
 			startActivity(intent);
 		}
 	}

@@ -104,6 +104,7 @@ public class NoHttpUploadFileActivity extends Activity implements View.OnClickLi
 	 */
 	private void uploadFileNoHttp() {
 		Request<String> request = NoHttp.createStringRequest(url, RequestMethod.POST);// 或者用PUT，看服务器支持什么方法上传
+		// 添加一个普通参数
 		request.add("user", "yolanda");
 
 		// 上传文件需要实现NoHttp的Binary接口，NoHttp默认实现了一个上传File的，传入File和fileName就可以了
