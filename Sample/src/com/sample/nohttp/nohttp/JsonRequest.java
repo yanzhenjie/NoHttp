@@ -15,9 +15,13 @@
  */
 package com.sample.nohttp.nohttp;
 
+import java.io.UnsupportedEncodingException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.yolanda.nohttp.HeaderParser;
+import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.RestRequestor;
 
 /**
@@ -37,12 +41,22 @@ public class JsonRequest extends RestRequestor<JSONObject> {
 
 	@Override
 	public JSONObject parseResponse(String url, String contentType, byte[] byteArray) {
-		String jsonString = "{\"name\":\"yolanda\",\"pass\":\"yolanda.pass\"}";
+		String jsonString = null;
 		JSONObject jsonObject = null;
+		if (byteArray != null && byteArray.length > 0) {
+			try {
+				String charset = HeaderParser.parseHeadValue(contentType, "charset", "");
+				jsonString = new String(byteArray, charset);
+			} catch (UnsupportedEncodingException e) {
+				Logger.w("Charset error in ContentType returned by the server：" + contentType);
+				jsonString = new String(byteArray);
+			}
+		}
+		jsonString = "{\"name\":\"yolanda\",\"pass\":\"yolanda.pass\"}";
 		try {
 			jsonObject = new JSONObject(jsonString);
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (JSONException e1) {
+			e1.printStackTrace();
 		}
 		return jsonObject;
 	}
