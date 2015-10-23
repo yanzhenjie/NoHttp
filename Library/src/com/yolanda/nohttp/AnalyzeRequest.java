@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,41 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.download;
+package com.yolanda.nohttp;
+
+import java.util.Set;
 
 /**
- * Created in Oct 19, 2015 2:46:42 PM
+ * Ful rest interface to write parameters of the interface<br/>
+ * Created in Oct 16, 2015 8:16:55 PM
+ * 
  * @author YOLANDA
  */
-public enum StatusCode {
+public abstract interface AnalyzeRequest extends BasicAnalyzeRequest {
 
 	/**
-	 * Network is not available
+	 * Get the output request package body
 	 */
-	ERROR_NETWORK_NOT_AVAILABLE,
+	public abstract byte[] getRequestBody();
+
 	/**
-	 * URL Adress error
+	 * Get the parameters set
 	 */
-	ERROR_URL_SYNTAX_ERROR,
+	public abstract Set<String> keySet();
+
 	/**
-	 * Specified folder capacity
+	 * Return {@link #keySet()} key corresponding to value
+	 * 
+	 * @param key from {@link #keySet()}
 	 */
-	ERROR_STORAGE_NOT_ENOUGH,
+	public abstract Object value(String key);
+
 	/**
-	 * No server in URL is found in the current network.
+	 * Get get of this request
 	 */
-	ERROR_SERVER_NOT_FOUND,
-	/**
-	 * Server exception
-	 */
-	ERROR_SERVER_EXCEPTION,
-	/**
-	 * Download the timeout
-	 */
-	ERROR_DOWNLOAD_TIMEOUT,
-	/**
-	 * Other errors
-	 */
-	ERROR_OTHER
+	public abstract Object getTag();
 
 }

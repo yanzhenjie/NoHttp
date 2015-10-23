@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,38 +16,20 @@
 package com.yolanda.nohttp.download;
 
 /**
- * Created in Oct 19, 2015 2:46:42 PM
+ * Download Network Interface</br>
+ * Created in Oct 20, 2015 4:13:04 PM
+ * 
  * @author YOLANDA
  */
-public enum StatusCode {
+public abstract interface Downloader {
 
 	/**
-	 * Network is not available
+	 * Execute a download task
+	 * 
+	 * @param downloadRequest Download request parameter
+	 * @param what what of task
+	 * @param downloadListener The download process monitor
 	 */
-	ERROR_NETWORK_NOT_AVAILABLE,
-	/**
-	 * URL Adress error
-	 */
-	ERROR_URL_SYNTAX_ERROR,
-	/**
-	 * Specified folder capacity
-	 */
-	ERROR_STORAGE_NOT_ENOUGH,
-	/**
-	 * No server in URL is found in the current network.
-	 */
-	ERROR_SERVER_NOT_FOUND,
-	/**
-	 * Server exception
-	 */
-	ERROR_SERVER_EXCEPTION,
-	/**
-	 * Download the timeout
-	 */
-	ERROR_DOWNLOAD_TIMEOUT,
-	/**
-	 * Other errors
-	 */
-	ERROR_OTHER
+	public abstract void download(DownloadRequest downloadRequest, int what, DownloadListener downloadListener);
 
 }

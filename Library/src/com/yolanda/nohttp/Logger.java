@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,10 @@
  */
 package com.yolanda.nohttp;
 
+import java.util.Locale;
+
+import android.util.Log;
+
 /**
  * Created in Jul 28, 2015 7:32:05 PM
  * 
@@ -23,47 +27,132 @@ package com.yolanda.nohttp;
 public class Logger {
 
 	/**
-	 * red error message
-	 * 
-	 * @param msg
+	 * library debug tag
 	 */
-	public static void e(String msg) {
-		if (NoHttp.isDebug) {
-			android.util.Log.e(NoHttp.logTag, msg);
-		}
-	}
+	static String sLogTag = "NoHttp";
 
 	/**
-	 * orange warn message
-	 * 
-	 * @param msg
+	 * library debug sign
 	 */
-	public static void w(String msg) {
-		if (NoHttp.isDebug) {
-			android.util.Log.w(NoHttp.logTag, msg);
-		}
-	}
+	static Boolean isDebug = false;
 
-	/**
-	 * green message
-	 * 
-	 * @param msg
-	 */
 	public static void i(String msg) {
-		if (NoHttp.isDebug) {
-			android.util.Log.i(NoHttp.logTag, msg);
-		}
+		if (isDebug)
+			Log.i(sLogTag, msg);
+	}
+
+	public static void i(String format, Object... obj) {
+		if (isDebug)
+			Log.i(sLogTag, buildMessage(format, obj));
+	}
+
+	public static void v(String msg) {
+		if (isDebug)
+			Log.v(sLogTag, msg);
+	}
+
+	public static void v(String format, Object... obj) {
+		if (isDebug)
+			Log.v(sLogTag, buildMessage(format, obj));
+	}
+
+	public static void d(String msg) {
+		if (isDebug)
+			Log.d(sLogTag, msg);
+	}
+
+	public static void d(String format, Object... obj) {
+		if (isDebug)
+			Log.d(sLogTag, buildMessage(format, obj));
+	}
+
+	public static void e(String msg) {
+		if (isDebug)
+			Log.e(sLogTag, msg);
+	}
+
+	public static void e(String format, Object... obj) {
+		if (isDebug)
+			Log.e(sLogTag, buildMessage(format, obj));
+	}
+
+	public static void e(Throwable e) {
+		if (isDebug)
+			Log.e(sLogTag, "", e);
+	}
+
+	public static void e(Throwable e, String format, Object... obj) {
+		if (isDebug)
+			Log.e(sLogTag, buildMessage(format, obj), e);
+	}
+
+	public static void w(String msg) {
+		if (isDebug)
+			Log.w(sLogTag, msg);
+	}
+
+	public static void w(String format, Object... obj) {
+		if (isDebug)
+			Log.w(sLogTag, buildMessage(format, obj));
+	}
+
+	public static void w(Throwable e) {
+		if (isDebug)
+			Log.w(sLogTag, "", e);
+	}
+
+	public static void w(Throwable e, String format, Object... obj) {
+		if (isDebug)
+			Log.w(sLogTag, buildMessage(format, obj), e);
+	}
+
+	public static void wtf(String msg) {
+		if (isDebug)
+			Log.wtf(sLogTag, msg);
+	}
+
+	public static void wtf(String format, Object... obj) {
+		if (isDebug)
+			Log.wtf(sLogTag, buildMessage(format, obj));
+	}
+
+	public static void wtf(Throwable e) {
+		if (isDebug)
+			Log.wtf(sLogTag, "", e);
+	}
+
+	public static void wtf(Throwable e, String msg) {
+		if (isDebug)
+			Log.wtf(sLogTag, msg, e);
+	}
+
+	public static void throwable(Throwable e) {
+		if (isDebug)
+			e.printStackTrace();
 	}
 
 	/**
-	 * blue status message
-	 * 
-	 * @param msg
+	 * msgs the caller's provided message and prepends useful info like
+	 * calling thread ID and method name.
 	 */
-	public static void d(String msg) {
-		if (NoHttp.isDebug) {
-			android.util.Log.d(NoHttp.logTag, msg);
+	protected static String buildMessage(String format, Object... args) {
+		String msg = (args == null) ? format : String.format(Locale.US, format, args);
+		StackTraceElement[] trace = new Throwable().fillInStackTrace().getStackTrace();
+
+		String caller = "<unknown>";
+		// Walk up the stack looking for the first caller outside of VolleyLog.
+		// It will be at least two frames up, so start there.
+		for (int i = 2; i < trace.length; i++) {
+			Class<?> clazz = trace[i].getClass();
+			if (!clazz.equals(Logger.class)) {
+				String callingClass = trace[i].getClassName();
+				callingClass = callingClass.substring(callingClass.lastIndexOf('.') + 1);
+				callingClass = callingClass.substring(callingClass.lastIndexOf('$') + 1);
+				caller = callingClass + "." + trace[i].getMethodName();
+				break;
+			}
 		}
+		return String.format(Locale.US, "[%d] %s: %s", Thread.currentThread().getId(), caller, msg);
 	}
 
 }

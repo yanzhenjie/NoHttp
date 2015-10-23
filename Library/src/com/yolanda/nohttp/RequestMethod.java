@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,41 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.download;
+package com.yolanda.nohttp;
 
 /**
- * Created in Oct 19, 2015 2:46:42 PM
+ * HTTP request method</br>
+ * Created in Oct 10, 2015 8:00:48 PM
+ * 
  * @author YOLANDA
  */
-public enum StatusCode {
-
-	/**
-	 * Network is not available
-	 */
-	ERROR_NETWORK_NOT_AVAILABLE,
-	/**
-	 * URL Adress error
-	 */
-	ERROR_URL_SYNTAX_ERROR,
-	/**
-	 * Specified folder capacity
-	 */
-	ERROR_STORAGE_NOT_ENOUGH,
-	/**
-	 * No server in URL is found in the current network.
-	 */
-	ERROR_SERVER_NOT_FOUND,
-	/**
-	 * Server exception
-	 */
-	ERROR_SERVER_EXCEPTION,
-	/**
-	 * Download the timeout
-	 */
-	ERROR_DOWNLOAD_TIMEOUT,
-	/**
-	 * Other errors
-	 */
-	ERROR_OTHER
-
+public abstract interface RequestMethod {
+	final int GET = 0;
+	final int POST = 1;
+	final int PUT = 2;
+	final int DELETE = 3;
+	final int HEAD = 4;
+	final int OPTIONS = 5;
+	final int TRACE = 6;
+	final int PATCH = 7;
+	final String[] METHOD = new String[] { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH" };
 }

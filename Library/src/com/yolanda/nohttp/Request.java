@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,49 +15,74 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.Serializable;
-import java.net.URLEncoder;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 
-import com.yolanda.nohttp.base.BaseRequest;
-import com.yolanda.nohttp.base.RequestMethod;
-
-import android.graphics.Bitmap;
+import com.yolanda.nohttp.security.Certificate;
 
 /**
- * Created in Jul 28, 2015 7:33:52 PM
+ * Created in Oct 16, 2015 8:22:06 PM
  * 
  * @author YOLANDA
  */
-public class Request extends BaseRequest implements Serializable {
-
-	private static final long serialVersionUID = 100L;
-	/**
-	 * Param collection
-	 */
-	private LinkedHashMap<String, Object> mParamSets = new LinkedHashMap<>();
-	/**
-	 * UpLoad file name collection
-	 */
-	private LinkedHashMap<String, String> mFileNames = new LinkedHashMap<>();
-	/**
-	 * Post data
-	 */
-	private String mPostData;
+public abstract interface Request<T> {
 
 	/**
-	 * Create reuqest params
+	 * @param mCertificate the mCertificate to set
+	 */
+	public abstract void setCertificate(Certificate mCertificate);
+
+	/**
+	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
 	 * 
-	 * @param context Application context
-	 * @param url Target adress
-	 * @param requestMethod Request method
+	 * @param isAllowHttps the isAllowHttps to set
 	 */
-	public Request(String url, RequestMethod requestMethod) {
-		super(url, requestMethod);
-	}
+	public abstract void setAllowHttps(boolean isAllowHttps);
+
+	/**
+	 * Sets the connection timeout time
+	 * 
+	 * @param connectTimeout timeout number
+	 */
+	public abstract void setConnectTimeout(int connectTimeout);
+
+	/**
+	 * Sets the read timeout time
+	 * 
+	 * @param readTimeout timeout number
+	 */
+	public abstract void setReadTimeout(int readTimeout);
+
+	/**
+	 * Sets the header named {@code name} to {@code value}. If this request
+	 * already has any headers with that name, they are all replaced.
+	 */
+	public abstract void setHeader(String name, String value);
+
+	/**
+	 * Adds a header with {@code name} and {@code value}. Prefer this method for multiply-valued headers like "Cookie".
+	 */
+	public abstract void addHeader(String name, String value);
+
+	/**
+	 * Add cookie to header
+	 */
+	public abstract void addCookie(HttpCookie cookie);
+
+	/**
+	 * Add CookieStore to CookieManager of NoHttp, Will replace the old value
+	 */
+	public abstract void addCookie(CookieStore cookieStore);
+
+	/**
+	 * Removes a header with {@code name} and {@code value}. If there are multiple keys, will remove all, like "Cookie".
+	 */
+	public abstract void removeHeader(String name);
+
+	/**
+	 * Remove all header
+	 */
+	public abstract void removeAllHeaders();
 
 	/**
 	 * Settings you want to post data, if the post directly, then other data
@@ -65,18 +90,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * 
 	 * @param data Post data
 	 */
-	public void setPostData(String data) {
-		mPostData = data;
-	}
-
-	/**
-	 * Get post data
-	 * 
-	 * @return User post data
-	 */
-	public String getPostData() {
-		return mPostData;
-	}
+	public abstract void setRequestBody(String data);
 
 	/**
 	 * Add <code>CharSequence</code> param
@@ -84,9 +98,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, CharSequence value) {
-		mParamSets.put(key, String.valueOf(value));
-	}
+	public abstract void add(String key, CharSequence value);
 
 	/**
 	 * Add <code>Integer</code> param
@@ -94,9 +106,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, int value) {
-		mParamSets.put(key, Integer.toString(value));
-	}
+	public abstract void add(String key, int value);
 
 	/**
 	 * Add <code>Long</code> param
@@ -104,9 +114,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, long value) {
-		mParamSets.put(key, Long.toString(value));
-	}
+	public abstract void add(String key, long value);
 
 	/**
 	 * Add <code>Boolean</code> param
@@ -114,9 +122,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, boolean value) {
-		mParamSets.put(key, String.valueOf(value));
-	}
+	public abstract void add(String key, boolean value);
 
 	/**
 	 * Add <code>char</code> param
@@ -124,9 +130,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, char value) {
-		mParamSets.put(key, String.valueOf(value));
-	}
+	public abstract void add(String key, char value);
 
 	/**
 	 * Add <code>Double</code> param
@@ -134,9 +138,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, double value) {
-		mParamSets.put(key, Double.toString(value));
-	}
+	public abstract void add(String key, double value);
 
 	/**
 	 * Add <code>Float</code> param
@@ -144,9 +146,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, float value) {
-		mParamSets.put(key, Float.toString(value));
-	}
+	public abstract void add(String key, float value);
 
 	/**
 	 * Add <code>Short</code> param
@@ -154,9 +154,7 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public void add(String key, short value) {
-		mParamSets.put(key, Short.toString(value));
-	}
+	public abstract void add(String key, short value);
 
 	/**
 	 * Add <code>Byte</code> param
@@ -164,129 +162,58 @@ public class Request extends BaseRequest implements Serializable {
 	 * @param key Param name
 	 * @param value Param value 0 x01, for example, the result is 1
 	 */
-	public void add(String key, byte value) {
-		mParamSets.put(key, Integer.toString(value));
-	}
+	public abstract void add(String key, byte value);
 
 	/**
-	 * Add <code>Bitmap</code> param
+	 * Add <code>File</code> param; NoHttp already has a default implementation: {@link FileBinary}
 	 * 
 	 * @param key Param name
-	 * @param value Param value
-	 * @param fileName the filename for server
+	 * @param binary Param value
 	 */
-	public void add(String key, Bitmap value, String fileName) {
-		mParamSets.put(key, value);
-		mFileNames.put(key, fileName);
-	}
+	public abstract void add(String key, Binary binary);
 
 	/**
-	 * Add <code>File</code> param
-	 * 
-	 * @param key Param name
-	 * @param value Param value
-	 * @param fileName the filename for server
+	 * Remove a request param by key
 	 */
-	public void add(String key, File file, String fileName) {
-		mParamSets.put(key, file);
-		mFileNames.put(key, fileName);
-	}
+	public abstract void remove(String key);
 
 	/**
-	 * Add <code>ByteArrayOutputStream</code> param
-	 * 
-	 * @param key Param name
-	 * @param value Param value
-	 * @param fileName the filename for server
+	 * Remove all request param
 	 */
-	public void add(String key, ByteArrayOutputStream arrayOutputStream, String fileName) {
-		mParamSets.put(key, arrayOutputStream);
-		mFileNames.put(key, fileName);
-	}
+	public abstract void removeAll();
 
 	/**
-	 * Whether the request have parameter
-	 * 
-	 * @return Have returns true, no returns false
+	 * Set off the sign
 	 */
-	@Override
-	public boolean hasParam() {
-		return mParamSets.size() > 0;
-	}
+	public abstract void setCancelSign(Object sign);
 
 	/**
-	 * If the request were any uploading files
-	 * 
-	 * @return Have returns true, no returns false
+	 * According to Sign request
 	 */
-	public boolean hasBinaryData() {
-		Set<String> keys = mParamSets.keySet();
-		for (String key : keys) {
-			Object value = mParamSets.get(key);
-			if ((value instanceof File) || (value instanceof Bitmap) || (value instanceof ByteArrayOutputStream)) {
-				return true;
-			}
-		}
-		return false;
-	}
+	public abstract void cancelBySign(Object sign);
 
 	/**
-	 * Get the parameters set
-	 * 
-	 * @return The param key set
+	 * Cancel this request
 	 */
-	public Set<String> getParamKeys() {
-		return mParamSets.keySet();
-	}
+	public abstract void cancel();
 
 	/**
-	 * Get a param key corresponding to the value
-	 * 
-	 * @param key The param key
-	 * @return The param value
+	 * This request has been canceled.
 	 */
-	public Object getParam(String key) {
-		return mParamSets.get(key);
-	}
+	public abstract boolean isCanceled();
 
 	/**
-	 * Upload the file name
-	 * 
-	 * @param key The param key
-	 * @return filename
+	 * Set tag of task, Will return to you at the time of the task response
 	 */
-	public String getFileName(String key) {
-		return mFileNames.get(key);
-	}
+	public abstract void setTag(Object tag);
 
 	/**
-	 * Combination of parameters
-	 * 
-	 * @return Such as:sex=man&age=12
+	 * The interpreter is a parse, and the Http request occurs.
 	 */
-	@Override
-	public StringBuilder buildParam() {
-		StringBuilder paramBuilder = new StringBuilder();
-		boolean first = true;
-		for (String key : mParamSets.keySet()) {
-			if (first) {
-				first = false;
-			} else {
-				paramBuilder.append("&");
-			}
-			Object value = mParamSets.get(key);
-			if (value instanceof CharSequence) {
-				String param = value.toString();
-				try {
-					paramBuilder.append(URLEncoder.encode(key, getCharset()));
-					paramBuilder.append("=");
-					paramBuilder.append(URLEncoder.encode(param, getCharset()));
-				} catch (Throwable e) {
-					if (NoHttp.isDebug)
-						e.printStackTrace();
-				}
-			}
-		}
-		return paramBuilder;
-	}
+	public abstract AnalyzeRequest getAnalyzeRequest();
+
+	/**
+	 * Parse response
+	 */
+	public abstract T parseResponse(String url, String contentType, byte[] byteArray);
 }

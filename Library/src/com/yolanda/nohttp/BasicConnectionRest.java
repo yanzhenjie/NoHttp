@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,41 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.download;
+package com.yolanda.nohttp;
 
 /**
- * Created in Oct 19, 2015 2:46:42 PM
+ * Interface for executing RESTFUL's request</br>
+ * Created in Oct 20, 2015 4:12:16 PM
+ * 
  * @author YOLANDA
  */
-public enum StatusCode {
+public abstract interface BasicConnectionRest {
 
 	/**
-	 * Network is not available
+	 * Execute a request
 	 */
-	ERROR_NETWORK_NOT_AVAILABLE,
-	/**
-	 * URL Adress error
-	 */
-	ERROR_URL_SYNTAX_ERROR,
-	/**
-	 * Specified folder capacity
-	 */
-	ERROR_STORAGE_NOT_ENOUGH,
-	/**
-	 * No server in URL is found in the current network.
-	 */
-	ERROR_SERVER_NOT_FOUND,
-	/**
-	 * Server exception
-	 */
-	ERROR_SERVER_EXCEPTION,
-	/**
-	 * Download the timeout
-	 */
-	ERROR_DOWNLOAD_TIMEOUT,
-	/**
-	 * Other errors
-	 */
-	ERROR_OTHER
+	public abstract <T> Response<T> request(Request<T> request);
 
 }

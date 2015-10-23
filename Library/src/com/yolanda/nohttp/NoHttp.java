@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,18 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.base.BaseResponse;
-import com.yolanda.nohttp.base.HttpsVerifier;
+import java.io.File;
+import java.net.CookieManager;
+
+import com.yolanda.nohttp.download.DownloadConnection;
+import com.yolanda.nohttp.download.DownloadListener;
+import com.yolanda.nohttp.download.DownloadQueue;
+import com.yolanda.nohttp.download.DownloadRequest;
+import com.yolanda.nohttp.security.SecureVerifier;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.widget.ImageView;
 
 /**
  * Created in Jul 28, 2015 7:32:22 PM
@@ -27,40 +35,107 @@ import android.content.Context;
  */
 public class NoHttp {
 
-	/**
-	 * ApplicationContext
-	 */
-	static Context sContext;
-	/**
-	 * library debug sign
-	 */
-	static Boolean isDebug = false;
-	/**
-	 * library debug tag
-	 */
-	static String logTag = "NoHttp";
-	/**
-	 * silge model
-	 */
-	private static NoHttp _NoHttp;
+	public static final String CHARSET_DEFAULT = "UTF-8";
+
+	public static final String MIMETYE_DEFAULT = "application/octet-stream";
 
 	/**
-	 * To create a singleton pattern, set the task pool concurrency
-	 * 
-	 * @param concurrentCount Task concurrency
+	 * Cookie
 	 */
-	private NoHttp() {
+	private static CookieManager sCookieManager;
+
+	/**
+	 * Create a new request queue
+	 * 
+	 * @param context ApplicationContext
+	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
+	 * @return
+	 */
+	public static RequestQueue newRequestQueue(Context context, int threadPoolSize) {
+		RequestQueue requestQueue = new RequestQueue(HttpRestConnection.getInstance(context), threadPoolSize);
+		requestQueue.start();
+		return requestQueue;
 	}
 
 	/**
-	 * Set context, this is very necessary for your program, of course, do not set will not affect what
-	 * 
-	 * @param context
+	 * Create a request queue, the default thread pool number is 5
 	 */
-	public static void setApplicationContext(Context context) {
-		if (context == null)
-			throw new NullPointerException("context can't be null");
-		sContext = context.getApplicationContext();
+	public static RequestQueue newRequestQueue(Context context) {
+		return newRequestQueue(context, 5);
+	}
+
+	/**
+	 * To create a String type request, the request method is GET
+	 */
+	public static Request<String> createStringRequestGet(String url) {
+		return createStringRequest(url, RequestMethod.GET);
+	}
+
+	/**
+	 * To create a String type request, the request method is POST
+	 */
+	public static Request<String> createStringRequestPost(String url) {
+		return createStringRequest(url, RequestMethod.POST);
+	}
+
+	/**
+	 * Create a String type request, custom request method, method from {@link #RequestMethod}
+	 */
+	public static Request<String> createStringRequest(String url, int requestMethod) {
+		Request<String> request = new StringRequest(url, requestMethod);
+		return request;
+	}
+
+	/**
+	 * Create a Image type request
+	 */
+	public static Request<Bitmap> createImageRequest(String url) {
+		Request<Bitmap> request = new ImageRequest(url, 720, 1280, Bitmap.Config.ARGB_8888, ImageView.ScaleType.CENTER_INSIDE);
+		return request;
+	}
+
+	/**
+	 * Create a new download queue, the default thread pool number is 1
+	 * 
+	 * @param context ApplicationContext
+	 * @return
+	 */
+	public static DownloadQueue newDownloadQueue(Context context) {
+		return newDownloadQueue(context, 1);
+	}
+
+	/**
+	 * Create a new download queue
+	 * 
+	 * @param context ApplicationContext
+	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
+	 * @return
+	 */
+	public static DownloadQueue newDownloadQueue(Context context, int threadPoolSize) {
+		DownloadQueue downloadQueue = new DownloadQueue(DownloadConnection.getInstance(context), threadPoolSize);
+		downloadQueue.start();
+		return downloadQueue;
+	}
+
+	/**
+	 * To start a synchronization request, the request task will be triggered at the current thread, and the thread can be used.
+	 * 
+	 * @param what Http request sign, If multiple requests the Listener is the same, so that I can be used to mark which
+	 *        one is the request
+	 * @param request The packaging of the HTTP request parameter
+	 */
+	public static <T> Response<T> startRequestSync(Context context, Request<T> request) {
+		Response<T> response = null;
+		if (request != null)
+			response = HttpRestConnection.getInstance(context).request(request);
+		return response;
+	}
+
+	/**
+	 * Start a sync Download
+	 */
+	public static void download(Context context, DownloadRequest downloadRequest, DownloadListener downloadListener) {
+		DownloadConnection.getInstance(context).download(downloadRequest, downloadRequest.what(), downloadListener);
 	}
 
 	/**
@@ -68,8 +143,8 @@ public class NoHttp {
 	 * 
 	 * @param debug Set to debug mode is introduced into true, introduced to false otherwise
 	 */
-	public static void setDebug(Boolean debug) {
-		isDebug = debug;
+	public static void setDebug(boolean debug) {
+		Logger.isDebug = debug;
 	}
 
 	/**
@@ -77,106 +152,50 @@ public class NoHttp {
 	 * 
 	 * @param tag The incoming string will be NoHttp logtag, also is in development tools logcat tag bar to see
 	 */
-	public static void setTag(String tag) {
-		logTag = tag;
+	public static void setLogTag(String logTag) {
+		Logger.sLogTag = logTag;
 	}
 
 	/**
-	 * Open the HTTPS, CRT certificate verification
+	 * Sets up if all HTTPS certificates are allowed, if you set the true, the certificate parameter will be ignored
 	 * 
-	 * @param context Users get AssetManager, load your certificate of CRT
-	 * @param fileName Path and name of your certificate of CRT in assets, like file:///android_asset/yolanda.crt
+	 * @param isAll True is allowed, false is not disallowed, false need to verify the certificate
 	 */
-	public static void openHttpsVerify(String fileName) {
-		if (sContext == null) {
-			throw new NullPointerException(
-					"NoHttp context can't be null, You need Call NoHttp.setApplicationContext(Context) method");
-		}
+	public static void setAllowAllHttps(boolean isAll) {
+		SecureVerifier.getInstance().setAllowAllHttps(isAll);
+	}
+
+	/**
+	 * Returns the system-wide cookie handler or {@code null} if not set.
+	 */
+	public static CookieManager getDefaultCookieManager() {
+		if (sCookieManager == null)
+			sCookieManager = new CookieManager();
+		return sCookieManager;
+	}
+
+	/**
+	 * Sets the system-wide cookie manager
+	 */
+	public static void setDefaultCookieManager(CookieManager cookieManager) {
+		if (cookieManager == null)
+			throw new IllegalArgumentException("cookieManager == null");
+		sCookieManager = cookieManager;
+	}
+
+	/**
+	 * Open Http cache
+	 */
+	public static void enableHttpResponseCache(Context context) {
 		try {
-			HttpsVerifier.initVerify(sContext, fileName);
-		} catch (Exception e) {
-			if (isDebug)
-				e.printStackTrace();
+			long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+			File httpCacheDir = new File(context.getCacheDir(), "http");
+			Class.forName("android.net.http.HttpResponseCache").getMethod("install", File.class, long.class).invoke(null, httpCacheDir, httpCacheSize);
+		} catch (Exception e) {// httpResponseCacheNotAvailable
+			Logger.throwable(e);
 		}
 	}
 
-	/**
-	 * Close the Http yes CRT certificate of calibration
-	 */
-	public static void closeHttpsVerify() {
-		HttpsVerifier.closeVerify();
-	}
-
-	/**
-	 * The singlet entrance
-	 * 
-	 * @return
-	 */
-	public static NoHttp getInstance() {
-		if (_NoHttp == null) {
-			_NoHttp = new NoHttp();
-		}
-		return _NoHttp;
-	}
-
-	/**
-	 * Packaging the request
-	 * 
-	 * @param command Operation command
-	 * @param request The packaging of the HTTP request parameter
-	 * @param what Http request sign, If multiple requests the Listener is the same, so that I can be used to mark which
-	 *        one is the request
-	 * @param responseListener Accept the request as a result, no matter wrong or right will be returned to you
-	 */
-	private void execute(int command, Request request, int what, OnResponseListener responseListener) {
-		RequestPoster asyncPoster = new RequestPoster(what, command, responseListener);
-		asyncPoster.execute(request);
-	}
-
-	/**
-	 * In an asynchronous way request data from a url request type String, if
-	 * the request correctly, returns the String contained in the data, data
-	 * bytes
-	 * 
-	 * @param request The packaging of the HTTP request parameter
-	 * @param what Http request sign, If multiple requests the Listener is the same, so that I can be used to mark which
-	 *        one is the request
-	 * @param responseListener Accept the request as a result, no matter wrong or right will be returned to you
-	 */
-	public void requestAsync(Request request, int what, OnResponseListener responseListener) {
-		execute(RequestPoster.COMMAND_REQUEST_HTTP, request, what, responseListener);
-	}
-
-	/**
-	 * Send a synchronous request, recommend generally used in the child thread
-	 * 
-	 * @param request The packaging of the HTTP request parameter
-	 * @return The response of the packaging
-	 */
-	public BaseResponse requestSync(Request request) {
-		return HttpExecutor.getInstance().request(request);
-	}
-
-	/**
-	 * In an asynchronous way access to download the URL of the file name,
-	 * including the suffix
-	 * 
-	 * @param request The packaging of the HTTP request parameter
-	 * @param what Http request sign, If multiple requests the Listener is the same, so that I can be used to mark which
-	 *        one is the request
-	 * @param responseListener Accept the request as a result, no matter wrong or right will be returned to you
-	 */
-	public void requestFilenameAsync(Request request, int what, OnResponseListener responseListener) {
-		execute(RequestPoster.COMMAND_REQUEST_FILENAME, request, what, responseListener);
-	}
-
-	/**
-	 * In an synchronous way access to download the URL of the file name, including the suffix
-	 * 
-	 * @param request The packaging of the HTTP request parameter
-	 * @return The response of the packaging
-	 */
-	public BaseResponse requestFilenameSync(Request request) {
-		return HttpExecutor.getInstance().requestFilename(request);
+	private NoHttp() {
 	}
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,14 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA
  */
-public interface OnResponseListener {
+public abstract interface OnResponseListener<T> {
+
+	/**
+	 * When the request starts
+	 * 
+	 * @param what The credit of the incoming request is used to distinguish between multiple requests
+	 */
+	public abstract void onStart(int what);
 
 	/**
 	 * Server correct response to callback when an HTTP request
@@ -28,14 +35,22 @@ public interface OnResponseListener {
 	 * @param what The credit of the incoming request is used to distinguish between multiple requests
 	 * @param response In response to the results
 	 */
-	public abstract void onNoHttpResponse(int what, Response response);
+	public abstract void onSucceed(int what, Response<T> response);
 
 	/**
 	 * When there was an error correction
 	 * 
 	 * @param what The credit of the incoming request is used to distinguish between multiple requests
-	 * @param responseError In response to the error results
+	 * @param tag Tag of request callback
+	 * @param message error message for request
 	 */
-	public abstract void onNoHttpError(int what, ResponseError responseError);
+	public abstract void onFailed(int what, String url, Object tag, CharSequence message);
+
+	/**
+	 * When the request finish
+	 * 
+	 * @param what The credit of the incoming request is used to distinguish between multiple requests
+	 */
+	public abstract void onFinish(int what);
 
 }

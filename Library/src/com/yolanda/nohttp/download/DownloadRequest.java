@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,88 +15,90 @@
  */
 package com.yolanda.nohttp.download;
 
-import java.io.Serializable;
-
-import com.yolanda.nohttp.base.BaseRequest;
-import com.yolanda.nohttp.base.RequestMethod;
+import com.yolanda.nohttp.BasicAnalyzeRequest;
 
 /**
- * Created in Jul 31, 2015 10:38:10 AM
+ * Download task request interface</br>
+ * Created in Oct 21, 2015 11:09:04 AM
  * 
  * @author YOLANDA
  */
-public class DownloadRequest extends BaseRequest implements Serializable {
-
-	private static final long serialVersionUID = 201L;
-	/**
-	 * File the target folder
-	 */
-	private String mFileDir;
-	/**
-	 * The file target name
-	 */
-	private String mFileName;
-	/**
-	 * If is to download a file, whether the breakpoint continuingly
-	 */
-	private boolean isRange = false;
-
-	public DownloadRequest(String url, RequestMethod requestMethod) {
-		super(url, requestMethod);
-	}
+public abstract interface DownloadRequest extends BasicAnalyzeRequest {
 
 	/**
-	 * Set properties to download
+	 * Returns the what flag for the current task
+	 */
+	public abstract int what();
+
+	/**
+	 * Return the mFileDir
+	 */
+	public abstract String getFileDir();
+
+	/**
+	 * Return the mFileName
+	 */
+	public abstract String getFileName();
+
+	/**
+	 * Return the isRange
+	 */
+	public abstract boolean isRange();
+
+	/**
+	 * Set sign of the download
+	 */
+	public abstract void setCancelSign(Object sign);
+
+	/**
+	 * Cancel a request according to sign
+	 */
+	public abstract void cancelBySign(Object sign);
+
+	/**
+	 * Cancel the download
+	 */
+	public abstract void cancel();
+
+	/**
+	 * Return Download is canceled
+	 */
+	public abstract boolean isCanceled();
+
+	/**
+	 * Objects that can be identified by the network implementation.
+	 */
+	public abstract BasicAnalyzeRequest getAnalyzeReqeust();
+
+	/**
+	 * The current task download error
 	 * 
-	 * @param fileFloder The file save folder
-	 * @param filename The filename
-	 * @param isRange whether breakpoint continuingly
+	 * @param statusCode Error code, used to distinguish what kind of mistake
+	 * @param errorMessage error message
 	 */
-	public void setDownloadAttribute(String fileFloder, String filename, boolean isRange) {
-		this.mFileDir = fileFloder;
-		this.mFileName = filename;
-		this.isRange = isRange;
-	}
+	public abstract void onDownloadError(StatusCode statusCode, CharSequence errorMessage);
 
 	/**
-	 * @return the mFileDir
+	 * Notification of the current download task at the start
 	 */
-	public String getFileDir() {
-		return mFileDir;
-	}
+	public abstract void onStart();
 
 	/**
-	 * @param mFileDir the mFileDir to set
+	 * When the download process change
 	 */
-	public void setFileDir(String mFileDir) {
-		this.mFileDir = mFileDir;
-	}
+	public abstract void onProgress(int progress);
 
 	/**
-	 * @return the mFileName
+	 * Download is complete.
+	 * 
+	 * @param filePath After download, file save path
 	 */
-	public String getFileName() {
-		return mFileName;
-	}
+	public abstract void onFinish(String filePath);
 
 	/**
-	 * @param mFileName the mFileName to set
+	 * Download request is canceled
+	 * 
+	 * @param what Which is used to mark the download tasks
 	 */
-	public void setFileName(String mFileName) {
-		this.mFileName = mFileName;
-	}
-
-	/**
-	 * @return the isRange
-	 */
-	public boolean isRange() {
-		return isRange;
-	}
-
-	/**
-	 * @param isRange the isRange to set
-	 */
-	public void setRange(boolean isRange) {
-		this.isRange = isRange;
-	}
+	public abstract void onCancel();
 }
