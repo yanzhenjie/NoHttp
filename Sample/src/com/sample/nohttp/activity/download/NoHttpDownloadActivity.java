@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sample.nohttp.activity;
+package com.sample.nohttp.activity.download;
 
 import com.sample.nohttp.R;
 import com.yolanda.nohttp.NoHttp;
@@ -65,6 +65,9 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		setTitle("NoHttp演示文件下载");
+
 		setContentView(R.layout.activity_nohttp_download);
 
 		mProgressBar = (ProgressBar) findViewById(R.id.pb_progress);
@@ -125,6 +128,7 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		downloadRequest.cancel();
+		if (downloadRequest != null)
+			downloadRequest.cancel();
 	}
 }

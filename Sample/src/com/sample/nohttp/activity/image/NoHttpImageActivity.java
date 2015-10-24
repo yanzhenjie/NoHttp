@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sample.nohttp.activity;
+package com.sample.nohttp.activity.image;
 
 import com.sample.nohttp.R;
 import com.sample.nohttp.dialog.WaitDialog;
@@ -55,6 +55,9 @@ public class NoHttpImageActivity extends Activity implements OnResponseListener<
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setTitle("NoHttp演示请求Bitmap");
+		
 		setContentView(R.layout.activity_nohttp_image);
 		mImageView = (ImageView) findViewById(R.id.iv_status);
 		mStatus = (TextView) findViewById(R.id.tv_status);

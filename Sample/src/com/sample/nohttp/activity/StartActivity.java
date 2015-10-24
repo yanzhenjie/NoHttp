@@ -16,7 +16,15 @@
 package com.sample.nohttp.activity;
 
 import com.sample.nohttp.R;
-import com.yolanda.nohttp.NoHttp;
+import com.sample.nohttp.activity.cancel.NoHttpCancelActivity;
+import com.sample.nohttp.activity.cookie.NoHttpCookieActivity;
+import com.sample.nohttp.activity.define.NoHttpDefineRequestActivity;
+import com.sample.nohttp.activity.download.NoHttpDownloadActivity;
+import com.sample.nohttp.activity.image.NoHttpImageActivity;
+import com.sample.nohttp.activity.method.NoHttpMethodActivity;
+import com.sample.nohttp.activity.sync.NoHttpSyncActivity;
+import com.sample.nohttp.activity.upload.NoHttpUploadFileActivity;
+import com.sample.nohttp.nohttp.CallServer;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,14 +42,15 @@ public class StartActivity extends Activity implements View.OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setTitle("NoHttp演示Demo");
 		setContentView(R.layout.activity_start);
 
-		NoHttp.setDebug(true);
-
+		// 注册按钮监听
 		findViewById(R.id.btn_method_activity).setOnClickListener(this);
 		findViewById(R.id.btn_download_activity).setOnClickListener(this);
+		findViewById(R.id.btn_image_activity).setOnClickListener(this);
+		findViewById(R.id.btn_cookie_activity).setOnClickListener(this);
 		findViewById(R.id.btn_upload_activity).setOnClickListener(this);
-		findViewById(R.id.btn_iamge_activity).setOnClickListener(this);
 		findViewById(R.id.btn_define_activity).setOnClickListener(this);
 		findViewById(R.id.btn_cancel_activity).setOnClickListener(this);
 		findViewById(R.id.btn_sync_activity).setOnClickListener(this);
@@ -49,23 +58,28 @@ public class StartActivity extends Activity implements View.OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.btn_method_activity) {// 演示请求方法
+		if (v.getId() == R.id.btn_method_activity) {// 请求方法GET, POST
 			Intent intent = new Intent(this, NoHttpMethodActivity.class);
 			startActivity(intent);
 		}
 
-		if (v.getId() == R.id.btn_download_activity) {// 演示下载
+		if (v.getId() == R.id.btn_download_activity) {// 文件下载Demo
 			Intent intent = new Intent(this, NoHttpDownloadActivity.class);
+			startActivity(intent);
+		}
+
+		if (v.getId() == R.id.btn_image_activity) {// 演示请求图片
+			Intent intent = new Intent(this, NoHttpImageActivity.class);
+			startActivity(intent);
+		}
+
+		if (v.getId() == R.id.btn_cookie_activity) {// Cookie
+			Intent intent = new Intent(this, NoHttpCookieActivity.class);
 			startActivity(intent);
 		}
 
 		if (v.getId() == R.id.btn_upload_activity) {// 演示上传
 			Intent intent = new Intent(this, NoHttpUploadFileActivity.class);
-			startActivity(intent);
-		}
-
-		if (v.getId() == R.id.btn_iamge_activity) {// 演示请求图片
-			Intent intent = new Intent(this, NoHttpImageActivity.class);
 			startActivity(intent);
 		}
 
@@ -83,6 +97,14 @@ public class StartActivity extends Activity implements View.OnClickListener {
 			Intent intent = new Intent(this, NoHttpSyncActivity.class);
 			startActivity(intent);
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		// 程序退出时，停止所有请求
+		CallServer.getInstance().stopAll();
 	}
 
 }

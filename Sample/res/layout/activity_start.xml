@@ -4,33 +4,39 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" >
 
         <Button
             android:id="@+id/btn_method_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="各种方法(GET/POST)，Cookie使用" />
-
+            android:text="请求方法Demo(POST, GET, HEAD…)" />
+        
         <Button
             android:id="@+id/btn_download_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="文件下载演示" />
-
+        
+        <Button
+            android:id="@+id/btn_image_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="请求图片demo" />
+        
+        <Button
+            android:id="@+id/btn_cookie_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cookie使用Demo" />
+        
         <Button
             android:id="@+id/btn_upload_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="文件上传demo" />
-
-        <Button
-            android:id="@+id/btn_iamge_activity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="请求图片demo" />
-
+        
         <Button
             android:id="@+id/btn_define_activity"
             android:layout_width="match_parent"

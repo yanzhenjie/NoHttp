@@ -52,6 +52,7 @@ public class JsonRequest extends RestRequestor<JSONObject> {
 				jsonString = new String(byteArray);
 			}
 		}
+		// 这里先模拟一段Json
 		jsonString = "{\"name\":\"yolanda\",\"pass\":\"yolanda.pass\"}";
 		try {
 			jsonObject = new JSONObject(jsonString);

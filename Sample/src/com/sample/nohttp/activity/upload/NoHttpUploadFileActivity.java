@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sample.nohttp.activity;
+package com.sample.nohttp.activity.upload;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,12 +52,17 @@ public class NoHttpUploadFileActivity extends Activity implements View.OnClickLi
 	 * 文件路径
 	 */
 	private String filePath = Environment.getExternalStorageDirectory().getAbsoluteFile() + File.separator + "head.png";
-
+	/**
+	 * 等待
+	 */
 	private WaitDialog mWaitDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setTitle("NoHttp演示文件上传");
+		
 		setContentView(R.layout.activity_nohttp_uploadfile);
 		mTvStatus = (TextView) findViewById(R.id.tv_status);
 		findViewById(R.id.btn_upload_file).setOnClickListener(this);

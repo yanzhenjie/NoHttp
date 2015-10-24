@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sample.nohttp.activity;
+package com.sample.nohttp.activity.method;
 
 import java.net.HttpCookie;
 
@@ -59,6 +59,9 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setTitle("NoHttp演示请求方法");
+		
 		setContentView(R.layout.activity_nohttp_method);
 		findViewById(R.id.btn_patch).setOnClickListener(this);
 		findViewById(R.id.btn_post).setOnClickListener(this);

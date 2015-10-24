@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sample.nohttp.activity;
+package com.sample.nohttp.activity.define;
 
 import org.json.JSONObject;
 
@@ -37,17 +37,22 @@ import android.widget.TextView;
  */
 public class NoHttpDefineRequestActivity extends Activity implements OnResponseListener<JSONObject> {
 
+	/**
+	 * 显示请求结果
+	 */
 	private TextView mTvStatus;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setTitle("NoHttp演示自定义请求对象");
+		
 		setContentView(R.layout.activity_nohttp_define);
 		mTvStatus = (TextView) findViewById(R.id.tv_status);
 		findViewById(R.id.btn_reqeust_define).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// 这里只是为了演示可以自定义请求对象，所以这个地址是模拟的，返回的数据也是模拟的: JsonRequest
 				Request<JSONObject> request = new JsonRequest("http://www.baidu.com");
 				CallServer.getInstance().add(0, request, NoHttpDefineRequestActivity.this);
 			}
@@ -56,7 +61,7 @@ public class NoHttpDefineRequestActivity extends Activity implements OnResponseL
 
 	@Override
 	public void onStart(int what) {
-		mTvStatus.setText("开始了");
+		mTvStatus.setText("开始");
 	}
 
 	@Override

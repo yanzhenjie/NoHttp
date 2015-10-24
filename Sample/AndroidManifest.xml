@@ -34,25 +34,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.NoHttpMethodActivity"
+            android:name="com.sample.nohttp.activity.method.NoHttpMethodActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.NoHttpDownloadActivity"
+            android:name="com.sample.nohttp.activity.download.NoHttpDownloadActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.NoHttpUploadFileActivity"
+            android:name="com.sample.nohttp.activity.image.NoHttpImageActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.NoHttpImageActivity"
+            android:name="com.sample.nohttp.activity.cookie.NoHttpCookieActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.NoHttpDefineRequestActivity"
+            android:name="com.sample.nohttp.activity.upload.NoHttpUploadFileActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.NoHttpCancelActivity"
+            android:name="com.sample.nohttp.activity.define.NoHttpDefineRequestActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.NoHttpSyncActivity"
+            android:name="com.sample.nohttp.activity.cancel.NoHttpCancelActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.sync.NoHttpSyncActivity"
             android:label="@string/app_name" />
     </application>
 
