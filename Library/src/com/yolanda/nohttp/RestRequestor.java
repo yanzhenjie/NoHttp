@@ -333,7 +333,9 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException("ParamEncoding Error: " + getParamsEncoding(), e);
 			}
-		return builder.toString().getBytes();
+		String requestBody = builder.toString();
+		Logger.d("RequestBody: " + requestBody);
+		return requestBody.getBytes();
 	}
 
 	@Override

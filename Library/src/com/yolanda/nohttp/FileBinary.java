@@ -22,7 +22,8 @@ import java.io.IOException;
 
 /**
  * A default implementation of Binary</br>
- * All the methods are called in Son thread.</br></br>
+ * All the methods are called in Son thread.</br>
+ * </br>
  * Created in Oct 17, 2015 12:40:54 PM
  * 
  * @author YOLANDA
@@ -36,8 +37,6 @@ public class FileBinary implements Binary {
 	public FileBinary(File file, String fileName) {
 		if (file == null)
 			throw new IllegalArgumentException("file == null");
-		if (!file.exists())
-			throw new IllegalArgumentException("file not exists");
 		this.file = file;
 		this.fileName = fileName;
 	}
@@ -45,26 +44,22 @@ public class FileBinary implements Binary {
 	@Override
 	public byte[] getByteArray() {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		FileInputStream inputStream = null;
-		try {
-			inputStream = new FileInputStream(file);
-			int len = -1;
-			byte[] buffer = new byte[1024];
-			while ((len = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, len);
-			}
-		} catch (Exception e) {
-			Logger.e(e);
-			if (inputStream != null)
-				try {
-					inputStream.close();
-				} catch (IOException e1) {
-				}
+		if (file.isFile()) {
 			try {
+				FileInputStream inputStream = new FileInputStream(file);
+				int len = -1;
+				byte[] buffer = new byte[1024];
+				while ((len = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, len);
+				}
 				outputStream.flush();
 				outputStream.close();
-			} catch (IOException e2) {
+				inputStream.close();
+			} catch (IOException e) {
+				Logger.wtf(e);
 			}
+		} else {
+			Logger.e("File not found: " + fileName);
 		}
 		return outputStream.toByteArray();
 	}

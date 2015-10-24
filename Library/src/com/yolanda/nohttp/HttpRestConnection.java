@@ -101,11 +101,10 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 				try {
 					httpConnection = getHttpConnection(analyzeRequest);
 					httpConnection.connect();
-
 					sendRequestParam(httpConnection, analyzeRequest);
-
-					responseCode = httpConnection.getResponseCode();
+					
 					Logger.i("-------Response Start-------");
+					responseCode = httpConnection.getResponseCode();
 					Logger.d("ResponseCode: " + responseCode);
 
 					Map<String, List<String>> responseHeaders = httpConnection.getHeaderFields();
@@ -141,15 +140,15 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 					isSucceed = false;
 					String exceptionInfo = getExcetionMessage(e);
 					byteArray = exceptionInfo.getBytes();
-					Logger.e(exceptionInfo);
+					Logger.e(e);
 				} finally {
 					if (httpConnection != null)
 						httpConnection.disconnect();
+					Logger.i("-------Response End-------");
 				}
 			}
 			if (isSucceed && byteArray != null)
 				result = request.parseResponse(url, headers.get(Headers.HEAD_KEY_CONTENT_TYPE), byteArray);
-			Logger.i("-------Response End-------");
 		}
 		Logger.d("--------------Reqeust Finish--------------");
 		return new RestResponser<T>(url, isSucceed, responseCode, headers, byteArray, tag, result);
