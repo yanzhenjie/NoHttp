@@ -1,21 +1,21 @@
 # NoHttp
-
+(**QQ**交流群：**46523908**, E-mail: **smallajax@foxmail.com**)
 这里简单的列出几个使用Demo，具体的请看Demo
 
-##NoHttp特性：
+**NoHttp特性:**
 
-* NoHttp支持HTTP/HTTPS, Https证书自定义, 异步请求, 同步请求, 大文件, 多文件上传, 文件下载, 添加请求头, 添加请求参数, 你不用理睬复杂的Http的API, 所以它的名字是NoHttp.
+* A. 支持HTTP/HTTPS, Https证书, 自动维持Cookie, 异步/同步请求, 大文件/多文件上传, 文件下载, 你不用理睬复杂的Http的API, 所以它的名字是NoHttp.
 
-* 项目中使用请求队列, 自动为请求排队, 可以取消所有请求, 可以取消指定请求, 可以取消当前请求
+* B. NoHttp支持请求队列, 自动为请求排队, 可以取消指定请求, 可以取消队列所有请求
 
-* 支持请求String, Bitmap, JsonObject, 自定义请求等, 使用灵活.
+* C. 支持请求String, Bitmap, JsonObject, 可自定义扩展请求类型
 
-* API非常样简单, 一个Request对象提供所有请求参数, 一个Response对象提供了所有响应.
+* D. API使用简单, Request对象包涵参数, 请求头, Cookie, 上传文件等, Response对象包涵响应， 相应头等信息.
 
-##请求String类型数据
+##一. 请求Http接口
 
-上传文件, 提交普通参数, 添加请求头, 添加COokie等
-
+**1. 请求String类型数据**
+上传文件, 提交普通参数, 添加请求头, 添加Cookie等
 ```
 RequestQueue requestQueue = NoHttp.newRequestQueue(SampleApplication.getInstance());
 // 初始化需要url, method
@@ -29,6 +29,10 @@ mRequest.add("head_small", new FileBinary(new File(filePath), "head_small.png"))
 mRequest.add("userName", "yolanda");// String类型
 mRequest.add("userAge", 20);// int类型
 mRequest.add("userSex", '1');// char类型
+
+// 添加Cookie
+mRequest.addCookie(HttpCookie);
+mRequest.addCookie(CookieStore);
 	
 // 添加请求头
 reqeustQueue.addHead("Author", "user=yolanda");
@@ -36,25 +40,57 @@ reqeustQueue.addHead("Author", "user=yolanda");
 //添加到请求队列
 requestQueue.add(what, mRequest, OnResponseListener<String>);
 ```
-
-##请求图片类型数据
+**2. 请求Bitmap类型数据**
 ```	
-Request<Bitmap> mRequest = NoHttp.createStringRequest(url, RequstMethod.GET);
+Request<Bitmap> mRequest = NoHttp.createImageRequest(url);
 requestQueue.add(what, mRequest, OnResponseListener<Bitmap>);
 ```
-
-##取消一个请求
+**3. 取消一个请求**
 ```
 request.cancel();	
 ```
-
-**从队列中取消指定的请求**
-
+**4. 从队列中取消指定的请求**
 ```
 requestQueue.cancelBySign(Object);
 ```
-
-##自定义请求类型: JsonObject
+**5. 发送一个同步请求**
+```
+// 在当前线程发起请求，在线程这么使用
+Request<String> request = NoHttp.createStringRequest(url, RequestMethod.POST);
+Response<String> response = NoHttp.startRequestSync(context, request);
+if (response.isSucceed()) {
+	Logger.i("响应消息： " + response.get());
+} else {
+	Logger.i("错误信息： " + response.getErrorMessage());
+}
+```
+##二. 接受响应
+```
+OnResponseListener<String> responseListener = new OnResponseListener<String>() {
+    @Override
+	public void onStart(int what) {
+	    // 请求开始时，可以显示一个Dialog
+	}
+	
+	@Override
+	public void onFinish(int what) {
+	    // 请求接受时，关闭Dialog
+	}
+	
+	@Override
+	public void onSucceed(int what, Response<String> response) {
+	    // 接受请求结果
+	    String result = response.get();
+	    // Bitmap imageHead = response.get(); // 如果是bitmap类型, 都是同样的用法
+	}
+		
+	@Override
+	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	    // 请求失败或者发生异常
+	}
+};
+```
+##三. 自定义请求类型: JsonObject
 ```
 // 使用自定义JsonObject的请求
 Request<JsonObject> mRequest = new JsonRequest(url, RequestMethod.GET);
@@ -96,22 +132,10 @@ public class JsonRequest extends RestRequestor<JSONObject> {
 }
 ```
 
-**发送一个同步请求**
-```
-// 这里直接发起一个同步请求，建议在子线程这么使用
-Request<String> request = NoHttp.createStringRequest("http://www.baidu.com", RequestMethod.POST);
-Response<String> response = NoHttp.startRequestSync(getApplicationContext(), request);
-if (response.isSucceed()) {
-	Logger.i("响应消息： " + response.get());
-} else {
-	Logger.i("错误信息： " + response.getErrorMessage());
-}
-```
-
-**下载文件**
+##五. 下载文件
 ```
 //下载文件
-mDownloadQueue = NoHttp.newDownloadQueue(getApplicationContext());
+mDownloadQueue = NoHttp.newDownloadQueue(context);
 
 // what 区分下载
 // url 下载地址
@@ -119,9 +143,11 @@ mDownloadQueue = NoHttp.newDownloadQueue(getApplicationContext());
 // fileName 文件名
 // isRange 是否断点续传下载
 // DownloadListener 下载状态接受: 开始下载、下载出错，下载进度变化，下载完成
-DownloadRequest downloadRequest = new DownloadRequestor(0, url, fileFloder, filename, true, DownloadListener);
+DownloadRequest request = new DownloadRequestor(0, url, fileFloder, filename, true, listener);
 mDownloadQueue.add(downloadRequest);
+```
 
-//取消或者暂停下载
+**1. 取消或者暂停下载**
+```
 downloadRequest.cancel();
 ```
