@@ -119,7 +119,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 		mRequest.addHeader("Author", "user=yolanda");
 
 		// 添加Cookie
-		HttpCookie cookie = new HttpCookie("yanzhenjie", "yanzhenjie");
+		HttpCookie cookie = new HttpCookie("username", "yolanda");
 		cookie.setDomain("192.168.1.36");
 		mRequest.addCookie(cookie);
 
