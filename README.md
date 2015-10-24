@@ -10,7 +10,7 @@
 
 * C. 支持请求String, Bitmap, JsonObject, 可自定义扩展请求类型
 
-* D. API使用简单, Request对象包涵参数, 请求头, Cookie, 上传文件等, Response对象包涵响应， 相应头等信息.
+* D. API使用简单, Request对象包涵参数, 请求头, Cookie, 上传文件等, Response对象包涵响应， 响应头等信息.
 
 ##一. 请求Http接口
 
