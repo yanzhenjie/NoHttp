@@ -84,9 +84,9 @@ public class RequestDispatcher extends Thread {
 
 			if (request.request.isCanceled())
 				continue;
-			getPosterHandler().post(new ThreadPoster(ThreadPoster.COMMAND_START, request.what, request.responseListener, null));
+			getPosterHandler().post(new ThreadPoster(ThreadPoster.COMMAND_START, request.what, request.responseListener, request.request, null));
 			Response<?> response = mConnectionRest.request(request.request);
-			getPosterHandler().post(new ThreadPoster(ThreadPoster.COMMAND_RESPONSE, request.what, request.responseListener, response));
+			getPosterHandler().post(new ThreadPoster(ThreadPoster.COMMAND_RESPONSE, request.what, request.responseListener, request.request, response));
 		}
 	}
 
@@ -108,11 +108,13 @@ public class RequestDispatcher extends Thread {
 		private final int what;
 		private final OnResponseListener responseListener;
 		private final Response response;
+		private final Request request;
 
-		public ThreadPoster(int command, int what, OnResponseListener<?> responseListener, Response<?> response) {
+		public ThreadPoster(int command, int what, OnResponseListener<?> responseListener, Request<?> request, Response<?> response) {
 			this.command = command;
 			this.what = what;
 			this.responseListener = responseListener;
+			this.request = request;
 			this.response = response;
 		}
 
@@ -123,10 +125,12 @@ public class RequestDispatcher extends Thread {
 					responseListener.onStart(what);
 				} else if (command == COMMAND_RESPONSE && response != null) {
 					responseListener.onFinish(what);
-					if (response.isSucceed())
+					if (response.isSucceed() && !request.isCanceled())
 						responseListener.onSucceed(what, response);
-					else
+					else if (!request.isCanceled())
 						responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage());
+				} else if (response == null) {
+					responseListener.onFailed(what, null, null, null);
 				}
 			}
 		}

@@ -17,6 +17,7 @@ package com.yolanda.nohttp;
 
 import java.net.CookieStore;
 import java.net.HttpCookie;
+import java.util.Map;
 
 import com.yolanda.nohttp.security.Certificate;
 
@@ -171,6 +172,12 @@ public abstract interface Request<T> {
 	 * @param binary Param value
 	 */
 	public abstract void add(String key, Binary binary);
+
+	/**
+	 * add all param
+	 * @param params params map
+	 */
+	public abstract void add(Map<String, String> params);
 
 	/**
 	 * Remove a request param by key

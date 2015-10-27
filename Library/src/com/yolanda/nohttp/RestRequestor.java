@@ -285,6 +285,12 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
+	public void add(Map<String, String> params) {
+		if (params != null && params.size() > 0)
+			this.mParamMap.putAll(params);
+	}
+
+	@Override
 	public void remove(String key) {
 		mParamMap.remove(key);
 	}
