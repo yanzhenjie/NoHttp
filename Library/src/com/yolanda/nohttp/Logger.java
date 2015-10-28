@@ -131,17 +131,11 @@ public class Logger {
 			e.printStackTrace();
 	}
 
-	/**
-	 * msgs the caller's provided message and prepends useful info like
-	 * calling thread ID and method name.
-	 */
 	protected static String buildMessage(String format, Object... args) {
 		String msg = (args == null) ? format : String.format(Locale.US, format, args);
 		StackTraceElement[] trace = new Throwable().fillInStackTrace().getStackTrace();
 
 		String caller = "<unknown>";
-		// Walk up the stack looking for the first caller outside of VolleyLog.
-		// It will be at least two frames up, so start there.
 		for (int i = 2; i < trace.length; i++) {
 			Class<?> clazz = trace[i].getClass();
 			if (!clazz.equals(Logger.class)) {
