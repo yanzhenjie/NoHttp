@@ -73,24 +73,18 @@ public class ImageRequest extends RestRequestor<Bitmap> {
 			decodeOptions.inPreferredConfig = mDecodeConfig;
 			bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, decodeOptions);
 		} else {
-			// If we have to resize this image, first get the natural bounds.
 			decodeOptions.inJustDecodeBounds = true;
 			BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, decodeOptions);
 			int actualWidth = decodeOptions.outWidth;
 			int actualHeight = decodeOptions.outHeight;
 
-			// Then compute the dimensions we would ideally like to decode to.
 			int desiredWidth = getResizedDimension(mMaxWidth, mMaxHeight, actualWidth, actualHeight, mScaleType);
 			int desiredHeight = getResizedDimension(mMaxHeight, mMaxWidth, actualHeight, actualWidth, mScaleType);
 
-			// Decode to the nearest power of two scaling factor.
 			decodeOptions.inJustDecodeBounds = false;
-			// TODO(ficus): Do we need this or is it okay since API 8 doesn't support it?
-			// decodeOptions.inPreferQualityOverSpeed = PREFER_QUALITY_OVER_SPEED;
 			decodeOptions.inSampleSize = findBestSampleSize(actualWidth, actualHeight, desiredWidth, desiredHeight);
 			Bitmap tempBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, decodeOptions);
 
-			// If necessary, scale down to the maximal acceptable size.
 			if (tempBitmap != null && (tempBitmap.getWidth() > desiredWidth || tempBitmap.getHeight() > desiredHeight)) {
 				bitmap = Bitmap.createScaledBitmap(tempBitmap, desiredWidth, desiredHeight, true);
 				tempBitmap.recycle();
@@ -101,18 +95,6 @@ public class ImageRequest extends RestRequestor<Bitmap> {
 		return bitmap;
 	}
 
-	/**
-	 * Scales one side of a rectangle to fit aspect ratio.
-	 *
-	 * @param maxPrimary Maximum size of the primary dimension (i.e. width for
-	 *        max width), or zero to maintain aspect ratio with secondary
-	 *        dimension
-	 * @param maxSecondary Maximum size of the secondary dimension, or zero to
-	 *        maintain aspect ratio with primary dimension
-	 * @param actualPrimary Actual size of the primary dimension
-	 * @param actualSecondary Actual size of the secondary dimension
-	 * @param scaleType The ScaleType used to calculate the needed image size.
-	 */
 	private static int getResizedDimension(int maxPrimary, int maxSecondary, int actualPrimary, int actualSecondary, ScaleType scaleType) {
 
 		// If no dominant value at all, just return the actual.
@@ -155,15 +137,6 @@ public class ImageRequest extends RestRequestor<Bitmap> {
 		return resized;
 	}
 
-	/**
-	 * Returns the largest power-of-two divisor for use in downscaling a bitmap
-	 * that will not result in the scaling past the desired dimensions.
-	 *
-	 * @param actualWidth Actual width of the bitmap
-	 * @param actualHeight Actual height of the bitmap
-	 * @param desiredWidth Desired width of the bitmap
-	 * @param desiredHeight Desired height of the bitmap
-	 */
 	// Visible for testing.
 	public static int findBestSampleSize(int actualWidth, int actualHeight, int desiredWidth, int desiredHeight) {
 		double wr = (double) actualWidth / desiredWidth;
