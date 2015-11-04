@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sample.nohttp"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="23" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:name="com.sample.nohttp.SampleApplication"
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".activity.StartActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.sample.nohttp.activity.NoHttpOriginalActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.method.NoHttpMethodActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.download.NoHttpDownloadActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.image.NoHttpImageActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.cookie.NoHttpCookieActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.upload.NoHttpUploadFileActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.define.NoHttpDefineRequestActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.cancel.NoHttpCancelActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.sync.NoHttpSyncActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.sample.nohttp.activity.https.NoHttpsActivity"
+            android:label="@string/app_name" />
+    </application>
+
+</manifest>
