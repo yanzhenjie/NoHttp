@@ -22,6 +22,7 @@ import com.yolanda.nohttp.download.DownloadConnection;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadQueue;
 import com.yolanda.nohttp.download.DownloadRequest;
+import com.yolanda.nohttp.download.RestDownloadRequestor;
 import com.yolanda.nohttp.security.SecureVerifier;
 
 import android.content.Context;
@@ -35,9 +36,9 @@ import android.widget.ImageView;
  */
 public class NoHttp {
 
-	public static final String CHARSET_DEFAULT = "UTF-8";
+	public static final String CHARSET_UTF8 = "UTF-8";
 
-	public static final String MIMETYE_DEFAULT = "application/octet-stream";
+	public static final String MIMETYE_FILE = "application/octet-stream";
 
 	/**
 	 * Cookie
@@ -82,16 +83,36 @@ public class NoHttp {
 	 * Create a String type request, custom request method, method from {@link #RequestMethod}
 	 */
 	public static Request<String> createStringRequest(String url, int requestMethod) {
-		Request<String> request = new StringRequest(url, requestMethod);
-		return request;
+		return new StringRequest(url, requestMethod);
 	}
 
 	/**
 	 * Create a Image type request
 	 */
 	public static Request<Bitmap> createImageRequest(String url) {
-		Request<Bitmap> request = new ImageRequest(url, 720, 1280, Bitmap.Config.ARGB_8888, ImageView.ScaleType.CENTER_INSIDE);
-		return request;
+		return createImageRequest(url, 1000, 1000, Bitmap.Config.ARGB_8888, ImageView.ScaleType.CENTER_INSIDE);
+	}
+
+	/**
+	 * Create a Image type request
+	 */
+	public static Request<Bitmap> createImageRequest(String url, int maxWidth, int maxHeight, Bitmap.Config config, ImageView.ScaleType scaleType) {
+		return new ImageRequest(url, maxWidth, maxHeight, config, scaleType);
+	}
+
+	/**
+	 * To start a synchronization request, the request task will be triggered at the current thread, and the thread can
+	 * be used.
+	 * 
+	 * @param what Http request sign, If multiple requests the Listener is the same, so that I can be used to mark which
+	 *        one is the request
+	 * @param request The packaging of the HTTP request parameter
+	 */
+	public static <T> Response<T> startRequestSync(Context context, Request<T> request) {
+		Response<T> response = null;
+		if (request != null)
+			response = HttpRestConnection.getInstance(context).request(request);
+		return response;
 	}
 
 	/**
@@ -118,17 +139,15 @@ public class NoHttp {
 	}
 
 	/**
-	 * To start a synchronization request, the request task will be triggered at the current thread, and the thread can be used.
+	 * Create a download requestor
 	 * 
-	 * @param what Http request sign, If multiple requests the Listener is the same, so that I can be used to mark which
-	 *        one is the request
-	 * @param request The packaging of the HTTP request parameter
+	 * @param url Download address
+	 * @param fileFloder Folder to save files
+	 * @param filename filename
+	 * @param isRange Whether power resume Download
 	 */
-	public static <T> Response<T> startRequestSync(Context context, Request<T> request) {
-		Response<T> response = null;
-		if (request != null)
-			response = HttpRestConnection.getInstance(context).request(request);
-		return response;
+	public static DownloadRequest createDownloadRequest(String url, String fileFloder, String filename, boolean isRange) {
+		return new RestDownloadRequestor(url, fileFloder, filename, isRange);
 	}
 
 	/**

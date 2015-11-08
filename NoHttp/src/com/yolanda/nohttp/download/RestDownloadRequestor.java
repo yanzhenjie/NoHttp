@@ -15,6 +15,7 @@
  */
 package com.yolanda.nohttp.download;
 
+import java.io.File;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -34,7 +35,7 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA
  */
-public class DownloadRequestor implements DownloadRequest, BasicAnalyzeRequest {
+public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeRequest {
 	/**
 	 * Default timeout
 	 */
@@ -92,7 +93,7 @@ public class DownloadRequestor implements DownloadRequest, BasicAnalyzeRequest {
 	 * @param filename filename
 	 * @param isRange Whether power resume Download
 	 */
-	public DownloadRequestor(String url, String fileFloder, String filename, boolean isRange) {
+	public RestDownloadRequestor(String url, String fileFloder, String filename, boolean isRange) {
 		this.url = url;
 		this.mFileDir = fileFloder;
 		this.mFileName = filename;
@@ -152,7 +153,7 @@ public class DownloadRequestor implements DownloadRequest, BasicAnalyzeRequest {
 
 	@Override
 	public String getParamsEncoding() {
-		return NoHttp.CHARSET_DEFAULT;
+		return NoHttp.CHARSET_UTF8;
 	}
 
 	@Override
@@ -184,6 +185,22 @@ public class DownloadRequestor implements DownloadRequest, BasicAnalyzeRequest {
 	@Override
 	public void cancel() {
 		this.isCancel = true;
+	}
+
+	@Override
+	public int checkBeforeStatus() {
+		if (isRange) {
+			try {
+				File lastFile = new File(mFileDir, mFileName);
+				if (lastFile.exists())
+					return STATUS_FINISH;
+				File tempFile = new File(mFileDir, mFileName + ".temp");
+				if (tempFile.exists())
+					return STATUS_RESUME;
+			} catch (Exception e) {
+			}
+		}
+		return STATUS_RESTART;
 	}
 
 	@Override

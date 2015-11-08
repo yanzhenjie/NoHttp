@@ -46,11 +46,15 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	/**
 	 * Target adress
 	 */
-	protected final String url;
+	protected String url;
+	/**
+	 * Ever create a url
+	 */
+	private boolean urlBuilded = false;
 	/**
 	 * Request method
 	 */
-	protected final int mRequestMethod;
+	protected int mRequestMethod;
 	/**
 	 * Connect http timeout
 	 */
@@ -112,6 +116,8 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 		BasicConnection.checkRequestMethod(requestMethod);
 		if (TextUtils.isEmpty(url))
 			throw new IllegalArgumentException("url is null");
+		if (requestMethod < RequestMethod.GET || requestMethod > RequestMethod.PATCH)
+			throw new IllegalArgumentException("RequestMethod error, value shuld from RequestMethod");
 		if (url.regionMatches(true, 0, "ws://", 0, 5)) {
 			url = "http" + url.substring(2);
 		} else if (url.regionMatches(true, 0, "wss://", 0, 6)) {
@@ -125,15 +131,20 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 
 	@Override
 	public final String url() {
-		StringBuilder urlBuilder = new StringBuilder(url);
-		if (!isOutPut() && mParamMap.size() > 0) {
-			if (url.contains("?") && url.contains("="))
-				urlBuilder.append("&");
-			else
-				urlBuilder.append("?");
-			urlBuilder.append(buildReuqestParam());
+		if (!urlBuilded) {
+			urlBuilded = true;
+			StringBuffer urlBuffer = new StringBuffer(url);
+			if (!isOutPut() && mParamMap.size() > 0) {
+				StringBuffer paramBuffer = buildReuqestParam();
+				if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
+					urlBuffer.append("&");
+				else if (paramBuffer.length() > 0)
+					urlBuffer.append("?");
+				urlBuffer.append(paramBuffer);
+				url = urlBuffer.toString();
+			}
 		}
-		return urlBuilder.toString();
+		return url;
 	}
 
 	@Override
@@ -307,7 +318,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 
 	@Override
 	public String getParamsEncoding() {
-		return NoHttp.CHARSET_DEFAULT;
+		return NoHttp.CHARSET_UTF8;
 	}
 
 	@Override

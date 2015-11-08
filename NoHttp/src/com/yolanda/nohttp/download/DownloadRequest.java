@@ -25,6 +25,20 @@ import com.yolanda.nohttp.CommonRequest;
  * @author YOLANDA
  */
 public abstract interface DownloadRequest extends CommonRequest {
+
+	/**
+	 * Also didn't download to start download again
+	 */
+	public static final int STATUS_RESTART = 0;
+	/**
+	 * Part has been downloaded, continue to download last time
+	 */
+	public static final int STATUS_RESUME = 1;
+	/**
+	 * Has the download is complete, not to download operation
+	 */
+	public static final int STATUS_FINISH = 2;
+
 	/**
 	 * Return the mFileDir
 	 */
@@ -59,6 +73,18 @@ public abstract interface DownloadRequest extends CommonRequest {
 	 * Return Download is canceled
 	 */
 	public abstract boolean isCanceled();
+
+	/**
+	 * Query before download status
+	 * STATUS_RESTART representative no download do to download again; Download STATUS_RESUME represents a part of, to
+	 * continue to download; STATUS_FINISH representatives have finished downloading.
+	 * 
+	 * @return
+	 * @see #STATUS_RESTART
+	 * @see #STATUS_RESUME
+	 * @see #STATUS_FINISH
+	 */
+	public abstract int checkBeforeStatus();
 
 	/**
 	 * Objects that can be identified by the network implementation.

@@ -73,12 +73,12 @@ public class FileBinary implements Binary {
 
 	@Override
 	public String getMimeType() {
-		return NoHttp.MIMETYE_DEFAULT;
+		return NoHttp.MIMETYE_FILE;
 	}
 
 	@Override
 	public String getCharset() {
-		return NoHttp.CHARSET_DEFAULT;
+		return NoHttp.CHARSET_UTF8;
 	}
 
 }

@@ -22,9 +22,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.yolanda.nohttp.Logger;
 
@@ -43,22 +42,22 @@ public class ImageNetDowner {
 
 	private static ImageNetDowner instance;
 	private Poster mPoster;
-	private ThreadPoolExecutor mPoolExecutor;
+	private ExecutorService mExecutorService;
 	/**
 	 * Cache path
 	 */
 	private String mCachePath;
 
 	private ImageNetDowner(Context context) {
-		setCachePath(context.getCacheDir().toString());
+		setCachePath(context.getCacheDir().getAbsolutePath());
 		mPoster = new Poster();
-		mPoolExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		mExecutorService = Executors.newFixedThreadPool(2);
 	}
 
 	/**
 	 * Singleton mode to create download object
 	 */
-	public synchronized static ImageNetDowner getInstance(Context context) {
+	public static ImageNetDowner getInstance(Context context) {
 		if (instance == null) {
 			instance = new ImageNetDowner(context);
 		}
@@ -73,19 +72,16 @@ public class ImageNetDowner {
 			throw new NullPointerException("cachePath cann't null");
 		this.mCachePath = cachePath;
 		File file = new File(cachePath);
-		if (file.exists() && file.isFile()) {
+		if (file.exists() && file.isFile())
 			file.delete();
-		} else if (!file.exists()) {
+		else if (!file.exists())
 			file.mkdirs();
-		}
 	}
 
 	/**
 	 * download image
 	 */
 	public void downloadImage(String imageUrl, OnImageDownListener downListener, Object tag) {
-		if (TextUtils.isEmpty(mCachePath) || mCachePath.trim().isEmpty())
-			throw new NullPointerException("cache path cann't is null");
 		StringBuffer buffer = new StringBuffer(mCachePath);
 		buffer.append(File.separator);
 		buffer.append(getMa5ForString(imageUrl));
@@ -107,9 +103,8 @@ public class ImageNetDowner {
 			holder.downListener = downListener;
 			holder.tag = tag;
 			mPoster.obtainMessage(0, holder).sendToTarget();
-		} else {
-			mPoolExecutor.execute(new DownImageThread(imageUrl, path, downListener, tag));
-		}
+		} else
+			mExecutorService.execute(new DownImageThread(imageUrl, path, downListener, tag));
 	}
 
 	private class DownImageThread implements Runnable {
@@ -171,7 +166,7 @@ public class ImageNetDowner {
 		@Override
 		public void handleMessage(Message msg) {
 			ImageHolder holder = (ImageHolder) msg.obj;
-			holder.poster();
+			holder.post();
 		}
 	}
 
@@ -204,7 +199,7 @@ public class ImageNetDowner {
 		boolean isSucceed;
 		Object tag;
 
-		void poster() {
+		void post() {
 			downListener.onDownFinish(imageUrl, imagePath, isSucceed, tag);
 		}
 	}

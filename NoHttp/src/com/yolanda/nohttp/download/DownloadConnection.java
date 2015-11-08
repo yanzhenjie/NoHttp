@@ -66,7 +66,8 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 	}
 
 	/**
-	 * The object that is obtained by downloading the network task execution object, if no, is created, and the singleton pattern
+	 * The object that is obtained by downloading the network task execution object, if no, is created, and the
+	 * singleton pattern
 	 */
 	public static Downloader getInstance(Context context) {
 		if (_Downloader == null)
@@ -102,12 +103,13 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			Logger.d("Download file save path：" + lastFile.getAbsolutePath());
 			if (lastFile.exists()) {// 已存在，删除
 				if (downloadRequest.isRange()) {
-					downloadListener.onProgress(what, 100);
+					downloadListener.onProgress(what, 100, lastFile.length());
 					Logger.d("Download finish");
 					downloadListener.onFinish(what, lastFile.getAbsolutePath());
 					return;
-				} else
+				} else {
 					lastFile.delete();
+				}
 			}
 
 			tempFile = new File(downloadRequest.getFileDir(), downloadRequest.getFileName() + ".temp");
@@ -154,7 +156,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			}
 
 			// 文件总大小，不论断点续传下载还是完整下载
-			int totalLength = 0;
+			long totalLength = 0;
 
 			/* ==更新文件开始下载处的大小和总大小== */
 			if (responseCode == 206 && downloadRequest.isRange()) {
@@ -162,7 +164,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				String range = httpConnection.getHeaderField("Content-Range");// 事例：Content-Range:bytes 1024-2047/2048
 				if (!TextUtils.isEmpty(range)) {
 					try {
-						totalLength = Integer.parseInt(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
+						totalLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
 					} catch (Exception e) {
 						String erroeMessage = "Content-Range error in Server HTTP header information";
 						Logger.e(erroeMessage);
@@ -170,9 +172,9 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 						return;
 					}
 				}
-			} else if (responseCode == 200)
+			} else if (responseCode == 200) {
 				totalLength = httpConnection.getContentLength();// 直接下载
-			else {
+			} else {
 				downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, "Server response code error: " + responseCode);
 				return;
 			}
@@ -184,7 +186,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			}
 			// 通知开始下载了
 			Logger.d("Download start");
-			downloadListener.onStart(what, Headers.parseMultimap(responseHeaders), totalLength);
+			downloadListener.onStart(what, tempFileLength > 0, tempFileLength, Headers.parseMultimap(responseHeaders), totalLength);
 			inputStream = httpConnection.getInputStream();
 			String contentEncoding = httpConnection.getContentEncoding();
 			if (HeaderParser.isGzipContent(contentEncoding))
@@ -214,7 +216,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 						int progress = (int) (count * 100 / totalLength);
 						if ((0 == progress % 2 || 0 == progress % 3 || 0 == progress % 5 || 0 == progress % 7) && oldProgress != progress) {
 							oldProgress = progress;
-							downloadListener.onProgress(what, progress);// 进度通知
+							downloadListener.onProgress(what, progress, count);// 进度通知
 						}
 					}
 				}

@@ -38,18 +38,22 @@ public interface DownloadListener {
 	 * When this download task starts the callback method
 	 * 
 	 * @param what Which is used to mark the download tasks
+	 * @param isResume Whether to continue to download, if it is true that has download before, and have already
+	 *        download the file size is not zero
+	 * @param beforeLength Before the length of the download
 	 * @param responseHeaders Server response headers
 	 * @param allCount Total file size
 	 */
-	public abstract void onStart(int what, Headers responseHeaders, int allCount);
+	public abstract void onStart(int what, boolean isResume, long beforeLength, Headers responseHeaders, long allCount);
 
 	/**
 	 * When the download process change
 	 * 
 	 * @param what Which is used to mark the download tasks
 	 * @param progress This method is the time to change the progress of the download.
+	 * @param fileCount Have downloaded the file size
 	 */
-	public abstract void onProgress(int what, int progress);
+	public abstract void onProgress(int what, int progress, long fileCount);
 
 	/**
 	 * Download is complete.

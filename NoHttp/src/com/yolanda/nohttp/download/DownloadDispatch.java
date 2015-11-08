@@ -29,7 +29,7 @@ import android.os.Process;
  * 
  * @author YOLANDA
  */
-public class DownloadDispatch extends Thread {
+class DownloadDispatch extends Thread {
 
 	/**
 	 * Get handler lock
@@ -94,8 +94,8 @@ public class DownloadDispatch extends Thread {
 			mDownloader.download(request.what, request.downloadRequest, new DownloadListener() {
 
 				@Override
-				public void onStart(int what, Headers headers, int allCount) {
-					threadPoster.onStart(headers, allCount);
+				public void onStart(int what, boolean isResume, long beforeLength, Headers headers, long allCount) {
+					threadPoster.onStart(isResume, beforeLength, headers, allCount);
 					getPosterHandler().post(threadPoster);
 				}
 
@@ -106,8 +106,8 @@ public class DownloadDispatch extends Thread {
 				}
 
 				@Override
-				public void onProgress(int what, int progress) {
-					threadPoster.onProgress(progress);
+				public void onProgress(int what, int progress, long fileCount) {
+					threadPoster.onProgress(progress, fileCount);
 					getPosterHandler().post(threadPoster);
 				}
 
@@ -150,10 +150,13 @@ public class DownloadDispatch extends Thread {
 
 		// start
 		private Headers responseHeaders;
-		private int allCount;
+		private long allCount;
+		private boolean isResume;
+		private long beforeLength; 
 
 		// progress
 		private int progress;
+		private long fileCount;
 
 		// error
 		private StatusCode statusCode;
@@ -167,14 +170,18 @@ public class DownloadDispatch extends Thread {
 			this.downloadListener = downloadListener;
 		}
 
-		public void onStart(Headers responseHeaders, int allCount) {
+		public void onStart(boolean isResume, long beforeLength, Headers responseHeaders, long allCount) {
 			this.command = COMMAND_START;
+			this.isResume = isResume;
+			this.beforeLength = beforeLength;
 			this.responseHeaders = responseHeaders;
+			this.allCount = allCount;
 		}
 
-		public void onProgress(int progress) {
+		public void onProgress(int progress, long fileCount) {
 			this.command = COMMAND_PROGRESS;
 			this.progress = progress;
+			this.fileCount = fileCount;
 		}
 
 		public void onError(StatusCode statusCode, CharSequence errorMessage) {
@@ -196,10 +203,10 @@ public class DownloadDispatch extends Thread {
 		public synchronized void run() {
 			switch (command) {
 			case COMMAND_START:
-				downloadListener.onStart(what, responseHeaders, allCount);
+				downloadListener.onStart(what, isResume, beforeLength, responseHeaders, allCount);
 				break;
 			case COMMAND_PROGRESS:
-				downloadListener.onProgress(what, progress);
+				downloadListener.onProgress(what, progress, fileCount);
 				break;
 			case COMMAND_ERROR:
 				downloadListener.onDownloadError(what, statusCode, errorMessage);
