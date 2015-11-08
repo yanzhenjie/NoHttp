@@ -54,7 +54,7 @@ public class NoHttpDefineRequestActivity extends Activity implements HttpCallbac
 			@Override
 			public void onClick(View v) {
 				Request<JSONObject> request = new JsonRequest("http://www.baidu.com");
-				CallServer.getInstance().add(NoHttpDefineRequestActivity.this, 0, request, NoHttpDefineRequestActivity.this);
+				CallServer.getRequestInstance().add(NoHttpDefineRequestActivity.this, 0, request, NoHttpDefineRequestActivity.this);
 			}
 		});
 	}

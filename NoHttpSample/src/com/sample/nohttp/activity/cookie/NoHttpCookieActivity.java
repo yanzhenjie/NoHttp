@@ -108,7 +108,7 @@ public class NoHttpCookieActivity extends Activity implements View.OnClickListen
 		// 添加Cookie第二种方法
 		// mRequest.addCookie(cookieStore);
 
-		CallServer.getInstance().add(this, 0, mRequest, this);
+		CallServer.getRequestInstance().add(this, 0, mRequest, this);
 	}
 
 	@Override

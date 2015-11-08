@@ -16,13 +16,13 @@
 package com.sample.nohttp.activity.download;
 
 import com.sample.nohttp.R;
+import com.sample.nohttp.config.AppConfig;
+import com.sample.nohttp.nohttp.CallServer;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.download.DownloadListener;
-import com.yolanda.nohttp.download.DownloadQueue;
 import com.yolanda.nohttp.download.DownloadRequest;
-import com.yolanda.nohttp.download.DownloadRequestor;
 import com.yolanda.nohttp.download.StatusCode;
 
 import android.app.Activity;
@@ -39,10 +39,8 @@ import android.widget.TextView;
  * @author YOLANDA
  */
 public class NoHttpDownloadActivity extends Activity implements View.OnClickListener, DownloadListener {
-	/**
-	 * 下载队列
-	 */
-	private DownloadQueue mDownloadQueue;
+
+	private final static String PROGRESS_KEY = "download_progress";
 	/**
 	 * 下载按钮、暂停、开始等
 	 */
@@ -76,7 +74,34 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 		mBtnStart = (TextView) findViewById(R.id.btn_start_download);
 		mBtnStart.setOnClickListener(this);
 
-		mDownloadQueue = NoHttp.newDownloadQueue(getApplicationContext());
+		// 初始化下载属性
+		String fileFloder = Environment.getExternalStorageDirectory().getAbsolutePath();
+		String filename = "123.apk";
+		// url 下载地址
+		// fileFloader 保存的文件夹
+		// fileName 文件名
+		// isRange 是否断点续传下载
+		downloadRequest = NoHttp.createDownloadRequest(url, fileFloder, filename, true);
+
+		// 检查之前的下载状态
+		int beforeStatus = downloadRequest.checkBeforeStatus();
+		switch (beforeStatus) {
+		case DownloadRequest.STATUS_RESTART:
+			mProgressBar.setProgress(0);
+			mBtnStart.setText("开始下载");
+			break;
+		case DownloadRequest.STATUS_RESUME:
+			int progress = AppConfig.getInstance().getInt(PROGRESS_KEY, 0);
+			mProgressBar.setProgress(progress);
+			mBtnStart.setText("已暂停, 进度: " + progress + "; 继续下载");
+			break;
+		case DownloadRequest.STATUS_FINISH:
+			mProgressBar.setProgress(100);
+			mBtnStart.setText("已完成下载");
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -85,37 +110,33 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 			// 取消下载
 			downloadRequest.cancel();
 		} else {
-			String fileFloder = Environment.getExternalStorageDirectory().getAbsolutePath();
-			String filename = "123.apk";
-			// url 下载地址
-			// fileFloader 保存的文件夹
-			// fileName 文件名
-			// isRange 是否断点续传下载
-			downloadRequest = new DownloadRequestor(url, fileFloder, filename, true);
 			// what 区分下载
 			// downloadRequest 下载请求对象
 			// downloadListener 下载监听
-			mDownloadQueue.add(0, downloadRequest, this);
+			CallServer.getDownloadInstance().add(0, downloadRequest, this);
 		}
 	}
 
 	@Override
-	public void onStart(int what, Headers headers, int allCount) {
+	public void onStart(int what, boolean isResume, long beforeLenght, Headers headers, long allCount) {
 		isStarted = true;
-		mBtnStart.setText("暂停下载");
+		int progress = (int) (beforeLenght * 100 / allCount);
+		mProgressBar.setProgress(progress);
+		mBtnStart.setText("进度: " + progress);
 	}
 
 	@Override
 	public void onDownloadError(int what, StatusCode statusCode, CharSequence errorMessage) {
 		isStarted = false;
-		mBtnStart.setText("出错了，重新下载");
+		mBtnStart.setText("出错了，继续下载");
 		Logger.e("下载出错");
 	}
 
 	@Override
-	public void onProgress(int what, int progress) {
-		mBtnStart.setText("进度：" + progress);
+	public void onProgress(int what, int progress, long fileCount) {
+		mBtnStart.setText("进度: " + progress);
 		mProgressBar.setProgress(progress);
+		AppConfig.getInstance().saveInt(PROGRESS_KEY, progress);
 		Logger.e("进度: " + progress);
 	}
 
@@ -129,8 +150,8 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 	@Override
 	public void onCancel(int what) {
 		isStarted = false;
-		mBtnStart.setText("暂停了，继续下载");
-		Logger.i("暂停下载");
+		mBtnStart.setText("继续下载");
+		Logger.i("用户暂停下载");
 	}
 
 	@Override

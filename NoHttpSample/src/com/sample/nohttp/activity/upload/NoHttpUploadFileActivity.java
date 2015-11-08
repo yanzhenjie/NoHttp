@@ -108,7 +108,7 @@ public class NoHttpUploadFileActivity extends Activity implements View.OnClickLi
 		// 上传文件需要实现NoHttp的Binary接口，NoHttp默认实现了一个上传File的，传入File和fileName就可以了
 		// 因为这个接口是在子线程中回调，所以接口的方法可以做IO操作
 		request.add("head", new FileBinary(new File(filePath), "head.png"));
-		CallServer.getInstance().add(this, 0, request, this);
+		CallServer.getRequestInstance().add(this, 0, request, this);
 	}
 
 	/**

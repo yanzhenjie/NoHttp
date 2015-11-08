@@ -62,7 +62,7 @@ public class NoHttpImageActivity extends Activity implements HttpCallback<Bitmap
 			public void onClick(View v) {
 				String url = "http://a1.qpic.cn/psb?/V13FzpwG3JdUAq/.y.rmni00WJydktHAv9kFaRHIJ.xZDZYyjwV72Hnu.Q!/b/dG8AAAAAAAAA&bo=LAEsAQAAAAAFByQ!&rf=viewer_4";
 				Request<Bitmap> request = NoHttp.createImageRequest(url);
-				CallServer.getInstance().add(NoHttpImageActivity.this, 0, request, NoHttpImageActivity.this);
+				CallServer.getRequestInstance().add(NoHttpImageActivity.this, 0, request, NoHttpImageActivity.this);
 			}
 		});
 

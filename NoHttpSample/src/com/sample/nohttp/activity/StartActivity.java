@@ -116,7 +116,7 @@ public class StartActivity extends Activity implements View.OnClickListener {
 		super.onDestroy();
 
 		// 程序退出时，停止所有请求
-		CallServer.getInstance().stopAll();
+		CallServer.getRequestInstance().stopAll();
 	}
 
 }

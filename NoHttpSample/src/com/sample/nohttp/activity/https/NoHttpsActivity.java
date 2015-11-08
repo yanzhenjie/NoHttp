@@ -93,7 +93,7 @@ public class NoHttpsActivity extends Activity implements View.OnClickListener, H
 
 		// 这里使用第一种，使用哪种都可以
 		httpsRequest.setCertificate(certificate);
-		CallServer.getInstance().add(this, 0, httpsRequest, this);
+		CallServer.getRequestInstance().add(this, 0, httpsRequest, this);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class NoHttpsActivity extends Activity implements View.OnClickListener, H
 		// 这里如果不需要证书，直接允许这个https的请求
 		httpsRequest.setAllowHttps(true);
 
-		CallServer.getInstance().add(this, 0, httpsRequest, this);
+		CallServer.getRequestInstance().add(this, 0, httpsRequest, this);
 	}
 
 	@Override

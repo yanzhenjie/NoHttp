@@ -19,7 +19,7 @@ import com.sample.nohttp.SampleApplication;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestQueue;
-import com.yolanda.nohttp.Response;
+import com.yolanda.nohttp.download.DownloadQueue;
 
 import android.content.Context;
 
@@ -30,29 +30,29 @@ import android.content.Context;
  */
 public class CallServer {
 
-	/**
-	 * 单例
-	 */
-	private static CallServer _instance;
+	private static CallServer callServer;
 
-	/**
-	 * NoHttp请求队列
-	 */
 	private RequestQueue requestQueue;
 
+	private static DownloadQueue downloadQueue;
+
 	private CallServer() {
-		// 创建 一个请求队列
 		requestQueue = NoHttp.newRequestQueue(SampleApplication.getInstance());
 	}
 
 	/**
 	 * 创建请求对象，管理请求队列
 	 */
-	public static CallServer getInstance() {
-		if (_instance == null) {
-			_instance = new CallServer();
-		}
-		return _instance;
+	public static CallServer getRequestInstance() {
+		if (callServer == null)
+			callServer = new CallServer();
+		return callServer;
+	}
+
+	public static DownloadQueue getDownloadInstance() {
+		if (downloadQueue == null)
+			downloadQueue = NoHttp.newDownloadQueue(SampleApplication.getInstance());
+		return downloadQueue;
 	}
 
 	/**
@@ -79,13 +79,6 @@ public class CallServer {
 	 */
 	public void stopAll() {
 		requestQueue.stop();
-	}
-
-	/**
-	 * 开始一个同步请求，推荐在子线程中这么用，主线程不允许访问网络
-	 */
-	public <T> Response<T> startSyncRequest(Request<T> request) {
-		return NoHttp.startRequestSync(SampleApplication.getInstance(), request);
 	}
 
 }

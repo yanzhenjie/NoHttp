@@ -126,7 +126,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 		// what: 用来区分请求，当多个请求使用同一个OnResponseListener时，在回调方法中会返回这个what，相当于handler的what一样
 		// request: 请求对象，包涵Cookie、Head、请求参数、URL、请求方法
 		// responseListener 请求结果监听，回调时把what原样返回
-		CallServer.getInstance().add(this, 0, mRequest, this);// 这里的what，先用0代替，正式开发中，多个请求使用同一个Listener时，要传入不同的what，相当于handler的what一样
+		CallServer.getRequestInstance().add(this, 0, mRequest, this);// 这里的what，先用0代替，正式开发中，多个请求使用同一个Listener时，要传入不同的what，相当于handler的what一样
 	}
 
 	@Override

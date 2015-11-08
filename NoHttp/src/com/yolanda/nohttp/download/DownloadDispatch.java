@@ -89,36 +89,39 @@ class DownloadDispatch extends Thread {
 			if (request.downloadRequest.isCanceled())
 				continue;
 
-			final ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
-
 			mDownloader.download(request.what, request.downloadRequest, new DownloadListener() {
 
 				@Override
 				public void onStart(int what, boolean isResume, long beforeLength, Headers headers, long allCount) {
+					ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
 					threadPoster.onStart(isResume, beforeLength, headers, allCount);
 					getPosterHandler().post(threadPoster);
 				}
 
 				@Override
 				public void onDownloadError(int what, StatusCode statusCode, CharSequence errorMessage) {
+					ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
 					threadPoster.onError(statusCode, errorMessage);
 					getPosterHandler().post(threadPoster);
 				}
 
 				@Override
 				public void onProgress(int what, int progress, long fileCount) {
+					ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
 					threadPoster.onProgress(progress, fileCount);
 					getPosterHandler().post(threadPoster);
 				}
 
 				@Override
 				public void onFinish(int what, String filePath) {
+					ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
 					threadPoster.onFinish(filePath);
 					getPosterHandler().post(threadPoster);
 				}
 
 				@Override
 				public void onCancel(int what) {
+					ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
 					threadPoster.onCancel();
 					getPosterHandler().post(threadPoster);
 				}
@@ -152,7 +155,7 @@ class DownloadDispatch extends Thread {
 		private Headers responseHeaders;
 		private long allCount;
 		private boolean isResume;
-		private long beforeLength; 
+		private long beforeLength;
 
 		// progress
 		private int progress;
@@ -200,7 +203,7 @@ class DownloadDispatch extends Thread {
 		}
 
 		@Override
-		public synchronized void run() {
+		public void run() {
 			switch (command) {
 			case COMMAND_START:
 				downloadListener.onStart(what, isResume, beforeLength, responseHeaders, allCount);
