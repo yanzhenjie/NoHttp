@@ -85,16 +85,19 @@ public class RequestDispatcher extends Thread {
 			if (request.request.isCanceled()) {
 				continue;
 			}
-			final ThreadPoster threadPoster = new ThreadPoster(request.what, request.responseListener);
-			threadPoster.onStart();
-			getPosterHandler().post(threadPoster);
+			// start 
+			final ThreadPoster startThread = new ThreadPoster(request.what, request.responseListener);
+			startThread.onStart();
+			getPosterHandler().post(startThread);
+			// finish
+			final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
 			Response<?> response = mConnectionRest.request(request.request);
 			if (request.request.isCanceled()) {
-				threadPoster.onFinished();
+				finishThread.onFinished();
 			} else {
-				threadPoster.onResponse(response);
+				finishThread.onResponse(response);
 			}
-			getPosterHandler().post(threadPoster);
+			getPosterHandler().post(finishThread);
 		}
 	}
 

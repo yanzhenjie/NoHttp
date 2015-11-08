@@ -34,7 +34,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -45,11 +44,6 @@ import android.widget.ImageView;
  * @author YOLANDA;
  */
 public class ImageLocalLoader {
-
-	/**
-	 * Update bitmap for view
-	 */
-	private static final int UPDATE_UI = 0x112;
 	/**
 	 * Single lock
 	 */
@@ -90,20 +84,6 @@ public class ImageLocalLoader {
 	private ImageLocalLoader() {
 		mDefaultDrawable = new ColorDrawable(Color.GRAY);
 		mExecutorService = Executors.newSingleThreadExecutor();
-		mPosterHandler = new Handler(Looper.getMainLooper()) {
-			@Override
-			public void handleMessage(Message msg) {
-				if (msg.what == UPDATE_UI) {
-					ImgBeanHolder holder = (ImgBeanHolder) msg.obj;
-					ImageView imageView = holder.imageView;
-					Bitmap bm = holder.bitmap;
-					String path = holder.imagePath;
-					if (path.equals(imageView.getTag())) {
-						imageView.setImageBitmap(bm);
-					}
-				}
-			}
-		};
 
 		int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 8);
 		mLruCache = new LruCache<String, Bitmap>(maxMemory) {
@@ -115,6 +95,14 @@ public class ImageLocalLoader {
 				return value.getRowBytes() * value.getHeight();
 			};
 		};
+	}
+
+	private Handler getPostHandler() {
+		synchronized (SINGLE_OBJECT) {
+			if (mPosterHandler == null)
+				mPosterHandler = new Handler(Looper.getMainLooper());
+		}
+		return mPosterHandler;
 	}
 
 	/**
@@ -198,7 +186,21 @@ public class ImageLocalLoader {
 	 * Load image from local SDCard
 	 */
 	public void loadImage(ImageView imageView, String imagePath) {
-		loadImage(imageView, imagePath, 0, 0);
+		loadImage(imageView, imagePath, 0, 0, null);
+	}
+
+	/**
+	 * Load image from local SDCard
+	 */
+	public void loadImage(ImageView imageView, String imagePath, ImageLoadListener imageLoadListener) {
+		loadImage(imageView, imagePath, 0, 0, imageLoadListener);
+	}
+
+	/**
+	 * Load image from local SDCard
+	 */
+	public void loadImage(ImageView imageView, String imagePath, int width, int height) {
+		loadImage(imageView, imagePath, width, height, null);
 	}
 
 	/**
@@ -209,14 +211,20 @@ public class ImageLocalLoader {
 	 * @param width Target width
 	 * @param height Target height
 	 */
-	public void loadImage(ImageView imageView, String imagePath, int width, int height) {
-		imageView.setTag(imagePath);
+	public void loadImage(ImageView imageView, String imagePath, int width, int height, ImageLoadListener imageLoadListener) {
+		if (imageLoadListener == null)
+			imageView.setTag(imagePath);
 		Bitmap bitmap = getImageFromCache(imagePath + width + height);
 		if (bitmap != null) {
-			imageView.setImageBitmap(bitmap);
+			ImgBeanHolder holder = new ImgBeanHolder();
+			holder.imageView = imageView;
+			holder.imagePath = imagePath;
+			holder.bitmap = bitmap;
+			holder.imageLoadListener = imageLoadListener;
+			getPostHandler().post(holder);
 		} else {
 			imageView.setImageDrawable(mDefaultDrawable);
-			mExecutorService.execute(new TaskThread(imageView, imagePath, width, height));
+			mExecutorService.execute(new TaskThread(imageView, imagePath, width, height, imageLoadListener));
 		}
 	}
 
@@ -240,12 +248,14 @@ public class ImageLocalLoader {
 		private String mImagePath;
 		private int width;
 		private int height;
+		private ImageLoadListener imageLoadListener;
 
-		TaskThread(ImageView imageView, String imagePath, int width, int height) {
+		TaskThread(ImageView imageView, String imagePath, int width, int height, ImageLoadListener imageLoadListener) {
 			this.mImagePath = imagePath;
 			this.mImageView = imageView;
 			this.width = width;
 			this.height = height;
+			this.imageLoadListener = imageLoadListener;
 		}
 
 		@Override
@@ -263,13 +273,32 @@ public class ImageLocalLoader {
 			holder.bitmap = getImageFromCache(mImagePath + width + height);
 			holder.imageView = mImageView;
 			holder.imagePath = mImagePath;
-			mPosterHandler.obtainMessage(UPDATE_UI, holder).sendToTarget();	
+			holder.imageLoadListener = imageLoadListener;
+			getPostHandler().post(holder);
 		}
 	};
 
-	private class ImgBeanHolder {
+	private class ImgBeanHolder implements Runnable {
 		Bitmap bitmap;
 		ImageView imageView;
 		String imagePath;
+		ImageLoadListener imageLoadListener;
+
+		@Override
+		public void run() {
+			if (imageLoadListener == null) {
+				if (imagePath.equals(imageView.getTag())) {
+					imageView.setImageBitmap(bitmap);
+				}
+			} else {
+				imageLoadListener.onLoadSucceed(imageView, bitmap, imagePath);
+			}
+		}
+	}
+
+	public interface ImageLoadListener {
+		void onLoadSucceed(ImageView imageView, Bitmap bitmap, String imagePath);
+
+		void onLoadFalied(ImageView imageView, String imagePath);
 	}
 }
