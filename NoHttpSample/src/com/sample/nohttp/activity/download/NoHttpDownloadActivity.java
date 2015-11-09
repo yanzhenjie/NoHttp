@@ -81,7 +81,7 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 		// fileFloader 保存的文件夹
 		// fileName 文件名
 		// isRange 是否断点续传下载
-		downloadRequest = NoHttp.createDownloadRequest(url, fileFloder, filename, true);
+		downloadRequest = NoHttp.createDownloadRequest(url, fileFloder, filename, true, false);
 
 		// 检查之前的下载状态
 		int beforeStatus = downloadRequest.checkBeforeStatus();
