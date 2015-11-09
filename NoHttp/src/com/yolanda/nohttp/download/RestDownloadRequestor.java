@@ -57,6 +57,10 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	 */
 	private final boolean isRange;
 	/**
+	 * If there is a old files, whether to delete the old files
+	 */
+	private final boolean isDeleteOld;
+	/**
 	 * sign of the request
 	 */
 	private Object cancelSign;
@@ -93,32 +97,37 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	 * @param filename filename
 	 * @param isRange Whether power resume Download
 	 */
-	public RestDownloadRequestor(String url, String fileFloder, String filename, boolean isRange) {
+	public RestDownloadRequestor(String url, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
 		this.url = url;
 		this.mFileDir = fileFloder;
 		this.mFileName = filename;
 		this.isRange = isRange;
+		this.isDeleteOld = isDeleteOld;
 		this.mheaders = new Headers();
 	}
 
 	@Override
 	public String url() {
-		return url;
+		return this.url;
 	}
 
 	@Override
 	public String getFileDir() {
-		return mFileDir;
+		return this.mFileDir;
 	}
 
 	@Override
 	public String getFileName() {
-		return mFileName;
+		return this.mFileName;
 	}
 
 	@Override
 	public boolean isRange() {
-		return isRange;
+		return this.isRange;
+	}
+	@Override
+	public boolean isDeleteOld() {
+		return this.isDeleteOld;
 	}
 
 	@Override
@@ -128,27 +137,27 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 
 	@Override
 	public Certificate getCertificate() {
-		return mCertificate;
+		return this.mCertificate;
 	}
 
 	@Override
 	public boolean isAllowHttps() {
-		return isAllowHttps;
+		return this.isAllowHttps;
 	}
 
 	@Override
 	public int getConnectTimeout() {
-		return mConnectTimeout;
+		return this.mConnectTimeout;
 	}
 
 	@Override
 	public int getReadTimeout() {
-		return mReadTimeout;
+		return this.mReadTimeout;
 	}
 
 	@Override
 	public Headers getHeaders() {
-		return mheaders;
+		return this.mheaders;
 	}
 
 	@Override
@@ -179,7 +188,7 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 
 	@Override
 	public boolean isCanceled() {
-		return isCancel;
+		return this.isCancel;
 	}
 
 	@Override
@@ -189,12 +198,12 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 
 	@Override
 	public int checkBeforeStatus() {
-		if (isRange) {
+		if (this.isRange) {
 			try {
 				File lastFile = new File(mFileDir, mFileName);
 				if (lastFile.exists())
 					return STATUS_FINISH;
-				File tempFile = new File(mFileDir, mFileName + ".temp");
+				File tempFile = new File(mFileDir, mFileName + ".nohttp");
 				if (tempFile.exists())
 					return STATUS_RESUME;
 			} catch (Exception e) {
@@ -230,12 +239,12 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 
 	@Override
 	public void setHeader(String name, String value) {
-		mheaders.set(name, value);
+		this.mheaders.set(name, value);
 	}
 
 	@Override
 	public void addHeader(String name, String value) {
-		mheaders.add(name, value);
+		this.mheaders.add(name, value);
 	}
 
 	@Override
@@ -243,7 +252,7 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 		try {
 			URI uri = new URI(url);
 			if (HttpCookie.domainMatches(cookie.getDomain(), uri.getHost())) {
-				mheaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
+				this.mheaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
 			}
 		} catch (URISyntaxException e) {
 			Logger.throwable(e);
@@ -265,11 +274,11 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 
 	@Override
 	public void removeHeader(String name) {
-		mheaders.removeAll(name);
+		this.mheaders.removeAll(name);
 	}
 
 	@Override
 	public void removeAllHeaders() {
-		mheaders.clear();
+		this.mheaders.clear();
 	}
 }

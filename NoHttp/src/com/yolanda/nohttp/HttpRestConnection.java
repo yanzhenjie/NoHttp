@@ -115,11 +115,11 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 					List<String> headValues = responseHeaders.get(headName);
 					for (String headValue : headValues) {
 						StringBuffer buffer = new StringBuffer();
-						if (TextUtils.isEmpty(headName)) {
+						if (!TextUtils.isEmpty(headName)) {
 							buffer.append(headName);
 							buffer.append(": ");
 						}
-						if (TextUtils.isEmpty(headValue))
+						if (!TextUtils.isEmpty(headValue))
 							buffer.append(headValue);
 						Logger.d(buffer.toString());
 					}

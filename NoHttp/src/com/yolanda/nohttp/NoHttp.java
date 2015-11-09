@@ -145,9 +145,10 @@ public class NoHttp {
 	 * @param fileFloder Folder to save files
 	 * @param filename filename
 	 * @param isRange Whether power resume Download
+	 * @param isDeleteOld If there is a old files, whether to delete the old files
 	 */
-	public static DownloadRequest createDownloadRequest(String url, String fileFloder, String filename, boolean isRange) {
-		return new RestDownloadRequestor(url, fileFloder, filename, isRange);
+	public static DownloadRequest createDownloadRequest(String url, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
+		return new RestDownloadRequestor(url, fileFloder, filename, isRange, isDeleteOld);
 	}
 
 	/**

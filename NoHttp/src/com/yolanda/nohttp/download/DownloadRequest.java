@@ -55,6 +55,11 @@ public abstract interface DownloadRequest extends CommonRequest {
 	public abstract boolean isRange();
 
 	/**
+	 * If there is a old files, whether to delete the old files
+	 */
+	public abstract boolean isDeleteOld();
+
+	/**
 	 * Set sign of the download
 	 */
 	public abstract void setCancelSign(Object sign);

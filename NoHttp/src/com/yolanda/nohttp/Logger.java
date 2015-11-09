@@ -29,12 +29,12 @@ public class Logger {
 	/**
 	 * library debug tag
 	 */
-	static String sLogTag = "NoHttp";
+	public static String sLogTag = "NoHttp";
 
 	/**
 	 * library debug sign
 	 */
-	static Boolean isDebug = false;
+	public static Boolean isDebug = false;
 
 	public static void i(String msg) {
 		if (isDebug)
