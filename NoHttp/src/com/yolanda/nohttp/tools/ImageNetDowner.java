@@ -82,17 +82,31 @@ public class ImageNetDowner {
 	 * download image
 	 */
 	public void downloadImage(String imageUrl, OnImageDownListener downListener, Object tag) {
+		downloadImage(imageUrl, downListener, tag, 3 * 1000);
+	}
+
+	/**
+	 * download image
+	 */
+	public void downloadImage(String imageUrl, OnImageDownListener downListener, Object tag, int timeOut) {
 		StringBuffer buffer = new StringBuffer(mCachePath);
 		buffer.append(File.separator);
 		buffer.append(getMa5ForString(imageUrl));
 		buffer.append(".png");
-		downImage(imageUrl, downListener, buffer.toString(), tag);
+		downloadImage(imageUrl, downListener, buffer.toString(), tag);
 	}
 
 	/**
 	 * Download the image to the specified path
 	 */
-	public void downImage(String imageUrl, OnImageDownListener downListener, String path, Object tag) {
+	public void downloadImage(String imageUrl, OnImageDownListener downListener, String path, Object tag) {
+		downloadImage(imageUrl, downListener, path, tag, 3 * 1000);
+	}
+
+	/**
+	 * Download the image to the specified path
+	 */
+	public void downloadImage(String imageUrl, OnImageDownListener downListener, String path, Object tag, int timeOut) {
 		Logger.d("ImageDownload url: " + imageUrl);
 		File file = new File(path);
 		if (file.exists()) {
@@ -104,7 +118,7 @@ public class ImageNetDowner {
 			holder.tag = tag;
 			mPoster.obtainMessage(0, holder).sendToTarget();
 		} else
-			mExecutorService.execute(new DownImageThread(imageUrl, path, downListener, tag));
+			mExecutorService.execute(new DownImageThread(imageUrl, path, downListener, tag, timeOut));
 	}
 
 	private class DownImageThread implements Runnable {
@@ -117,12 +131,15 @@ public class ImageNetDowner {
 
 		private OnImageDownListener mDownListener;
 
-		public DownImageThread(String imageUrl, String imagePath, OnImageDownListener downListener, Object tag) {
+		private int timeOut;
+
+		public DownImageThread(String imageUrl, String imagePath, OnImageDownListener downListener, Object tag, int timeOut) {
 			super();
 			this.mImageUrl = imageUrl;
 			this.mImagePath = imagePath;
 			this.mDownListener = downListener;
 			this.tag = tag;
+			this.timeOut = timeOut;
 		}
 
 		@Override
@@ -135,8 +152,8 @@ public class ImageNetDowner {
 			try {
 				URL url = new URL(mImageUrl);
 				HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-				urlConnection.setConnectTimeout(5 * 1000);
-				urlConnection.setReadTimeout(5 * 1000);
+				urlConnection.setConnectTimeout(timeOut);
+				urlConnection.setReadTimeout(timeOut);
 				urlConnection.connect();
 				if (HttpURLConnection.HTTP_OK == urlConnection.getResponseCode()) {
 					OutputStream outputStream = new FileOutputStream(mImagePath);

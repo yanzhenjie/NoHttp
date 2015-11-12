@@ -69,7 +69,11 @@ public class DownloadQueue {
 	 * @param downloadListener Download results monitor
 	 */
 	public void add(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-		mDownloadQueue.add(new NetworkDownloadRequest(what, downloadRequest, downloadListener));
+		if (!downloadRequest.inQueue()) {
+			downloadRequest.takeQueue(true);
+			downloadRequest.start();
+			mDownloadQueue.add(new NetworkDownloadRequest(what, downloadRequest, downloadListener));
+		}
 	}
 
 	/**

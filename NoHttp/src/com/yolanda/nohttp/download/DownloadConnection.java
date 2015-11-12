@@ -77,16 +77,21 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
 	@Override
 	public void download(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-		if (downloadRequest == null)
+		if (downloadRequest == null) {
 			throw new IllegalArgumentException("downloadRequest == null");
-		if (downloadListener == null)
+		}
+		if (downloadListener == null) {
+			downloadRequest.takeQueue(false);
 			throw new IllegalArgumentException("downloadListener == null");
+		}
 		if (!NetUtil.isNetworkAvailable(mContext)) {
+			downloadRequest.takeQueue(false);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_NETWORK_NOT_AVAILABLE, "Network is not available");
 			return;
 		}
 		// 地址验证
 		if (!URLUtil.isValidUrl(downloadRequest.getAnalyzeReqeust().url())) {
+			downloadRequest.takeQueue(false);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_URL_SYNTAX_ERROR, "URL is wrong");
 			return;
 		}
@@ -104,6 +109,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				if (downloadRequest.isDeleteOld()) {
 					lastFile.delete();
 				} else {
+					downloadRequest.takeQueue(false);
 					downloadListener.onProgress(what, 100, lastFile.length());
 					Logger.d("-------Donwload finish-------");
 					downloadListener.onFinish(what, lastFile.getAbsolutePath());
@@ -137,7 +143,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			Logger.d("ResponseCode: " + responseCode);
 
 			Map<String, List<String>> responseHeaders = httpConnection.getHeaderFields();
-			if (Logger.isDebug)
+			if (Logger.isDebug) {
 				for (String headName : responseHeaders.keySet()) {
 					List<String> headValues = responseHeaders.get(headName);
 					for (String headValue : headValues) {
@@ -151,6 +157,13 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 						Logger.d(buffer.toString());
 					}
 				}
+			}
+			if (downloadRequest.isCanceled()) {
+				downloadRequest.takeQueue(false);
+				Log.i("NoHttpDownloader", "Download request is canceled");
+				downloadListener.onCancel(what);
+				return;
+			}
 
 			// 文件总大小，不论断点续传下载还是完整下载
 			long totalLength = 0;
@@ -163,6 +176,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 					try {
 						totalLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
 					} catch (Exception e) {
+						downloadRequest.takeQueue(false);
 						String erroeMessage = "Content-Range error in Server HTTP header information";
 						Logger.e(erroeMessage);
 						downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_EXCEPTION, erroeMessage);
@@ -172,12 +186,14 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			} else if (responseCode == 200) {
 				totalLength = httpConnection.getContentLength();// 直接下载
 			} else {
+				downloadRequest.takeQueue(false);
 				downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, "Server responseCode error: " + responseCode);
 				return;
 			}
 
 			// 保存空间判断
 			if (FileUtil.getDirSize(downloadRequest.getFileDir()) < totalLength) {
+				downloadRequest.takeQueue(false);
 				downloadListener.onDownloadError(what, StatusCode.ERROR_STORAGE_NOT_ENOUGH, "Specify the location, save space");
 				return;
 			}
@@ -200,6 +216,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
 			while (((len = inputStream.read(buffer)) != -1)) {
 				if (downloadRequest.isCanceled()) {
+					downloadRequest.takeQueue(false);
 					Log.i("NoHttpDownloader", "Download request is canceled");
 					downloadListener.onCancel(what);
 					break;
@@ -216,18 +233,24 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				}
 			}
 			randomAccessFile.close();
-			tempFile.renameTo(lastFile);
-			Logger.d("-------Donwload finish-------");
-			downloadListener.onFinish(what, lastFile.getAbsolutePath());
+			if (!downloadRequest.isCanceled()) {
+				downloadRequest.takeQueue(false);
+				tempFile.renameTo(lastFile);
+				Logger.d("-------Donwload finish-------");
+				downloadListener.onFinish(what, lastFile.getAbsolutePath());
+			}
 		} catch (SocketTimeoutException e) {
+			downloadRequest.takeQueue(false);
 			String exceptionInfo = getExcetionMessage(e);
 			Logger.e(exceptionInfo);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_DOWNLOAD_TIMEOUT, exceptionInfo);
 		} catch (UnknownHostException e) {
+			downloadRequest.takeQueue(false);
 			String exceptionInfo = getExcetionMessage(e);
 			Logger.e(exceptionInfo);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_NOT_FOUND, exceptionInfo);
 		} catch (Exception e) {
+			downloadRequest.takeQueue(false);
 			String exceptionInfo = getExcetionMessage(e);
 			Logger.e(exceptionInfo);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, exceptionInfo);

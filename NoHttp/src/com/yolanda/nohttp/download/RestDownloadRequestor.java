@@ -37,10 +37,6 @@ import com.yolanda.nohttp.security.Certificate;
  */
 public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeRequest {
 	/**
-	 * Default timeout
-	 */
-	public static final int TIMEOUT_DEFAULT = 8 * 1000;
-	/**
 	 * url of download target
 	 */
 	private final String url;
@@ -65,17 +61,25 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	 */
 	private Object cancelSign;
 	/**
+	 * Queue tag
+	 */
+	private boolean inQueue = false;
+	/**
+	 * The record has started.
+	 */
+	private boolean isStart = false;
+	/**
 	 * Download is canceled
 	 */
-	private boolean isCancel;
+	private boolean isCancel = false;
 	/**
 	 * Connect http timeout
 	 */
-	private int mConnectTimeout = TIMEOUT_DEFAULT;
+	private int mConnectTimeout = NoHttp.TIMEOUT_8S;
 	/**
 	 * Read data timeout
 	 */
-	private int mReadTimeout = TIMEOUT_DEFAULT;
+	private int mReadTimeout = NoHttp.TIMEOUT_8S;
 	/**
 	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
 	 */
@@ -125,6 +129,7 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	public boolean isRange() {
 		return this.isRange;
 	}
+
 	@Override
 	public boolean isDeleteOld() {
 		return this.isDeleteOld;
@@ -176,24 +181,46 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	}
 
 	@Override
+	public boolean inQueue() {
+		return this.inQueue;
+	}
+
+	@Override
+	public void takeQueue(boolean queue) {
+		this.inQueue = queue;
+	}
+
+	@Override
 	public void setCancelSign(Object sign) {
 		this.cancelSign = sign;
+	}
+
+	@Override
+	public void start() {
+		this.isStart = true;
+		this.isCancel = false;
+	}
+
+	@Override
+	public boolean isStarted() {
+		return isStart;
+	}
+
+	@Override
+	public void cancel() {
+		this.isCancel = true;
+		this.isStart = false;
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return isCancel;
 	}
 
 	@Override
 	public void cancelBySign(Object sign) {
 		if (this.cancelSign == sign)
 			cancel();
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return this.isCancel;
-	}
-
-	@Override
-	public void cancel() {
-		this.isCancel = true;
 	}
 
 	@Override

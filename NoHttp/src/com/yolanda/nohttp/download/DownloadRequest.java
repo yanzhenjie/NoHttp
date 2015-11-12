@@ -17,6 +17,9 @@ package com.yolanda.nohttp.download;
 
 import com.yolanda.nohttp.BasicAnalyzeRequest;
 import com.yolanda.nohttp.CommonRequest;
+import com.yolanda.nohttp.able.Cancelable;
+import com.yolanda.nohttp.able.Queueable;
+import com.yolanda.nohttp.able.Startable;
 
 /**
  * Download task request interface</br>
@@ -24,7 +27,7 @@ import com.yolanda.nohttp.CommonRequest;
  * 
  * @author YOLANDA
  */
-public abstract interface DownloadRequest extends CommonRequest {
+public abstract interface DownloadRequest extends CommonRequest, Queueable, Startable, Cancelable {
 
 	/**
 	 * Also didn't download to start download again
@@ -63,21 +66,6 @@ public abstract interface DownloadRequest extends CommonRequest {
 	 * Set sign of the download
 	 */
 	public abstract void setCancelSign(Object sign);
-
-	/**
-	 * Cancel a request according to sign
-	 */
-	public abstract void cancelBySign(Object sign);
-
-	/**
-	 * Cancel the download
-	 */
-	public abstract void cancel();
-
-	/**
-	 * Return Download is canceled
-	 */
-	public abstract boolean isCanceled();
 
 	/**
 	 * Query before download status

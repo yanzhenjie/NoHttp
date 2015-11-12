@@ -39,11 +39,6 @@ import android.text.TextUtils;
 public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 
 	/**
-	 * Default timeout
-	 */
-	public static final int TIMEOUT_DEFAULT = 8 * 1000;
-
-	/**
 	 * Target adress
 	 */
 	protected String url;
@@ -58,11 +53,11 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	/**
 	 * Connect http timeout
 	 */
-	private int mConnectTimeout = TIMEOUT_DEFAULT;
+	private int mConnectTimeout = NoHttp.TIMEOUT_8S;
 	/**
 	 * Read data timeout
 	 */
-	private int mReadTimeout = TIMEOUT_DEFAULT;
+	private int mReadTimeout = NoHttp.TIMEOUT_8S;
 	/**
 	 * Request heads
 	 */
@@ -78,7 +73,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	/**
 	 * Param collection
 	 */
-	private Map<String, Object> mParamMap = null;
+	protected Map<String, Object> mParamMap = null;
 	/**
 	 * Post data
 	 */

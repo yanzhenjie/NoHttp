@@ -40,6 +40,8 @@ public class NoHttp {
 
 	public static final String MIMETYE_FILE = "application/octet-stream";
 
+	public static final int TIMEOUT_8S = 8 * 1000;
+
 	/**
 	 * Cookie
 	 */
