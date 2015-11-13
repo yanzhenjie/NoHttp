@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -69,6 +70,8 @@ public class NoHttpCache {
 
 	private NoHttpCacheManager mCache;
 
+	private Context mContext;
+
 	public static NoHttpCache get(Context context) {
 		return get(context, "NoHttpCache");
 	}
@@ -77,15 +80,15 @@ public class NoHttpCache {
 		return get(context, cacheName, MAX_SIZE, MAX_COUNT);
 	}
 
-	public static NoHttpCache get(Context ctx, String cacheName, long maxZise, int maxCount) {
-		File f = new File(ctx.getCacheDir(), cacheName);
-		return get(f, maxZise, maxCount);
+	public static NoHttpCache get(Context context, String cacheName, long maxZise, int maxCount) {
+		File file = new File(context.getCacheDir(), cacheName);
+		return get(context, file, maxZise, maxCount);
 	}
 
-	public static NoHttpCache get(File cacheDir, long maxZise, int maxCount) {
+	public static NoHttpCache get(Context context, File cacheDir, long maxZise, int maxCount) {
 		NoHttpCache manager = mInstanceMap.get(cacheDir.getAbsoluteFile() + myPid());
 		if (manager == null) {
-			manager = new NoHttpCache(cacheDir, maxZise, maxCount);
+			manager = new NoHttpCache(context, cacheDir, maxZise, maxCount);
 			mInstanceMap.put(cacheDir.getAbsolutePath() + myPid(), manager);
 		}
 		return manager;
@@ -95,7 +98,8 @@ public class NoHttpCache {
 		return "_" + android.os.Process.myPid();
 	}
 
-	private NoHttpCache(File cacheDir, long maxZize, int maxCount) {
+	private NoHttpCache(Context context, File cacheDir, long maxZize, int maxCount) {
+		this.mContext = context;
 		if (!cacheDir.exists()) {
 			cacheDir.mkdirs();
 		} else if (cacheDir.isFile()) {
@@ -308,7 +312,7 @@ public class NoHttpCache {
 	 * 
 	 * @param key content key
 	 */
-	public Object getAsObject(String key) {
+	public Object getObject(String key) {
 		byte[] data = getBinary(key);
 		if (data != null) {
 			ByteArrayInputStream bais = null;
@@ -340,93 +344,79 @@ public class NoHttpCache {
 
 	}
 
-	/* ==========Bitmap缓存 */
+	/* ==========Bitmap缓存========== */
 	/**
-	 * 保存 bitmap 到 缓存中
+	 * Save bitmap to cache
 	 * 
-	 * @param key
-	 *        保存的key
-	 * @param value
-	 *        保存的bitmap数据
+	 * @param key content key
+	 * @param value content value
 	 */
 	public void put(String key, Bitmap value) {
 		put(key, Utils.Bitmap2Bytes(value));
 	}
 
 	/**
-	 * 保存 bitmap 到 缓存中
+	 * Save bitmap to cache
 	 * 
-	 * @param key
-	 *        保存的key
-	 * @param value
-	 *        保存的 bitmap 数据
-	 * @param saveTime
-	 *        保存的时间，单位：秒
+	 * @param key content key
+	 * @param value content value
+	 * @param saveTime valid time, unit is second
 	 */
 	public void put(String key, Bitmap value, int saveTime) {
 		put(key, Utils.Bitmap2Bytes(value), saveTime);
 	}
 
 	/**
-	 * 读取 bitmap 数据
+	 * Read bitmap from cache
 	 * 
-	 * @param key
-	 * @return bitmap 数据
+	 * @param key content key
 	 */
-	public Bitmap getAsBitmap(String key) {
+	public Bitmap getBitmap(String key) {
 		if (getBinary(key) == null) {
 			return null;
 		}
 		return Utils.Bytes2Bimap(getBinary(key));
 	}
 
-	// =======================================
-	// ============= drawable 数据 读写 =============
-	// =======================================
+	/* ==========Drawable========= */
+
 	/**
-	 * 保存 drawable 到 缓存中
+	 * Save drawable to cache
 	 * 
-	 * @param key
-	 *        保存的key
-	 * @param value
-	 *        保存的drawable数据
+	 * @param key content key
+	 * @param value content value
 	 */
 	public void put(String key, Drawable value) {
 		put(key, Utils.drawable2Bitmap(value));
 	}
 
 	/**
-	 * 保存 drawable 到 缓存中
+	 * Save drawable to cache
 	 * 
-	 * @param key
-	 *        保存的key
-	 * @param value
-	 *        保存的 drawable 数据
-	 * @param saveTime
-	 *        保存的时间，单位：秒
+	 * @param key content key
+	 * @param value content value
+	 * @param saveTime valid time, unit is second
 	 */
 	public void put(String key, Drawable value, int saveTime) {
 		put(key, Utils.drawable2Bitmap(value), saveTime);
 	}
 
 	/**
-	 * 读取 Drawable 数据
+	 * Read drawable from cache
 	 * 
-	 * @param key
-	 * @return Drawable 数据
+	 * @param key content key
 	 */
-	public Drawable getAsDrawable(String key) {
+	public Drawable getDrawable(String key) {
 		if (getBinary(key) == null) {
 			return null;
 		}
-		return Utils.bitmap2Drawable(Utils.Bytes2Bimap(getBinary(key)));
+		return Utils.bitmap2Drawable(mContext.getResources(), Utils.Bytes2Bimap(getBinary(key)));
 	}
 
 	/**
-	 * 获取缓存文件
+	 * Read cache file
 	 * 
-	 * @param key
-	 * @return value 缓存的文件
+	 * @param key content key
 	 */
 	public File file(String key) {
 		File f = mCache.newFile(key);
@@ -436,26 +426,25 @@ public class NoHttpCache {
 	}
 
 	/**
-	 * 移除某个key
+	 * Remove key
 	 * 
-	 * @param key
-	 * @return 是否移除成功
+	 * @param key content key
 	 */
 	public boolean remove(String key) {
 		return mCache.remove(key);
 	}
 
 	/**
-	 * 清除所有数据
+	 * Clean all data
 	 */
 	public void clear() {
 		mCache.clear();
 	}
 
 	/**
-	 * @title 缓存管理器
-	 * @author 杨福海（michael） www.yangfuhai.com
-	 * @version 1.0
+	 * Created in Nov 13, 2015 8:34:38 AM
+	 * 
+	 * @author YOLANDA
 	 */
 	public class NoHttpCacheManager {
 		private final AtomicLong cacheSize;
@@ -475,7 +464,7 @@ public class NoHttpCache {
 		}
 
 		/**
-		 * 计算 cacheSize和cacheCount
+		 * Calculation CacheSize and AacheCount
 		 */
 		private void calculateCacheSizeAndCacheCount() {
 			new Thread(new Runnable() {
@@ -550,9 +539,7 @@ public class NoHttpCache {
 		}
 
 		/**
-		 * 移除旧的文件
-		 * 
-		 * @return
+		 * Remove old file
 		 */
 		private long removeNext() {
 			if (lastUsageDates.isEmpty()) {
@@ -590,27 +577,22 @@ public class NoHttpCache {
 	}
 
 	/**
-	 * @title 时间计算工具类
-	 * @author 杨福海（michael） www.yangfuhai.com
-	 * @version 1.0
+	 * Computational time tools</br>
+	 * Created in Nov 13, 2015 8:37:29 AM
+	 * 
+	 * @author YOLANDA;
 	 */
 	private static class Utils {
 
 		/**
-		 * 判断缓存的String数据是否到期
-		 * 
-		 * @param str
-		 * @return true：到期了 false：还没有到期
+		 * Judge cache string data is overdue
 		 */
 		private static boolean isDue(String str) {
 			return isDue(str.getBytes());
 		}
 
 		/**
-		 * 判断缓存的byte数据是否到期
-		 * 
-		 * @param data
-		 * @return true：到期了 false：还没有到期
+		 * Judge cache byte data is overdue
 		 */
 		private static boolean isDue(byte[] data) {
 			String[] strs = getDateInfoFromDate(data);
@@ -742,12 +724,11 @@ public class NoHttpCache {
 		/*
 		 * Bitmap → Drawable
 		 */
-		@SuppressWarnings("deprecation")
-		private static Drawable bitmap2Drawable(Bitmap bm) {
+		private static Drawable bitmap2Drawable(Resources resources, Bitmap bm) {
 			if (bm == null) {
 				return null;
 			}
-			return new BitmapDrawable(bm);
+			return new BitmapDrawable(resources, bm);
 		}
 	}
 

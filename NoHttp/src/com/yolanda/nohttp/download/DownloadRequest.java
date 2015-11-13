@@ -15,11 +15,8 @@
  */
 package com.yolanda.nohttp.download;
 
-import com.yolanda.nohttp.BasicAnalyzeRequest;
 import com.yolanda.nohttp.CommonRequest;
 import com.yolanda.nohttp.able.Cancelable;
-import com.yolanda.nohttp.able.Queueable;
-import com.yolanda.nohttp.able.Startable;
 
 /**
  * Download task request interface</br>
@@ -27,7 +24,7 @@ import com.yolanda.nohttp.able.Startable;
  * 
  * @author YOLANDA
  */
-public abstract interface DownloadRequest extends CommonRequest, Queueable, Startable, Cancelable {
+public abstract interface DownloadRequest extends CommonRequest, Cancelable {
 
 	/**
 	 * Also didn't download to start download again
@@ -82,5 +79,5 @@ public abstract interface DownloadRequest extends CommonRequest, Queueable, Star
 	/**
 	 * Objects that can be identified by the network implementation.
 	 */
-	public abstract BasicAnalyzeRequest getAnalyzeReqeust();
+	public abstract AnalyzeRequest getAnalyzeReqeust();
 }
