@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import com.yolanda.nohttp.BasicAnalyzeRequest;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
@@ -34,7 +35,7 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA
  */
-public class RestDownloadRequestor implements DownloadRequest, AnalyzeRequest {
+public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeRequest {
 	/**
 	 * url of download target
 	 */
@@ -239,7 +240,7 @@ public class RestDownloadRequestor implements DownloadRequest, AnalyzeRequest {
 	}
 
 	@Override
-	public AnalyzeRequest getAnalyzeReqeust() {
+	public BasicAnalyzeRequest getAnalyzeReqeust() {
 		return this;
 	}
 

@@ -75,9 +75,4 @@ public abstract interface DownloadRequest extends CommonRequest, Cancelable {
 	 * @see #STATUS_FINISH
 	 */
 	public abstract int checkBeforeStatus();
-
-	/**
-	 * Objects that can be identified by the network implementation.
-	 */
-	public abstract AnalyzeRequest getAnalyzeReqeust();
 }

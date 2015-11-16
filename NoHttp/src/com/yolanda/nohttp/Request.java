@@ -17,12 +17,14 @@ package com.yolanda.nohttp;
 
 import java.util.Map;
 
+import com.yolanda.nohttp.able.Cancelable;
+
 /**
  * Created in Oct 16, 2015 8:22:06 PM
  * 
  * @author YOLANDA
  */
-public abstract interface Request<T> extends CommonRequest {
+public abstract interface Request<T> extends CommonRequest, Cancelable {
 
 	/**
 	 * Settings you want to post data, if the post directly, then other data
@@ -114,6 +116,7 @@ public abstract interface Request<T> extends CommonRequest {
 
 	/**
 	 * add all param
+	 * 
 	 * @param params params map
 	 */
 	public abstract void add(Map<String, String> params);
@@ -134,29 +137,9 @@ public abstract interface Request<T> extends CommonRequest {
 	public abstract void setCancelSign(Object sign);
 
 	/**
-	 * According to Sign request
-	 */
-	public abstract void cancelBySign(Object sign);
-
-	/**
-	 * Cancel this request
-	 */
-	public abstract void cancel();
-
-	/**
-	 * This request has been canceled.
-	 */
-	public abstract boolean isCanceled();
-
-	/**
 	 * Set tag of task, Will return to you at the time of the task response
 	 */
 	public abstract void setTag(Object tag);
-
-	/**
-	 * The interpreter is a parse, and the Http request occurs.
-	 */
-	public abstract AnalyzeRequest getAnalyzeRequest();
 
 	/**
 	 * Parse response

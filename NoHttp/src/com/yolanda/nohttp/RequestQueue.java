@@ -66,7 +66,11 @@ public class RequestQueue {
 	 * Add a request task to download queue, waiting for execution, if there is no task in the queue or the number of tasks is less than the number of thread pool, will be executed immediately
 	 */
 	public <T> void add(int what, Request<T> request, OnResponseListener<T> responseListener) {
-		mRequestQueue.add(new NetworkRequestor<T>(what, request, responseListener));
+		if (!request.getAnalyzeReqeust().inQueue()) {
+			request.getAnalyzeReqeust().takeQueue(true);
+			request.getAnalyzeReqeust().start();
+			mRequestQueue.add(new NetworkRequestor<T>(what, request, responseListener));
+		}
 	}
 
 	/**

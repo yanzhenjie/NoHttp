@@ -79,18 +79,25 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	 */
 	private String requestBody = "";
 	/**
-	 * Tag of tag
+	 * Queue tag
 	 */
-	private Object tag;
+	private boolean inQueue = false;
 	/**
-	 * Cancel sign
+	 * The record has started.
 	 */
-	private Object cancelSign;
-
+	private boolean isStart = false;
 	/**
 	 * Has been canceled
 	 */
 	private boolean isCaneled;
+	/**
+	 * Cancel sign
+	 */
+	private Object cancelSign;
+	/**
+	 * Tag of tag
+	 */
+	private Object tag;
 
 	/**
 	 * Create a request, RequestMethod is {@link RequestMethod#Get}
@@ -373,6 +380,38 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
+	public void cancel() {
+		isCaneled = true;
+		isStart = false;
+	}
+
+	@Override
+	public boolean inQueue() {
+		return inQueue;
+	}
+
+	@Override
+	public void takeQueue(boolean queue) {
+		this.inQueue = queue;
+	}
+
+	@Override
+	public void start() {
+		this.isStart = true;
+		this.isCaneled = false;
+	}
+
+	@Override
+	public boolean isStarted() {
+		return isStart;
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return isCaneled;
+	}
+
+	@Override
 	public void setCancelSign(Object sign) {
 		this.cancelSign = sign;
 	}
@@ -381,16 +420,6 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	public void cancelBySign(Object sign) {
 		if (cancelSign == sign)
 			cancel();
-	}
-
-	@Override
-	public void cancel() {
-		isCaneled = true;
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return isCaneled;
 	}
 
 	@Override
@@ -404,7 +433,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
-	public AnalyzeRequest getAnalyzeRequest() {
+	public AnalyzeRequest getAnalyzeReqeust() {
 		return this;
 	}
 

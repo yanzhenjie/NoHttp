@@ -83,5 +83,10 @@ public interface CommonRequest {
 	 * Remove all header
 	 */
 	public abstract void removeAllHeaders();
+	
+	/**
+	 * Objects that can be identified by the network implementation.
+	 */
+	public abstract BasicAnalyzeRequest getAnalyzeReqeust();
 
 }

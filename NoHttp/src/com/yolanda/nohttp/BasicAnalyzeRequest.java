@@ -15,6 +15,8 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.able.Queueable;
+import com.yolanda.nohttp.able.Startable;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -23,7 +25,7 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA
  */
-public interface BasicAnalyzeRequest {
+public interface BasicAnalyzeRequest extends Queueable, Startable {
 
 	/**
 	 * Return url of request

@@ -85,7 +85,7 @@ public class RequestDispatcher extends Thread {
 			if (request.request.isCanceled()) {
 				continue;
 			}
-			// start 
+			// start
 			final ThreadPoster startThread = new ThreadPoster(request.what, request.responseListener);
 			startThread.onStart();
 			getPosterHandler().post(startThread);
@@ -97,6 +97,7 @@ public class RequestDispatcher extends Thread {
 			} else {
 				finishThread.onResponse(response);
 			}
+			request.request.getAnalyzeReqeust().takeQueue(false);
 			getPosterHandler().post(finishThread);
 		}
 	}

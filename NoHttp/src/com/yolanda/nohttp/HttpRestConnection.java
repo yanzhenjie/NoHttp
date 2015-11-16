@@ -79,11 +79,14 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 	 */
 	@Override
 	public <T> Response<T> request(Request<T> request) {
-		if (request == null)
+		if (request == null) {
 			throw new IllegalArgumentException("reqeust == null");
-		AnalyzeRequest analyzeRequest = request.getAnalyzeRequest();
-		if (analyzeRequest == null)
+		}
+		AnalyzeRequest analyzeRequest = (AnalyzeRequest) request.getAnalyzeReqeust();
+		if (analyzeRequest == null) {
+			request.getAnalyzeReqeust().takeQueue(false);
 			throw new IllegalArgumentException("request.getAnalyzeRequest() == null");
+		}
 		Logger.d("--------------Reuqest start--------------");
 
 		String url = analyzeRequest.url();
@@ -145,6 +148,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 					byteArray = readResponseBody(inputStream);
 				}
 			} catch (Exception e) {
+				request.getAnalyzeReqeust().takeQueue(false);
 				isSucceed = false;
 				String exceptionInfo = getExcetionMessage(e);
 				byteArray = exceptionInfo.getBytes();
