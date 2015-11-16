@@ -149,15 +149,15 @@ public class RequestDispatcher extends Thread {
 				} else if (command == COMMAND_FINISH) {
 					responseListener.onFinish(what);
 				} else if (command == COMMAND_RESPONSE && response != null) {
+					responseListener.onFinish(what);
 					if (response.isSucceed()) {
 						responseListener.onSucceed(what, response);
 					} else {
 						responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage());
 					}
-					responseListener.onFinish(what);
 				} else if (response == null) {
-					responseListener.onFailed(what, null, null, null);
 					responseListener.onFinish(what);
+					responseListener.onFailed(what, null, null, null);
 				}
 			}
 		}
