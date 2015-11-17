@@ -166,7 +166,7 @@ public class NoHttp {
 	 * @param debug Set to debug mode is introduced into true, introduced to false otherwise
 	 */
 	public static void setDebug(boolean debug) {
-		Logger.isDebug = debug;
+		Logger.SDebug = debug;
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class NoHttp {
 	 * @param tag The incoming string will be NoHttp logtag, also is in development tools logcat tag bar to see
 	 */
 	public static void setLogTag(String logTag) {
-		Logger.sLogTag = logTag;
+		Logger.STag = logTag;
 	}
 
 	/**

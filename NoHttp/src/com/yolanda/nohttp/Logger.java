@@ -29,105 +29,105 @@ public class Logger {
 	/**
 	 * library debug tag
 	 */
-	public static String sLogTag = "NoHttp";
+	public static String STag = "NoHttp";
 
 	/**
 	 * library debug sign
 	 */
-	public static Boolean isDebug = false;
+	public static Boolean SDebug = false;
 
 	public static void i(String msg) {
-		if (isDebug)
-			Log.i(sLogTag, msg);
+		if (SDebug)
+			Log.i(STag, msg);
 	}
 
 	public static void i(String format, Object... obj) {
-		if (isDebug)
-			Log.i(sLogTag, buildMessage(format, obj));
+		if (SDebug)
+			Log.i(STag, buildMessage(format, obj));
 	}
 
 	public static void v(String msg) {
-		if (isDebug)
-			Log.v(sLogTag, msg);
+		if (SDebug)
+			Log.v(STag, msg);
 	}
 
 	public static void v(String format, Object... obj) {
-		if (isDebug)
-			Log.v(sLogTag, buildMessage(format, obj));
+		if (SDebug)
+			Log.v(STag, buildMessage(format, obj));
 	}
 
 	public static void d(String msg) {
-		if (isDebug)
-			Log.d(sLogTag, msg);
+		if (SDebug)
+			Log.d(STag, msg);
 	}
 
 	public static void d(String format, Object... obj) {
-		if (isDebug)
-			Log.d(sLogTag, buildMessage(format, obj));
+		if (SDebug)
+			Log.d(STag, buildMessage(format, obj));
 	}
 
 	public static void e(String msg) {
-		if (isDebug)
-			Log.e(sLogTag, msg);
+		if (SDebug)
+			Log.e(STag, msg);
 	}
 
 	public static void e(String format, Object... obj) {
-		if (isDebug)
-			Log.e(sLogTag, buildMessage(format, obj));
+		if (SDebug)
+			Log.e(STag, buildMessage(format, obj));
 	}
 
 	public static void e(Throwable e) {
-		if (isDebug)
-			Log.e(sLogTag, "", e);
+		if (SDebug)
+			Log.e(STag, "", e);
 	}
 
 	public static void e(Throwable e, String format, Object... obj) {
-		if (isDebug)
-			Log.e(sLogTag, buildMessage(format, obj), e);
+		if (SDebug)
+			Log.e(STag, buildMessage(format, obj), e);
 	}
 
 	public static void w(String msg) {
-		if (isDebug)
-			Log.w(sLogTag, msg);
+		if (SDebug)
+			Log.w(STag, msg);
 	}
 
 	public static void w(String format, Object... obj) {
-		if (isDebug)
-			Log.w(sLogTag, buildMessage(format, obj));
+		if (SDebug)
+			Log.w(STag, buildMessage(format, obj));
 	}
 
 	public static void w(Throwable e) {
-		if (isDebug)
-			Log.w(sLogTag, "", e);
+		if (SDebug)
+			Log.w(STag, "", e);
 	}
 
 	public static void w(Throwable e, String format, Object... obj) {
-		if (isDebug)
-			Log.w(sLogTag, buildMessage(format, obj), e);
+		if (SDebug)
+			Log.w(STag, buildMessage(format, obj), e);
 	}
 
 	public static void wtf(String msg) {
-		if (isDebug)
-			Log.wtf(sLogTag, msg);
+		if (SDebug)
+			Log.wtf(STag, msg);
 	}
 
 	public static void wtf(String format, Object... obj) {
-		if (isDebug)
-			Log.wtf(sLogTag, buildMessage(format, obj));
+		if (SDebug)
+			Log.wtf(STag, buildMessage(format, obj));
 	}
 
 	public static void wtf(Throwable e) {
-		if (isDebug)
-			Log.wtf(sLogTag, "", e);
+		if (SDebug)
+			Log.wtf(STag, "", e);
 	}
 
 	public static void wtf(Throwable e, String msg) {
-		if (isDebug)
-			Log.wtf(sLogTag, msg, e);
+		if (SDebug)
+			Log.wtf(STag, msg, e);
 	}
 
 	public static void throwable(Throwable e) {
-		if (isDebug)
+		if (SDebug)
 			e.printStackTrace();
 	}
 

@@ -110,6 +110,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 					lastFile.delete();
 				} else {
 					downloadRequest.getAnalyzeReqeust().takeQueue(false);
+					downloadListener.onStart(what, true, lastFile.length(), new Headers(), lastFile.length());
 					downloadListener.onProgress(what, 100, lastFile.length());
 					Logger.d("-------Donwload finish-------");
 					downloadListener.onFinish(what, lastFile.getAbsolutePath());
@@ -143,7 +144,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			Logger.d("ResponseCode: " + responseCode);
 
 			Map<String, List<String>> responseHeaders = httpConnection.getHeaderFields();
-			if (Logger.isDebug) {
+			if (Logger.SDebug) {
 				for (String headName : responseHeaders.keySet()) {
 					List<String> headValues = responseHeaders.get(headName);
 					for (String headValue : headValues) {
