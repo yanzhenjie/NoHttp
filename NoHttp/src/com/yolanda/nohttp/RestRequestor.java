@@ -212,7 +212,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 				mheaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
 			}
 		} catch (URISyntaxException e) {
-			Logger.throwable(e);
+			Logger.e(e);
 		}
 	}
 
@@ -225,7 +225,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 				addCookie(cookie);
 			}
 		} catch (URISyntaxException e) {
-			Logger.throwable(e);
+			Logger.e(e);
 		}
 	}
 

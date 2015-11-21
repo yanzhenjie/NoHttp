@@ -103,7 +103,7 @@ public class Certificate {
 				inputStream = mContext.getAssets().open(assetsCerName);
 			}
 		} catch (IOException e) {
-			Logger.throwable(e);
+			Logger.wtf(e);
 		}
 		if (inputStream == null && resCerId > 0) {
 			inputStream = mContext.getResources().openRawResource(resCerId);

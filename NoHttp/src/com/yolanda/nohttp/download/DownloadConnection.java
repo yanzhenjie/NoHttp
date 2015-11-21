@@ -144,19 +144,17 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			Logger.d("ResponseCode: " + responseCode);
 
 			Map<String, List<String>> responseHeaders = httpConnection.getHeaderFields();
-			if (Logger.SDebug) {
-				for (String headName : responseHeaders.keySet()) {
-					List<String> headValues = responseHeaders.get(headName);
-					for (String headValue : headValues) {
-						StringBuffer buffer = new StringBuffer();
-						if (!TextUtils.isEmpty(headName)) {
-							buffer.append(headName);
-							buffer.append(": ");
-						}
-						if (!TextUtils.isEmpty(headValue))
-							buffer.append(headValue);
-						Logger.d(buffer.toString());
+			for (String headName : responseHeaders.keySet()) {
+				List<String> headValues = responseHeaders.get(headName);
+				for (String headValue : headValues) {
+					StringBuffer buffer = new StringBuffer();
+					if (!TextUtils.isEmpty(headName)) {
+						buffer.append(headName);
+						buffer.append(": ");
 					}
+					if (!TextUtils.isEmpty(headValue))
+						buffer.append(headValue);
+					Logger.d(buffer.toString());
 				}
 			}
 			if (downloadRequest.isCanceled()) {
