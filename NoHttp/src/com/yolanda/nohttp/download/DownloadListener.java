@@ -29,10 +29,10 @@ public interface DownloadListener {
 	 * An error occurred while downloading
 	 * 
 	 * @param what Which is used to mark the download tasks
-	 * @param statusCode Error code, used to distinguish what kind of mistake
+	 * @param statusCode Error code, used to distinguish what kind of mistake; value from {@link StatusCode}
 	 * @param errorMessage error message
 	 */
-	public abstract void onDownloadError(int what, StatusCode statusCode, CharSequence errorMessage);
+	public abstract void onDownloadError(int what, int statusCode, CharSequence errorMessage);
 
 	/**
 	 * When this download task starts the callback method

@@ -242,19 +242,16 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			}
 		} catch (SocketTimeoutException e) {
 			downloadRequest.getAnalyzeReqeust().takeQueue(false);
-			String exceptionInfo = getExcetionMessage(e);
-			Logger.e(exceptionInfo);
-			downloadListener.onDownloadError(what, StatusCode.ERROR_DOWNLOAD_TIMEOUT, exceptionInfo);
+			Logger.e(e);
+			downloadListener.onDownloadError(what, StatusCode.ERROR_DOWNLOAD_TIMEOUT, getExcetionMessage(e));
 		} catch (UnknownHostException e) {
 			downloadRequest.getAnalyzeReqeust().takeQueue(false);
-			String exceptionInfo = getExcetionMessage(e);
-			Logger.e(exceptionInfo);
-			downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_NOT_FOUND, exceptionInfo);
+			Logger.e(e);
+			downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_NOT_FOUND, getExcetionMessage(e));
 		} catch (Exception e) {
 			downloadRequest.getAnalyzeReqeust().takeQueue(false);
-			String exceptionInfo = getExcetionMessage(e);
-			Logger.e(exceptionInfo);
-			downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, exceptionInfo);
+			Logger.e(e);
+			downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, getExcetionMessage(e));
 		} finally {
 			Logger.i("----------Response End----------");
 			try {

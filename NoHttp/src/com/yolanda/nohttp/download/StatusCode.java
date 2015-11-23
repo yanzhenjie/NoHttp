@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,37 +17,38 @@ package com.yolanda.nohttp.download;
 
 /**
  * Created in Oct 19, 2015 2:46:42 PM
+ * 
  * @author YOLANDA
  */
-public enum StatusCode {
+public interface StatusCode {
 
 	/**
 	 * Network is not available
 	 */
-	ERROR_NETWORK_NOT_AVAILABLE,
+	public static final int ERROR_NETWORK_NOT_AVAILABLE = -1;
 	/**
 	 * URL Adress error
 	 */
-	ERROR_URL_SYNTAX_ERROR,
+	public static final int ERROR_URL_SYNTAX_ERROR = -2;
 	/**
 	 * Specified folder capacity
 	 */
-	ERROR_STORAGE_NOT_ENOUGH,
+	public static final int ERROR_STORAGE_NOT_ENOUGH = -3;
 	/**
 	 * No server in URL is found in the current network.
 	 */
-	ERROR_SERVER_NOT_FOUND,
+	public static final int ERROR_SERVER_NOT_FOUND = -4;
 	/**
 	 * Server exception
 	 */
-	ERROR_SERVER_EXCEPTION,
+	public static final int ERROR_SERVER_EXCEPTION = -5;
 	/**
 	 * Download the timeout
 	 */
-	ERROR_DOWNLOAD_TIMEOUT,
+	public static final int ERROR_DOWNLOAD_TIMEOUT = -6;
 	/**
 	 * Other errors
 	 */
-	ERROR_OTHER
+	public static final int ERROR_OTHER = -7;
 
 }

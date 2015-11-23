@@ -224,14 +224,14 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	}
 
 	@Override
-	public int checkBeforeStatus() {
-		if (this.isRange) {
+	public int checkBeforeStatus(long fileSize) {
+		if (this.isRange && fileSize > 0) {
 			try {
 				File lastFile = new File(mFileDir, mFileName);
-				if (lastFile.exists())
+				if (lastFile.exists() && fileSize == lastFile.length())
 					return STATUS_FINISH;
 				File tempFile = new File(mFileDir, mFileName + ".nohttp");
-				if (tempFile.exists())
+				if (tempFile.exists() && tempFile.length() <= fileSize)
 					return STATUS_RESUME;
 			} catch (Exception e) {
 			}
