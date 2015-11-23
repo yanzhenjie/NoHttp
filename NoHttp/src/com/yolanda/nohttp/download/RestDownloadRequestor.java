@@ -282,7 +282,7 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 				this.mheaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
 			}
 		} catch (URISyntaxException e) {
-			Logger.throwable(e);
+			Logger.w(e);
 		}
 	}
 
@@ -295,7 +295,7 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 				addCookie(cookie);
 			}
 		} catch (URISyntaxException e) {
-			Logger.throwable(e);
+			Logger.w(e);
 		}
 	}
 

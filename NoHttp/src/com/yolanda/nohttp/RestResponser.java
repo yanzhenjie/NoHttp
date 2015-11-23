@@ -113,7 +113,7 @@ public class RestResponser<T> implements Response<T> {
 			if (headers != null)
 				contentLength = Integer.valueOf(headers.get(Headers.HEAD_KEY_CONTENT_LENGTH));
 		} catch (NumberFormatException e) {
-			Logger.throwable(e);
+			Logger.wtf(e);
 		}
 		return contentLength;
 	}

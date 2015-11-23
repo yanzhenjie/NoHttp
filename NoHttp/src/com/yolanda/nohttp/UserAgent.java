@@ -41,7 +41,7 @@ public class UserAgent {
 				Integer resId = (Integer) webUserAgentField.get(null);
 				webUserAgent = context.getString(resId);
 			} catch (Exception e) {
-				Logger.throwable(e);
+				// We have nothing to do
 			}
 		}
 		if (TextUtils.isEmpty(webUserAgent)) {

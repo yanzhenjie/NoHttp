@@ -18,6 +18,7 @@ package com.yolanda.nohttp.tools;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
@@ -46,27 +47,23 @@ public class NetUtil {
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	public static boolean isNetworkAvailable(Context context) {
-		try {
-			ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			if (connectivity == null) {
-				return false;
-			} else {
-				if (VERSION.SDK_INT >= 21) {
-					Network[] networks = connectivity.getAllNetworks();
-					for (Network network : networks) {
-						NetworkInfo networkInfo = connectivity.getNetworkInfo(network);
-						if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
-							return true;
-					}
-				} else {
-					NetworkInfo[] networkInfos = connectivity.getAllNetworkInfo();
-					for (NetworkInfo networkInfo : networkInfos)
-						if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
-							return true;
+		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (connectivity == null) {
+			return false;
+		} else {
+			if (VERSION.SDK_INT >= 21) {
+				Network[] networks = connectivity.getAllNetworks();
+				for (Network network : networks) {
+					NetworkInfo networkInfo = connectivity.getNetworkInfo(network);
+					if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
+						return true;
 				}
+			} else {
+				NetworkInfo[] networkInfos = connectivity.getAllNetworkInfo();
+				for (NetworkInfo networkInfo : networkInfos)
+					if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
+						return true;
 			}
-		} catch (Throwable e) {
-			Logger.throwable(e);
 		}
 		return false;
 	}
@@ -106,21 +103,19 @@ public class NetUtil {
 	 */
 	@SuppressLint("NewApi")
 	public boolean isMobileConnected(Context context) {
-		if (context != null) {
-			ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			if (VERSION.SDK_INT >= 21) {
-				Network[] networks = mConnectivityManager.getAllNetworks();
-				for (Network network : networks) {
-					NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
-					if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
-						return networkInfo.isAvailable() && networkInfo.isConnected();
-				}
-			} else {
-				@SuppressWarnings("deprecation")
-				NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-				if (mWiFiNetworkInfo != null)
-					return mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
+		ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (VERSION.SDK_INT >= 21) {
+			Network[] networks = mConnectivityManager.getAllNetworks();
+			for (Network network : networks) {
+				NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
+				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+					return networkInfo.isAvailable() && networkInfo.isConnected();
 			}
+		} else {
+			@SuppressWarnings("deprecation")
+			NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+			if (mWiFiNetworkInfo != null)
+				return mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
 		}
 		return false;
 	}
@@ -132,16 +127,16 @@ public class NetUtil {
 	 * @return Open return true, close returns false
 	 */
 	public static boolean isGPRSOpen(Context context) {
-		Boolean isOpen = false;
+		boolean isOpen = false;
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		Class<?> cmClass = connectivityManager.getClass();
+		Class<?>[] argClasses = null;
 		try {
-			ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			Class<?> cmClass = connectivityManager.getClass();
-			Class<?>[] argClasses = null;
 			Method method = cmClass.getMethod("getMobileDataEnabled", argClasses);
 			Object[] argObject = null;
-			isOpen = (Boolean) method.invoke(connectivityManager, argObject);
-		} catch (Throwable e) {
-			Logger.throwable(e);
+			isOpen = (boolean) method.invoke(connectivityManager, argObject);
+		} catch (Exception e) {
+			Logger.w(e);
 		}
 		return isOpen;
 	}
@@ -160,8 +155,8 @@ public class NetUtil {
 			argClasses[0] = boolean.class;
 			Method method = cmClass.getMethod("setMobileDataEnabled", argClasses);
 			method.invoke(connectivityManager, isEnable);
-		} catch (Throwable e) {
-			Logger.throwable(e);
+		} catch (Exception e) {
+			Logger.w(e);
 		}
 	}
 
@@ -171,9 +166,13 @@ public class NetUtil {
 	 * @return Such as：192.168.1.1
 	 */
 	public static String getLocalIPAddress() {
-		String ipAddress = "";
+		Enumeration<NetworkInterface> netfaces = null;
 		try {
-			Enumeration<NetworkInterface> netfaces = NetworkInterface.getNetworkInterfaces();
+			netfaces = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
+			Logger.w(e);
+		}
+		if (netfaces != null) {
 			// 遍历所用的网络接口
 			while (netfaces.hasMoreElements()) {
 				NetworkInterface nif = netfaces.nextElement();// 得到每一个网络接口绑定的地址
@@ -182,14 +181,12 @@ public class NetUtil {
 				while (inetAddresses.hasMoreElements()) {
 					InetAddress ip = inetAddresses.nextElement();
 					if (!ip.isLoopbackAddress() && isIPv4Address(ip.getHostAddress())) {
-						ipAddress = ip.getHostAddress();
+						return ip.getHostAddress();
 					}
 				}
 			}
-		} catch (Throwable e) {
-			Logger.throwable(e);
 		}
-		return ipAddress;
+		return "";
 	}
 
 	/**
@@ -212,7 +209,7 @@ public class NetUtil {
 	// 未压缩过的IPv6地址检查
 	private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
 	// 压缩过的IPv6地址检查
-	private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                             // 0-6
+	private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                  // 0-6
 			"::" + "(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)$");// 0-6 hex fields
 
 	/**

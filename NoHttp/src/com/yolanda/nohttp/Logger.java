@@ -29,12 +29,20 @@ public class Logger {
 	/**
 	 * library debug tag
 	 */
-	public static String STag = "NoHttp";
+	private static String STag = "NoHttp";
 
 	/**
 	 * library debug sign
 	 */
-	public static Boolean SDebug = false;
+	private static boolean SDebug = false;
+
+	public static void setTag(String tag) {
+		STag = tag;
+	}
+
+	public static void setDebug(boolean debug) {
+		SDebug = debug;
+	}
 
 	public static void i(String msg) {
 		if (SDebug)
@@ -44,6 +52,16 @@ public class Logger {
 	public static void i(String format, Object... obj) {
 		if (SDebug)
 			Log.i(STag, buildMessage(format, obj));
+	}
+
+	public static void i(Throwable e) {
+		if (SDebug)
+			Log.i(STag, "", e);
+	}
+
+	public static void i(Throwable e, String format, Object... obj) {
+		if (SDebug)
+			Log.i(STag, buildMessage(format, obj), e);
 	}
 
 	public static void v(String msg) {
@@ -56,6 +74,16 @@ public class Logger {
 			Log.v(STag, buildMessage(format, obj));
 	}
 
+	public static void v(Throwable e) {
+		if (SDebug)
+			Log.v(STag, "", e);
+	}
+
+	public static void v(Throwable e, String format, Object... obj) {
+		if (SDebug)
+			Log.v(STag, buildMessage(format, obj), e);
+	}
+
 	public static void d(String msg) {
 		if (SDebug)
 			Log.d(STag, msg);
@@ -64,6 +92,16 @@ public class Logger {
 	public static void d(String format, Object... obj) {
 		if (SDebug)
 			Log.d(STag, buildMessage(format, obj));
+	}
+
+	public static void d(Throwable e) {
+		if (SDebug)
+			Log.d(STag, "", e);
+	}
+
+	public static void d(Throwable e, String format, Object... obj) {
+		if (SDebug)
+			Log.d(STag, buildMessage(format, obj), e);
 	}
 
 	public static void e(String msg) {
@@ -124,11 +162,6 @@ public class Logger {
 	public static void wtf(Throwable e, String msg) {
 		if (SDebug)
 			Log.wtf(STag, msg, e);
-	}
-
-	public static void throwable(Throwable e) {
-		if (SDebug)
-			e.printStackTrace();
 	}
 
 	protected static String buildMessage(String format, Object... args) {

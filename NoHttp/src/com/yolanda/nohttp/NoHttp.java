@@ -15,7 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.File;
 import java.net.CookieManager;
 
 import com.yolanda.nohttp.download.DownloadConnection;
@@ -161,24 +160,6 @@ public class NoHttp {
 	}
 
 	/**
-	 * Set is a debug mode, if it is a debug mode, you can see NoHttp Log information
-	 * 
-	 * @param debug Set to debug mode is introduced into true, introduced to false otherwise
-	 */
-	public static void setDebug(boolean debug) {
-		Logger.SDebug = debug;
-	}
-
-	/**
-	 * Set the log of the tag
-	 * 
-	 * @param tag The incoming string will be NoHttp logtag, also is in development tools logcat tag bar to see
-	 */
-	public static void setLogTag(String logTag) {
-		Logger.STag = logTag;
-	}
-
-	/**
 	 * Sets up if all HTTPS certificates are allowed, if you set the true, the certificate parameter will be ignored
 	 * 
 	 * @param isAll True is allowed, false is not disallowed, false need to verify the certificate
@@ -203,19 +184,6 @@ public class NoHttp {
 		if (cookieManager == null)
 			throw new IllegalArgumentException("cookieManager == null");
 		sCookieManager = cookieManager;
-	}
-
-	/**
-	 * Open Http cache
-	 */
-	public static void enableHttpResponseCache(Context context) {
-		try {
-			long httpCacheSize = 40 * 1024 * 1024;
-			File httpCacheDir = new File(context.getCacheDir(), "NoHttp");
-			Class.forName("android.net.http.HttpResponseCache").getMethod("install", File.class, long.class).invoke(null, httpCacheDir, httpCacheSize);
-		} catch (Exception e) {// httpResponseCacheNotAvailable
-			Logger.throwable(e);
-		}
 	}
 
 	private NoHttp() {
