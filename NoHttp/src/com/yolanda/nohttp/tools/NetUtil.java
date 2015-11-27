@@ -26,6 +26,7 @@ import com.yolanda.nohttp.Logger;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -38,6 +39,18 @@ import android.os.Build.VERSION;
  */
 public class NetUtil {
 
+	/**
+	 * Open network settings page
+	 * @param context context
+	 */
+	public static void openSetting(Context context) {
+		if (android.os.Build.VERSION.SDK_INT > 10) {
+			context.startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+		} else {
+			context.startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+		}
+	}
+	
 	/**
 	 * Check the netwoek is enable
 	 * 
