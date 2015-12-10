@@ -61,8 +61,12 @@ public class RestResponser<T> implements Response<T> {
 	 * Corresponding response results
 	 */
 	private final T result;
+	/**
+	 * Millesecond of request
+	 */
+	private final long mNetworkMillis;
 
-	public RestResponser(String url, boolean isSucceed, int responseCode, Headers headers, byte[] byteArray, Object tag, T result) {
+	public RestResponser(String url, boolean isSucceed, int responseCode, Headers headers, byte[] byteArray, Object tag, T result, long millis) {
 		this.url = url;
 		this.isSucceed = isSucceed;
 		this.responseCode = responseCode;
@@ -70,6 +74,7 @@ public class RestResponser<T> implements Response<T> {
 		this.byteArray = byteArray;
 		this.tag = tag;
 		this.result = result;
+		this.mNetworkMillis = millis;
 	}
 
 	@Override
@@ -145,6 +150,11 @@ public class RestResponser<T> implements Response<T> {
 			resultBuilder.append(new String(byteArray));
 		}
 		return resultBuilder.toString();
+	}
+
+	@Override
+	public long getNetworkMillis() {
+		return mNetworkMillis;
 	}
 
 	@Override

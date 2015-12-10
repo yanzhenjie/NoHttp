@@ -153,11 +153,11 @@ public class RequestDispatcher extends Thread {
 					if (response.isSucceed()) {
 						responseListener.onSucceed(what, response);
 					} else {
-						responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage());
+						responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), response.getResponseCode(), response.getNetworkMillis());
 					}
 				} else if (response == null) {
 					responseListener.onFinish(what);
-					responseListener.onFailed(what, null, null, null);
+					responseListener.onFailed(what, null, null, null, 0, 0);
 				}
 			}
 		}

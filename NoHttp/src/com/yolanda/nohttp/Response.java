@@ -97,4 +97,9 @@ public abstract interface Response<T> {
 	 * Gets the tag of request
 	 */
 	public Object getTag();
+
+	/**
+	 * Gets the millisecond of request
+	 */
+	public long getNetworkMillis();
 }

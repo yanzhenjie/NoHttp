@@ -43,8 +43,10 @@ public abstract interface OnResponseListener<T> {
 	 * @param what The credit of the incoming request is used to distinguish between multiple requests
 	 * @param tag Tag of request callback
 	 * @param message error message for request
+	 * @param responseCode Server response code
+	 * @param networkMillis Request process consumption time
 	 */
-	public abstract void onFailed(int what, String url, Object tag, CharSequence message);
+	public abstract void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis);
 
 	/**
 	 * When the request finish

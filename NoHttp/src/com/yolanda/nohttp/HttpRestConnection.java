@@ -27,6 +27,7 @@ import java.util.zip.GZIPInputStream;
 import com.yolanda.nohttp.tools.NetUtil;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
@@ -79,6 +80,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 	 */
 	@Override
 	public <T> Response<T> request(Request<T> request) {
+		long startTime = SystemClock.elapsedRealtime();
 		if (request == null) {
 			throw new IllegalArgumentException("reqeust == null");
 		}
@@ -162,7 +164,8 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 		if (isSucceed && byteArray != null)
 			result = request.parseResponse(url, headers.get(Headers.HEAD_KEY_CONTENT_TYPE), byteArray);
 		Logger.d("--------------Reqeust Finish--------------");
-		return new RestResponser<T>(url, isSucceed, responseCode, headers, byteArray, tag, result);
+		long endTime = SystemClock.elapsedRealtime();
+		return new RestResponser<T>(url, isSucceed, responseCode, headers, byteArray, tag, result, endTime - startTime);
 	}
 
 	@Override
