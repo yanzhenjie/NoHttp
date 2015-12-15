@@ -69,12 +69,10 @@ public abstract interface DownloadRequest extends CommonRequest, Cancelable {
 	 * STATUS_RESTART representative no download do to download again; Download STATUS_RESUME represents a part of, to
 	 * continue to download; STATUS_FINISH representatives have finished downloading.
 	 * 
-	 * @param fileSize file size
-	 * 
 	 * @return
 	 * @see #STATUS_RESTART
 	 * @see #STATUS_RESUME
 	 * @see #STATUS_FINISH
 	 */
-	public abstract int checkBeforeStatus(long fileSize);
+	public abstract int checkBeforeStatus();
 }

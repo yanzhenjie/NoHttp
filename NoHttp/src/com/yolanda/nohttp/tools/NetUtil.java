@@ -147,7 +147,7 @@ public class NetUtil {
 		try {
 			Method method = cmClass.getMethod("getMobileDataEnabled", argClasses);
 			Object[] argObject = null;
-			isOpen = (boolean) method.invoke(connectivityManager, argObject);
+			isOpen = (Boolean) method.invoke(connectivityManager, argObject);
 		} catch (Exception e) {
 			Logger.w(e);
 		}

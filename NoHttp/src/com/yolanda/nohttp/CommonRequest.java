@@ -18,6 +18,8 @@ package com.yolanda.nohttp;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 
+import com.yolanda.nohttp.able.Queueable;
+import com.yolanda.nohttp.able.Startable;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -25,7 +27,7 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA
  */
-public interface CommonRequest {
+public interface CommonRequest extends Queueable, Startable {
 
 	/**
 	 * @param mCertificate the mCertificate to set

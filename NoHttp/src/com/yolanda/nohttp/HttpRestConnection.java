@@ -86,7 +86,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 		}
 		AnalyzeRequest analyzeRequest = (AnalyzeRequest) request.getAnalyzeReqeust();
 		if (analyzeRequest == null) {
-			request.getAnalyzeReqeust().takeQueue(false);
+			request.takeQueue(false);
 			throw new IllegalArgumentException("request.getAnalyzeRequest() == null");
 		}
 		Logger.d("--------------Reuqest start--------------");
@@ -150,7 +150,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 					byteArray = readResponseBody(inputStream);
 				}
 			} catch (Exception e) {
-				request.getAnalyzeReqeust().takeQueue(false);
+				request.takeQueue(false);
 				isSucceed = false;
 				String exceptionInfo = getExcetionMessage(e);
 				byteArray = exceptionInfo.getBytes();

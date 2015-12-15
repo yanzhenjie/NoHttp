@@ -15,8 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.able.Queueable;
-import com.yolanda.nohttp.able.Startable;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -25,7 +23,7 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA
  */
-public interface BasicAnalyzeRequest extends Queueable, Startable {
+public interface BasicAnalyzeRequest {
 
 	/**
 	 * Return url of request
@@ -70,7 +68,7 @@ public interface BasicAnalyzeRequest extends Queueable, Startable {
 	/**
 	 * If the request is POST, PUT, PATCH, the true should be returned.
 	 */
-	public abstract boolean isOutPut();
+	public abstract boolean isOutPutMethod();
 
 	/**
 	 * If the argument contains File, Bitmap, ByteArrayOutputStream, true

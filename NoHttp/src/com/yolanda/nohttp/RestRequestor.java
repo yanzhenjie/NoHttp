@@ -128,15 +128,15 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 		this.url = url;
 		this.mRequestMethod = requestMethod;
 		this.mheaders = new Headers();
-		this.mParamMap = new LinkedHashMap<>();
+		this.mParamMap = new LinkedHashMap<String, Object>();
 	}
 
 	@Override
 	public final String url() {
 		if (!urlBuilded) {
 			urlBuilded = true;
-			StringBuffer urlBuffer = new StringBuffer(url);
-			if (!isOutPut() && mParamMap.size() > 0) {
+			if (!isOutPutMethod() && mParamMap.size() > 0) {
+				StringBuffer urlBuffer = new StringBuffer(url);
 				StringBuffer paramBuffer = buildReuqestParam();
 				if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
 					urlBuffer.append("&");
@@ -241,7 +241,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 
 	@Override
 	public void setRequestBody(String data) {
-		if (!TextUtils.isEmpty(data) && isOutPut()) {
+		if (!TextUtils.isEmpty(data) && isOutPutMethod()) {
 			mParamMap.clear();
 			requestBody = data;
 		}
@@ -324,7 +324,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
-	public final boolean isOutPut() {
+	public final boolean isOutPutMethod() {
 		switch (mRequestMethod) {
 		case RequestMethod.GET:
 			return false;
@@ -370,19 +370,8 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
-	public Set<String> keySet() {
-		return mParamMap.keySet();
-	}
-
-	@Override
-	public Object value(String key) {
-		return mParamMap.get(key);
-	}
-
-	@Override
-	public void cancel() {
-		isCaneled = true;
-		isStart = false;
+	public void takeQueue(boolean queue) {
+		this.inQueue = queue;
 	}
 
 	@Override
@@ -391,19 +380,14 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
-	public void takeQueue(boolean queue) {
-		this.inQueue = queue;
+	public void cancel() {
+		this.isCaneled = true;
+		this.isStart = false;
 	}
 
 	@Override
-	public void start() {
-		this.isStart = true;
+	public void reverseCancle() {
 		this.isCaneled = false;
-	}
-
-	@Override
-	public boolean isStarted() {
-		return isStart;
 	}
 
 	@Override
@@ -412,14 +396,34 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
+	public void cancelBySign(Object sign) {
+		if (cancelSign == sign)
+			cancel();
+	}
+
+	@Override
+	public void start() {
+		this.isStart = true;
+	}
+
+	@Override
+	public boolean isStarted() {
+		return isStart && !isCaneled;
+	}
+
+	@Override
 	public void setCancelSign(Object sign) {
 		this.cancelSign = sign;
 	}
 
 	@Override
-	public void cancelBySign(Object sign) {
-		if (cancelSign == sign)
-			cancel();
+	public Set<String> keySet() {
+		return mParamMap.keySet();
+	}
+
+	@Override
+	public Object value(String key) {
+		return mParamMap.get(key);
 	}
 
 	@Override

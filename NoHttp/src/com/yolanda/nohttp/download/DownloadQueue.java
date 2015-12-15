@@ -27,7 +27,7 @@ public class DownloadQueue {
 	/**
 	 * Save download task
 	 */
-	private final LinkedBlockingQueue<NetworkDownloadRequest> mDownloadQueue = new LinkedBlockingQueue<>();
+	private final LinkedBlockingQueue<NetworkDownloadRequest> mDownloadQueue = new LinkedBlockingQueue<NetworkDownloadRequest>();
 	/**
 	 * Download Network task execution interface
 	 */
@@ -69,9 +69,9 @@ public class DownloadQueue {
 	 * @param downloadListener Download results monitor
 	 */
 	public void add(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-		if (!downloadRequest.getAnalyzeReqeust().inQueue()) {
-			downloadRequest.getAnalyzeReqeust().takeQueue(true);
-			downloadRequest.getAnalyzeReqeust().start();
+		if (!downloadRequest.inQueue()) {
+			downloadRequest.takeQueue(true);
+			downloadRequest.reverseCancle();
 			mDownloadQueue.add(new NetworkDownloadRequest(what, downloadRequest, downloadListener));
 		}
 	}

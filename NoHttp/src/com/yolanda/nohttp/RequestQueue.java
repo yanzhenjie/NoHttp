@@ -27,7 +27,7 @@ public class RequestQueue {
 	/**
 	 * Save reuest task
 	 */
-	private final LinkedBlockingQueue<NetworkRequestor<?>> mRequestQueue = new LinkedBlockingQueue<>();
+	private final LinkedBlockingQueue<NetworkRequestor<?>> mRequestQueue = new LinkedBlockingQueue<NetworkRequestor<?>>();
 	/**
 	 * HTTP request actuator interface
 	 */
@@ -66,9 +66,9 @@ public class RequestQueue {
 	 * Add a request task to download queue, waiting for execution, if there is no task in the queue or the number of tasks is less than the number of thread pool, will be executed immediately
 	 */
 	public <T> void add(int what, Request<T> request, OnResponseListener<T> responseListener) {
-		if (!request.getAnalyzeReqeust().inQueue()) {
-			request.getAnalyzeReqeust().takeQueue(true);
-			request.getAnalyzeReqeust().start();
+		if (!request.inQueue()) {
+			request.takeQueue(true);
+			request.reverseCancle();
 			mRequestQueue.add(new NetworkRequestor<T>(what, request, responseListener));
 		}
 	}
@@ -84,14 +84,24 @@ public class RequestQueue {
 	}
 
 	/**
-	 * All requests for the sign specified in the queue, if you are executing, will interrupt the download task
+	 * All requests for the sign specified in the queue, if you are executing, will interrupt the task
 	 * 
-	 * @param sign This sign will be the same as sign's DownloadRequest, and if it is the same, then cancel the task.
+	 * @param sign This sign will be the same as sign's Request, and if it is the same, then cancel the task.
 	 */
-	public void cancelAll(Object sign) {
+	public void cancelBySign(Object sign) {
 		synchronized (mRequestQueue) {
 			for (NetworkRequestor<?> request : mRequestQueue)
 				request.request.cancelBySign(sign);
+		}
+	}
+
+	/**
+	 * Cancel all requests, if you are executing, will interrupt the task
+	 */
+	public void cancelAll() {
+		synchronized (mRequestQueue) {
+			for (NetworkRequestor<?> request : mRequestQueue)
+				request.request.cancel();
 		}
 	}
 }

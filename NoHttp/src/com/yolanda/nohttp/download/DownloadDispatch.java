@@ -89,6 +89,8 @@ class DownloadDispatch extends Thread {
 			if (request.downloadRequest.isCanceled())
 				continue;
 
+			request.downloadRequest.start();
+			
 			mDownloader.download(request.what, request.downloadRequest, new DownloadListener() {
 
 				@Override

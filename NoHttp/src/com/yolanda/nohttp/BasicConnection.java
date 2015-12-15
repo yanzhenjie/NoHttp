@@ -69,7 +69,7 @@ public abstract class BasicConnection {
 		Logger.d("Request method:" + method);
 		httpConnection.setRequestMethod(method);
 		httpConnection.setDoInput(true);
-		httpConnection.setDoOutput(analyzeRequest.isOutPut());
+		httpConnection.setDoOutput(analyzeRequest.isOutPutMethod());
 		httpConnection.setConnectTimeout(analyzeRequest.getConnectTimeout());
 		httpConnection.setReadTimeout(analyzeRequest.getReadTimeout());
 
@@ -126,7 +126,7 @@ public abstract class BasicConnection {
 			httpConnection.addRequestProperty(name, value);
 		}
 		Logger.i("-------Request Headers End-------");
-		if (analyzeRequest.isOutPut() && analyzeRequest.hasBinary())
+		if (analyzeRequest.isOutPutMethod() && analyzeRequest.hasBinary())
 			httpConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
 		else
 			httpConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + analyzeRequest.getParamsEncoding());
@@ -171,10 +171,10 @@ public abstract class BasicConnection {
 	 * @throws IOException
 	 */
 	protected void sendRequestParam(HttpURLConnection httpConnection, AnalyzeRequest analyzeRequest) throws UnsupportedEncodingException, IOException {
-		if (analyzeRequest.isOutPut())
+		if (analyzeRequest.isOutPutMethod())
 			if (analyzeRequest.hasBinary()) {
 				writeFormStreamData(httpConnection.getOutputStream(), analyzeRequest);
-			} else if (analyzeRequest.isOutPut()) {
+			} else {
 				byte[] requestBodyArray = analyzeRequest.getRequestBody();
 				if (requestBodyArray != null)
 					httpConnection.getOutputStream().write(requestBodyArray);

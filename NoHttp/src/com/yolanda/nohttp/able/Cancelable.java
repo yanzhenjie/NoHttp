@@ -28,6 +28,11 @@ public abstract interface Cancelable {
 	public abstract void cancel();
 
 	/**
+	 * To cancel the opposite state
+	 */
+	public abstract void reverseCancle();
+
+	/**
 	 * Query whether to cancel the state
 	 */
 	public abstract boolean isCanceled();

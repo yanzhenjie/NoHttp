@@ -66,7 +66,7 @@ public class NoHttpCache {
 
 	private static final int MAX_COUNT = Integer.MAX_VALUE; // 不限制存放数据的数量
 
-	private static Map<String, NoHttpCache> mInstanceMap = new HashMap<>();
+	private static Map<String, NoHttpCache> mInstanceMap = new HashMap<String, NoHttpCache>();
 
 	private NoHttpCacheManager mCache;
 

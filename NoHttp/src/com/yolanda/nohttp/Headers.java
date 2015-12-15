@@ -61,7 +61,7 @@ public final class Headers {
 
 	public static final String HEAD_KEY_COOKIE2 = "Cookie2";
 
-	private final List<String> namesAndValues = new ArrayList<>(20);
+	private final List<String> namesAndValues = new ArrayList<String>(20);
 
 	/**
 	 * Set a field with the specified value. If the field is not found, it is
@@ -171,7 +171,7 @@ public final class Headers {
 	 * Returns an immutable case-insensitive set of header names.
 	 */
 	public Set<String> names() {
-		TreeSet<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);// 因为头的关系，不区分大小写升序排列
+		TreeSet<String> result = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);// 因为头的关系，不区分大小写升序排列
 		for (int i = 0, size = size(); i < size; i++) {
 			result.add(name(i));
 		}
@@ -186,7 +186,7 @@ public final class Headers {
 		for (int i = 0, size = namesAndValues.size(); i < size; i++) {
 			if (name.equalsIgnoreCase(name(i))) {
 				if (result == null)
-					result = new ArrayList<>(2);
+					result = new ArrayList<String>(2);
 				result.add(value(i));
 			}
 		}
@@ -224,12 +224,12 @@ public final class Headers {
 	 * Get all the requests
 	 */
 	public static Map<String, List<String>> toMultimap(Headers headers) {
-		Map<String, List<String>> result = new TreeMap<>(FIELD_NAME_COMPARATOR);
+		Map<String, List<String>> result = new TreeMap<String, List<String>>(FIELD_NAME_COMPARATOR);
 		for (int i = 0, size = headers.size(); i < size && headers != null; i++) {
 			String name = headers.name(i);
 			String value = headers.value(i);
 
-			List<String> allValues = new ArrayList<>();
+			List<String> allValues = new ArrayList<String>();
 			List<String> otherValues = result.get(name);
 			if (otherValues != null)
 				allValues.addAll(otherValues);
@@ -271,7 +271,7 @@ public final class Headers {
 	 * The request for analysis in the Cookie head into two pairs: Cookie and Cookie2
 	 */
 	public static Map<String, String> parseRequestCookie(Headers headers) {
-		Map<String, String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String, String>();
 		if (headers != null) {
 			map.put(HEAD_KEY_COOKIE, "");
 			map.put(HEAD_KEY_COOKIE2, "");

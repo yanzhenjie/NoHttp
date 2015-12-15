@@ -71,7 +71,7 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	/**
 	 * Download is canceled
 	 */
-	private boolean isCancel = false;
+	private boolean isCaneled = false;
 	/**
 	 * Connect http timeout
 	 */
@@ -171,7 +171,7 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	}
 
 	@Override
-	public boolean isOutPut() {
+	public boolean isOutPutMethod() {
 		return false;
 	}
 
@@ -181,40 +181,44 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	}
 
 	@Override
-	public boolean inQueue() {
-		return this.inQueue;
-	}
-
-	@Override
 	public void takeQueue(boolean queue) {
 		this.inQueue = queue;
 	}
 
 	@Override
-	public void setCancelSign(Object sign) {
-		this.cancelSign = sign;
+	public boolean inQueue() {
+		return this.inQueue;
+	}
+
+	@Override
+	public void cancel() {
+		this.isCaneled = true;
+		this.isStart = false;
+	}
+
+	@Override
+	public void reverseCancle() {
+		this.isCaneled = false;
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return isCaneled;
 	}
 
 	@Override
 	public void start() {
 		this.isStart = true;
-		this.isCancel = false;
 	}
 
 	@Override
 	public boolean isStarted() {
-		return isStart;
+		return isStart && !isCaneled;
 	}
 
 	@Override
-	public void cancel() {
-		this.isCancel = true;
-		this.isStart = false;
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return isCancel;
+	public void setCancelSign(Object sign) {
+		this.cancelSign = sign;
 	}
 
 	@Override
@@ -224,14 +228,14 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	}
 
 	@Override
-	public int checkBeforeStatus(long fileSize) {
-		if (this.isRange && fileSize > 0) {
+	public int checkBeforeStatus() {
+		if (this.isRange) {
 			try {
 				File lastFile = new File(mFileDir, mFileName);
-				if (lastFile.exists() && fileSize == lastFile.length())
+				if (lastFile.exists() && !isDeleteOld)
 					return STATUS_FINISH;
 				File tempFile = new File(mFileDir, mFileName + ".nohttp");
-				if (tempFile.exists() && tempFile.length() <= fileSize)
+				if (tempFile.exists())
 					return STATUS_RESUME;
 			} catch (Exception e) {
 			}
