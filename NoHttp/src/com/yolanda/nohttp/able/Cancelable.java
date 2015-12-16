@@ -42,4 +42,9 @@ public abstract interface Cancelable {
 	 */
 	public abstract void cancelBySign(Object sign);
 
+	/**
+	 * Set off the sign
+	 */
+	public abstract void setCancelSign(Object object);
+
 }

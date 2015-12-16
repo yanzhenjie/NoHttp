@@ -22,7 +22,26 @@ import java.util.Map;
  * 
  * @author YOLANDA
  */
-public abstract interface Request<T> extends CommonRequest {
+public abstract class Request<T> extends CommonRequest {
+
+	/**
+	 * Create a request, RequestMethod is {@link RequestMethod#Get}
+	 * 
+	 * @param url request adress, like: http://www.google.com
+	 */
+	public Request(String url) {
+		super(url);
+	}
+
+	/**
+	 * Create a request
+	 * 
+	 * @param url request adress, like: http://www.google.com
+	 * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
+	 */
+	public Request(String url, int requestMethod) {
+		super(url, requestMethod);
+	}
 
 	/**
 	 * Settings you want to post data, if the post directly, then other data
@@ -118,6 +137,12 @@ public abstract interface Request<T> extends CommonRequest {
 	 * @param params params map
 	 */
 	public abstract void add(Map<String, String> params);
+	
+	/**
+	 * set all param
+	 * @param params
+	 */
+	public abstract void set(Map<String, String> params);
 
 	/**
 	 * Remove a request param by key
@@ -128,11 +153,6 @@ public abstract interface Request<T> extends CommonRequest {
 	 * Remove all request param
 	 */
 	public abstract void removeAll();
-
-	/**
-	 * Set off the sign
-	 */
-	public abstract void setCancelSign(Object sign);
 
 	/**
 	 * Set tag of task, Will return to you at the time of the task response

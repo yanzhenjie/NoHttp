@@ -31,7 +31,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 
-import com.yolanda.nohttp.BasicAnalyzeRequest;
+import com.yolanda.nohttp.CommonRequestAnalyze;
 import com.yolanda.nohttp.Logger;
 
 import android.annotation.SuppressLint;
@@ -83,7 +83,7 @@ public final class SecureVerifier {
 	 * @param certificate The certificate parameter, if set up to allow all Https requests, is ignored.
 	 */
 	@SuppressLint("TrulyRandom")
-	public void doVerifier(HttpsURLConnection httpsURLConnection, BasicAnalyzeRequest request) {
+	public void doVerifier(HttpsURLConnection httpsURLConnection, CommonRequestAnalyze request) {
 		if (isAllowAll || request.isAllowHttps()) {
 			httpsURLConnection.setSSLSocketFactory(DefaultSSLSocketFactory.get());
 			httpsURLConnection.setHostnameVerifier(hostnameVerifier);

@@ -76,7 +76,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 	/**
 	 * The request string
 	 * 
-	 * @param analyzeRequest request parameters
+	 * @param request request parameters
 	 */
 	@Override
 	public <T> Response<T> request(Request<T> request) {
@@ -84,31 +84,26 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 		if (request == null) {
 			throw new IllegalArgumentException("reqeust == null");
 		}
-		BasicAnalyzeRequest analyzeRequest = request.getAnalyzeReqeust();
-		if (analyzeRequest == null) {
-			request.takeQueue(false);
-			throw new IllegalArgumentException("request.getAnalyzeRequest() == null");
-		}
 		Logger.d("--------------Reuqest start--------------");
 
-		String url = analyzeRequest.url();
-		Object tag = analyzeRequest.getTag();
+		String url = request.url();
+		Object tag = request.getTag();
 		boolean isSucceed = false;
 		int responseCode = -1;
 		Headers headers = null;
 		byte[] byteArray = null;
 		T result = null;
 
-		if (!URLUtil.isValidUrl(analyzeRequest.url()))
+		if (!URLUtil.isValidUrl(request.url()))
 			byteArray = "URL Error".getBytes();
 		else if (!NetUtil.isNetworkAvailable(mContext)) {
 			byteArray = "Network error".getBytes();
 		} else {
 			HttpURLConnection httpConnection = null;
 			try {
-				httpConnection = getHttpConnection(analyzeRequest);
+				httpConnection = getHttpConnection(request);
 				httpConnection.connect();
-				sendRequestParam(httpConnection, analyzeRequest);
+				sendRequestParam(httpConnection, request);
 
 				Logger.i("-------Response Start-------");
 				responseCode = httpConnection.getResponseCode();
@@ -132,11 +127,11 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 
 				CookieManager cookieManager = NoHttp.getDefaultCookieManager();
 				// 这里解析的是set-cookie2和set-cookie
-				cookieManager.put(new URI(analyzeRequest.url()), responseHeaders);
+				cookieManager.put(new URI(request.url()), responseHeaders);
 
 				isSucceed = true;
 
-				if (hasResponseBody(analyzeRequest.getRequestMethod(), responseCode)) {
+				if (hasResponseBody(request.getRequestMethod(), responseCode)) {
 					String contentEncoding = httpConnection.getContentEncoding();
 					InputStream inputStream = null;
 					try {

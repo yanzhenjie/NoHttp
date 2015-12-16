@@ -16,6 +16,7 @@
 package com.yolanda.nohttp.download;
 
 import com.yolanda.nohttp.CommonRequest;
+import com.yolanda.nohttp.RequestMethod;
 
 /**
  * Download task request interface</br>
@@ -23,7 +24,7 @@ import com.yolanda.nohttp.CommonRequest;
  * 
  * @author YOLANDA
  */
-public abstract interface DownloadRequest extends CommonRequest {
+public abstract class DownloadRequest extends CommonRequest {
 
 	/**
 	 * Also didn't download to start download again
@@ -37,6 +38,21 @@ public abstract interface DownloadRequest extends CommonRequest {
 	 * Has the download is complete, not to download operation
 	 */
 	public static final int STATUS_FINISH = 2;
+	
+	/**
+	 * @param url
+	 * @param requestMethod
+	 */
+	public DownloadRequest(String url, int requestMethod) {
+		super(url, RequestMethod.GET);
+	}
+
+	/**
+	 * @param url
+	 */
+	public DownloadRequest(String url) {
+		super(url);
+	}
 
 	/**
 	 * Return the mFileDir
@@ -57,11 +73,6 @@ public abstract interface DownloadRequest extends CommonRequest {
 	 * If there is a old files, whether to delete the old files
 	 */
 	public abstract boolean isDeleteOld();
-
-	/**
-	 * Set sign of the download
-	 */
-	public abstract void setCancelSign(Object sign);
 
 	/**
 	 * Query before download status

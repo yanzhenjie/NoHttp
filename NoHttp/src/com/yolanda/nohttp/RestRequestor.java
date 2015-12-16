@@ -16,17 +16,10 @@
 package com.yolanda.nohttp;
 
 import java.io.UnsupportedEncodingException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.yolanda.nohttp.security.Certificate;
 
 import android.text.TextUtils;
 
@@ -36,40 +29,8 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeRequest {
+public abstract class RestRequestor<T> extends Request<T> {
 
-	/**
-	 * Target adress
-	 */
-	protected String url;
-	/**
-	 * Ever create a url
-	 */
-	private boolean urlBuilded = false;
-	/**
-	 * Request method
-	 */
-	protected int mRequestMethod;
-	/**
-	 * Connect http timeout
-	 */
-	private int mConnectTimeout = NoHttp.TIMEOUT_8S;
-	/**
-	 * Read data timeout
-	 */
-	private int mReadTimeout = NoHttp.TIMEOUT_8S;
-	/**
-	 * Request heads
-	 */
-	private Headers mheaders;
-	/**
-	 * Https certificate
-	 */
-	private Certificate mCertificate;
-	/**
-	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
-	 */
-	private boolean isAllowHttps = true;
 	/**
 	 * Param collection
 	 */
@@ -78,22 +39,6 @@ public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeReques
 	 * Post data
 	 */
 	private String requestBody = "";
-	/**
-	 * Queue tag
-	 */
-	private boolean inQueue = false;
-	/**
-	 * The record has started.
-	 */
-	private boolean isStart = false;
-	/**
-	 * Has been canceled
-	 */
-	private boolean isCaneled;
-	/**
-	 * Cancel sign
-	 */
-	private Object cancelSign;
 	/**
 	 * Tag of tag
 	 */
@@ -105,7 +50,7 @@ public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeReques
 	 * @param url request adress, like: http://www.google.com
 	 */
 	public RestRequestor(String url) {
-		this(url, RequestMethod.GET);
+		super(url);
 	}
 
 	/**
@@ -115,128 +60,27 @@ public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeReques
 	 * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
 	 */
 	public RestRequestor(String url, int requestMethod) {
-		BasicConnection.checkRequestMethod(requestMethod);
-		if (TextUtils.isEmpty(url))
-			throw new IllegalArgumentException("url is null");
-		if (requestMethod < RequestMethod.GET || requestMethod > RequestMethod.PATCH)
-			throw new IllegalArgumentException("RequestMethod error, value shuld from RequestMethod");
-		if (url.regionMatches(true, 0, "ws://", 0, 5)) {
-			url = "http" + url.substring(2);
-		} else if (url.regionMatches(true, 0, "wss://", 0, 6)) {
-			url = "https" + url.substring(3);
-		}
-		this.url = url;
-		this.mRequestMethod = requestMethod;
-		this.mheaders = new Headers();
+		super(url, requestMethod);
+		url = buildUrl();
 		this.mParamMap = new LinkedHashMap<String, Object>();
+	}
+
+	protected final String buildUrl() {
+		StringBuffer urlBuffer = new StringBuffer(url);
+		if (!isOutPutMethod() && mParamMap.size() > 0) {
+			StringBuffer paramBuffer = buildReuqestParam();
+			if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
+				urlBuffer.append("&");
+			else if (paramBuffer.length() > 0)
+				urlBuffer.append("?");
+			urlBuffer.append(paramBuffer);
+		}
+		return urlBuffer.toString();
 	}
 
 	@Override
 	public final String url() {
-		if (!urlBuilded) {
-			urlBuilded = true;
-			if (!isOutPutMethod() && mParamMap.size() > 0) {
-				StringBuffer urlBuffer = new StringBuffer(url);
-				StringBuffer paramBuffer = buildReuqestParam();
-				if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
-					urlBuffer.append("&");
-				else if (paramBuffer.length() > 0)
-					urlBuffer.append("?");
-				urlBuffer.append(paramBuffer);
-				url = urlBuffer.toString();
-			}
-		}
 		return url;
-	}
-
-	@Override
-	public final int getRequestMethod() {
-		return mRequestMethod;
-	}
-
-	@Override
-	public void setConnectTimeout(int connectTimeout) {
-		this.mConnectTimeout = connectTimeout;
-	}
-
-	@Override
-	public int getConnectTimeout() {
-		return mConnectTimeout;
-	}
-
-	@Override
-	public void setReadTimeout(int readTimeout) {
-		this.mReadTimeout = readTimeout;
-	}
-
-	@Override
-	public int getReadTimeout() {
-		return mReadTimeout;
-	}
-
-	@Override
-	public void setCertificate(Certificate mCertificate) {
-		this.mCertificate = mCertificate;
-	}
-
-	@Override
-	public Certificate getCertificate() {
-		return mCertificate;
-	}
-
-	@Override
-	public void setAllowHttps(boolean isAllowHttps) {
-		this.isAllowHttps = isAllowHttps;
-	}
-
-	@Override
-	public boolean isAllowHttps() {
-		return isAllowHttps;
-	}
-
-	@Override
-	public void setHeader(String name, String value) {
-		mheaders.set(name, value);
-	}
-
-	@Override
-	public void addHeader(String name, String value) {
-		mheaders.add(name, value);
-	}
-
-	@Override
-	public void addCookie(HttpCookie cookie) {
-		try {
-			URI uri = new URI(url);
-			if (HttpCookie.domainMatches(cookie.getDomain(), uri.getHost())) {
-				mheaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
-			}
-		} catch (URISyntaxException e) {
-			Logger.e(e);
-		}
-	}
-
-	@Override
-	public void addCookie(CookieStore cookieStore) {
-		try {
-			URI uri = new URI(url);
-			List<HttpCookie> httpCookies = cookieStore.get(uri);
-			for (HttpCookie cookie : httpCookies) {
-				addCookie(cookie);
-			}
-		} catch (URISyntaxException e) {
-			Logger.e(e);
-		}
-	}
-
-	@Override
-	public void removeHeader(String name) {
-		mheaders.removeAll(name);
-	}
-
-	@Override
-	public void removeAllHeaders() {
-		mheaders.clear();
 	}
 
 	@Override
@@ -299,8 +143,16 @@ public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeReques
 
 	@Override
 	public void add(Map<String, String> params) {
-		if (params != null && params.size() > 0)
+		if (params != null)
 			this.mParamMap.putAll(params);
+	}
+
+	@Override
+	public void set(Map<String, String> params) {
+		if (params != null) {
+			this.mParamMap.clear();
+			this.mParamMap.putAll(params);
+		}
 	}
 
 	@Override
@@ -314,33 +166,20 @@ public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeReques
 	}
 
 	@Override
-	public Headers getHeaders() {
-		return this.mheaders;
+	public void setTag(Object tag) {
+		this.tag = tag;
 	}
 
 	@Override
-	public String getParamsEncoding() {
-		return NoHttp.CHARSET_UTF8;
-	}
-
-	@Override
-	public final boolean isOutPutMethod() {
-		switch (mRequestMethod) {
-		case RequestMethod.GET:
-			return false;
-		case RequestMethod.POST:
-		case RequestMethod.PUT:
-			return true;
-		case RequestMethod.DELETE:// DELETE
-		case RequestMethod.HEAD:// HEAD
-		case RequestMethod.OPTIONS:// OPTIONS
-		case RequestMethod.TRACE:// TRACE
-			return false;
-		case RequestMethod.PATCH:// PATCH
-			return true;
-		default:
-			return false;
+	public boolean hasBinary() {
+		Set<String> keys = mParamMap.keySet();
+		for (String key : keys) {
+			Object value = mParamMap.get(key);
+			if (value instanceof Binary) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	@Override
@@ -358,65 +197,6 @@ public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeReques
 	}
 
 	@Override
-	public boolean hasBinary() {
-		Set<String> keys = mParamMap.keySet();
-		for (String key : keys) {
-			Object value = mParamMap.get(key);
-			if (value instanceof Binary) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public void takeQueue(boolean queue) {
-		this.inQueue = queue;
-	}
-
-	@Override
-	public boolean inQueue() {
-		return inQueue;
-	}
-
-	@Override
-	public void cancel() {
-		this.isCaneled = true;
-		this.isStart = false;
-	}
-
-	@Override
-	public void reverseCancle() {
-		this.isCaneled = false;
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return isCaneled;
-	}
-
-	@Override
-	public void cancelBySign(Object sign) {
-		if (cancelSign == sign)
-			cancel();
-	}
-
-	@Override
-	public void start() {
-		this.isStart = true;
-	}
-
-	@Override
-	public boolean isStarted() {
-		return isStart && !isCaneled;
-	}
-
-	@Override
-	public void setCancelSign(Object sign) {
-		this.cancelSign = sign;
-	}
-
-	@Override
 	public Set<String> keySet() {
 		return mParamMap.keySet();
 	}
@@ -427,18 +207,8 @@ public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeReques
 	}
 
 	@Override
-	public void setTag(Object tag) {
-		this.tag = tag;
-	}
-
-	@Override
 	public Object getTag() {
 		return this.tag;
-	}
-
-	@Override
-	public BasicAnalyzeRequest getAnalyzeReqeust() {
-		return this;
 	}
 
 	protected StringBuffer buildReuqestParam() {

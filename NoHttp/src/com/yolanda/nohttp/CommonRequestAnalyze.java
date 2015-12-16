@@ -17,6 +17,9 @@ package com.yolanda.nohttp;
 
 import java.util.Set;
 
+import com.yolanda.nohttp.able.Cancelable;
+import com.yolanda.nohttp.able.Queueable;
+import com.yolanda.nohttp.able.Startable;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -25,7 +28,7 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA
  */
-public interface BasicAnalyzeRequest {
+public interface CommonRequestAnalyze extends Queueable, Startable, Cancelable {
 
 	/**
 	 * Return url of request
@@ -38,16 +41,6 @@ public interface BasicAnalyzeRequest {
 	public abstract int getRequestMethod();
 
 	/**
-	 * If the request is HTTPS, and the {@link #isAllowHttps()} return false, then the certificate must be returned, otherwise HTTPS cannot be accessed.
-	 */
-	public abstract Certificate getCertificate();
-
-	/**
-	 * If you are allowed to access the Https directly, then the true will be returned if the certificate is required to return false
-	 */
-	public abstract boolean isAllowHttps();
-
-	/**
 	 * Get the connection timeout time
 	 */
 	public abstract int getConnectTimeout();
@@ -58,14 +51,19 @@ public interface BasicAnalyzeRequest {
 	public abstract int getReadTimeout();
 
 	/**
+	 * If you are allowed to access the Https directly, then the true will be returned if the certificate is required to return false
+	 */
+	public abstract boolean isAllowHttps();
+
+	/**
+	 * If the request is HTTPS, and the {@link #isAllowHttps()} return false, then the certificate must be returned, otherwise HTTPS cannot be accessed.
+	 */
+	public abstract Certificate getCertificate();
+
+	/**
 	 * Get all Heads
 	 */
 	public abstract Headers getHeaders();
-
-	/**
-	 * Get Encoding of request param
-	 */
-	public abstract String getParamsEncoding();
 
 	/**
 	 * If the request is POST, PUT, PATCH, the true should be returned.
@@ -73,10 +71,15 @@ public interface BasicAnalyzeRequest {
 	public abstract boolean isOutPutMethod();
 
 	/**
+	 * Get Encoding of request param
+	 */
+	public abstract String getParamsEncoding();
+
+	/**
 	 * If the argument contains File, Bitmap, ByteArrayOutputStream, true
 	 */
 	public abstract boolean hasBinary();
-	
+
 	/**
 	 * Get the output request package body
 	 */

@@ -53,7 +53,7 @@ public abstract class BasicConnection {
 	/**
 	 * Create a Http connection object, but do not establish a connection, where the request header information is set up, including Cookie
 	 */
-	protected HttpURLConnection getHttpConnection(BasicAnalyzeRequest analyzeRequest) throws IOException, URISyntaxException {
+	protected HttpURLConnection getHttpConnection(CommonRequestAnalyze analyzeRequest) throws IOException, URISyntaxException {
 		String urlStr = analyzeRequest.url();
 		Logger.d("Reuqest adress:" + urlStr);
 		if (android.os.Build.VERSION.SDK_INT < 9)
@@ -64,7 +64,6 @@ public abstract class BasicConnection {
 		if ("https".equals(url.getProtocol()))
 			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) httpConnection, analyzeRequest);
 		int requestMethod = analyzeRequest.getRequestMethod();
-		checkRequestMethod(requestMethod);
 		String method = RequestMethod.METHOD[requestMethod];
 		Logger.d("Request method:" + method);
 		httpConnection.setRequestMethod(method);
@@ -134,14 +133,6 @@ public abstract class BasicConnection {
 	}
 
 	/**
-	 * Check method request
-	 */
-	public static void checkRequestMethod(int requestMethod) {
-		if (requestMethod < RequestMethod.GET || requestMethod > RequestMethod.PATCH)
-			throw new RuntimeException("Invalid HTTP method: " + requestMethod);
-	}
-
-	/**
 	 * Randomly generated boundary mark
 	 * 
 	 * @return random code
@@ -170,7 +161,7 @@ public abstract class BasicConnection {
 	 * @throws UnsupportedEncodingException Throw this exception when the request object's Encoding is not supported.
 	 * @throws IOException
 	 */
-	protected void sendRequestParam(HttpURLConnection httpConnection, BasicAnalyzeRequest analyzeRequest) throws UnsupportedEncodingException, IOException {
+	protected void sendRequestParam(HttpURLConnection httpConnection, CommonRequestAnalyze analyzeRequest) throws UnsupportedEncodingException, IOException {
 		if (analyzeRequest.isOutPutMethod())
 			if (analyzeRequest.hasBinary()) {
 				writeFormStreamData(httpConnection.getOutputStream(), analyzeRequest);
@@ -184,7 +175,7 @@ public abstract class BasicConnection {
 	/**
 	 * When using POST, PUT, PATCH request method, the simulation form to write data should call this method
 	 */
-	protected void writeFormStreamData(OutputStream outputStream, BasicAnalyzeRequest request) throws UnsupportedEncodingException, IOException {
+	protected void writeFormStreamData(OutputStream outputStream, CommonRequestAnalyze request) throws UnsupportedEncodingException, IOException {
 		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 		String paramEncoding = request.getParamsEncoding();
 		Set<String> keys = request.keySet();
