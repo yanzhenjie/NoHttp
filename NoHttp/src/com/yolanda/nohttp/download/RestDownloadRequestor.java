@@ -16,6 +16,7 @@
 package com.yolanda.nohttp.download;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Set;
 
 import com.yolanda.nohttp.Headers;
@@ -106,22 +107,12 @@ public class RestDownloadRequestor extends DownloadRequest {
 	}
 
 	@Override
-	public byte[] getRequestBody() {
-		return null;
+	protected Set<String> keySet() {
+		return Collections.<String> emptySet();
 	}
 
 	@Override
-	public Set<String> keySet() {
-		return null;
-	}
-
-	@Override
-	public Object value(String key) {
-		return null;
-	}
-
-	@Override
-	public Object getTag() {
+	protected Object value(String key) {
 		return null;
 	}
 }

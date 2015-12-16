@@ -74,9 +74,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 	}
 
 	/**
-	 * The request string
-	 * 
-	 * @param request request parameters
+	 * Initiate the request, and parse the response results
 	 */
 	@Override
 	public <T> Response<T> request(Request<T> request) {
@@ -103,8 +101,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 			try {
 				httpConnection = getHttpConnection(request);
 				httpConnection.connect();
-				sendRequestParam(httpConnection, request);
-
+				writeRequestBody(httpConnection, request);
 				Logger.i("-------Response Start-------");
 				responseCode = httpConnection.getResponseCode();
 				Logger.d("ResponseCode: " + responseCode);
@@ -143,6 +140,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 					if (HeaderParser.isGzipContent(contentEncoding))
 						inputStream = new GZIPInputStream(inputStream);
 					byteArray = readResponseBody(inputStream);
+					inputStream.close();
 				}
 			} catch (Exception e) {
 				request.takeQueue(false);

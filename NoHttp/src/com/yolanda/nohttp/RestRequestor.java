@@ -15,13 +15,9 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
-import android.text.TextUtils;
 
 /**
  * 
@@ -35,14 +31,6 @@ public abstract class RestRequestor<T> extends Request<T> {
 	 * Param collection
 	 */
 	protected Map<String, Object> mParamMap = null;
-	/**
-	 * Post data
-	 */
-	private String requestBody = "";
-	/**
-	 * Tag of tag
-	 */
-	private Object tag;
 
 	/**
 	 * Create a request, RequestMethod is {@link RequestMethod#Get}
@@ -65,10 +53,13 @@ public abstract class RestRequestor<T> extends Request<T> {
 		this.mParamMap = new LinkedHashMap<String, Object>();
 	}
 
+	/**
+	 * Rebuilding the URL, compatible with the GET method, using {@code request.add(key, value);}
+	 */
 	protected final String buildUrl() {
 		StringBuffer urlBuffer = new StringBuffer(url);
 		if (!isOutPutMethod() && mParamMap.size() > 0) {
-			StringBuffer paramBuffer = buildReuqestParam();
+			StringBuffer paramBuffer = buildCommonParams();
 			if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
 				urlBuffer.append("&");
 			else if (paramBuffer.length() > 0)
@@ -76,19 +67,6 @@ public abstract class RestRequestor<T> extends Request<T> {
 			urlBuffer.append(paramBuffer);
 		}
 		return urlBuffer.toString();
-	}
-
-	@Override
-	public final String url() {
-		return url;
-	}
-
-	@Override
-	public void setRequestBody(String data) {
-		if (!TextUtils.isEmpty(data) && isOutPutMethod()) {
-			mParamMap.clear();
-			requestBody = data;
-		}
 	}
 
 	@Override
@@ -166,37 +144,6 @@ public abstract class RestRequestor<T> extends Request<T> {
 	}
 
 	@Override
-	public void setTag(Object tag) {
-		this.tag = tag;
-	}
-
-	@Override
-	public boolean hasBinary() {
-		Set<String> keys = mParamMap.keySet();
-		for (String key : keys) {
-			Object value = mParamMap.get(key);
-			if (value instanceof Binary) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public final byte[] getRequestBody() {
-		StringBuffer buffer = buildReuqestParam();
-		if (buffer.length() == 0)
-			try {
-				buffer.append(URLEncoder.encode(requestBody, getParamsEncoding()));
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException("ParamEncoding Error: " + getParamsEncoding(), e);
-			}
-		String requestBody = buffer.toString();
-		Logger.d("RequestBody: " + requestBody);
-		return requestBody.getBytes();
-	}
-
-	@Override
 	public Set<String> keySet() {
 		return mParamMap.keySet();
 	}
@@ -204,35 +151,5 @@ public abstract class RestRequestor<T> extends Request<T> {
 	@Override
 	public Object value(String key) {
 		return mParamMap.get(key);
-	}
-
-	@Override
-	public Object getTag() {
-		return this.tag;
-	}
-
-	protected StringBuffer buildReuqestParam() {
-		StringBuffer paramBuffer = new StringBuffer();
-		boolean first = true;
-		Set<String> keySet = mParamMap.keySet();
-		for (String key : keySet) {
-			Object value = mParamMap.get(key);
-			if (value != null && value instanceof CharSequence) {
-				if (first) {
-					first = false;
-				} else {
-					paramBuffer.append("&");
-				}
-				try {
-					String paramEncoding = getParamsEncoding();
-					paramBuffer.append(URLEncoder.encode(key, paramEncoding));
-					paramBuffer.append("=");
-					paramBuffer.append(URLEncoder.encode(value.toString(), paramEncoding));
-				} catch (UnsupportedEncodingException e) {
-					throw new RuntimeException("Encoding " + getParamsEncoding() + " format is not supported by the system");
-				}
-			}
-		}
-		return paramBuffer;
 	}
 }

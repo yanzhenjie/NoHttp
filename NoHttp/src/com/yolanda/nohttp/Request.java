@@ -44,14 +44,6 @@ public abstract class Request<T> extends CommonRequest {
 	}
 
 	/**
-	 * Settings you want to post data, if the post directly, then other data
-	 * will not be sent
-	 * 
-	 * @param data Post data
-	 */
-	public abstract void setRequestBody(String data);
-
-	/**
 	 * Add <code>CharSequence</code> param
 	 *
 	 * @param key Param name
@@ -153,11 +145,6 @@ public abstract class Request<T> extends CommonRequest {
 	 * Remove all request param
 	 */
 	public abstract void removeAll();
-
-	/**
-	 * Set tag of task, Will return to you at the time of the task response
-	 */
-	public abstract void setTag(Object tag);
 
 	/**
 	 * Parse response

@@ -19,18 +19,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -46,15 +41,12 @@ import android.text.TextUtils;
  */
 public abstract class BasicConnection {
 
-	protected final String BOUNDARY = createBoundry();
-	protected final String START_BOUNDARY = "--" + BOUNDARY;
-	protected final String END_BOUNDARY = "--" + BOUNDARY + "--";
-
 	/**
-	 * Create a Http connection object, but do not establish a connection, where the request header information is set up, including Cookie
+	 * Create a Http connection object, but do not establish a connection, where the request header information is set
+	 * up, including Cookie
 	 */
-	protected HttpURLConnection getHttpConnection(CommonRequestAnalyze analyzeRequest) throws IOException, URISyntaxException {
-		String urlStr = analyzeRequest.url();
+	protected HttpURLConnection getHttpConnection(CommonRequest commonRequest) throws IOException, URISyntaxException {
+		String urlStr = commonRequest.url();
 		Logger.d("Reuqest adress:" + urlStr);
 		if (android.os.Build.VERSION.SDK_INT < 9)
 			System.setProperty("http.keepAlive", "false");
@@ -62,17 +54,17 @@ public abstract class BasicConnection {
 		URL url = new URL(urlStr);
 		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
 		if ("https".equals(url.getProtocol()))
-			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) httpConnection, analyzeRequest);
-		int requestMethod = analyzeRequest.getRequestMethod();
+			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) httpConnection, commonRequest);
+		int requestMethod = commonRequest.getRequestMethod();
 		String method = RequestMethod.METHOD[requestMethod];
 		Logger.d("Request method:" + method);
 		httpConnection.setRequestMethod(method);
 		httpConnection.setDoInput(true);
-		httpConnection.setDoOutput(analyzeRequest.isOutPutMethod());
-		httpConnection.setConnectTimeout(analyzeRequest.getConnectTimeout());
-		httpConnection.setReadTimeout(analyzeRequest.getReadTimeout());
+		httpConnection.setDoOutput(commonRequest.isOutPutMethod());
+		httpConnection.setConnectTimeout(commonRequest.getConnectTimeout());
+		httpConnection.setReadTimeout(commonRequest.getReadTimeout());
 
-		Headers headers = analyzeRequest.getHeaders();
+		Headers headers = commonRequest.getHeaders();
 		if (headers == null)
 			headers = new Headers();
 
@@ -80,7 +72,8 @@ public abstract class BasicConnection {
 		// Authorization:
 		// Accept-Language:zh-CN,zh;q=0.8
 
-		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);// gzip, deflate, sdch; default: gzip
+		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);// gzip, deflate, sdch;
+																							// default: gzip
 		if (headers.get(Headers.HEAD_KEY_ACCEPT) == null)
 			headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT); // text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
 
@@ -99,7 +92,7 @@ public abstract class BasicConnection {
 		// affect cookie choice besides "Host".
 		CookieManager cookieManager = NoHttp.getDefaultCookieManager();
 		if (cookieManager != null) {
-			URI uri = new URI(analyzeRequest.url());
+			URI uri = new URI(commonRequest.url());
 			Map<String, List<String>> cookies = cookieManager.get(uri, Headers.toMultimap(headers));
 
 			// Add any new cookies to the request.
@@ -125,150 +118,27 @@ public abstract class BasicConnection {
 			httpConnection.addRequestProperty(name, value);
 		}
 		Logger.i("-------Request Headers End-------");
-		if (analyzeRequest.isOutPutMethod() && analyzeRequest.hasBinary())
-			httpConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+		if (commonRequest.isOutPutMethod() && commonRequest.hasBinary())
+			httpConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + commonRequest.getBoundary());
 		else
-			httpConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + analyzeRequest.getParamsEncoding());
+			httpConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + commonRequest.getParamsEncoding());
 		return httpConnection;
 	}
 
 	/**
-	 * Randomly generated boundary mark
-	 * 
-	 * @return random code
+	 * Send the request data to the server
 	 */
-	protected String createBoundry() {
-		StringBuffer sb = new StringBuffer();
-		for (int t = 1; t < 12; t++) {
-			long time = System.currentTimeMillis() + t;
-			if (time % 3L == 0L) {
-				sb.append((char) (int) time % '\t');
-			} else if (time % 3L == 1L) {
-				sb.append((char) (int) (65L + time % 26L));
-			} else {
-				sb.append((char) (int) (97L + time % 26L));
-			}
+	protected <T> void writeRequestBody(HttpURLConnection connection, Request<T> request) throws IOException {
+		byte[] body = request.getRequestBody();
+		if (body != null) {
+			DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+			out.write(body);
+			out.close();
 		}
-		return sb.toString();
 	}
 
 	/**
-	 * If the connection is established successfully, and write parameters,
-	 * return httpUrlConnection, if it fails, will throw an exception.
-	 * 
-	 * @param httpConnection Http objects that have been built up to connect
-	 * @param analyzeRequest Request object
-	 * @throws UnsupportedEncodingException Throw this exception when the request object's Encoding is not supported.
-	 * @throws IOException
-	 */
-	protected void sendRequestParam(HttpURLConnection httpConnection, CommonRequestAnalyze analyzeRequest) throws UnsupportedEncodingException, IOException {
-		if (analyzeRequest.isOutPutMethod())
-			if (analyzeRequest.hasBinary()) {
-				writeFormStreamData(httpConnection.getOutputStream(), analyzeRequest);
-			} else {
-				byte[] requestBodyArray = analyzeRequest.getRequestBody();
-				if (requestBodyArray != null)
-					httpConnection.getOutputStream().write(requestBodyArray);
-			}
-	}
-
-	/**
-	 * When using POST, PUT, PATCH request method, the simulation form to write data should call this method
-	 */
-	protected void writeFormStreamData(OutputStream outputStream, CommonRequestAnalyze request) throws UnsupportedEncodingException, IOException {
-		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-		String paramEncoding = request.getParamsEncoding();
-		Set<String> keys = request.keySet();
-		for (String key : keys) {// 文件或者图片
-			Object value = request.value(key);
-			if (value != null && value instanceof String)
-				writeFormString(dataOutputStream, key, value.toString(), paramEncoding);
-			if (value != null && value instanceof Binary)
-				writeFormFile(dataOutputStream, key, (Binary) value);
-		}
-		dataOutputStream.write(("\r\n" + END_BOUNDARY + "\r\n").getBytes());
-		dataOutputStream.flush();
-		dataOutputStream.close();
-	}
-
-	/**
-	 * Write out the form {@code String} data
-	 * 
-	 * @param outputStream output stream
-	 * @param key param name
-	 * @param value param value
-	 * @param charset param charset
-	 * @throws UnsupportedEncodingException Throw this exception when the request object's Encoding is not supported.
-	 * @throws IOException
-	 */
-	private void writeFormString(OutputStream outputStream, String key, String value, String charset) throws UnsupportedEncodingException, IOException {
-		Logger.i(key + " = " + value);
-		String formString = createFormStringField(key, value, charset);
-		outputStream.write(formString.getBytes());
-		outputStream.write("\r\n".getBytes());
-	}
-
-	/**
-	 * Write out the form {@code Binary} data
-	 * 
-	 * @param outputStream output stream
-	 * @param key param name
-	 * @param binary param value, this is binary
-	 * @throws IOException
-	 */
-	private void writeFormFile(OutputStream outputStream, String key, Binary binary) throws IOException {
-		Logger.i(key + " is File");
-		outputStream.write(createFormFileField(key, binary, binary.getCharset()).getBytes());
-		outputStream.write(binary.getByteArray());
-		outputStream.write("\r\n".getBytes());
-	}
-
-	/**
-	 * When using POST, PUT, PATCH request method, Create a raw data from {@code String}
-	 * 
-	 * @param key param name
-	 * @param value param value
-	 * @param charset param charset
-	 * @return Returns a row data for a parameter
-	 * @throws UnsupportedEncodingException
-	 */
-	protected String createFormStringField(String key, String value, String charset) throws UnsupportedEncodingException {
-		StringBuilder stringFieldBuilder = new StringBuilder();
-		stringFieldBuilder.append(START_BOUNDARY).append("\r\n");
-		stringFieldBuilder.append("Content-Disposition: form-data; name=\"").append(URLEncoder.encode(key, charset)).append("\"\r\n");
-		stringFieldBuilder.append("Content-Type: text/plain; charset=").append(charset).append("\r\n\r\n");
-		stringFieldBuilder.append(URLEncoder.encode(value, charset));
-		return stringFieldBuilder.toString();
-	}
-
-	/**
-	 * Analog form submission files
-	 * 
-	 * @param key File the field names
-	 * @param fileName file name
-	 * @param charset stream charset
-	 * @return
-	 */
-	protected String createFormFileField(String key, Binary binary, String charset) {
-		StringBuilder fileFieldBuilder = new StringBuilder();
-		fileFieldBuilder.append(START_BOUNDARY).append("\r\n");
-		fileFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\";");
-		if (!TextUtils.isEmpty(binary.getFileName())) {
-			fileFieldBuilder.append(" filename=\"").append(binary.getFileName()).append("\"");
-		}
-		fileFieldBuilder.append("\r\n");
-		fileFieldBuilder.append("Content-Type: ").append(binary.getMimeType()).append("; charset:").append(charset).append("\r\n");
-		fileFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
-		return fileFieldBuilder.toString();
-	}
-
-	/**
-	 * Read from the HttpURLConnection server response
-	 * 
-	 * @param inputStream Stream from HttpConnection
-	 * @return Return good results: the corresponding ResponseResult
-	 * @throws SocketTimeoutException If read timeout thrown
-	 * @throws Throwable Other unpredictable exceptions
+	 * To read information from the server's response
 	 */
 	protected byte[] readResponseBody(InputStream inputStream) throws IOException {
 		int readBytes;
@@ -279,7 +149,6 @@ public abstract class BasicConnection {
 		}
 		content.flush();
 		content.close();
-		inputStream.close();
 		return content.toByteArray();
 	}
 

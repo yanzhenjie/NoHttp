@@ -89,7 +89,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			return;
 		}
 		// 地址验证
-		if (!URLUtil.isValidUrl(downloadRequest.getAnalyzeReqeust().url())) {
+		if (!URLUtil.isValidUrl(downloadRequest.url())) {
 			downloadRequest.takeQueue(false);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_URL_SYNTAX_ERROR, "URL is wrong");
 			return;
@@ -132,7 +132,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				tempFile.setWritable(true, true);
 			}
 
-			httpConnection = getHttpConnection(downloadRequest.getAnalyzeReqeust());
+			httpConnection = getHttpConnection(downloadRequest);
 			if (downloadRequest.isRange()) {
 				String range = "bytes=" + tempFileLength + "-";
 				httpConnection.setRequestProperty("Range", range);// 从1024开始下载：Range:bytes=1024-
