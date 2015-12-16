@@ -17,14 +17,12 @@ package com.yolanda.nohttp;
 
 import java.util.Map;
 
-import com.yolanda.nohttp.able.Cancelable;
-
 /**
  * Created in Oct 16, 2015 8:22:06 PM
  * 
  * @author YOLANDA
  */
-public abstract interface Request<T> extends CommonRequest, Cancelable {
+public abstract interface Request<T> extends CommonRequest {
 
 	/**
 	 * Settings you want to post data, if the post directly, then other data

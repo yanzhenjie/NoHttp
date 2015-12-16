@@ -16,7 +16,6 @@
 package com.yolanda.nohttp.download;
 
 import com.yolanda.nohttp.CommonRequest;
-import com.yolanda.nohttp.able.Cancelable;
 
 /**
  * Download task request interface</br>
@@ -24,7 +23,7 @@ import com.yolanda.nohttp.able.Cancelable;
  * 
  * @author YOLANDA
  */
-public abstract interface DownloadRequest extends CommonRequest, Cancelable {
+public abstract interface DownloadRequest extends CommonRequest {
 
 	/**
 	 * Also didn't download to start download again

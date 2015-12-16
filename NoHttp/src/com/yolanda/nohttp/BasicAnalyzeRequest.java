@@ -15,6 +15,8 @@
  */
 package com.yolanda.nohttp;
 
+import java.util.Set;
+
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -74,5 +76,27 @@ public interface BasicAnalyzeRequest {
 	 * If the argument contains File, Bitmap, ByteArrayOutputStream, true
 	 */
 	public abstract boolean hasBinary();
+	
+	/**
+	 * Get the output request package body
+	 */
+	public abstract byte[] getRequestBody();
+
+	/**
+	 * Get the parameters set
+	 */
+	public abstract Set<String> keySet();
+
+	/**
+	 * Return {@link #keySet()} key corresponding to value
+	 * 
+	 * @param key from {@link #keySet()}
+	 */
+	public abstract Object value(String key);
+
+	/**
+	 * Get get of this request
+	 */
+	public abstract Object getTag();
 
 }

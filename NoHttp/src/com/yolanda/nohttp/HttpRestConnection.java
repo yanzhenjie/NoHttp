@@ -84,7 +84,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 		if (request == null) {
 			throw new IllegalArgumentException("reqeust == null");
 		}
-		AnalyzeRequest analyzeRequest = (AnalyzeRequest) request.getAnalyzeReqeust();
+		BasicAnalyzeRequest analyzeRequest = request.getAnalyzeReqeust();
 		if (analyzeRequest == null) {
 			request.takeQueue(false);
 			throw new IllegalArgumentException("request.getAnalyzeRequest() == null");

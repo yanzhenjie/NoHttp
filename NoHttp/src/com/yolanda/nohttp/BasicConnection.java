@@ -170,7 +170,7 @@ public abstract class BasicConnection {
 	 * @throws UnsupportedEncodingException Throw this exception when the request object's Encoding is not supported.
 	 * @throws IOException
 	 */
-	protected void sendRequestParam(HttpURLConnection httpConnection, AnalyzeRequest analyzeRequest) throws UnsupportedEncodingException, IOException {
+	protected void sendRequestParam(HttpURLConnection httpConnection, BasicAnalyzeRequest analyzeRequest) throws UnsupportedEncodingException, IOException {
 		if (analyzeRequest.isOutPutMethod())
 			if (analyzeRequest.hasBinary()) {
 				writeFormStreamData(httpConnection.getOutputStream(), analyzeRequest);
@@ -184,7 +184,7 @@ public abstract class BasicConnection {
 	/**
 	 * When using POST, PUT, PATCH request method, the simulation form to write data should call this method
 	 */
-	protected void writeFormStreamData(OutputStream outputStream, AnalyzeRequest request) throws UnsupportedEncodingException, IOException {
+	protected void writeFormStreamData(OutputStream outputStream, BasicAnalyzeRequest request) throws UnsupportedEncodingException, IOException {
 		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 		String paramEncoding = request.getParamsEncoding();
 		Set<String> keys = request.keySet();

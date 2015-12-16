@@ -21,6 +21,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 
 import com.yolanda.nohttp.BasicAnalyzeRequest;
 import com.yolanda.nohttp.Headers;
@@ -311,5 +312,25 @@ public class RestDownloadRequestor implements DownloadRequest, BasicAnalyzeReque
 	@Override
 	public void removeAllHeaders() {
 		this.mheaders.clear();
+	}
+
+	@Override
+	public byte[] getRequestBody() {
+		return null;
+	}
+
+	@Override
+	public Set<String> keySet() {
+		return null;
+	}
+
+	@Override
+	public Object value(String key) {
+		return null;
+	}
+
+	@Override
+	public Object getTag() {
+		return null;
 	}
 }

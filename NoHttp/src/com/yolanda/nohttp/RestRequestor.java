@@ -36,7 +36,7 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
+public abstract class RestRequestor<T> implements Request<T>, BasicAnalyzeRequest {
 
 	/**
 	 * Target adress
@@ -437,7 +437,7 @@ public abstract class RestRequestor<T> implements Request<T>, AnalyzeRequest {
 	}
 
 	@Override
-	public AnalyzeRequest getAnalyzeReqeust() {
+	public BasicAnalyzeRequest getAnalyzeReqeust() {
 		return this;
 	}
 
