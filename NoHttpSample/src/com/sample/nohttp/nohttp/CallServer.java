@@ -15,7 +15,6 @@
  */
 package com.sample.nohttp.nohttp;
 
-import com.sample.nohttp.SampleApplication;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestQueue;
@@ -37,7 +36,7 @@ public class CallServer {
 	private static DownloadQueue downloadQueue;
 
 	private CallServer() {
-		requestQueue = NoHttp.newRequestQueue(SampleApplication.getInstance());
+		requestQueue = NoHttp.newRequestQueue();
 	}
 
 	/**
@@ -51,7 +50,7 @@ public class CallServer {
 
 	public static DownloadQueue getDownloadInstance() {
 		if (downloadQueue == null)
-			downloadQueue = NoHttp.newDownloadQueue(SampleApplication.getInstance());
+			downloadQueue = NoHttp.newDownloadQueue();
 		return downloadQueue;
 	}
 
@@ -67,11 +66,16 @@ public class CallServer {
 
 	/**
 	 * 取消这个sign标记的所有请求
-	 * 
-	 * @param sign
 	 */
 	public void cancelBySign(Object sign) {
-		requestQueue.cancelAll(sign);
+		requestQueue.cancelBySign(sign);
+	}
+
+	/**
+	 * 取消队列中所有请求
+	 */
+	public void cancelAll() {
+		requestQueue.cancelAll();
 	}
 
 	/**

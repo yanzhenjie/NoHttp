@@ -26,6 +26,6 @@ public abstract interface HttpCallback<T> {
 
 	public abstract void onSucceed(int what, Response<T> response);
 
-	public abstract void onFailed(int what, String url, Object tag, CharSequence message);
+	public abstract void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis);
 
 }

@@ -16,20 +16,20 @@
 package com.yolanda.nohttp.able;
 
 /**
- * Created in Nov 12, 2015 5:03:54 PM
+ * Created in Nov 12, 2015 5:11:56 PM
  * 
  * @author YOLANDA;
  */
-public abstract interface Startable {
+public abstract interface SignCancelable extends Cancelable {
 
 	/**
-	 * Start request
+	 * Cancel request by sign
 	 */
-	public abstract void start();
+	public abstract void cancelBySign(Object sign);
 
 	/**
-	 * Judge whether the object is to begin.
+	 * Set cancel sign
 	 */
-	public abstract boolean isStarted();
+	public abstract void setCancelSign(Object object);
 
 }

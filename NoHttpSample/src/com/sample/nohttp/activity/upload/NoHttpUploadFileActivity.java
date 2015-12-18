@@ -95,7 +95,7 @@ public class NoHttpUploadFileActivity extends Activity implements View.OnClickLi
 		}
 	}
 
-	private String url = "http://www.baidu.com";
+	private String url = "http://192.168.1.36/HttpServer/UserLogin";
 
 	/**
 	 * 用NoHtt默认实现上传文件
@@ -104,10 +104,17 @@ public class NoHttpUploadFileActivity extends Activity implements View.OnClickLi
 		Request<String> request = NoHttp.createStringRequest(url, RequestMethod.POST);// 或者用PUT，看服务器支持什么方法上传
 		// 添加一个普通参数
 		request.add("user", "yolanda");
+		request.add("dsas", "dsfda");
+		request.add("usersdf", "yolsdfadsfanda");
 
 		// 上传文件需要实现NoHttp的Binary接口，NoHttp默认实现了一个上传File的，传入File和fileName就可以了
 		// 因为这个接口是在子线程中回调，所以接口的方法可以做IO操作
-		request.add("head", new FileBinary(new File(filePath), "head.png"));
+		// request.add("head", new FileBinary(new File(filePath)));
+		String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+		request.add("image1", new FileBinary(new File(path + File.separator + "123.jpg")));
+		request.add("image2", new FileBinary(new File(path + File.separator + "234.jpg")));
+		request.add("image3", new FileBinary(new File(path + File.separator + "345.jpg")));
+		request.add("file4", new FileBinary(new File(path + File.separator + "360sd_k.exe")));
 		CallServer.getRequestInstance().add(this, 0, request, this);
 	}
 
@@ -121,7 +128,7 @@ public class NoHttpUploadFileActivity extends Activity implements View.OnClickLi
 	}
 
 	@Override
-	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 		mTvStatus.setText("发生错误了，这里更换成你的http接口就好了：" + message);
 	}
 }

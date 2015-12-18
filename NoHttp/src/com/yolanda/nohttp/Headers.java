@@ -45,7 +45,7 @@ public final class Headers {
 
 	public static final String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
 
-	public static final String HEAD_VALUE_ACCEPT_ENCODING = "gzip";
+	public static final String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate, sdch";
 
 	public static final String HEAD_KEY_CACHE_CONTROL = "Cache-Control";
 
@@ -182,7 +182,8 @@ public final class Headers {
 	 * Get All Header value
 	 */
 	public List<String> values(String name) {
-		List<String> result = null;
+		@SuppressWarnings("unchecked")
+		List<String> result = Collections.EMPTY_LIST;
 		for (int i = 0, size = namesAndValues.size(); i < size; i++) {
 			if (name.equalsIgnoreCase(name(i))) {
 				if (result == null)
@@ -190,7 +191,7 @@ public final class Headers {
 				result.add(value(i));
 			}
 		}
-		return result != null ? Collections.unmodifiableList(result) : Collections.<String> emptyList();
+		return Collections.unmodifiableList(result);
 	}
 
 	/**
@@ -262,8 +263,9 @@ public final class Headers {
 		if (cookieHeader != null && headers != null)
 			for (Map.Entry<String, List<String>> entry : cookieHeader.entrySet()) {
 				String key = entry.getKey();
-				if ((HEAD_KEY_COOKIE.equalsIgnoreCase(key) || HEAD_KEY_COOKIE2.equalsIgnoreCase(key)) && !entry.getValue().isEmpty())
-					headers.add(key, buildCookieHeader(entry.getValue()));
+				List<String> value = entry.getValue();
+				if ((HEAD_KEY_COOKIE.equalsIgnoreCase(key) || HEAD_KEY_COOKIE2.equalsIgnoreCase(key)) && !value.isEmpty())
+					headers.add(key, buildCookieHeader(value));
 			}
 	}
 
@@ -275,15 +277,13 @@ public final class Headers {
 		if (headers != null) {
 			map.put(HEAD_KEY_COOKIE, "");
 			map.put(HEAD_KEY_COOKIE2, "");
-			if (headers != null && headers.size() > 0) {
-				for (int i = 0; i < headers.size(); i++) {
-					if (HEAD_KEY_COOKIE.equalsIgnoreCase(headers.name(i))) {
-						String cookie = map.get(HEAD_KEY_COOKIE) + headers.value(i) + "; ";
-						map.put(HEAD_KEY_COOKIE, cookie);
-					} else if (HEAD_KEY_COOKIE2.equalsIgnoreCase(headers.name(i))) {
-						String cookie2 = map.get(HEAD_KEY_COOKIE2) + headers.value(i) + "; ";
-						map.put(HEAD_KEY_COOKIE2, cookie2);
-					}
+			for (int i = 0; i < headers.size(); i++) {
+				if (HEAD_KEY_COOKIE.equalsIgnoreCase(headers.name(i))) {
+					String cookie = map.get(HEAD_KEY_COOKIE) + headers.value(i) + "; ";
+					map.put(HEAD_KEY_COOKIE, cookie);
+				} else if (HEAD_KEY_COOKIE2.equalsIgnoreCase(headers.name(i))) {
+					String cookie2 = map.get(HEAD_KEY_COOKIE2) + headers.value(i) + "; ";
+					map.put(HEAD_KEY_COOKIE2, cookie2);
 				}
 			}
 		}

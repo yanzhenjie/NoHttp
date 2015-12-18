@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,35 +16,24 @@
 package com.yolanda.nohttp.able;
 
 /**
- * Created in Nov 12, 2015 5:11:56 PM
- * 
+ * </br>Created in Dec 17, 2015 11:42:10 AM
  * @author YOLANDA;
  */
-public abstract interface Cancelable {
+public interface Cancelable {
 
 	/**
-	 * Cancel request
+	 * Cancel operation
 	 */
 	public abstract void cancel();
-
+	
 	/**
-	 * To cancel the opposite state
-	 */
-	public abstract void reverseCancle();
-
-	/**
-	 * Query whether to cancel the state
+	 * Judge whether the operation is canceled
 	 */
 	public abstract boolean isCanceled();
-
+	
 	/**
-	 * Cancel request based on sign
+	 * Anti cancellation
 	 */
-	public abstract void cancelBySign(Object sign);
-
-	/**
-	 * Set off the sign
-	 */
-	public abstract void setCancelSign(Object object);
-
+	public abstract void reverseCancle();
+	
 }

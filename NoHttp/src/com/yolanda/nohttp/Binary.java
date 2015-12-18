@@ -15,19 +15,42 @@
  */
 package com.yolanda.nohttp;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import com.yolanda.nohttp.able.Cancelable;
+import com.yolanda.nohttp.tools.CounterOutputStream;
+
 /**
  * File interface</br>
- * All the methods are called in Son thread.</br></br>
+ * All the methods are called in Son thread.</br>
+ * </br>
  * Created in Oct 12, 2015 4:44:07 PM
  * 
  * @author YOLANDA
  */
-public abstract interface Binary {
+public abstract class Binary implements Cancelable {
 
 	/**
 	 * Return the byteArray of file
 	 */
-	public abstract byte[] getByteArray();
+	public final void onWriteBinary(CommonRequest request, OutputStream outputStream) throws IOException {
+		if (outputStream instanceof CounterOutputStream) {
+			((CounterOutputStream) outputStream).addLong(onMeasureLength());
+		} else {
+			onWriteByteArray(request, outputStream);
+		}
+	}
+
+	/**
+	 * Length of measurement
+	 */
+	protected abstract long onMeasureLength();
+
+	/**
+	 * Return the byteArray of file
+	 */
+	protected abstract void onWriteByteArray(CommonRequest request, OutputStream outputStream);
 
 	/**
 	 * Return the fileName

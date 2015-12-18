@@ -116,7 +116,7 @@ public class NoHttpsActivity extends Activity implements View.OnClickListener, H
 	}
 
 	@Override
-	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 		mTvStatus.setText("失败：\n" + message);
 	}
 }

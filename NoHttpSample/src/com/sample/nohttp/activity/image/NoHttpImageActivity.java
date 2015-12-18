@@ -78,7 +78,7 @@ public class NoHttpImageActivity extends Activity implements HttpCallback<Bitmap
 	}
 
 	@Override
-	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 		mStatus.setText("失败：" + message);
 	}
 

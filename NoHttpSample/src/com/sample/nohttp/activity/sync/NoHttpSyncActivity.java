@@ -47,7 +47,7 @@ public class NoHttpSyncActivity extends Activity {
 			public void run() {
 				// 这里直接发起一个同步请求，建议在子线程这么使用
 				Request<String> request = NoHttp.createStringRequest("http://www.baidu.com", RequestMethod.POST);
-				Response<String> response = NoHttp.startRequestSync(getApplicationContext(), request);
+				Response<String> response = NoHttp.startRequestSync(request);
 				if (response.isSucceed()) {
 					Logger.i("响应消息： " + response.get());
 				} else {

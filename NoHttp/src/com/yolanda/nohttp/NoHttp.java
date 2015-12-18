@@ -24,6 +24,7 @@ import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.download.RestDownloadRequestor;
 import com.yolanda.nohttp.security.SecureVerifier;
 
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
@@ -41,10 +42,26 @@ public class NoHttp {
 
 	public static final int TIMEOUT_8S = 8 * 1000;
 
+	private static Context sContext;
+
 	/**
 	 * Cookie
 	 */
 	private static CookieManager sCookieManager;
+
+	/**
+	 * initialization NoHttp
+	 */
+	public static void init(Application context) {
+		sContext = context.getApplicationContext();
+		sCookieManager = new CookieManager();
+	}
+
+	public static Context getContext() {
+		if (sContext == null)
+			throw new ExceptionInInitializerError("please invoke NoHttp.init(Application) on Application#onCreate()");
+		return sContext;
+	}
 
 	/**
 	 * Create a new request queue
@@ -53,8 +70,8 @@ public class NoHttp {
 	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
 	 * @return
 	 */
-	public static RequestQueue newRequestQueue(Context context, int threadPoolSize) {
-		RequestQueue requestQueue = new RequestQueue(HttpRestConnection.getInstance(context), threadPoolSize);
+	public static RequestQueue newRequestQueue(int threadPoolSize) {
+		RequestQueue requestQueue = new RequestQueue(HttpRestConnection.getInstance(getContext()), threadPoolSize);
 		requestQueue.start();
 		return requestQueue;
 	}
@@ -62,8 +79,8 @@ public class NoHttp {
 	/**
 	 * Create a request queue, the default thread pool number is 5
 	 */
-	public static RequestQueue newRequestQueue(Context context) {
-		return newRequestQueue(context, 5);
+	public static RequestQueue newRequestQueue() {
+		return newRequestQueue(5);
 	}
 
 	/**
@@ -109,10 +126,10 @@ public class NoHttp {
 	 *        one is the request
 	 * @param request The packaging of the HTTP request parameter
 	 */
-	public static <T> Response<T> startRequestSync(Context context, Request<T> request) {
+	public static <T> Response<T> startRequestSync(Request<T> request) {
 		Response<T> response = null;
 		if (request != null)
-			response = HttpRestConnection.getInstance(context).request(request);
+			response = HttpRestConnection.getInstance(getContext()).request(request);
 		return response;
 	}
 
@@ -122,8 +139,8 @@ public class NoHttp {
 	 * @param context ApplicationContext
 	 * @return
 	 */
-	public static DownloadQueue newDownloadQueue(Context context) {
-		return newDownloadQueue(context, 2);
+	public static DownloadQueue newDownloadQueue() {
+		return newDownloadQueue(2);
 	}
 
 	/**
@@ -133,8 +150,8 @@ public class NoHttp {
 	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
 	 * @return
 	 */
-	public static DownloadQueue newDownloadQueue(Context context, int threadPoolSize) {
-		DownloadQueue downloadQueue = new DownloadQueue(DownloadConnection.getInstance(context), threadPoolSize);
+	public static DownloadQueue newDownloadQueue(int threadPoolSize) {
+		DownloadQueue downloadQueue = new DownloadQueue(DownloadConnection.getInstance(getContext()), threadPoolSize);
 		downloadQueue.start();
 		return downloadQueue;
 	}
@@ -155,8 +172,8 @@ public class NoHttp {
 	/**
 	 * Start a sync Download
 	 */
-	public static void downloadSync(Context context, int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-		DownloadConnection.getInstance(context).download(what, downloadRequest, downloadListener);
+	public static void downloadSync(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
+		DownloadConnection.getInstance(getContext()).download(what, downloadRequest, downloadListener);
 	}
 
 	/**
@@ -172,8 +189,6 @@ public class NoHttp {
 	 * Returns the system-wide cookie handler or {@code null} if not set.
 	 */
 	public static CookieManager getDefaultCookieManager() {
-		if (sCookieManager == null)
-			sCookieManager = new CookieManager();
 		return sCookieManager;
 	}
 

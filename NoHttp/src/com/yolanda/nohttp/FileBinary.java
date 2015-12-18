@@ -15,12 +15,12 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
-import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * A default implementation of Binary</br>
@@ -30,40 +30,68 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public class FileBinary implements Binary {
+public class FileBinary extends Binary {
 
 	private File file;
 
 	private String fileName;
 
+	private String mimeType;
+
+	private String charSet;
+
+	private boolean isStarted = false;
+
+	private boolean isRun = true;
+
+	public FileBinary(File file) {
+		this(file, file.getName());
+	}
+
 	public FileBinary(File file, String fileName) {
-		if (file == null)
-			throw new IllegalArgumentException("file == null");
-		if (!file.isFile())
-			throw new IllegalArgumentException("file isn't file");
+		this(file, fileName, NoHttp.MIMETYE_FILE);
+	}
+
+	public FileBinary(File file, String fileName, String mimeType) {
+		this(file, fileName, mimeType, NoHttp.CHARSET_UTF8);
+	}
+
+	public FileBinary(File file, String fileName, String mimeType, String charSet) {
+		if (file == null) {
+			Log.e("NoHttp", fileName + " is null file");
+		} else if (!file.exists()) {
+			Log.e("NoHttp", fileName + " is non-existent");
+		}
 		this.file = file;
 		this.fileName = fileName;
-		if (TextUtils.isEmpty(fileName))
-			this.fileName = file.getName();
+		this.mimeType = mimeType;
+		this.charSet = charSet;
+	}
+	
+	@Override
+	protected long onMeasureLength() {
+		if(file != null) {
+			return this.file.length();
+		}
+		return 0;
 	}
 
 	@Override
-	public byte[] getByteArray() {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		try {
-			FileInputStream inputStream = new FileInputStream(file);
-			int len = -1;
-			byte[] buffer = new byte[1024];
-			while ((len = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, len);
+	protected void onWriteByteArray(CommonRequest request, OutputStream outputStream) {
+		if (this.file != null && isRun) {
+			isStarted = true;
+			try {
+				RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
+				int len = -1;
+				byte[] buffer = new byte[1024];
+				while (!request.isCaneled && (len = accessFile.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, len);
+				}
+				accessFile.close();
+			} catch (IOException e) {
+				Logger.e(e);
 			}
-			outputStream.flush();
-			outputStream.close();
-			inputStream.close();
-		} catch (IOException e) {
-			Logger.wtf(e);
 		}
-		return outputStream.toByteArray();
 	}
 
 	@Override
@@ -73,12 +101,29 @@ public class FileBinary implements Binary {
 
 	@Override
 	public String getMimeType() {
-		return NoHttp.MIMETYE_FILE;
+		return mimeType;
 	}
 
 	@Override
 	public String getCharset() {
-		return NoHttp.CHARSET_UTF8;
+		return charSet;
+	}
+
+	@Override
+	public void cancel() {
+		if (isStarted)
+			throw new RuntimeException("Upload action has begun, can not be canceled");
+		this.isRun = false;
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return !isRun;
+	}
+
+	@Override
+	public void reverseCancle() {
+		this.isRun = true;
 	}
 
 }

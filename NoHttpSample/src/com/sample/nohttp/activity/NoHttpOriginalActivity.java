@@ -53,7 +53,7 @@ public class NoHttpOriginalActivity extends Activity {
 
 		// 创建请求队列
 		// 1.第一种方法，默认并发3个请求
-		RequestQueue queue = NoHttp.newRequestQueue(this);
+		RequestQueue queue = NoHttp.newRequestQueue();
 		// 2.第二种方法 第二个参数指同事可并发请求数量
 		// queue = NoHttp.newRequestQueue(this, 3);
 
@@ -117,7 +117,7 @@ public class NoHttpOriginalActivity extends Activity {
 		}
 
 		@Override
-		public void onFailed(int what, String url, Object tag, CharSequence message) {
+		public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 			// 请求失败
 			((TextView) findViewById(R.id.tv_status)).setText("请求失败: " + message);
 		}

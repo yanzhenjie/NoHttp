@@ -93,7 +93,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 		T result = null;
 
 		if (!URLUtil.isValidUrl(request.url()))
-			byteArray = "URL Error".getBytes();
+			byteArray = "URL error".getBytes();
 		else if (!NetUtil.isNetworkAvailable(mContext)) {
 			byteArray = "Network error".getBytes();
 		} else {
@@ -101,8 +101,10 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 			try {
 				httpConnection = getHttpConnection(request);
 				httpConnection.connect();
+				Logger.i("-------Send reqeust data start-------");
 				writeRequestBody(httpConnection, request);
-				Logger.i("-------Response Start-------");
+				Logger.i("-------Send request data end-------");
+				Logger.i("-------Response start-------");
 				responseCode = httpConnection.getResponseCode();
 				Logger.d("ResponseCode: " + responseCode);
 
@@ -151,12 +153,12 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 			} finally {
 				if (httpConnection != null)
 					httpConnection.disconnect();
-				Logger.i("-------Response End-------");
+				Logger.i("-------Response end-------");
 			}
 		}
 		if (isSucceed && byteArray != null)
 			result = request.parseResponse(url, headers.get(Headers.HEAD_KEY_CONTENT_TYPE), byteArray);
-		Logger.d("--------------Reqeust Finish--------------");
+		Logger.d("--------------Reqeust finish--------------");
 		long endTime = SystemClock.elapsedRealtime();
 		return new RestResponser<T>(url, isSucceed, responseCode, headers, byteArray, tag, result, endTime - startTime);
 	}

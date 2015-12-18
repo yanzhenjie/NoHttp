@@ -23,7 +23,7 @@ package com.yolanda.nohttp.able;
 public abstract interface Queueable {
 
 	/**
-	 * Whether in the queue
+	 * Judge whether the object is in the queue.
 	 */
 	public abstract boolean inQueue();
 

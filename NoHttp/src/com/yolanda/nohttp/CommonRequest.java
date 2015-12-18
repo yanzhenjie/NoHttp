@@ -15,7 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -27,10 +26,11 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 
-import com.yolanda.nohttp.able.Cancelable;
 import com.yolanda.nohttp.able.Queueable;
+import com.yolanda.nohttp.able.SignCancelable;
 import com.yolanda.nohttp.able.Startable;
 import com.yolanda.nohttp.security.Certificate;
+import com.yolanda.nohttp.tools.CounterOutputStream;
 
 import android.text.TextUtils;
 
@@ -39,7 +39,7 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public abstract class CommonRequest implements Queueable, Startable, Cancelable {
+public abstract class CommonRequest implements Queueable, Startable, SignCancelable {
 
 	protected final static String BOUNDARY = createBoundry();
 	protected final static String START_BOUNDARY = "--" + BOUNDARY;
@@ -88,7 +88,7 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	/**
 	 * Has been canceled
 	 */
-	protected boolean isCaneled;
+	protected boolean isCaneled = false;
 	/**
 	 * Cancel sign
 	 */
@@ -134,6 +134,22 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	 */
 	public String url() {
 		return url;
+	}
+
+	/**
+	 * Rebuilding the URL, compatible with the GET method, using {@code request.add(key, value);}
+	 */
+	protected final String buildUrl() {
+		StringBuffer urlBuffer = new StringBuffer(url);
+		if (!isOutPutMethod() && keySet().size() > 0) {
+			StringBuffer paramBuffer = buildCommonParams();
+			if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
+				urlBuffer.append("&");
+			else if (paramBuffer.length() > 0)
+				urlBuffer.append("?");
+			urlBuffer.append(paramBuffer);
+		}
+		return urlBuffer.toString();
 	}
 
 	/**
@@ -209,8 +225,7 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	 */
 	public void addCookie(CookieStore cookieStore) {
 		try {
-			URI uri = new URI(url);
-			List<HttpCookie> httpCookies = cookieStore.get(uri);
+			List<HttpCookie> httpCookies = cookieStore.get(new URI(url));
 			for (HttpCookie cookie : httpCookies) {
 				addCookie(cookie);
 			}
@@ -222,7 +237,7 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	/**
 	 * Get all Heads
 	 */
-	public Headers getHeaders() {
+	public Headers headers() {
 		return this.mheaders;
 	}
 
@@ -270,6 +285,23 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	 */
 	public Certificate getCertificate() {
 		return mCertificate;
+	}
+
+	/**
+	 * Get content length
+	 */
+	public long getContentLength() {
+		CounterOutputStream outputStream = new CounterOutputStream();
+
+		if (mRequestBody == null && hasBinary()) {
+			writeFormStreamData(outputStream);
+		} else if (mRequestBody == null) {
+			writeCommonStreamData(outputStream);
+		} else {
+			writePushBody(outputStream);
+		}
+		long contentLength = outputStream.get();
+		return contentLength;
 	}
 
 	/**
@@ -325,36 +357,61 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	/**
 	 * Settings you want to post data, if the post directly, then other data
 	 * will not be sent
-	 * 
-	 * @param data Post data
 	 */
 	public void setRequestBody(byte[] requestBody) {
 		this.mRequestBody = requestBody;
 	}
 
 	/**
-	 * Get the output request package body
+	 * Settings you want to post data, if the post directly, then other data will not be sent
 	 */
-	public byte[] getRequestBody() {
-		if (mRequestBody == null && hasBinary())
-			mRequestBody = buildFormStreamData();
-		else if (mRequestBody == null) {
-			mRequestBody = buildCommonStreamData();
-		}
-		return mRequestBody;
+	public void setRequestBody(String requestBody) {
+		if (!TextUtils.isEmpty(requestBody))
+			try {
+				this.mRequestBody = URLEncoder.encode(requestBody, getParamsEncoding()).getBytes();
+			} catch (UnsupportedEncodingException e) {
+				Logger.e(e);
+			}
 	}
 
 	/**
-	 * Organization general format of data flow
+	 * Send request data, give priority to RequestBody, and then send the form data
 	 */
-	protected byte[] buildCommonStreamData() {
+	public void onWriteRequestBody(OutputStream outputStream) {
+		if (mRequestBody == null && hasBinary())
+			writeFormStreamData(outputStream);
+		else if (mRequestBody == null)
+			writeCommonStreamData(outputStream);
+		else
+			writePushBody(outputStream);
+	}
+
+	/**
+	 * Send request {@code RequestBody}
+	 */
+	protected void writePushBody(OutputStream outputStream) {
+		try {
+			outputStream.write(mRequestBody);
+		} catch (IOException e) {
+			Logger.e(e);
+		}
+	}
+
+	/**
+	 * Send non form data
+	 */
+	protected void writeCommonStreamData(OutputStream outputStream) {
 		String requestBody = buildCommonParams().toString();
 		Logger.d("RequestBody: " + requestBody);
-		return requestBody.getBytes();
+		try {
+			outputStream.write(requestBody.getBytes());
+		} catch (IOException e) {
+			Logger.e(e);
+		}
 	}
 
 	/**
-	 * Stitching general format data of key-value pairs
+	 * split joint non form data
 	 */
 	protected StringBuffer buildCommonParams() {
 		StringBuffer paramBuffer = new StringBuffer();
@@ -379,33 +436,27 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	}
 
 	/**
-	 * Organization form format of the data flow
+	 * Send form data
 	 */
-	protected byte[] buildFormStreamData() {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	protected void writeFormStreamData(OutputStream outputStream) {
 		try {
 			Set<String> keys = keySet();
 			for (String key : keys) {// 文件或者图片
 				Object value = value(key);
-				if (value != null && value instanceof String)
+				if (value != null && value instanceof String) {
 					writeFormString(outputStream, key, value.toString());
-				if (value != null && value instanceof Binary)
+				} else if (value != null && value instanceof Binary) {
 					writeFormBinary(outputStream, key, (Binary) value);
+				}
 			}
 			outputStream.write(("\r\n" + END_BOUNDARY + "\r\n").getBytes());
 		} catch (IOException e) {
 			Logger.e(e);
-		} finally {
-			try {
-				outputStream.close();
-			} catch (IOException e) {
-			}
 		}
-		return outputStream.toByteArray();
 	}
 
 	/**
-	 * Write out the form {@code String} data
+	 * Send text data in a form
 	 */
 	private void writeFormString(OutputStream outputStream, String key, String value) throws IOException {
 		Logger.i(key + " = " + value);
@@ -415,17 +466,17 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	}
 
 	/**
-	 * Write out the form {@code Binary} data
+	 * Send binary data in a form
 	 */
-	private void writeFormBinary(OutputStream outputStream, String key, Binary binary) throws IOException {
+	private void writeFormBinary(OutputStream outputStream, String key, Binary value) throws IOException {
 		Logger.i(key + " is File");
-		outputStream.write(createFormFileField(key, binary, binary.getCharset()).getBytes());
-		outputStream.write(binary.getByteArray());
+		outputStream.write(createFormBinaryField(key, value, value.getCharset()).getBytes());
+		value.onWriteBinary(this, outputStream);
 		outputStream.write("\r\n".getBytes());
 	}
 
 	/**
-	 * When using POST, PUT, PATCH request method, Create a raw data from {@code String}
+	 * Create a text message in a form
 	 */
 	protected String createFormStringField(String key, String value, String charset) throws UnsupportedEncodingException {
 		StringBuilder stringFieldBuilder = new StringBuilder();
@@ -437,9 +488,9 @@ public abstract class CommonRequest implements Queueable, Startable, Cancelable 
 	}
 
 	/**
-	 * Analog form submission files
+	 * Create a binary message in a form
 	 */
-	protected String createFormFileField(String key, Binary binary, String charset) {
+	protected String createFormBinaryField(String key, Binary binary, String charset) {
 		StringBuilder fileFieldBuilder = new StringBuilder();
 		fileFieldBuilder.append(START_BOUNDARY).append("\r\n");
 		fileFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\";");

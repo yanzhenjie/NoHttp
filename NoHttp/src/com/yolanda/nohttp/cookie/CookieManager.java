@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.able;
+package com.yolanda.nohttp.cookie;
+
+import java.net.CookiePolicy;
+import java.net.CookieStore;
+
+import android.content.Context;
 
 /**
- * Created in Nov 12, 2015 5:03:54 PM
+ * </br>
+ * Created in Dec 17, 2015 7:56:27 PM
  * 
  * @author YOLANDA;
  */
-public abstract interface Startable {
+public class CookieManager extends java.net.CookieManager {
 
-	/**
-	 * Start request
-	 */
-	public abstract void start();
+	public CookieManager(Context context) {
+		super(new NoHttpCookieStore(context.getApplicationContext()), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+	}
 
-	/**
-	 * Judge whether the object is to begin.
-	 */
-	public abstract boolean isStarted();
+	public CookieManager(CookieStore store) {
+		super(store, CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+	}
 
 }

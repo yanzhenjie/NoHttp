@@ -15,8 +15,6 @@
  */
 package com.sample.nohttp.activity.method;
 
-import java.net.HttpCookie;
-
 import com.sample.nohttp.R;
 import com.sample.nohttp.nohttp.CallServer;
 import com.sample.nohttp.nohttp.HttpCallback;
@@ -41,7 +39,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	/**
 	 * 请求地址，你运行demo时，这里换成你的地址
 	 */
-	private String mTargetUrl = "https://github.com/Y0LANDA/NoHttp";
+	private String mTargetUrl = "http://192.168.1.36/HttpServer/UserLogin";
 	/**
 	 * 请求对象
 	 */
@@ -112,14 +110,6 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 		mRequest.add("userAge", 20);// int类型
 		mRequest.add("userSex", '1');// char类型，还支持其它类型
 
-		// 添加头
-		mRequest.addHeader("Author", "user=yolanda");
-
-		// 添加Cookie
-		HttpCookie cookie = new HttpCookie("username", "yolanda");
-		cookie.setDomain("192.168.1.36");
-		mRequest.addCookie(cookie);
-
 		// 设置这个请求的tag，NoHttp的请求会为你保持这个tag，在成功或者失败时返回给你
 		// mRequest.setTag(object);
 
@@ -143,7 +133,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	 * message 错误信息
 	 */
 	@Override
-	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 		Logger.i("失败：" + message);
 		mTvResult.setText("请求失败：" + message);
 	}

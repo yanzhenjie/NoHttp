@@ -51,9 +51,9 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
 	}
 
 	@Override
-	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 		if (callback != null)
-			callback.onFailed(what, url, tag, message);
+			callback.onFailed(what, url, tag, message, responseCode, networkMillis);
 	}
 
 	@Override

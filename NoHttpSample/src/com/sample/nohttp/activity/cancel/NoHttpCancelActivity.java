@@ -66,7 +66,7 @@ public class NoHttpCancelActivity extends Activity implements HttpCallback<Strin
 		String url = "http://www.baidu.com";
 
 		// 创建一个请求队列
-		mRequestQueue = NoHttp.newRequestQueue(getApplicationContext());
+		mRequestQueue = NoHttp.newRequestQueue();
 
 		// 实例化取消标志
 		cancelSign = new Object();
@@ -88,11 +88,16 @@ public class NoHttpCancelActivity extends Activity implements HttpCallback<Strin
 		mRequestQueue.add(REQUEST_2, mRequest1, new HttpResponseListener<String>(this, this));
 		mRequestQueue.add(REQUEST_3, mRequest2, new HttpResponseListener<String>(this, this));
 
+		// 以下三种方式选择合适自己的使用, 这里只是例举
+		
 		// 取消一个请求
 		mRequest.cancel();
 
 		// 取消用sign标志的请求
-		mRequestQueue.cancelAll(cancelSign);
+		mRequestQueue.cancelBySign(cancelSign);
+		
+		// 直接取消所有请求
+		mRequestQueue.cancelAll();
 
 		// 取消所有队列的请求
 		mRequestQueue.stop();
@@ -102,9 +107,9 @@ public class NoHttpCancelActivity extends Activity implements HttpCallback<Strin
 	public void onSucceed(int what, Response<String> response) {
 		Logger.i("请求成功: " + response.get());
 	}
-
+	
 	@Override
-	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 		Logger.i("请求失败: " + message);
 	}
 

@@ -16,7 +16,6 @@
 package com.sample.nohttp.activity.cookie;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,6 +31,7 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
+import com.yolanda.nohttp.cookie.CookieManager;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -69,7 +69,7 @@ public class NoHttpCookieActivity extends Activity implements View.OnClickListen
 		mTvStatus = (TextView) findViewById(R.id.tv_status);
 
 		// NoHttp会自动维持Cookie，如果开发者自己管理Cookie，设置CookieManager即可
-		CookieManager cookieManager = new CookieManager();
+		CookieManager cookieManager = new CookieManager(this);
 		NoHttp.setDefaultCookieManager(cookieManager);
 
 		// 并且这里你可以初始化一些Cookie到CookieManger，例如：
@@ -124,7 +124,7 @@ public class NoHttpCookieActivity extends Activity implements View.OnClickListen
 	}
 
 	@Override
-	public void onFailed(int what, String url, Object tag, CharSequence message) {
+	public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
 		mTvStatus.setText("请求失败: " + message);
 	}
 

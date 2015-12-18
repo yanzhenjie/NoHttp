@@ -49,24 +49,7 @@ public abstract class RestRequestor<T> extends Request<T> {
 	 */
 	public RestRequestor(String url, int requestMethod) {
 		super(url, requestMethod);
-		url = buildUrl();
 		this.mParamMap = new LinkedHashMap<String, Object>();
-	}
-
-	/**
-	 * Rebuilding the URL, compatible with the GET method, using {@code request.add(key, value);}
-	 */
-	protected final String buildUrl() {
-		StringBuffer urlBuffer = new StringBuffer(url);
-		if (!isOutPutMethod() && mParamMap.size() > 0) {
-			StringBuffer paramBuffer = buildCommonParams();
-			if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
-				urlBuffer.append("&");
-			else if (paramBuffer.length() > 0)
-				urlBuffer.append("?");
-			urlBuffer.append(paramBuffer);
-		}
-		return urlBuffer.toString();
 	}
 
 	@Override

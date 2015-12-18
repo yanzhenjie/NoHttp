@@ -15,15 +15,15 @@
  */
 package com.yolanda.nohttp;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +31,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 import com.yolanda.nohttp.security.SecureVerifier;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.text.TextUtils;
 
 /**
@@ -45,37 +47,52 @@ public abstract class BasicConnection {
 	 * Create a Http connection object, but do not establish a connection, where the request header information is set
 	 * up, including Cookie
 	 */
-	protected HttpURLConnection getHttpConnection(CommonRequest commonRequest) throws IOException, URISyntaxException {
-		String urlStr = commonRequest.url();
+	@TargetApi(Build.VERSION_CODES.KITKAT)
+	protected HttpURLConnection getHttpConnection(CommonRequest request) throws IOException, URISyntaxException {
+		String urlStr = request.url();
 		Logger.d("Reuqest adress:" + urlStr);
 		if (android.os.Build.VERSION.SDK_INT < 9)
 			System.setProperty("http.keepAlive", "false");
 
 		URL url = new URL(urlStr);
-		HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		if ("https".equals(url.getProtocol()))
-			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) httpConnection, commonRequest);
-		int requestMethod = commonRequest.getRequestMethod();
+			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) connection, request);
+		int requestMethod = request.getRequestMethod();
 		String method = RequestMethod.METHOD[requestMethod];
 		Logger.d("Request method:" + method);
-		httpConnection.setRequestMethod(method);
-		httpConnection.setDoInput(true);
-		httpConnection.setDoOutput(commonRequest.isOutPutMethod());
-		httpConnection.setConnectTimeout(commonRequest.getConnectTimeout());
-		httpConnection.setReadTimeout(commonRequest.getReadTimeout());
+		connection.setRequestMethod(method);
+		connection.setDoInput(true);
+		connection.setDoOutput(request.isOutPutMethod());
+		connection.setConnectTimeout(request.getConnectTimeout());
+		connection.setReadTimeout(request.getReadTimeout());
+		connection.setUseCaches(false);
+		connection.setInstanceFollowRedirects(true);
 
-		Headers headers = commonRequest.getHeaders();
-		if (headers == null)
-			headers = new Headers();
+		if (request.isOutPutMethod() && request.hasBinary()) {
+			connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + request.getBoundary());
+		} else {
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + request.getParamsEncoding());
+		}
 
-		// Accept:text/html
-		// Authorization:
-		// Accept-Language:zh-CN,zh;q=0.8
+		long contentLength = request.getContentLength();
+		if (contentLength < 0) {
+			connection.setChunkedStreamingMode(256 * 1024);
+		} else if (contentLength < Integer.MAX_VALUE) {
+			connection.setFixedLengthStreamingMode((int) contentLength);
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			connection.setFixedLengthStreamingMode(contentLength);
+		} else {
+			connection.setChunkedStreamingMode(256 * 1024);
+		}
+
+		Headers headers = request.headers();
+		headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
+
+		// TODO Authorization:
 
 		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);// gzip, deflate, sdch;
-																							// default: gzip
-		if (headers.get(Headers.HEAD_KEY_ACCEPT) == null)
-			headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT); // text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+		headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT); // text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
 
 		// 请求时：no-cache、no-store、max-age=0、max-stale、min-fresh、only-if-cached
 		// 响应时：public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age、s-maxage
@@ -91,13 +108,10 @@ public abstract class BasicConnection {
 		// This is mostly to stay close to the RI; it is unlikely any of the headers above would
 		// affect cookie choice besides "Host".
 		CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-		if (cookieManager != null) {
-			URI uri = new URI(commonRequest.url());
-			Map<String, List<String>> cookies = cookieManager.get(uri, Headers.toMultimap(headers));
-
-			// Add any new cookies to the request.
-			Headers.addCookiesToHeaders(headers, cookies);
-		}
+		@SuppressWarnings("unchecked")
+		Map<String, List<String>> cookieMaps = cookieManager.get(url.toURI(), Collections.EMPTY_MAP);
+		// Add any new cookies to the request.
+		Headers.addCookiesToHeaders(headers, cookieMaps);
 
 		Map<String, String> cookies = Headers.parseRequestCookie(headers);
 		headers.removeAll(Headers.HEAD_KEY_COOKIE);
@@ -110,30 +124,25 @@ public abstract class BasicConnection {
 		}
 
 		// 2.Adds all request header to httoConnection
-		Logger.i("-------Request Headers Start-------");
+		Logger.i("-------Send request headers start-------");
 		for (int i = 0; i < headers.size(); i++) {
 			String name = headers.name(i);
 			String value = headers.value(i);
 			Logger.i(name + ": " + value);
-			httpConnection.addRequestProperty(name, value);
+			connection.addRequestProperty(name, value);
 		}
-		Logger.i("-------Request Headers End-------");
-		if (commonRequest.isOutPutMethod() && commonRequest.hasBinary())
-			httpConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + commonRequest.getBoundary());
-		else
-			httpConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + commonRequest.getParamsEncoding());
-		return httpConnection;
+		Logger.i("-------Send request headers end-------");
+		return connection;
 	}
 
 	/**
 	 * Send the request data to the server
 	 */
 	protected <T> void writeRequestBody(HttpURLConnection connection, Request<T> request) throws IOException {
-		byte[] body = request.getRequestBody();
-		if (body != null) {
-			DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-			out.write(body);
-			out.close();
+		if (request.isOutPutMethod()) {
+			BufferedOutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
+			request.onWriteRequestBody(outputStream);
+			outputStream.close();
 		}
 	}
 
