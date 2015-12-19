@@ -69,7 +69,7 @@ public class NoHttpCookieActivity extends Activity implements View.OnClickListen
 		mTvStatus = (TextView) findViewById(R.id.tv_status);
 
 		// NoHttp会自动维持Cookie，如果开发者自己管理Cookie，设置CookieManager即可
-		CookieManager cookieManager = new CookieManager(this);
+		CookieManager cookieManager = new CookieManager();
 		NoHttp.setDefaultCookieManager(cookieManager);
 
 		// 并且这里你可以初始化一些Cookie到CookieManger，例如：
@@ -99,14 +99,6 @@ public class NoHttpCookieActivity extends Activity implements View.OnClickListen
 		mRequest.add("userName", "yolanda");
 		mRequest.add("userSex", "男");
 		mRequest.add("userAge", 20);
-
-		// 添加Cookie
-		HttpCookie cookie = new HttpCookie("sessionId", "164adsf465dsfs");
-		cookie.setDomain(".baidu.com");
-		mRequest.addCookie(cookie);
-
-		// 添加Cookie第二种方法
-		// mRequest.addCookie(cookieStore);
 
 		CallServer.getRequestInstance().add(this, 0, mRequest, this);
 	}

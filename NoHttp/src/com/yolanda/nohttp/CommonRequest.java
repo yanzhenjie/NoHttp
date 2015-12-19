@@ -18,12 +18,7 @@ package com.yolanda.nohttp;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Set;
 
 import com.yolanda.nohttp.able.Queueable;
@@ -204,34 +199,6 @@ public abstract class CommonRequest implements Queueable, Startable, SignCancela
 	 */
 	public void addHeader(String name, String value) {
 		mheaders.add(name, value);
-	}
-
-	/**
-	 * Add cookie to header
-	 */
-	public void addCookie(HttpCookie cookie) {
-		try {
-			URI uri = new URI(url);
-			if (HttpCookie.domainMatches(cookie.getDomain(), uri.getHost())) {
-				mheaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
-			}
-		} catch (URISyntaxException e) {
-			Logger.e(e);
-		}
-	}
-
-	/**
-	 * Add CookieStore to CookieManager of NoHttp, Will replace the old value
-	 */
-	public void addCookie(CookieStore cookieStore) {
-		try {
-			List<HttpCookie> httpCookies = cookieStore.get(new URI(url));
-			for (HttpCookie cookie : httpCookies) {
-				addCookie(cookie);
-			}
-		} catch (URISyntaxException e) {
-			Logger.e(e);
-		}
 	}
 
 	/**

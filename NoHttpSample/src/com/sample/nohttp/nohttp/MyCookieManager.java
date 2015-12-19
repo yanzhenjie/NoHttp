@@ -15,17 +15,7 @@
  */
 package com.sample.nohttp.nohttp;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.yolanda.nohttp.cookie.CookieManager;
-
-import android.content.Context;
 
 /**
  * Created in Oct 23, 2015 2:16:17 PM
@@ -37,20 +27,19 @@ public class MyCookieManager extends CookieManager {
 	/**
 	 * NoHttp会替你维护Cookie，这里可以用自己的CookieManger，添加一些必要的Cookie
 	 */
-	public MyCookieManager(Context context) {
-		super(context);
-		String cookieString = "sessionid=f564fsaf3asd4f6as35";
-		Map<String, List<String>> map = new HashMap<>();
-		List<String> lists = new ArrayList<>();
-		lists.add(cookieString);
-		map.put("Set-Cookie", lists);
-		try {
-			put(new URI("http://www.baidu.com"), map);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+	public MyCookieManager() {
+//		String cookieString = "sessionid=f564fsaf3asd4f6as35";
+//		Map<String, List<String>> map = new HashMap<>();
+//		List<String> lists = new ArrayList<>();
+//		lists.add(cookieString);
+//		map.put("Set-Cookie", lists);
+//		try {
+//			put(new URI("http://www.baidu.com"), map);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (URISyntaxException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 }

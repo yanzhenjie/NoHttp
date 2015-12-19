@@ -26,7 +26,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * 
  * @author YOLANDA;
  */
-class CookieDatabase extends SQLiteOpenHelper {
+class CookieDisker extends SQLiteOpenHelper {
 
 	private static final String COOKIE_DB_NAME = "_nohttp_cookies_db_name_";
 
@@ -48,15 +48,14 @@ class CookieDatabase extends SQLiteOpenHelper {
 	public final static String SECURE = "secure";
 	public final static String VERSION = "version";
 
-	public CookieDatabase() {
+	public CookieDisker() {
 		super(NoHttp.getContext(), COOKIE_DB_NAME, null, COOKIE_DB_VERSION);
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-
 		StringBuilder sql = new StringBuilder("create table ");
-		sql.append(CookieDatabase.TABLE_NAME);
+		sql.append(CookieDisker.TABLE_NAME);
 		sql.append("(");
 		sql.append(ID);
 		sql.append(" Integer primary key autoincrement, ");
@@ -89,6 +88,11 @@ class CookieDatabase extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		if (newVersion != oldVersion) {
+			StringBuilder sql = new StringBuilder("drop table if exists ");
+			sql.append(TABLE_NAME);
+			db.execSQL(sql.toString());
+		}
 	}
 
 }

@@ -15,8 +15,7 @@
  */
 package com.yolanda.nohttp;
 
-import java.net.CookieManager;
-
+import com.yolanda.nohttp.cookie.CookieManager;
 import com.yolanda.nohttp.download.DownloadConnection;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadQueue;
@@ -41,6 +40,10 @@ public class NoHttp {
 	public static final String MIMETYE_FILE = "application/octet-stream";
 
 	public static final int TIMEOUT_8S = 8 * 1000;
+
+	public static final int DEFAULT_REQUEST_THREAD_SIZE = 3;
+
+	public static final int DEFAULT_DOWNLOAD_THREAD_SIZE = 2;
 
 	private static Context sContext;
 
@@ -80,7 +83,7 @@ public class NoHttp {
 	 * Create a request queue, the default thread pool number is 5
 	 */
 	public static RequestQueue newRequestQueue() {
-		return newRequestQueue(5);
+		return newRequestQueue(DEFAULT_REQUEST_THREAD_SIZE);
 	}
 
 	/**
@@ -140,7 +143,7 @@ public class NoHttp {
 	 * @return
 	 */
 	public static DownloadQueue newDownloadQueue() {
-		return newDownloadQueue(2);
+		return newDownloadQueue(DEFAULT_DOWNLOAD_THREAD_SIZE);
 	}
 
 	/**

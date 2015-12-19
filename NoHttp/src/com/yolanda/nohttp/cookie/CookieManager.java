@@ -18,8 +18,6 @@ package com.yolanda.nohttp.cookie;
 import java.net.CookiePolicy;
 import java.net.CookieStore;
 
-import android.content.Context;
-
 /**
  * </br>
  * Created in Dec 17, 2015 7:56:27 PM
@@ -28,8 +26,8 @@ import android.content.Context;
  */
 public class CookieManager extends java.net.CookieManager {
 
-	public CookieManager(Context context) {
-		super(new NoHttpCookieStore(context.getApplicationContext()), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+	public CookieManager() {
+		super(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ORIGINAL_SERVER);
 	}
 
 	public CookieManager(CookieStore store) {
