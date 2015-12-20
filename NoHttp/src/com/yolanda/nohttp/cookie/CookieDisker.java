@@ -28,71 +28,55 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 class CookieDisker extends SQLiteOpenHelper {
 
-	private static final String COOKIE_DB_NAME = "_nohttp_cookies_db_name_";
+	public final static String DB_COOKIE_NAME = "_nohttp_cookies_db.db";
+	public final static int DB_COOKIE_VERSION = 1;
 
-	private static final int COOKIE_DB_VERSION = 1;
-
-	public static final String TABLE_NAME = "_cookies_table_name_";
-
+	public final static String TABLE_NAME = "cookies_table";
+	public final static String ALL = "*";
 	public final static String ID = "_id";
 	public final static String URI = "uri";
 	public final static String NAME = "name";
 	public final static String VALUE = "value";
 	public final static String COMMENT = "comment";
-	public final static String COMMENTURL = "commentURL";
+	public final static String COMMENTURL = "comment_url";
 	public final static String DISCARD = "discard";
 	public final static String DOMAIN = "domain";
 	public final static String EXPIRY = "expiry";
 	public final static String PATH = "path";
-	public final static String PORTLIST = "portList";
+	public final static String PORTLIST = "portlist";
 	public final static String SECURE = "secure";
 	public final static String VERSION = "version";
 
+	private final static String SQL_CREATE_TABLE = "CREATE TABLE cookies_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, name TEXT, value TEXT, comment TEXT, comment_url TEXT, discard TEXT, domain TEXT, expiry INTEGER, path TEXT, portlist TEXT, secure TEXT, version INTEGER)";
+	private final static String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX unique_index_cookie ON cookies_table(name, domain, path)";
+	private final static String SQL_DELETE_TABLE = "DROP TABLE cookies_table";
+
 	public CookieDisker() {
-		super(NoHttp.getContext(), COOKIE_DB_NAME, null, COOKIE_DB_VERSION);
+		super(NoHttp.getContext(), DB_COOKIE_NAME, null, DB_COOKIE_VERSION);
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		StringBuilder sql = new StringBuilder("create table ");
-		sql.append(CookieDisker.TABLE_NAME);
-		sql.append("(");
-		sql.append(ID);
-		sql.append(" Integer primary key autoincrement, ");
-		sql.append(URI);
-		sql.append(" text, ");
-		sql.append(NAME);
-		sql.append(" text, ");
-		sql.append(VALUE);
-		sql.append(" text, ");
-		sql.append(COMMENT);
-		sql.append(" text, ");
-		sql.append(COMMENTURL);
-		sql.append(" text, ");
-		sql.append(DISCARD);
-		sql.append(" Integer, ");
-		sql.append(DOMAIN);
-		sql.append(" text, ");
-		sql.append(EXPIRY);
-		sql.append(" Integer, ");
-		sql.append(PATH);
-		sql.append(" text, ");
-		sql.append(PORTLIST);
-		sql.append(" text, ");
-		sql.append(SECURE);
-		sql.append(" Integer, ");
-		sql.append(VERSION);
-		sql.append(" Integer); ");
-		db.execSQL(sql.toString());
+		db.beginTransaction();
+		try {
+			db.execSQL(SQL_CREATE_TABLE);
+			db.execSQL(SQL_CREATE_UNIQUE_INDEX);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		if (newVersion != oldVersion) {
-			StringBuilder sql = new StringBuilder("drop table if exists ");
-			sql.append(TABLE_NAME);
-			db.execSQL(sql.toString());
+			db.execSQL(SQL_DELETE_TABLE);
+			onCreate(db);
 		}
 	}
 
+	@Override
+	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		onUpgrade(db, oldVersion, newVersion);
+	}
 }

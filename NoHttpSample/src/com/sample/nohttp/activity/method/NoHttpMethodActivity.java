@@ -39,7 +39,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	/**
 	 * 请求地址，你运行demo时，这里换成你的地址
 	 */
-	private String mTargetUrl = "http://192.168.1.36/HttpServer/UserLogin";
+	private String mTargetUrl = "http://192.168.1.112/HttpServer/NoHttp";
 	/**
 	 * 请求对象
 	 */

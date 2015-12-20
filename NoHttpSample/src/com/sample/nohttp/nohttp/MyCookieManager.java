@@ -15,7 +15,7 @@
  */
 package com.sample.nohttp.nohttp;
 
-import com.yolanda.nohttp.cookie.CookieManager;
+import java.net.CookieManager;
 
 /**
  * Created in Oct 23, 2015 2:16:17 PM

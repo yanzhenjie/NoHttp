@@ -19,15 +19,13 @@ import java.io.Serializable;
 import java.net.HttpCookie;
 import java.net.URI;
 
-import android.text.TextUtils;
-
 /**
  * </br>
  * Created in Dec 17, 2015 7:21:16 PM
  * 
  * @author YOLANDA;
  */
-class NoHttpCookie implements Serializable {
+class CookieEntity implements Serializable {
 
 	private static final long serialVersionUID = 6374381323722046732L;
 
@@ -50,10 +48,10 @@ class NoHttpCookie implements Serializable {
 	private boolean secure;
 	private int version = 1;
 
-	public NoHttpCookie() {
+	public CookieEntity() {
 	}
 
-	public NoHttpCookie(URI uri, HttpCookie cookie) {
+	public CookieEntity(URI uri, HttpCookie cookie) {
 		this.uri = uri == null ? null : uri.toString();
 		this.name = cookie.getName();
 		this.value = cookie.getValue();
@@ -69,9 +67,6 @@ class NoHttpCookie implements Serializable {
 			}
 		}
 		this.path = cookie.getPath();
-		if (!TextUtils.isEmpty(path) && path.length() > 1 && path.endsWith("/")) {
-			this.path = path.substring(0, path.length() - 1);
-		}
 		this.portList = cookie.getPortlist();
 		this.secure = cookie.getSecure();
 		this.version = cookie.getVersion();

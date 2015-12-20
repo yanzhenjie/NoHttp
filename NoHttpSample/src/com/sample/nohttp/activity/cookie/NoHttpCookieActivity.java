@@ -16,6 +16,7 @@
 package com.sample.nohttp.activity.cookie;
 
 import java.io.IOException;
+import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,7 +32,6 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
-import com.yolanda.nohttp.cookie.CookieManager;
 
 import android.app.Activity;
 import android.os.Bundle;

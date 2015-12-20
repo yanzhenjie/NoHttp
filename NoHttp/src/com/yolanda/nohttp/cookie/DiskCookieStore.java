@@ -19,15 +19,9 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.channels.Selector;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.yolanda.nohttp.Logger;
 
@@ -43,11 +37,9 @@ public enum DiskCookieStore implements CookieStore {
 
 	INSTANCE;
 
-	private Lock lock = null;
+	private final static int MAX_COOKIE_SIZE = 5000;
 
 	private CookieDiskManager mManager;
-
-	private final static Executor THREAD_EXECUTOR = Executors.newSingleThreadExecutor();
 
 	/**
 	 * Construct a persistent cookie store.
@@ -55,147 +47,149 @@ public enum DiskCookieStore implements CookieStore {
 	 * @param context Context to attach cookie store to
 	 */
 	DiskCookieStore() {
-		lock = new ReentrantLock(false);
-		mManager = new CookieDiskManager();
+		mManager = CookieDiskManager.getInstance();
 	}
 
 	@Override
 	public void add(URI uri, HttpCookie cookie) {
-		lock.lock();
-		try {
-			if (cookie == null) {
-				return;
-			}
-			uri = getEffectiveURI(uri);
-			mManager.replace(new NoHttpCookie(uri, cookie));
-			trimSize();
-		} finally {
-			lock.unlock();
+		if (cookie == null) {
+			return;
 		}
+		uri = getEffectiveURI(uri);
+		mManager.replace(new CookieEntity(uri, cookie));
+		trimSize();
 	}
 
 	@Override
 	public List<HttpCookie> get(URI uri) {
-		if (uri == null) {
+		if (uri == null)
 			return Collections.emptyList();
-		}
 		uri = getEffectiveURI(uri);
-		List<HttpCookie> rt = new ArrayList<HttpCookie>();
 		deleteExpiryCookies();
-		try {
-			Selector<CookieEntity> selector = db.selector(CookieEntity.class);
-			Where where = new Where();
-			String host = uri.getHost();
-			if (!TextUtils.isEmpty(host)) {
-				where.set("domain", "=", host);
-				int lastDot = host.lastIndexOf(".");
-				if (lastDot > 1) {
-					lastDot = host.lastIndexOf(".", lastDot - 1);
-					if (lastDot > 0) {
-						String domain = host.substring(lastDot, host.length());
-						if (!TextUtils.isEmpty(domain)) {
-							where.or("domain", "=", domain);
-						}
+		Where where = new Where();
+		String host = uri.getHost();
+		if (!TextUtils.isEmpty(host)) {
+			Where subWhere = new Where(CookieDisker.DOMAIN, "=", host);
+			int lastDot = host.lastIndexOf(".");
+			if (lastDot > 1) {
+				lastDot = host.lastIndexOf(".", lastDot - 1);
+				if (lastDot > 0) {
+					String domain = host.substring(lastDot, host.length());
+					if (!TextUtils.isEmpty(domain)) {
+						subWhere.or(CookieDisker.DOMAIN, "=", domain).insert(0, "(").add(")");
 					}
 				}
 			}
+			where.set(subWhere.get());
+		}
 
-			String path = uri.getPath();
-			if (!TextUtils.isEmpty(path)) {
-				Where subWhere = new Where("path", "=", path).or("path", "=", "/").or("path", "=", null);
-				int lastSplit = path.lastIndexOf("/");
-				while (lastSplit > 0) {
-					path = path.substring(0, lastSplit);
-					subWhere.or("path", "=", path);
-					lastSplit = path.lastIndexOf("/");
-				}
-				where.and(subWhere.toString());
+		String path = uri.getPath();
+		if (!TextUtils.isEmpty(path)) {
+			Where subWhere = new Where(CookieDisker.PATH, "=", path).or(CookieDisker.PATH, "=", "/").orNull(CookieDisker.PATH);
+			int lastSplit = path.lastIndexOf("/");
+			while (lastSplit > 0) {
+				path = path.substring(0, lastSplit);
+				subWhere.or(CookieDisker.PATH, "=", path);
+				lastSplit = path.lastIndexOf("/");
 			}
-			where.or("uri", "=", uri.toString());
-			List<CookieEntity> cookieEntityList = selector.where(where).findAll();
-			if (cookieEntityList != null) {
-				for (CookieEntity cookieEntity : cookieEntityList) {
-					rt.add(cookieEntity.toHttpCookie());
-				}
-			}
-		} catch (Throwable ex) {
-			LogUtil.e(ex.getMessage(), ex);
+			subWhere.insert(0, "(").add(")");
+			where.and(subWhere.get());
+		}
+
+		where.or(CookieDisker.URI, "=", uri.toString());
+
+		List<CookieEntity> cookieEntityList = mManager.get(null, where.toString(), null, null, null);
+		List<HttpCookie> rt = new ArrayList<HttpCookie>();
+		for (CookieEntity cookieEntity : cookieEntityList) {
+			rt.add(cookieEntity.toHttpCookie());
 		}
 		return rt;
 	}
 
 	@Override
 	public List<HttpCookie> getCookies() {
-		ArrayList<HttpCookie> ret = new ArrayList<HttpCookie>();
-		Collection<HttpCookie> removeCookieMap = new ArrayList<HttpCookie>();
-		for (String host : cookies.keySet()) {
-			Collection<HttpCookie> cookieMap = cookies.get(host).values();
-			for (HttpCookie httpCookie : cookieMap) {
-				if (httpCookie.hasExpired()) {
-					removeCookieMap.add(httpCookie);
-				} else {
-					ret.add(httpCookie);
-				}
-			}
+		List<HttpCookie> rt = new ArrayList<HttpCookie>();
+		deleteExpiryCookies();
+		List<CookieEntity> cookieEntityList = mManager.getAll();
+		for (CookieEntity cookieEntity : cookieEntityList) {
+			rt.add(cookieEntity.toHttpCookie());
 		}
-		removeCookieMap.clear();
-		return ret;
+		return rt;
 	}
 
 	@Override
 	public List<URI> getURIs() {
-		ArrayList<URI> ret = new ArrayList<URI>();
-		for (String key : cookies.keySet())
-			try {
-				ret.add(new URI(key));
-			} catch (URISyntaxException e) {
-				Logger.w(e);
+		List<URI> uris = new ArrayList<URI>();
+		List<CookieEntity> uriList = mManager.getAll(CookieDisker.URI);
+		for (CookieEntity cookie : uriList) {
+			String uri = cookie.getUri();
+			if (!TextUtils.isEmpty(uri)) {
+				try {
+					uris.add(new URI(uri));
+				} catch (Throwable e) {
+					Logger.w(e);
+					StringBuilder where = new StringBuilder(CookieDisker.URI).append('=').append(uri);
+					mManager.delete(where.toString());
+				}
 			}
-
-		return ret;
+		}
+		return uris;
 	}
 
 	@Override
-	public boolean remove(URI uri, HttpCookie cookie) {
-		String token = getCookieToken(uri, cookie);
-		String host = uri.getHost();
-		if (cookies.containsKey(host) && cookies.get(host).containsKey(token)) {
-			cookies.get(host).remove(token);
-			removeFromDisk(getKeyByToken(token));
-			addToDisk(host, tokenSetString(host));
+	public boolean remove(URI uri, HttpCookie httpCookie) {
+		if (httpCookie == null)
 			return true;
-		} else {
-			return false;
-		}
+
+		CookieEntity cookie = new CookieEntity(uri, httpCookie);
+		Where where = new Where(CookieDisker.NAME, "=", cookie.getName());
+
+		String domain = cookie.getDomain();
+		if (!TextUtils.isEmpty(domain))
+			where.and(CookieDisker.DOMAIN, "=", domain);
+
+		String path = cookie.getPath();
+		if (!TextUtils.isEmpty(path))
+			where.and(CookieDisker.PATH, "=", path);
+
+		return mManager.delete(where.toString());
 	}
 
 	@Override
 	public boolean removeAll() {
-		cookies.clear();
-		clearFromDisk();
-		return true;
+		return mManager.deleteAll();
 	}
 
+	/**
+	 * Delete all expired cookies
+	 */
 	private void deleteExpiryCookies() {
 		StringBuilder deleteWhere = new StringBuilder(CookieDisker.EXPIRY);
-		deleteWhere.append("<");
+		deleteWhere.append('<');
 		deleteWhere.append(System.currentTimeMillis());
 		mManager.delete(deleteWhere.toString());
 	}
 
+	/**
+	 * Trim the Cookie list
+	 */
 	private void trimSize() {
-		THREAD_EXECUTOR.execute(new Runnable() {
-			@Override
-			public void run() {
-
+		int count = mManager.count();
+		if (count > MAX_COOKIE_SIZE + 10) {
+			List<CookieEntity> rmList = mManager.get(CookieDisker.ALL, null, null, Integer.toString(count - MAX_COOKIE_SIZE), null);
+			if (rmList != null) {
+				mManager.delete(rmList);
 			}
-		});
+		}
 	}
 
+	/**
+	 * Get effective URI
+	 */
 	private URI getEffectiveURI(final URI uri) {
 		URI effectiveURI = null;
 		try {
-			effectiveURI = new URI("http", uri.getHost(), uri.getPath(), null, null);
+			effectiveURI = new URI(uri.getScheme(), uri.getHost(), uri.getPath(), null, null);
 		} catch (URISyntaxException e) {
 			effectiveURI = uri;
 		}

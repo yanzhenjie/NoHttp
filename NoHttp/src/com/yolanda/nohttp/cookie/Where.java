@@ -22,8 +22,6 @@ package com.yolanda.nohttp.cookie;
  * @author YOLANDA;
  */
 public class Where {
-	private boolean isAnd;
-	private boolean isOr;
 
 	private StringBuilder builder;
 
@@ -31,154 +29,96 @@ public class Where {
 		builder = new StringBuilder();
 	}
 
-	/**
-	 * eg: name op value
-	 */
-	public Where(String columnName, String op, Object value) {
-		this();
-		builder.append(columnName);
-		builder.append(op);
-		builder.append(value);
+	public Where(CharSequence columnName, CharSequence op, Object value) {
+		builder = new StringBuilder();
+		add(columnName, op, value);
 	}
 
-	/**
-	 * eg: name op value
-	 */
-	public Where set(String columnName, String op, Object value) {
+	public final Where set(String row) {
+		clear().add(row);
+		return this;
+	}
+
+	public final Where add(CharSequence row) {
+		builder.append(row);
+		return this;
+	}
+
+	public final Where add(CharSequence columnName, CharSequence op, Object value) {
+		builder.append("\"").append(columnName).append("\" ").append(op);
+		if (value instanceof Long || value instanceof Integer)
+			builder.append(value);
+		else
+			builder.append(" '").append(value).append("'");
+		return this;
+	}
+
+	public final Where isNull(CharSequence columnName) {
+		builder.append("\"").append(columnName).append("\" ").append("IS ").append("NULL");
+		return this;
+	}
+
+	public final Where insert(int offset, CharSequence s) {
+		builder.insert(offset, s);
+		return this;
+	}
+
+	public final Where and(CharSequence columnName, CharSequence op, Object value) {
+		and();
+		add(columnName, op, value);
+		return this;
+	}
+
+	public final Where and(CharSequence row) {
+		and();
+		builder.append(row);
+		return this;
+	}
+
+	private final Where and() {
+		if (builder.length() > 0) {
+			builder.append(" AND ");
+		}
+		return this;
+	}
+
+	public final Where andNull(CharSequence columnName) {
+		and();
+		isNull(columnName);
+		return this;
+	}
+
+	public final Where or(CharSequence columnName, CharSequence op, CharSequence value) {
+		or();
+		add(columnName, op, value);
+		return this;
+	}
+
+	public final Where or(CharSequence row) {
+		or();
+		builder.append(row);
+		return this;
+	}
+
+	public final Where orNull(CharSequence columnName) {
+		or();
+		isNull(columnName);
+		return this;
+	}
+
+	private final Where or() {
+		if (builder.length() > 0) {
+			builder.append(" OR ");
+		}
+		return this;
+	}
+
+	public final Where clear() {
 		builder.delete(0, builder.length());
-		builder.append(columnName);
-		builder.append(op);
-		builder.append(value);
 		return this;
 	}
 
-	/**
-	 * eg: xxx and name op value
-	 */
-	public Where and(String columnName, String op, Object value) {
-		if (builder.length() > 0) {
-			if (!isAnd && isOr) {
-				builder.insert(0, '(');
-				builder.append(')');
-			}
-			builder.append(" and ");
-		}
-		builder.append(columnName);
-		builder.append(op);
-		builder.append(value);
-		isAnd = true;
-		isOr = false;
-		return this;
-	}
-
-	/**
-	 * eg: xxx and (row)
-	 */
-	public Where and(String row) {
-		if (builder.length() > 0) {
-			if (!isAnd && isOr) {
-				builder.insert(0, '(');
-				builder.append(')');
-			}
-			builder.append(" and ");
-		}
-		builder.append("(");
-		builder.append(row);
-		builder.append(")");
-		isAnd = true;
-		isOr = false;
-		return this;
-	}
-
-	/**
-	 * eg: xxx or name op value
-	 */
-	public Where or(String columnName, String op, Object value) {
-		if (builder.length() > 0) {
-			if (isAnd && !isOr) {
-				builder.insert(0, '(');
-				builder.append(')');
-			}
-			builder.append(" or ");
-		}
-		builder.append(columnName);
-		builder.append(op);
-		builder.append(value);
-		isAnd = false;
-		isOr = true;
-		return this;
-	}
-
-	/**
-	 * eg: xxx or (row)
-	 */
-	public Where or(String row) {
-		if (builder.length() > 0) {
-			if (!isAnd && isOr) {
-				builder.insert(0, '(');
-				builder.append(')');
-			}
-			builder.append(" or ");
-		}
-		builder.append("(");
-		builder.append(row);
-		builder.append(")");
-		isAnd = false;
-		isOr = true;
-		return this;
-	}
-
-	/**
-	 * eg: xxx and (firstName firstOp firstValue or secondName secondOp secondValue)
-	 */
-	public Where andOr(String firstColumnName, String firstOp, Object firstValue, String secondColumnName, String secondOp, Object secondValue) {
-		if (builder.length() > 0) {
-			if (!isAnd && isOr) {
-				builder.insert(0, '(');
-				builder.append(")");
-			}
-			builder.append(" and ");
-		}
-		builder.append("(");
-		builder.append(firstColumnName);
-		builder.append(firstOp);
-		builder.append(firstValue);
-		builder.append(" or ");
-		builder.append(firstColumnName);
-		builder.append(firstOp);
-		builder.append(firstValue);
-		builder.append(")");
-		isAnd = true;
-		isOr = false;
-		return this;
-	}
-
-	/**
-	 * eg: xxx or (firstName firstOp firstValue and secondName secondOp secondValue)
-	 */
-	public Where orAnd(String firstColumnName, String firstOp, Object firstValue, String secondColumnName, String secondOp, Object secondValue) {
-		if (builder.length() > 0) {
-			if (isAnd && isOr) {
-				builder.insert(0, '(');
-				builder.append(")");
-			}
-			builder.append(" or ");
-		}
-		builder.append("(");
-		builder.append(firstColumnName);
-		builder.append(firstOp);
-		builder.append(firstValue);
-		builder.append(" and ");
-		builder.append(firstColumnName);
-		builder.append(firstOp);
-		builder.append(firstValue);
-		builder.append(")");
-		isAnd = false;
-		isOr = true;
-		return this;
-	}
-
-	public String get() {
+	public final String get() {
 		return builder.toString();
 	}
 

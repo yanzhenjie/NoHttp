@@ -15,7 +15,10 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.cookie.CookieManager;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
+import com.yolanda.nohttp.cookie.DiskCookieStore;
 import com.yolanda.nohttp.download.DownloadConnection;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadQueue;
@@ -24,7 +27,6 @@ import com.yolanda.nohttp.download.RestDownloadRequestor;
 import com.yolanda.nohttp.security.SecureVerifier;
 
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
@@ -34,18 +36,31 @@ import android.widget.ImageView;
  * @author YOLANDA
  */
 public class NoHttp {
-
+	/**
+	 * Default charset of request body, value is {@value}
+	 */
 	public static final String CHARSET_UTF8 = "UTF-8";
-
+	/**
+	 * Default mimetype of upload file, value is {@value}
+	 */
 	public static final String MIMETYE_FILE = "application/octet-stream";
-
+	/**
+	 * Default timeout, value is {@value}s
+	 */
 	public static final int TIMEOUT_8S = 8 * 1000;
-
+	/**
+	 * RequestQueue default thread size, value is {@value}
+	 */
 	public static final int DEFAULT_REQUEST_THREAD_SIZE = 3;
-
+	/**
+	 * DownloadQueue default thread size, value is {@value}
+	 */
 	public static final int DEFAULT_DOWNLOAD_THREAD_SIZE = 2;
 
-	private static Context sContext;
+	/**
+	 * Context
+	 */
+	private static Application sApplication;
 
 	/**
 	 * Cookie
@@ -53,25 +68,26 @@ public class NoHttp {
 	private static CookieManager sCookieManager;
 
 	/**
-	 * initialization NoHttp
+	 * Initialization NoHttp, Should invoke on {@link Application#onCreate()}
 	 */
-	public static void init(Application context) {
-		sContext = context.getApplicationContext();
-		sCookieManager = new CookieManager();
+	public static void init(Application application) {
+		sApplication = application;
+		sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
 	}
 
-	public static Context getContext() {
-		if (sContext == null)
+	/**
+	 * Get application of app
+	 */
+	public static Application getContext() {
+		if (sApplication == null)
 			throw new ExceptionInInitializerError("please invoke NoHttp.init(Application) on Application#onCreate()");
-		return sContext;
+		return sApplication;
 	}
 
 	/**
 	 * Create a new request queue
 	 * 
-	 * @param context ApplicationContext
 	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
-	 * @return
 	 */
 	public static RequestQueue newRequestQueue(int threadPoolSize) {
 		RequestQueue requestQueue = new RequestQueue(HttpRestConnection.getInstance(getContext()), threadPoolSize);
@@ -80,7 +96,7 @@ public class NoHttp {
 	}
 
 	/**
-	 * Create a request queue, the default thread pool number is 5
+	 * Create a request queue, the default thread pool number is {@link NoHttp#DEFAULT_REQUEST_THREAD_SIZE}
 	 */
 	public static RequestQueue newRequestQueue() {
 		return newRequestQueue(DEFAULT_REQUEST_THREAD_SIZE);
@@ -125,8 +141,6 @@ public class NoHttp {
 	 * To start a synchronization request, the request task will be triggered at the current thread, and the thread can
 	 * be used.
 	 * 
-	 * @param what Http request sign, If multiple requests the Listener is the same, so that I can be used to mark which
-	 *        one is the request
 	 * @param request The packaging of the HTTP request parameter
 	 */
 	public static <T> Response<T> startRequestSync(Request<T> request) {
@@ -137,10 +151,7 @@ public class NoHttp {
 	}
 
 	/**
-	 * Create a new download queue, the default thread pool number is 1
-	 * 
-	 * @param context ApplicationContext
-	 * @return
+	 * Create a new download queue, the default thread pool number is {@link NoHttp#DEFAULT_DOWNLOAD_THREAD_SIZE}
 	 */
 	public static DownloadQueue newDownloadQueue() {
 		return newDownloadQueue(DEFAULT_DOWNLOAD_THREAD_SIZE);
@@ -149,9 +160,7 @@ public class NoHttp {
 	/**
 	 * Create a new download queue
 	 * 
-	 * @param context ApplicationContext
 	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
-	 * @return
 	 */
 	public static DownloadQueue newDownloadQueue(int threadPoolSize) {
 		DownloadQueue downloadQueue = new DownloadQueue(DownloadConnection.getInstance(getContext()), threadPoolSize);

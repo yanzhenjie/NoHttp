@@ -18,8 +18,11 @@ package com.yolanda.nohttp.cookie;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.yolanda.nohttp.Logger;
+
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
@@ -29,47 +32,66 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA;
  */
-public class CookieDiskManager {
-
+class CookieDiskManager {
+	/**
+	 * Instance
+	 */
+	private static CookieDiskManager _Instance;
+	/**
+	 * Disk manager
+	 */
 	private CookieDisker mCookieDisker;
+	/**
+	 * Disk executor
+	 */
 	private SQLiteDatabase execute;
 
-	public CookieDiskManager() {
+	private CookieDiskManager() {
 		mCookieDisker = new CookieDisker();
 	}
 
-	public long add(NoHttpCookie httpCookie) {
-		getWritableDatabase();
+	public static CookieDiskManager getInstance() {
+		if (_Instance == null) {
+			_Instance = new CookieDiskManager();
+		}
+		return _Instance;
+	}
+
+	/**
+	 * Add or update by index(name, domain, path)
+	 */
+	public long replace(CookieEntity cookies) {
+		openWriter();
 		ContentValues values = new ContentValues();
-		values.put(CookieDisker.URI, httpCookie.getUri());
-		values.put(CookieDisker.NAME, httpCookie.getName());
-		values.put(CookieDisker.VALUE, httpCookie.getValue());
-		values.put(CookieDisker.COMMENT, httpCookie.getComment());
+		values.put(CookieDisker.URI, cookies.getUri());
+		values.put(CookieDisker.NAME, cookies.getName());
+		values.put(CookieDisker.VALUE, cookies.getValue());
+		values.put(CookieDisker.COMMENT, cookies.getComment());
 		values.put(CookieDisker.COMMENTURL, CookieDisker.COMMENTURL);
-		values.put(CookieDisker.DISCARD, httpCookie.isDiscard() ? 1 : 0);
-		values.put(CookieDisker.DOMAIN, httpCookie.getDomain());
-		values.put(CookieDisker.EXPIRY, httpCookie.getExpiry());
-		values.put(CookieDisker.PORTLIST, httpCookie.getPortList());
-		values.put(CookieDisker.SECURE, httpCookie.isSecure() ? 1 : 0);
-		values.put(CookieDisker.VERSION, httpCookie.getVersion());
-		long id = execute.insert(CookieDisker.TABLE_NAME, null, values);
+		values.put(CookieDisker.DISCARD, String.valueOf(cookies.isDiscard()));
+		values.put(CookieDisker.DOMAIN, cookies.getDomain());
+		values.put(CookieDisker.EXPIRY, cookies.getExpiry());
+		values.put(CookieDisker.PORTLIST, cookies.getPortList());
+		values.put(CookieDisker.SECURE, String.valueOf(cookies.isSecure()));
+		values.put(CookieDisker.VERSION, cookies.getVersion());
+		long id = -1;
+		try {
+			id = execute.replace(CookieDisker.TABLE_NAME, null, values);
+		} catch (Throwable e) {
+			Logger.e(e);
+		}
 		finish();
 		return id;
 	}
 
-	public long replace(NoHttpCookie httpCookie) {
-		getWritableDatabase();
+	/**
+	 * Get Cookie List
+	 */
+	public List<CookieEntity> get(String columnName, String where, String orderBy, String limit, String offset) {
+		openReader();
 
-		long id = 0;
-		finish();
-		return id;
-	}
-
-	public List<NoHttpCookie> get(String where, String orderBy, String limit, String offset) {
-		getReadableDatabase();
-
-		List<NoHttpCookie> httpCookies = new ArrayList<NoHttpCookie>();
-		StringBuilder sql = new StringBuilder("select * from");
+		List<CookieEntity> cookies = new ArrayList<CookieEntity>();
+		StringBuilder sql = new StringBuilder("select ").append(columnName).append(" from");
 		sql.append(CookieDisker.TABLE_NAME);
 		if (!TextUtils.isEmpty(where)) {
 			sql.append(" where ");
@@ -87,52 +109,124 @@ public class CookieDiskManager {
 			sql.append(" offset ");
 			sql.append(offset);
 		}
-		Cursor cursor = execute.rawQuery(sql.toString(), null);
-		if (cursor.moveToNext()) {
-			NoHttpCookie httpCookie = new NoHttpCookie();
-			httpCookie.setId(cursor.getInt(cursor.getColumnIndex(CookieDisker.ID)));
-			httpCookie.setUri(cursor.getString(cursor.getColumnIndex(CookieDisker.URI)));
-			httpCookie.setName(cursor.getString(cursor.getColumnIndex(CookieDisker.NAME)));
-			httpCookie.setValue(cursor.getString(cursor.getColumnIndex(CookieDisker.VALUE)));
-			httpCookie.setComment(cursor.getString(cursor.getColumnIndex(CookieDisker.COMMENT)));
-			httpCookie.setCommentURL(cursor.getString(cursor.getColumnIndex(CookieDisker.COMMENTURL)));
-			httpCookie.setDiscard(cursor.getInt(cursor.getColumnIndex(CookieDisker.DISCARD)) == 1);
-			httpCookie.setDomain(cursor.getString(cursor.getColumnIndex(CookieDisker.DOMAIN)));
-			httpCookie.setExpiry(cursor.getLong(cursor.getColumnIndex(CookieDisker.EXPIRY)));
-			httpCookie.setPath(cursor.getString(cursor.getColumnIndex(CookieDisker.PATH)));
-			httpCookie.setPortList(cursor.getString(cursor.getColumnIndex(CookieDisker.PORTLIST)));
-			httpCookie.setSecure(cursor.getInt(cursor.getColumnIndex(CookieDisker.SECURE)) == 1);
-			httpCookie.setVersion(cursor.getInt(cursor.getColumnIndex(CookieDisker.VERSION)));
-			httpCookies.add(httpCookie);
+		Cursor cursor = null;
+		try {
+			cursor = execute.rawQuery(sql.toString(), null);
+			while (cursor.moveToNext()) {
+				try {
+					CookieEntity httpCookie = new CookieEntity();
+					httpCookie.setId(cursor.getInt(cursor.getColumnIndex(CookieDisker.ID)));
+					httpCookie.setUri(cursor.getString(cursor.getColumnIndex(CookieDisker.URI)));
+					httpCookie.setName(cursor.getString(cursor.getColumnIndex(CookieDisker.NAME)));
+					httpCookie.setValue(cursor.getString(cursor.getColumnIndex(CookieDisker.VALUE)));
+					httpCookie.setComment(cursor.getString(cursor.getColumnIndex(CookieDisker.COMMENT)));
+					httpCookie.setCommentURL(cursor.getString(cursor.getColumnIndex(CookieDisker.COMMENTURL)));
+					httpCookie.setDiscard("true".equals(cursor.getString(cursor.getColumnIndex(CookieDisker.DISCARD))));
+					httpCookie.setDomain(cursor.getString(cursor.getColumnIndex(CookieDisker.DOMAIN)));
+					httpCookie.setExpiry(cursor.getLong(cursor.getColumnIndex(CookieDisker.EXPIRY)));
+					httpCookie.setPath(cursor.getString(cursor.getColumnIndex(CookieDisker.PATH)));
+					httpCookie.setPortList(cursor.getString(cursor.getColumnIndex(CookieDisker.PORTLIST)));
+					httpCookie.setSecure("true".equals(cursor.getString(cursor.getColumnIndex(CookieDisker.SECURE))));
+					httpCookie.setVersion(cursor.getInt(cursor.getColumnIndex(CookieDisker.VERSION)));
+					cookies.add(httpCookie);
+				} catch (Throwable e) {
+					Logger.e(e);
+				}
+			}
+		} catch (Throwable e) {
+			Logger.e(e);
 		}
-		cursor.close();
-		finish();
-		return httpCookies;
+		finish(cursor);
+		return cookies;
 	}
 
-	public List<NoHttpCookie> getAll() {
-		return get(null, null, null, null);
+	/**
+	 * Get all cookie in database
+	 */
+	public List<CookieEntity> getAll() {
+		return getAll("*");
 	}
 
-	public void delete(String where) {
+	/**
+	 * Get all cookie in database
+	 */
+	public List<CookieEntity> getAll(String columnName) {
+		return get(columnName, null, null, null, null);
+	}
+
+	/**
+	 * delete data
+	 */
+	public boolean delete(String where) {
 		if (TextUtils.isEmpty(where))
-			throw new NullPointerException("where is null");
-		StringBuilder sql = new StringBuilder("delete from ");
-		sql.append(CookieDisker.TABLE_NAME);
-		sql.append(" where ");
-		sql.append(where);
-		execute.execSQL(sql.toString());
+			return true;
+		openWriter();
+		StringBuilder sql = new StringBuilder("delete from ").append(CookieDisker.TABLE_NAME).append(" where ").append(where);
+		boolean result = true;
+		try {
+			execute.execSQL(sql.toString());
+		} catch (SQLException e) {
+			Logger.e(e);
+			result = false;
+		}
+		finish();
+		return result;
 	}
 
-	public void deleteAll() {
-		delete("1=1");
+	/**
+	 * To delete multiple cookies
+	 */
+	public boolean delete(List<CookieEntity> cookies) {
+		StringBuilder where = new StringBuilder(CookieDisker.ID).append(" in(");
+		for (CookieEntity cookie : cookies) {
+			long id = cookie.getId();
+			if (id > 0) {
+				where.append(',');
+				where.append(id);
+			}
+		}
+		where.append(')');
+		int charIndex = CookieDisker.ID.length() + 3;
+		if (',' == where.charAt(charIndex)) {
+			where.deleteCharAt(charIndex);
+		}
+		return delete(where.toString());
 	}
 
-	private void getReadableDatabase() {
+	/**
+	 * delete all data
+	 */
+	public boolean deleteAll() {
+		return delete("1=1");
+	}
+
+	/**
+	 * Get count all
+	 */
+	public int count() {
+		return count(CookieDisker.ID);
+	}
+
+	/**
+	 * Get count
+	 */
+	public int count(String columnName) {
+		openReader();
+		StringBuilder sql = new StringBuilder("select count(").append(columnName).append(") from ").append(CookieDisker.TABLE_NAME);
+		Cursor cursor = execute.rawQuery(sql.toString(), null);
+		int count = 0;
+		if (cursor.moveToNext()) {
+			count = cursor.getInt(0);
+		}
+		finish();
+		return count;
+	}
+
+	private void openReader() {
 		execute = mCookieDisker.getReadableDatabase();
 	}
 
-	private void getWritableDatabase() {
+	private void openWriter() {
 		execute = mCookieDisker.getWritableDatabase();
 	}
 
@@ -140,6 +234,12 @@ public class CookieDiskManager {
 		if (execute != null && execute.isOpen()) {
 			execute.close();
 		}
+	}
+
+	private void finish(Cursor cursor) {
+		if (cursor != null && !cursor.isClosed())
+			cursor.close();
+		finish();
 	}
 
 }
