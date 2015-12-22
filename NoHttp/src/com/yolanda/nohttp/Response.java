@@ -24,27 +24,27 @@ import java.util.List;
  * 
  * @author YOLANDA
  */
-public abstract interface Response<T> {
+public interface Response<T> {
 
 	/**
 	 * url
 	 */
-	public String url();
+	String url();
 
 	/**
 	 * Ask for success
 	 */
-	public boolean isSucceed();
+	boolean isSucceed();
 
 	/**
 	 * Get http responseCode
 	 */
-	public int getResponseCode();
+	int getResponseCode();
 
 	/**
 	 * Get http response headers
 	 */
-	public Headers getHeaders();
+	Headers getHeaders();
 
 	/**
 	 * Returns the value of the header field specified by {@code key} or {@code
@@ -54,7 +54,7 @@ public abstract interface Response<T> {
 	 * @param key the name of the header field.
 	 * @return the value of the header field.
 	 */
-	public List<String> getHeaders(String key);
+	List<String> getHeaders(String key);
 
 	/**
 	 * Returns the MIME-type of the content specified by the response header
@@ -62,44 +62,44 @@ public abstract interface Response<T> {
 	 *
 	 * @return the value of the response header field {@code content-type}.
 	 */
-	public String getContentType();
+	String getContentType();
 
 	/**
 	 * Returns the content length in bytes specified by the response header
 	 * field {@code content-length} or {@code -1} if this field is not set or
 	 * cannot be represented as an {@code int}.
 	 */
-	public int getContentLength();
+	int getContentLength();
 
 	/**
 	 * Get http response Cookie
 	 */
-	public List<HttpCookie> getCookies();
+	List<HttpCookie> getCookies();
 
 	/**
 	 * Get raw data
 	 */
-	public byte[] getByteArray();
+	byte[] getByteArray();
 
 	/**
 	 * Get request results
 	 */
-	public T get();
+	T get();
 
 	/**
 	 * Get Error Message
 	 * 
 	 * @return
 	 */
-	public String getErrorMessage();
+	String getErrorMessage();
 
 	/**
 	 * Gets the tag of request
 	 */
-	public Object getTag();
+	Object getTag();
 
 	/**
 	 * Gets the millisecond of request
 	 */
-	public long getNetworkMillis();
+	long getNetworkMillis();
 }

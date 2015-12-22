@@ -108,7 +108,7 @@ public class RestDownloadRequestor extends DownloadRequest {
 
 	@Override
 	protected Set<String> keySet() {
-		return Collections.<String> emptySet();
+		return Collections.emptySet();
 	}
 
 	@Override

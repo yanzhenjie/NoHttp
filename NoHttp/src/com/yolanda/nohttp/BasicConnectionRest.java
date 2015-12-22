@@ -21,11 +21,11 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA
  */
-public abstract interface BasicConnectionRest {
+public interface BasicConnectionRest {
 
 	/**
 	 * Execute a request
 	 */
-	public abstract <T> Response<T> request(Request<T> request);
+	<T> Response<T> request(Request<T> request);
 
 }

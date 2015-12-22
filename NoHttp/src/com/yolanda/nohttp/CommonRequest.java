@@ -21,9 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Set;
 
-import com.yolanda.nohttp.able.Queueable;
-import com.yolanda.nohttp.able.SignCancelable;
-import com.yolanda.nohttp.able.Startable;
 import com.yolanda.nohttp.security.Certificate;
 import com.yolanda.nohttp.tools.CounterOutputStream;
 
@@ -34,7 +31,7 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public abstract class CommonRequest implements Queueable, Startable, SignCancelable {
+public abstract class CommonRequest implements ImplRequest, BasicRequest {
 
 	protected final static String BOUNDARY = createBoundry();
 	protected final static String START_BOUNDARY = "--" + BOUNDARY;
@@ -124,9 +121,7 @@ public abstract class CommonRequest implements Queueable, Startable, SignCancela
 		this.mheaders = new Headers();
 	}
 
-	/**
-	 * Return url of request
-	 */
+	@Override
 	public String url() {
 		return url;
 	}
@@ -147,133 +142,32 @@ public abstract class CommonRequest implements Queueable, Startable, SignCancela
 		return urlBuffer.toString();
 	}
 
-	/**
-	 * return method of request
-	 */
+	@Override
 	public int getRequestMethod() {
 		return mRequestMethod;
 	}
 
-	/**
-	 * Sets the connection timeout time
-	 * 
-	 * @param connectTimeout timeout number, Unit is a millisecond
-	 */
-	public void setConnectTimeout(int connectTimeout) {
-		this.mConnectTimeout = connectTimeout;
-	}
-
-	/**
-	 * Get the connection timeout time, Unit is a millisecond
-	 */
-	public int getConnectTimeout() {
-		return mConnectTimeout;
-	}
-
-	/**
-	 * Sets the read timeout time
-	 * 
-	 * @param readTimeout timeout number, Unit is a millisecond
-	 */
-	public void setReadTimeout(int readTimeout) {
-		this.mReadTimeout = readTimeout;
-	}
-
-	/**
-	 * Get the read timeout time, Unit is a millisecond
-	 */
-	public int getReadTimeout() {
-		return mReadTimeout;
-	}
-
-	/**
-	 * Sets the header named {@code name} to {@code value}. If this request
-	 * already has any headers with that name, they are all replaced.
-	 */
-	public void setHeader(String name, String value) {
-		mheaders.set(name, value);
-	}
-
-	/**
-	 * Adds a header with {@code name} and {@code value}. Prefer this method for multiply-valued headers like "Cookie".
-	 */
-	public void addHeader(String name, String value) {
-		mheaders.add(name, value);
-	}
-
-	/**
-	 * Get all Heads
-	 */
-	public Headers headers() {
-		return this.mheaders;
-	}
-
-	/**
-	 * Removes a header with {@code name} and {@code value}. If there are multiple keys, will remove all, like "Cookie".
-	 */
-	public void removeHeader(String name) {
-		mheaders.removeAll(name);
-	}
-
-	/**
-	 * Remove all header
-	 */
-	public void removeAllHeaders() {
-		mheaders.clear();
-	}
-
-	/**
-	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
-	 * 
-	 * @param isAllowHttps the isAllowHttps to set
-	 */
+	@Override
 	public void setAllowHttps(boolean isAllowHttps) {
 		this.isAllowHttps = isAllowHttps;
 	}
 
-	/**
-	 * If you are allowed to access the Https directly, then the true will be returned if the certificate is required to
-	 * return false
-	 */
+	@Override
 	public boolean isAllowHttps() {
 		return isAllowHttps;
 	}
 
-	/**
-	 * Sets the {@code Certificate} of https
-	 */
+	@Override
 	public void setCertificate(Certificate mCertificate) {
 		this.mCertificate = mCertificate;
 	}
 
-	/**
-	 * If the request is HTTPS, and the {@link #isAllowHttps()} return false, then the certificate must be returned,
-	 * otherwise HTTPS cannot be accessed.
-	 */
+	@Override
 	public Certificate getCertificate() {
 		return mCertificate;
 	}
 
-	/**
-	 * Get content length
-	 */
-	public long getContentLength() {
-		CounterOutputStream outputStream = new CounterOutputStream();
-
-		if (mRequestBody == null && hasBinary()) {
-			writeFormStreamData(outputStream);
-		} else if (mRequestBody == null) {
-			writeCommonStreamData(outputStream);
-		} else {
-			writePushBody(outputStream);
-		}
-		long contentLength = outputStream.get();
-		return contentLength;
-	}
-
-	/**
-	 * If the request is POST, PUT, PATCH, the true should be returned.
-	 */
+	@Override
 	public boolean isOutPutMethod() {
 		switch (mRequestMethod) {
 		case RequestMethod.GET:
@@ -293,24 +187,78 @@ public abstract class CommonRequest implements Queueable, Startable, SignCancela
 		}
 	}
 
-	/**
-	 * Get Boundary of data
-	 */
+	@Override
+	public void setConnectTimeout(int connectTimeout) {
+		this.mConnectTimeout = connectTimeout;
+	}
+
+	@Override
+	public int getConnectTimeout() {
+		return mConnectTimeout;
+	}
+
+	@Override
+	public void setReadTimeout(int readTimeout) {
+		this.mReadTimeout = readTimeout;
+	}
+
+	@Override
+	public int getReadTimeout() {
+		return mReadTimeout;
+	}
+
+	@Override
+	public void setHeader(String name, String value) {
+		mheaders.set(name, value);
+	}
+
+	@Override
+	public void addHeader(String name, String value) {
+		mheaders.add(name, value);
+	}
+
+	@Override
+	public Headers headers() {
+		return this.mheaders;
+	}
+
+	@Override
+	public void removeHeader(String name) {
+		mheaders.removeAll(name);
+	}
+
+	@Override
+	public void removeAllHeaders() {
+		mheaders.clear();
+	}
+
+	@Override
+	public long getContentLength() {
+		CounterOutputStream outputStream = new CounterOutputStream();
+
+		if (mRequestBody == null && hasBinary()) {
+			writeFormStreamData(outputStream);
+		} else if (mRequestBody == null) {
+			writeCommonStreamData(outputStream);
+		} else {
+			writePushBody(outputStream);
+		}
+		long contentLength = outputStream.get();
+		return contentLength;
+	}
+
+	@Override
 	public final String getBoundary() {
 		return BOUNDARY;
 	}
 
-	/**
-	 * Get Encoding of request param
-	 */
+	@Override
 	public String getParamsEncoding() {
 		return NoHttp.CHARSET_UTF8;
 	}
 
-	/**
-	 * If the argument contains {@code Binary}
-	 */
-	protected boolean hasBinary() {
+	@Override
+	public boolean hasBinary() {
 		Set<String> keys = keySet();
 		for (String key : keys) {
 			Object value = value(key);
@@ -321,17 +269,12 @@ public abstract class CommonRequest implements Queueable, Startable, SignCancela
 		return false;
 	}
 
-	/**
-	 * Settings you want to post data, if the post directly, then other data
-	 * will not be sent
-	 */
+	@Override
 	public void setRequestBody(byte[] requestBody) {
 		this.mRequestBody = requestBody;
 	}
 
-	/**
-	 * Settings you want to post data, if the post directly, then other data will not be sent
-	 */
+	@Override
 	public void setRequestBody(String requestBody) {
 		if (!TextUtils.isEmpty(requestBody))
 			try {
@@ -341,9 +284,7 @@ public abstract class CommonRequest implements Queueable, Startable, SignCancela
 			}
 	}
 
-	/**
-	 * Send request data, give priority to RequestBody, and then send the form data
-	 */
+	@Override
 	public void onWriteRequestBody(OutputStream outputStream) {
 		if (mRequestBody == null && hasBinary())
 			writeFormStreamData(outputStream);
@@ -470,16 +411,12 @@ public abstract class CommonRequest implements Queueable, Startable, SignCancela
 		return fileFieldBuilder.toString();
 	}
 
-	/**
-	 * Set tag of task, Will return to you at the time of the task response
-	 */
+	@Override
 	public void setTag(Object tag) {
 		this.mTag = tag;
 	}
 
-	/**
-	 * Get get of this request
-	 */
+	@Override
 	public Object getTag() {
 		return this.mTag;
 	}

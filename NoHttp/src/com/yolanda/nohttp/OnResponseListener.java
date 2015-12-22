@@ -20,14 +20,14 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA
  */
-public abstract interface OnResponseListener<T> {
+public interface OnResponseListener<T> {
 
 	/**
 	 * When the request starts
 	 * 
 	 * @param what The credit of the incoming request is used to distinguish between multiple requests
 	 */
-	public abstract void onStart(int what);
+	void onStart(int what);
 
 	/**
 	 * Server correct response to callback when an HTTP request
@@ -35,7 +35,7 @@ public abstract interface OnResponseListener<T> {
 	 * @param what The credit of the incoming request is used to distinguish between multiple requests
 	 * @param response In response to the results
 	 */
-	public abstract void onSucceed(int what, Response<T> response);
+	void onSucceed(int what, Response<T> response);
 
 	/**
 	 * When there was an error correction
@@ -46,13 +46,13 @@ public abstract interface OnResponseListener<T> {
 	 * @param responseCode Server response code
 	 * @param networkMillis Request process consumption time
 	 */
-	public abstract void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis);
+	void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis);
 
 	/**
 	 * When the request finish
 	 * 
 	 * @param what The credit of the incoming request is used to distinguish between multiple requests
 	 */
-	public abstract void onFinish(int what);
+	void onFinish(int what);
 
 }

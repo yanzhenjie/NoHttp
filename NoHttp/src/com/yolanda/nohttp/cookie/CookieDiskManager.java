@@ -18,8 +18,6 @@ package com.yolanda.nohttp.cookie;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.yolanda.nohttp.Logger;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -60,25 +58,26 @@ class CookieDiskManager {
 	/**
 	 * Add or update by index(name, domain, path)
 	 */
-	public long replace(CookieEntity cookies) {
+	public long replace(CookieEntity cookie) {
 		openWriter();
 		ContentValues values = new ContentValues();
-		values.put(CookieDisker.URI, cookies.getUri());
-		values.put(CookieDisker.NAME, cookies.getName());
-		values.put(CookieDisker.VALUE, cookies.getValue());
-		values.put(CookieDisker.COMMENT, cookies.getComment());
-		values.put(CookieDisker.COMMENTURL, CookieDisker.COMMENTURL);
-		values.put(CookieDisker.DISCARD, String.valueOf(cookies.isDiscard()));
-		values.put(CookieDisker.DOMAIN, cookies.getDomain());
-		values.put(CookieDisker.EXPIRY, cookies.getExpiry());
-		values.put(CookieDisker.PORTLIST, cookies.getPortList());
-		values.put(CookieDisker.SECURE, String.valueOf(cookies.isSecure()));
-		values.put(CookieDisker.VERSION, cookies.getVersion());
+		values.put(CookieDisker.URI, cookie.getUri());
+		values.put(CookieDisker.NAME, cookie.getName());
+		values.put(CookieDisker.VALUE, cookie.getValue());
+		values.put(CookieDisker.COMMENT, cookie.getComment());
+		values.put(CookieDisker.COMMENTURL, cookie.getCommentURL());
+		values.put(CookieDisker.DISCARD, String.valueOf(cookie.isDiscard()));
+		values.put(CookieDisker.DOMAIN, cookie.getDomain());
+		values.put(CookieDisker.EXPIRY, cookie.getExpiry());
+		values.put(CookieDisker.PATH, cookie.getPath());
+		values.put(CookieDisker.PORTLIST, cookie.getPortList());
+		values.put(CookieDisker.SECURE, String.valueOf(cookie.isSecure()));
+		values.put(CookieDisker.VERSION, cookie.getVersion());
 		long id = -1;
 		try {
 			id = execute.replace(CookieDisker.TABLE_NAME, null, values);
 		} catch (Throwable e) {
-			Logger.e(e);
+			e.printStackTrace();
 		}
 		finish();
 		return id;
@@ -91,7 +90,7 @@ class CookieDiskManager {
 		openReader();
 
 		List<CookieEntity> cookies = new ArrayList<CookieEntity>();
-		StringBuilder sql = new StringBuilder("select ").append(columnName).append(" from");
+		StringBuilder sql = new StringBuilder("select ").append(columnName).append(" from ");
 		sql.append(CookieDisker.TABLE_NAME);
 		if (!TextUtils.isEmpty(where)) {
 			sql.append(" where ");
@@ -114,27 +113,66 @@ class CookieDiskManager {
 			cursor = execute.rawQuery(sql.toString(), null);
 			while (cursor.moveToNext()) {
 				try {
-					CookieEntity httpCookie = new CookieEntity();
-					httpCookie.setId(cursor.getInt(cursor.getColumnIndex(CookieDisker.ID)));
-					httpCookie.setUri(cursor.getString(cursor.getColumnIndex(CookieDisker.URI)));
-					httpCookie.setName(cursor.getString(cursor.getColumnIndex(CookieDisker.NAME)));
-					httpCookie.setValue(cursor.getString(cursor.getColumnIndex(CookieDisker.VALUE)));
-					httpCookie.setComment(cursor.getString(cursor.getColumnIndex(CookieDisker.COMMENT)));
-					httpCookie.setCommentURL(cursor.getString(cursor.getColumnIndex(CookieDisker.COMMENTURL)));
-					httpCookie.setDiscard("true".equals(cursor.getString(cursor.getColumnIndex(CookieDisker.DISCARD))));
-					httpCookie.setDomain(cursor.getString(cursor.getColumnIndex(CookieDisker.DOMAIN)));
-					httpCookie.setExpiry(cursor.getLong(cursor.getColumnIndex(CookieDisker.EXPIRY)));
-					httpCookie.setPath(cursor.getString(cursor.getColumnIndex(CookieDisker.PATH)));
-					httpCookie.setPortList(cursor.getString(cursor.getColumnIndex(CookieDisker.PORTLIST)));
-					httpCookie.setSecure("true".equals(cursor.getString(cursor.getColumnIndex(CookieDisker.SECURE))));
-					httpCookie.setVersion(cursor.getInt(cursor.getColumnIndex(CookieDisker.VERSION)));
-					cookies.add(httpCookie);
+					CookieEntity cookie = new CookieEntity();
+					int idIndex = cursor.getColumnIndex(CookieDisker.ID);
+					if (idIndex >= 0)
+						cookie.setId(cursor.getInt(idIndex));
+
+					int uriIndex = cursor.getColumnIndex(CookieDisker.URI);
+					if (uriIndex >= 0)
+						cookie.setUri(cursor.getString(uriIndex));
+
+					int nameIndex = cursor.getColumnIndex(CookieDisker.NAME);
+					if (nameIndex >= 0)
+						cookie.setName(cursor.getString(nameIndex));
+
+					int valueIndex = cursor.getColumnIndex(CookieDisker.VALUE);
+					if (valueIndex >= 0)
+						cookie.setValue(cursor.getString(valueIndex));
+
+					int commentIndex = cursor.getColumnIndex(CookieDisker.COMMENT);
+					if (commentIndex >= 0)
+						cookie.setComment(cursor.getString(commentIndex));
+
+					int commentUriIndex = cursor.getColumnIndex(CookieDisker.COMMENTURL);
+					if (commentUriIndex >= 0)
+						cookie.setCommentURL(cursor.getString(commentUriIndex));
+
+					int discardIndex = cursor.getColumnIndex(CookieDisker.DISCARD);
+					if (discardIndex >= 0)
+						cookie.setDiscard("true".equals(cursor.getString(discardIndex)));
+
+					int domainIndex = cursor.getColumnIndex(CookieDisker.DOMAIN);
+					if (domainIndex >= 0)
+						cookie.setDomain(cursor.getString(domainIndex));
+
+					int expiryIndex = cursor.getColumnIndex(CookieDisker.EXPIRY);
+					if (expiryIndex >= 0)
+						cookie.setExpiry(cursor.getLong(expiryIndex));
+
+					int pathIndex = cursor.getColumnIndex(CookieDisker.PATH);
+					if (pathIndex >= 0)
+						cookie.setPath(cursor.getString(pathIndex));
+
+					int portlistIndex = cursor.getColumnIndex(CookieDisker.PORTLIST);
+					if (portlistIndex >= 0)
+						cookie.setPortList(cursor.getString(portlistIndex));
+
+					int secureIndex = cursor.getColumnIndex(CookieDisker.SECURE);
+					if (secureIndex >= 0)
+						cookie.setSecure("true".equals(cursor.getString(secureIndex)));
+
+					int versionIndex = cursor.getColumnIndex(CookieDisker.VERSION);
+					if (versionIndex >= 0)
+						cookie.setVersion(cursor.getInt(versionIndex));
+
+					cookies.add(cookie);
 				} catch (Throwable e) {
-					Logger.e(e);
+					e.printStackTrace();
 				}
 			}
 		} catch (Throwable e) {
-			Logger.e(e);
+			e.printStackTrace();
 		}
 		finish(cursor);
 		return cookies;
@@ -144,7 +182,7 @@ class CookieDiskManager {
 	 * Get all cookie in database
 	 */
 	public List<CookieEntity> getAll() {
-		return getAll("*");
+		return getAll(CookieDisker.ALL);
 	}
 
 	/**
@@ -166,7 +204,7 @@ class CookieDiskManager {
 		try {
 			execute.execSQL(sql.toString());
 		} catch (SQLException e) {
-			Logger.e(e);
+			e.printStackTrace();
 			result = false;
 		}
 		finish();

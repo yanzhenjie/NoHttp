@@ -15,6 +15,9 @@
  */
 package com.yolanda.nohttp.cookie;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 /**
  * </br>
  * Created in Dec 19, 2015 4:16:24 PM
@@ -23,33 +26,45 @@ package com.yolanda.nohttp.cookie;
  */
 public class Where {
 
+	public enum Options {
+
+		IN("IN"), EQUAL("="), ThAN_LARGE(">"), THAN_SMALL("<");
+
+		private String value;
+
+		private Options(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public final String toString() {
+			return this.value;
+		}
+	}
+
 	private StringBuilder builder;
 
 	public Where() {
 		builder = new StringBuilder();
 	}
 
-	public Where(CharSequence columnName, CharSequence op, Object value) {
+	public Where(CharSequence columnName, Options op, Object value) {
 		builder = new StringBuilder();
 		add(columnName, op, value);
 	}
 
-	public final Where set(String row) {
-		clear().add(row);
+	public final Where clear() {
+		builder.delete(0, builder.length());
 		return this;
 	}
 
-	public final Where add(CharSequence row) {
+	public final Where append(Object row) {
 		builder.append(row);
 		return this;
 	}
 
-	public final Where add(CharSequence columnName, CharSequence op, Object value) {
-		builder.append("\"").append(columnName).append("\" ").append(op);
-		if (value instanceof Long || value instanceof Integer)
-			builder.append(value);
-		else
-			builder.append(" '").append(value).append("'");
+	public final Where set(String row) {
+		clear().append(row);
 		return this;
 	}
 
@@ -58,63 +73,85 @@ public class Where {
 		return this;
 	}
 
-	public final Where insert(int offset, CharSequence s) {
-		builder.insert(offset, s);
+	private final Where addColumnName(CharSequence columnName, Options op) {
+		builder.append("\"").append(columnName).append("\" ").append(op.toString()).append(' ');
 		return this;
 	}
 
-	public final Where and(CharSequence columnName, CharSequence op, Object value) {
-		and();
-		add(columnName, op, value);
+	public final Where add(CharSequence columnName, Options op, Object value) {
+		if (Options.EQUAL.equals(op) || Options.ThAN_LARGE.equals(op) || Options.THAN_SMALL.equals(op)) {
+			addColumnName(columnName, op);
+			if (isNumber(value))
+				builder.append(value);
+			else if (value instanceof CharSequence)
+				builder.append("'").append(value).append("'");
+			else
+				throw new IllegalArgumentException("Value is not supported by the data type");
+		} else if (Options.IN.equals(op) && value instanceof List<?>)
+			addColumnName(columnName, op).append(value).in((List<?>) value);
+		else
+			throw new IllegalArgumentException("Value is not supported by the data type");
 		return this;
 	}
 
-	public final Where and(CharSequence row) {
-		and();
-		builder.append(row);
+	private final <T> Where in(List<T> values) {
+		builder.append(Options.IN).append(" (");
+		String sep = ", ";
+		for (T value : values) {
+			if (value instanceof CharSequence)
+				builder.append("'").append(value).append("'");
+			else if (value instanceof Integer || value instanceof Long || value instanceof Short)
+				builder.append(value);
+			builder.append(sep);
+		}
+		if (builder.lastIndexOf(sep) > 0)
+			builder.delete(builder.length() - 2, builder.length());
+		builder.append(")");
 		return this;
 	}
 
 	private final Where and() {
-		if (builder.length() > 0) {
+		if (builder.length() > 0)
 			builder.append(" AND ");
-		}
 		return this;
+	}
+
+	public final Where and(CharSequence columnName, Options op, Object value) {
+		return and().add(columnName, op, value);
 	}
 
 	public final Where andNull(CharSequence columnName) {
-		and();
-		isNull(columnName);
-		return this;
+		return and().isNull(columnName);
 	}
 
-	public final Where or(CharSequence columnName, CharSequence op, CharSequence value) {
-		or();
-		add(columnName, op, value);
-		return this;
-	}
-
-	public final Where or(CharSequence row) {
-		or();
-		builder.append(row);
-		return this;
-	}
-
-	public final Where orNull(CharSequence columnName) {
-		or();
-		isNull(columnName);
-		return this;
+	public final Where and(Where where) {
+		return and().append(where);
 	}
 
 	private final Where or() {
-		if (builder.length() > 0) {
+		if (builder.length() > 0)
 			builder.append(" OR ");
-		}
 		return this;
 	}
 
-	public final Where clear() {
-		builder.delete(0, builder.length());
+	public final Where or(CharSequence columnName, Options op, CharSequence value) {
+		return or().add(columnName, op, value);
+	}
+
+	public final Where orNull(CharSequence columnName) {
+		return or().isNull(columnName);
+	}
+
+	public final Where or(Where where) {
+		return or().append(where);
+	}
+
+	public final Where bracket() {
+		return insert(0, "(").append(')');
+	}
+
+	public final Where insert(int index, CharSequence s) {
+		builder.insert(0, s);
 		return this;
 	}
 
@@ -125,5 +162,10 @@ public class Where {
 	@Override
 	public String toString() {
 		return builder.toString();
+	}
+
+	public final static boolean isNumber(Object value) {
+		Pattern pattern = Pattern.compile("[0-9]*");
+		return pattern.matcher(String.valueOf(value)).matches();
 	}
 }

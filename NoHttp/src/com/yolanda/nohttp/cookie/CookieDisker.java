@@ -48,7 +48,7 @@ class CookieDisker extends SQLiteOpenHelper {
 	public final static String VERSION = "version";
 
 	private final static String SQL_CREATE_TABLE = "CREATE TABLE cookies_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, name TEXT, value TEXT, comment TEXT, comment_url TEXT, discard TEXT, domain TEXT, expiry INTEGER, path TEXT, portlist TEXT, secure TEXT, version INTEGER)";
-	private final static String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX unique_index_cookie ON cookies_table(name, domain, path)";
+	private final static String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cookie_unique_index ON cookies_table(\"name\", \"domain\", \"path\")";
 	private final static String SQL_DELETE_TABLE = "DROP TABLE cookies_table";
 
 	public CookieDisker() {

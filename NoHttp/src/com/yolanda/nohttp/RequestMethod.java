@@ -21,7 +21,7 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA
  */
-public abstract interface RequestMethod {
+public interface RequestMethod {
 	final int GET = 0;
 	final int POST = 1;
 	final int PUT = 2;

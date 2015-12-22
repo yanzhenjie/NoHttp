@@ -32,19 +32,15 @@ import android.text.TextUtils;
  */
 public class HeaderParser {
 
-	private static final String VERSION_ZERO_HEADER = "Set-cookie";
-
-	private static final String VERSION_ONE_HEADER = "Set-cookie2";
-
 	/**
-	 * Analysis of cookie from the server side
+	 * Analysis of the response from the server Cookie
 	 */
 	public static List<HttpCookie> parseCookie(Map<String, List<String>> responseHeaders) {
 		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
 		if (responseHeaders != null)
 			for (Map.Entry<String, List<String>> entry : responseHeaders.entrySet()) {
 				String key = entry.getKey();
-				if (key != null && (key.equalsIgnoreCase(VERSION_ZERO_HEADER) || key.equalsIgnoreCase(VERSION_ONE_HEADER))) {
+				if (key != null && (key.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE) || key.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE2))) {
 					for (String cookieStr : entry.getValue()) {
 						try {
 							for (HttpCookie cookie : HttpCookie.parse(cookieStr)) {
@@ -66,7 +62,7 @@ public class HeaderParser {
 		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
 		for (int i = 0; headers != null && i < headers.size(); i++) {
 			String name = headers.name(i);
-			if (name != null && (name.equalsIgnoreCase(VERSION_ZERO_HEADER) || name.equalsIgnoreCase(VERSION_ONE_HEADER))) {
+			if (name != null && (name.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE) || name.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE2))) {
 				List<String> cookieValues = headers.values(name);
 				for (String cookieStr : cookieValues) {
 					try {
@@ -86,8 +82,8 @@ public class HeaderParser {
 	 * A value of the header information
 	 * 
 	 * @param responseHeaders http Response Headers
-	 * @param key like <code>charset</code>
-	 * @param defaultValue list <code>utf-8</code>
+	 * @param key like {@code charset}
+	 * @param defaultValue list {@code utf-8}
 	 * @return If you have a value key, you will return the parsed value if you don't return the default value
 	 */
 	public static String parseHeadValue(Map<String, List<String>> responseHeaders, String key, String defaultValue) {
@@ -109,8 +105,8 @@ public class HeaderParser {
 	 * A value of the header information
 	 * 
 	 * @param responseHeaders http Response Headers
-	 * @param key like <code>charset</code>
-	 * @param defaultValue list <code>utf-8</code>
+	 * @param key like {@code charset}
+	 * @param defaultValue list {@code utf-8}
 	 * @return If you have a value key, you will return the parsed value if you don't return the default value
 	 */
 	public static String parseHeadValue(Headers responseHeaders, String key, String defaultValue) {
@@ -132,8 +128,8 @@ public class HeaderParser {
 	 * A value of value of one of the corresponding heads of Http
 	 * 
 	 * @param responseHeaderValues Value of one of the corresponding heads of Http
-	 * @param key like <code>charset</code>
-	 * @param defaultValue list<code>utf-8</code>
+	 * @param key like {@code charset}
+	 * @param defaultValue list {@code utf-8}
 	 * @return If you have a value key, you will return the parsed value if you don't return the default value
 	 */
 	public static String parseHeadValue(List<String> responseHeaderValues, String key, String defaultValue) {
@@ -152,9 +148,9 @@ public class HeaderParser {
 	/**
 	 * A value of the header information
 	 * 
-	 * @param content like <code>text/html;charset=utf-8</code>
-	 * @param key like <code>charset</code>
-	 * @param defaultValue list<code>utf-8</code>
+	 * @param content like {@code text/html;charset=utf-8}
+	 * @param key like {@code charset}
+	 * @param defaultValue list {@code utf-8}
 	 * @return If you have a value key, you will return the parsed value if you don't return the default value
 	 */
 	public static String parseHeadValue(String content, String key, String defaultValue) {

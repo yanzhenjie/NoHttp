@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.cookie.Where.Options;
 
 import android.text.TextUtils;
 
@@ -37,15 +37,13 @@ public enum DiskCookieStore implements CookieStore {
 
 	INSTANCE;
 
-	private final static int MAX_COOKIE_SIZE = 5000;
+	/**
+	 * Cookie max count in disk
+	 */
+	private final static int MAX_COOKIE_SIZE = 8888;
 
 	private CookieDiskManager mManager;
 
-	/**
-	 * Construct a persistent cookie store.
-	 *
-	 * @param context Context to attach cookie store to
-	 */
 	DiskCookieStore() {
 		mManager = CookieDiskManager.getInstance();
 	}
@@ -69,15 +67,14 @@ public enum DiskCookieStore implements CookieStore {
 		Where where = new Where();
 		String host = uri.getHost();
 		if (!TextUtils.isEmpty(host)) {
-			Where subWhere = new Where(CookieDisker.DOMAIN, "=", host);
+			Where subWhere = new Where(CookieDisker.DOMAIN, Options.EQUAL, host);
 			int lastDot = host.lastIndexOf(".");
 			if (lastDot > 1) {
 				lastDot = host.lastIndexOf(".", lastDot - 1);
 				if (lastDot > 0) {
 					String domain = host.substring(lastDot, host.length());
-					if (!TextUtils.isEmpty(domain)) {
-						subWhere.or(CookieDisker.DOMAIN, "=", domain).insert(0, "(").add(")");
-					}
+					if (!TextUtils.isEmpty(domain))
+						subWhere.or(CookieDisker.DOMAIN, Options.EQUAL, domain).bracket();
 				}
 			}
 			where.set(subWhere.get());
@@ -85,25 +82,24 @@ public enum DiskCookieStore implements CookieStore {
 
 		String path = uri.getPath();
 		if (!TextUtils.isEmpty(path)) {
-			Where subWhere = new Where(CookieDisker.PATH, "=", path).or(CookieDisker.PATH, "=", "/").orNull(CookieDisker.PATH);
+			Where subWhere = new Where(CookieDisker.PATH, Options.EQUAL, path).or(CookieDisker.PATH, Options.EQUAL, "/").orNull(CookieDisker.PATH);
 			int lastSplit = path.lastIndexOf("/");
 			while (lastSplit > 0) {
 				path = path.substring(0, lastSplit);
-				subWhere.or(CookieDisker.PATH, "=", path);
+				subWhere.or(CookieDisker.PATH, Options.EQUAL, path);
 				lastSplit = path.lastIndexOf("/");
 			}
-			subWhere.insert(0, "(").add(")");
-			where.and(subWhere.get());
+			subWhere.bracket();
+			where.and(subWhere);
 		}
 
-		where.or(CookieDisker.URI, "=", uri.toString());
+		where.or(CookieDisker.URI, Options.EQUAL, uri.toString());
 
-		List<CookieEntity> cookieEntityList = mManager.get(null, where.toString(), null, null, null);
-		List<HttpCookie> rt = new ArrayList<HttpCookie>();
-		for (CookieEntity cookieEntity : cookieEntityList) {
-			rt.add(cookieEntity.toHttpCookie());
-		}
-		return rt;
+		List<CookieEntity> cookieList = mManager.get(CookieDisker.ALL, where.toString(), null, null, null);
+		List<HttpCookie> returnedCookies = new ArrayList<HttpCookie>();
+		for (CookieEntity cookieEntity : cookieList)
+			returnedCookies.add(cookieEntity.toHttpCookie());
+		return returnedCookies;
 	}
 
 	@Override
@@ -111,9 +107,8 @@ public enum DiskCookieStore implements CookieStore {
 		List<HttpCookie> rt = new ArrayList<HttpCookie>();
 		deleteExpiryCookies();
 		List<CookieEntity> cookieEntityList = mManager.getAll();
-		for (CookieEntity cookieEntity : cookieEntityList) {
+		for (CookieEntity cookieEntity : cookieEntityList)
 			rt.add(cookieEntity.toHttpCookie());
-		}
 		return rt;
 	}
 
@@ -123,15 +118,14 @@ public enum DiskCookieStore implements CookieStore {
 		List<CookieEntity> uriList = mManager.getAll(CookieDisker.URI);
 		for (CookieEntity cookie : uriList) {
 			String uri = cookie.getUri();
-			if (!TextUtils.isEmpty(uri)) {
+			if (!TextUtils.isEmpty(uri))
 				try {
 					uris.add(new URI(uri));
 				} catch (Throwable e) {
-					Logger.w(e);
+					e.printStackTrace();
 					StringBuilder where = new StringBuilder(CookieDisker.URI).append('=').append(uri);
 					mManager.delete(where.toString());
 				}
-			}
 		}
 		return uris;
 	}
@@ -142,15 +136,15 @@ public enum DiskCookieStore implements CookieStore {
 			return true;
 
 		CookieEntity cookie = new CookieEntity(uri, httpCookie);
-		Where where = new Where(CookieDisker.NAME, "=", cookie.getName());
+		Where where = new Where(CookieDisker.NAME, Options.EQUAL, cookie.getName());
 
 		String domain = cookie.getDomain();
 		if (!TextUtils.isEmpty(domain))
-			where.and(CookieDisker.DOMAIN, "=", domain);
+			where.and(CookieDisker.DOMAIN, Options.EQUAL, domain);
 
 		String path = cookie.getPath();
 		if (!TextUtils.isEmpty(path))
-			where.and(CookieDisker.PATH, "=", path);
+			where.and(CookieDisker.PATH, Options.EQUAL, path);
 
 		return mManager.delete(where.toString());
 	}
@@ -164,10 +158,8 @@ public enum DiskCookieStore implements CookieStore {
 	 * Delete all expired cookies
 	 */
 	private void deleteExpiryCookies() {
-		StringBuilder deleteWhere = new StringBuilder(CookieDisker.EXPIRY);
-		deleteWhere.append('<');
-		deleteWhere.append(System.currentTimeMillis());
-		mManager.delete(deleteWhere.toString());
+		Where where = new Where(CookieDisker.EXPIRY, Options.THAN_SMALL, System.currentTimeMillis());
+		mManager.delete(where.get());
 	}
 
 	/**
@@ -177,9 +169,8 @@ public enum DiskCookieStore implements CookieStore {
 		int count = mManager.count();
 		if (count > MAX_COOKIE_SIZE + 10) {
 			List<CookieEntity> rmList = mManager.get(CookieDisker.ALL, null, null, Integer.toString(count - MAX_COOKIE_SIZE), null);
-			if (rmList != null) {
+			if (rmList != null)
 				mManager.delete(rmList);
-			}
 		}
 	}
 

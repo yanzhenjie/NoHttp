@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.net.HttpCookie;
 import java.net.URI;
 
+import android.text.TextUtils;
+
 /**
  * </br>
  * Created in Dec 17, 2015 7:21:16 PM
@@ -30,11 +32,11 @@ class CookieEntity implements Serializable {
 	private static final long serialVersionUID = 6374381323722046732L;
 
 	/**
-	 * max expiry: 100 year
+	 * max expiry: 100 years
 	 */
 	private static final long MAX_EXPIRY = System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 30L * 12L * 100L;
 
-	private long id;
+	private long id = -1;
 	private String uri; // cookie add by this uri.
 	private String name;
 	private String value;
@@ -84,6 +86,10 @@ class CookieEntity implements Serializable {
 		cookie.setSecure(secure);
 		cookie.setVersion(version);
 		return cookie;
+	}
+
+	public boolean isNull() {
+		return id == -1 && TextUtils.isEmpty(uri) && TextUtils.isEmpty(name) && TextUtils.isEmpty(value) && TextUtils.isEmpty(domain) && TextUtils.isEmpty(path);
 	}
 
 	/**

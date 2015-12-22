@@ -48,7 +48,7 @@ public abstract class BasicConnection {
 	 * up, including Cookie
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
-	protected HttpURLConnection getHttpConnection(CommonRequest request) throws IOException, URISyntaxException {
+	protected HttpURLConnection getHttpConnection(BasicRequest request) throws IOException, URISyntaxException {
 		String urlStr = request.url();
 		Logger.d("Reuqest adress:" + urlStr);
 		if (android.os.Build.VERSION.SDK_INT < 9)
@@ -108,8 +108,7 @@ public abstract class BasicConnection {
 		// This is mostly to stay close to the RI; it is unlikely any of the headers above would
 		// affect cookie choice besides "Host".
 		CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-		@SuppressWarnings("unchecked")
-		Map<String, List<String>> cookieMaps = cookieManager.get(url.toURI(), Collections.EMPTY_MAP);
+		Map<String, List<String>> cookieMaps = cookieManager.get(url.toURI(), Collections.<String, List<String>> emptyMap());
 		// Add any new cookies to the request.
 		Headers.addCookiesToHeaders(headers, cookieMaps);
 

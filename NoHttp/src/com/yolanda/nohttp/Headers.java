@@ -61,6 +61,10 @@ public final class Headers {
 
 	public static final String HEAD_KEY_COOKIE2 = "Cookie2";
 
+	public static final String HEAD_KEY_SET_COOKIE = "Cookie";
+
+	public static final String HEAD_KEY_SET_COOKIE2 = "Cookie2";
+
 	private final List<String> namesAndValues = new ArrayList<String>(20);
 
 	/**
@@ -182,8 +186,7 @@ public final class Headers {
 	 * Get All Header value
 	 */
 	public List<String> values(String name) {
-		@SuppressWarnings("unchecked")
-		List<String> result = Collections.EMPTY_LIST;
+		List<String> result = Collections.emptyList();
 		for (int i = 0, size = namesAndValues.size(); i < size; i++) {
 			if (name.equalsIgnoreCase(name(i))) {
 				if (result == null)

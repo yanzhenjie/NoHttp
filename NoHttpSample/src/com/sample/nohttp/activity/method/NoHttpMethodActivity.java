@@ -20,8 +20,10 @@ import com.sample.nohttp.nohttp.CallServer;
 import com.sample.nohttp.nohttp.HttpCallback;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.OnResponseListener;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
+import com.yolanda.nohttp.RequestQueue;
 import com.yolanda.nohttp.Response;
 
 import android.app.Activity;
@@ -39,7 +41,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	/**
 	 * 请求地址，你运行demo时，这里换成你的地址
 	 */
-	private String mTargetUrl = "http://192.168.1.112/HttpServer/NoHttp";
+	private String mTargetUrl = "http://192.168.1.36/HttpServer/UserLogin";
 	/**
 	 * 请求对象
 	 */
