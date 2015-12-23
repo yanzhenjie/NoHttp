@@ -30,7 +30,7 @@ public abstract class Request<T> extends CommonRequest {
 	 * @param url request adress, like: http://www.google.com
 	 */
 	public Request(String url) {
-		super(url);
+		super(url, RequestMethod.GET);
 	}
 
 	/**

@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.net.HttpCookie;
 import java.net.URI;
 
+import com.yolanda.nohttp.Logger;
+
 import android.text.TextUtils;
 
 /**
@@ -34,7 +36,7 @@ class CookieEntity implements Serializable {
 	/**
 	 * max expiry: 100 years
 	 */
-	private static final long MAX_EXPIRY = System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 30L * 12L * 100L;
+	public static final long MAX_EXPIRY = System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 30L * 12L * 100L;
 
 	private long id = -1;
 	private String uri; // cookie add by this uri.
@@ -62,9 +64,10 @@ class CookieEntity implements Serializable {
 		this.discard = cookie.getDiscard();
 		this.domain = cookie.getDomain();
 		long maxAge = cookie.getMaxAge();
-		if (maxAge != -1L) {
-			this.expiry = (maxAge * 1000L) + System.currentTimeMillis();
-			if (this.expiry < 0L) {
+		Logger.d("maxAge: " + maxAge);
+		if (maxAge != -1) {
+			this.expiry = (maxAge * 1000) + System.currentTimeMillis();
+			if (this.expiry < 0) {
 				this.expiry = MAX_EXPIRY;
 			}
 		}
@@ -72,6 +75,8 @@ class CookieEntity implements Serializable {
 		this.portList = cookie.getPortlist();
 		this.secure = cookie.getSecure();
 		this.version = cookie.getVersion();
+		Logger.d("Save Cookie. Uri: " + uri + "; Name: " + name + "; Value: " + value + "; Comment: " + comment + "; CommmentURL: " + commentURL + "; Discard: " + discard + "; Domain: " + domain
+				+ "; MaxAge: " + expiry + " ms; Path: " + path + "; PortList: " + portList + "; Secure: " + secure + "; Version" + version);
 	}
 
 	public HttpCookie toHttpCookie() {

@@ -49,11 +49,11 @@ public abstract class BasicConnection {
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
 	protected HttpURLConnection getHttpConnection(BasicRequest request) throws IOException, URISyntaxException {
+		request.onPreExecute();
 		String urlStr = request.url();
 		Logger.d("Reuqest adress:" + urlStr);
 		if (android.os.Build.VERSION.SDK_INT < 9)
 			System.setProperty("http.keepAlive", "false");
-
 		URL url = new URL(urlStr);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		if ("https".equals(url.getProtocol()))
@@ -75,19 +75,21 @@ public abstract class BasicConnection {
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + request.getParamsEncoding());
 		}
 
-		long contentLength = request.getContentLength();
-		if (contentLength < 0) {
-			connection.setChunkedStreamingMode(256 * 1024);
-		} else if (contentLength < Integer.MAX_VALUE) {
-			connection.setFixedLengthStreamingMode((int) contentLength);
-		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			connection.setFixedLengthStreamingMode(contentLength);
-		} else {
-			connection.setChunkedStreamingMode(256 * 1024);
-		}
-
 		Headers headers = request.headers();
-		headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
+
+		if (request.isOutPutMethod()) {
+			long contentLength = request.getContentLength();
+			if (contentLength < 0) {
+				connection.setChunkedStreamingMode(256 * 1024);
+			} else if (contentLength < Integer.MAX_VALUE) {
+				connection.setFixedLengthStreamingMode((int) contentLength);
+			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				connection.setFixedLengthStreamingMode(contentLength);
+			} else {
+				connection.setChunkedStreamingMode(256 * 1024);
+			}
+			headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
+		}
 
 		// TODO Authorization:
 

@@ -33,9 +33,9 @@ import android.text.TextUtils;
  */
 public abstract class CommonRequest implements ImplRequest, BasicRequest {
 
-	protected final static String BOUNDARY = createBoundry();
-	protected final static String START_BOUNDARY = "--" + BOUNDARY;
-	protected final static String END_BOUNDARY = "--" + BOUNDARY + "--";
+	protected final String BOUNDARY = createBoundry();
+	protected final String START_BOUNDARY = "--" + BOUNDARY;
+	protected final String END_BOUNDARY = START_BOUNDARY + "--";
 
 	/**
 	 * Target adress
@@ -110,20 +110,14 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 			throw new IllegalArgumentException("url is null");
 		if (requestMethod < RequestMethod.GET || requestMethod > RequestMethod.PATCH)
 			throw new IllegalArgumentException("RequestMethod error, value shuld from RequestMethod");
-		if (url.regionMatches(true, 0, "ws://", 0, 5)) {
-			url = "http" + url.substring(2);
-		} else if (url.regionMatches(true, 0, "wss://", 0, 6)) {
-			url = "https" + url.substring(3);
-		}
 		this.url = url;
-		checkRequestMethod(requestMethod);
 		this.mRequestMethod = requestMethod;
 		this.mheaders = new Headers();
 	}
 
 	@Override
 	public String url() {
-		return url;
+		return buildUrl();
 	}
 
 	/**
@@ -235,7 +229,6 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	@Override
 	public long getContentLength() {
 		CounterOutputStream outputStream = new CounterOutputStream();
-
 		if (mRequestBody == null && hasBinary()) {
 			writeFormStreamData(outputStream);
 		} else if (mRequestBody == null) {
@@ -282,6 +275,10 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 			} catch (UnsupportedEncodingException e) {
 				Logger.e(e);
 			}
+	}
+
+	@Override
+	public void onPreExecute() {
 	}
 
 	@Override
@@ -351,7 +348,7 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 			Set<String> keys = keySet();
 			for (String key : keys) {// 文件或者图片
 				Object value = value(key);
-				if (value != null && value instanceof String) {
+				if (value != null && value instanceof CharSequence) {
 					writeFormString(outputStream, key, value.toString());
 				} else if (value != null && value instanceof Binary) {
 					writeFormBinary(outputStream, key, (Binary) value);
@@ -368,8 +365,15 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	 */
 	private void writeFormString(OutputStream outputStream, String key, String value) throws IOException {
 		Logger.i(key + " = " + value);
-		String formString = createFormStringField(key, value, getParamsEncoding());
-		outputStream.write(formString.getBytes());
+
+		StringBuilder stringFieldBuilder = new StringBuilder(START_BOUNDARY).append("\r\n");
+
+		stringFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"\r\n");
+		stringFieldBuilder.append("Content-Type: text/plain; charset=").append(getParamsEncoding()).append("\r\n\r\n");
+
+		outputStream.write(stringFieldBuilder.toString().getBytes());
+
+		outputStream.write(value.getBytes());
 		outputStream.write("\r\n".getBytes());
 	}
 
@@ -378,37 +382,17 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	 */
 	private void writeFormBinary(OutputStream outputStream, String key, Binary value) throws IOException {
 		Logger.i(key + " is File");
-		outputStream.write(createFormBinaryField(key, value, value.getCharset()).getBytes());
+
+		StringBuilder binaryFieldBuilder = new StringBuilder(START_BOUNDARY).append("\r\n");
+		binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"").append(value.getFileName()).append("\"\r\n");
+
+		binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
+		binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
+
+		outputStream.write(binaryFieldBuilder.toString().getBytes());
+
 		value.onWriteBinary(this, outputStream);
 		outputStream.write("\r\n".getBytes());
-	}
-
-	/**
-	 * Create a text message in a form
-	 */
-	protected String createFormStringField(String key, String value, String charset) throws UnsupportedEncodingException {
-		StringBuilder stringFieldBuilder = new StringBuilder();
-		stringFieldBuilder.append(START_BOUNDARY).append("\r\n");
-		stringFieldBuilder.append("Content-Disposition: form-data; name=\"").append(URLEncoder.encode(key, charset)).append("\"\r\n");
-		stringFieldBuilder.append("Content-Type: text/plain; charset=").append(charset).append("\r\n\r\n");
-		stringFieldBuilder.append(URLEncoder.encode(value, charset));
-		return stringFieldBuilder.toString();
-	}
-
-	/**
-	 * Create a binary message in a form
-	 */
-	protected String createFormBinaryField(String key, Binary binary, String charset) {
-		StringBuilder fileFieldBuilder = new StringBuilder();
-		fileFieldBuilder.append(START_BOUNDARY).append("\r\n");
-		fileFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\";");
-		if (!TextUtils.isEmpty(binary.getFileName())) {
-			fileFieldBuilder.append(" filename=\"").append(binary.getFileName()).append("\"");
-		}
-		fileFieldBuilder.append("\r\n");
-		fileFieldBuilder.append("Content-Type: ").append(binary.getMimeType()).append("; charset:").append(charset).append("\r\n");
-		fileFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
-		return fileFieldBuilder.toString();
 	}
 
 	@Override
@@ -481,20 +465,12 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	protected abstract Object value(String key);
 
 	/**
-	 * Check method request
-	 */
-	public static void checkRequestMethod(int requestMethod) {
-		if (requestMethod < RequestMethod.GET || requestMethod > RequestMethod.PATCH)
-			throw new RuntimeException("Invalid HTTP method: " + requestMethod);
-	}
-
-	/**
 	 * Randomly generated boundary mark
 	 * 
 	 * @return random code
 	 */
-	public static String createBoundry() {
-		StringBuffer sb = new StringBuffer();
+	public static final String createBoundry() {
+		StringBuffer sb = new StringBuffer("--------");
 		for (int t = 1; t < 12; t++) {
 			long time = System.currentTimeMillis() + t;
 			if (time % 3L == 0L) {

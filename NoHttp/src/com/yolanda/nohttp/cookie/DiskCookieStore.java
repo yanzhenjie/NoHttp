@@ -44,18 +44,27 @@ public enum DiskCookieStore implements CookieStore {
 
 	private CookieDiskManager mManager;
 
-	DiskCookieStore() {
+	private CookieStoreListener mCookieStoreListener;
+
+	private DiskCookieStore() {
 		mManager = CookieDiskManager.getInstance();
+	}
+
+	public void setCookieStoreListener(CookieStoreListener mCookieStoreListener) {
+		this.mCookieStoreListener = mCookieStoreListener;
 	}
 
 	@Override
 	public void add(URI uri, HttpCookie cookie) {
-		if (cookie == null) {
+		if (cookie == null)
 			return;
-		}
+		if (mCookieStoreListener != null)
+			mCookieStoreListener.onSaveCookie(uri, cookie);
 		uri = getEffectiveURI(uri);
-		mManager.replace(new CookieEntity(uri, cookie));
-		trimSize();
+		if (cookie != null) {
+			mManager.replace(new CookieEntity(uri, cookie));
+			trimSize();
+		}
 	}
 
 	@Override
@@ -134,7 +143,8 @@ public enum DiskCookieStore implements CookieStore {
 	public boolean remove(URI uri, HttpCookie httpCookie) {
 		if (httpCookie == null)
 			return true;
-
+		if (mCookieStoreListener != null)
+			mCookieStoreListener.onRemoveCookie(uri, httpCookie);
 		CookieEntity cookie = new CookieEntity(uri, httpCookie);
 		Where where = new Where(CookieDisker.NAME, Options.EQUAL, cookie.getName());
 

@@ -61,9 +61,9 @@ public final class Headers {
 
 	public static final String HEAD_KEY_COOKIE2 = "Cookie2";
 
-	public static final String HEAD_KEY_SET_COOKIE = "Cookie";
+	public static final String HEAD_KEY_SET_COOKIE = "Set-Cookie";
 
-	public static final String HEAD_KEY_SET_COOKIE2 = "Cookie2";
+	public static final String HEAD_KEY_SET_COOKIE2 = "Set-Cookie2";
 
 	private final List<String> namesAndValues = new ArrayList<String>(20);
 

@@ -38,7 +38,7 @@ public abstract class RestRequestor<T> extends Request<T> {
 	 * @param url request adress, like: http://www.google.com
 	 */
 	public RestRequestor(String url) {
-		super(url);
+		this(url, RequestMethod.GET);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public abstract class RestRequestor<T> extends Request<T> {
 
 	@Override
 	public void add(String key, short value) {
-		mParamMap.put(key, Short.toString(value));
+		mParamMap.put(key, Integer.toString(value));
 	}
 
 	@Override

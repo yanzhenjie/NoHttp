@@ -93,6 +93,11 @@ public interface BasicRequest extends Queueable, Startable, SignCancelable {
 	Headers headers();
 	
 	/**
+	 * When you start the request
+	 */
+	void onPreExecute();
+	
+	/**
 	 * Send request data, give priority to RequestBody, and then send the form data
 	 */
 	void onWriteRequestBody(OutputStream outputStream);

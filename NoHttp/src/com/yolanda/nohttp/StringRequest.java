@@ -25,7 +25,7 @@ import java.io.UnsupportedEncodingException;
 public class StringRequest extends RestRequestor<String> {
 
 	public StringRequest(String url) {
-		super(url);
+		this(url, RequestMethod.GET);
 	}
 
 	public StringRequest(String url, int requestMethod) {
