@@ -17,10 +17,17 @@ package com.yolanda.nohttp.tools;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
+import android.text.style.StrikethroughSpan;
 import android.widget.TextView;
 
 /**
@@ -53,99 +60,42 @@ public class ResourcesCompat {
 		}
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param leftDrawable target drawable
-	 */
 	public static void setLeftDrawable(TextView textView, Drawable leftDrawable) {
 		setDrawableBounds(leftDrawable);
 		textView.setCompoundDrawables(leftDrawable, null, null, null);
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param resId drawable in res
-	 */
 	public static void setLeftDrawable(TextView textView, int resId) {
 		setLeftDrawable(textView, getDrawable(textView.getContext(), resId));
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param topDrawable target drawable
-	 */
 	public static void setTopDrawable(TextView textView, Drawable topDrawable) {
 		setDrawableBounds(topDrawable);
 		textView.setCompoundDrawables(null, topDrawable, null, null);
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param resId drawable in res
-	 */
 	public static void setTopDrawable(TextView textView, int resId) {
 		setTopDrawable(textView, getDrawable(textView.getContext(), resId));
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param rightDrawable target drawable
-	 */
 	public static void setRightDrawable(TextView textView, Drawable rightDrawable) {
 		setDrawableBounds(rightDrawable);
 		textView.setCompoundDrawables(null, null, rightDrawable, null);
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param resId drawable in res
-	 */
 	public static void setRightDrawable(TextView textView, int resId) {
 		setRightDrawable(textView, getDrawable(textView.getContext(), resId));
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param bottomDrawable target drawable
-	 */
 	public static void setBottomDrawable(TextView textView, Drawable bottomDrawable) {
 		setDrawableBounds(bottomDrawable);
 		textView.setCompoundDrawables(null, null, bottomDrawable, null);
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param resId drawable in res
-	 */
 	public static void setBottomDrawable(TextView textView, int resId) {
 		setBottomDrawable(textView, getDrawable(textView.getContext(), resId));
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param leftmDrawable left target drawable
-	 * @param topDrawable top target drawable
-	 * @param rightDrawable right target drawable
-	 * @param bottomDrawable bottom target drawable
-	 */
 	public static void setCompoundDrawables(TextView textView, Drawable leftmDrawable, Drawable topDrawable, Drawable rightDrawable, Drawable bottomDrawable) {
 		setDrawableBounds(leftmDrawable);
 		setDrawableBounds(topDrawable);
@@ -154,30 +104,16 @@ public class ResourcesCompat {
 		textView.setCompoundDrawables(leftmDrawable, topDrawable, rightDrawable, bottomDrawable);
 	}
 
-	/**
-	 * set drawable for textview、button、checkbox
-	 * 
-	 * @param textView target textview
-	 * @param resLeftId left target drawable
-	 * @param resRightId top target drawable
-	 * @param resTopId right target drawable
-	 * @param resBottomId bottom target drawable
-	 */
 	public static void setCompoundDrawables(TextView textView, int resLeftId, int resRightId, int resTopId, int resBottomId) {
 		Context context = textView.getContext();
 		setCompoundDrawables(textView, getDrawable(context, resLeftId), getDrawable(context, resRightId), getDrawable(context, resTopId), getDrawable(context, resBottomId));
 	}
 
-	/**
-	 * init drawable
-	 */
-	private static void setDrawableBounds(Drawable drawable) {
+	public static void setDrawableBounds(Drawable drawable) {
 		if (drawable != null) {
 			drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
 		}
 	}
-
-	/* =====Color===== */
 
 	public static int getColor(Context context, int resId) {
 		return getColor(context.getResources(), resId);
@@ -201,4 +137,64 @@ public class ResourcesCompat {
 		}
 	}
 
+	public static ColorStateList getColorStateList(Context context, int resId) {
+		return getColorStateList(context.getResources(), resId);
+	}
+
+	public static ColorStateList getColorStateList(Context context, int resId, Theme theme) {
+		return getColorStateList(context.getResources(), resId, theme);
+	}
+
+	public static ColorStateList getColorStateList(Resources resources, int resId) {
+		return getColorStateList(resources, resId, null);
+	}
+
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	public static ColorStateList getColorStateList(Resources resources, int resId, Theme theme) {
+		if (VERSION.SDK_INT > 22) {
+			return resources.getColorStateList(resId, theme);// heigh than leve21
+		} else {
+			return resources.getColorStateList(resId);// small than leve21
+		}
+	}
+
+	public static SpannableString getScaleText(String content, int start, int end, int px) {
+		SpannableString stringSpan = new SpannableString(content);
+		stringSpan.setSpan(new AbsoluteSizeSpan(px), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		return stringSpan;
+	}
+
+	public static SpannableString getColotText(String content, String colorText, int color) {
+		SpannableString stringSpan = new SpannableString(content);
+		int index = content.indexOf(colorText);
+		if (index != -1) {
+			stringSpan.setSpan(new ForegroundColorSpan(color), 0, index, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		}
+		return stringSpan;
+	}
+
+	public static SpannableString getColotText(String content, int start, int end, int color) {
+		SpannableString stringSpan = new SpannableString(content);
+		stringSpan.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		return stringSpan;
+	}
+
+	public static SpannableString getDeleteText(String content) {
+		return getDeleteText(content, 0, content.length());
+	}
+
+	public static SpannableString getDeleteText(String content, int start, int end) {
+		SpannableString stringSpan = new SpannableString(content);
+		stringSpan.setSpan(new StrikethroughSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		return stringSpan;
+	}
+
+	public static SpannableString getImageSpanText(String content, Drawable drawable, int start, int end) {
+		SpannableString stringSpan = new SpannableString(content);
+		setDrawableBounds(drawable);
+		ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
+		stringSpan.setSpan(imageSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		return stringSpan;
+	}
 }
