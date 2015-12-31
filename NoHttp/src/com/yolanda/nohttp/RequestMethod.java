@@ -21,14 +21,33 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA
  */
-public interface RequestMethod {
-	final int GET = 0;
-	final int POST = 1;
-	final int PUT = 2;
-	final int DELETE = 3;
-	final int HEAD = 4;
-	final int OPTIONS = 5;
-	final int TRACE = 6;
-	final int PATCH = 7;
-	final String[] METHOD = new String[] { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH" };
+public enum RequestMethod {
+
+	GET("GET"),
+
+	POST("POST"),
+
+	PUT("PUT"),
+
+	DELETE("DELETE"),
+
+	HEAD("HEAD"),
+
+	OPTIONS("OPTIONS"),
+
+	TRACE("TRACE"),
+
+	PATCH("PATCH");
+
+	private final String value;
+
+	private RequestMethod(String value) {
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return this.value;
+	}
+
 }

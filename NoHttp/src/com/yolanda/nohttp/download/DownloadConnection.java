@@ -197,7 +197,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			}
 			// 通知开始下载了
 			Logger.d("-------Download start-------");
-			downloadListener.onStart(what, tempFileLength > 0, tempFileLength, Headers.parseMultimap(responseHeaders), totalLength);
+			downloadListener.onStart(what, tempFileLength > 0, tempFileLength, HeaderParser.parseMultimap(responseHeaders), totalLength);
 			inputStream = httpConnection.getInputStream();
 			String contentEncoding = httpConnection.getContentEncoding();
 			if (HeaderParser.isGzipContent(contentEncoding))

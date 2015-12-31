@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
+package com.yolanda.nohttp.cache;
 
 /**
  * Created in Nov 12, 2015 2:11:49 PM
@@ -42,6 +42,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.yolanda.nohttp.Logger;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -58,10 +60,6 @@ import android.graphics.drawable.Drawable;
  */
 public class NoHttpCache {
 
-	public static final int TIME_HOUR = 60 * 60;
-
-	public static final int TIME_DAY = TIME_HOUR * 24;
-
 	private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb
 
 	private static final int MAX_COUNT = Integer.MAX_VALUE; // 不限制存放数据的数量
@@ -76,8 +74,8 @@ public class NoHttpCache {
 		return get(context, "NoHttpCache");
 	}
 
-	public static NoHttpCache get(Context context, String cacheName) {
-		return get(context, cacheName, MAX_SIZE, MAX_COUNT);
+	public static NoHttpCache get(Context context, String floderName) {
+		return get(context, floderName, MAX_SIZE, MAX_COUNT);
 	}
 
 	public static NoHttpCache get(Context context, String cacheName, long maxZise, int maxCount) {
@@ -95,7 +93,7 @@ public class NoHttpCache {
 	}
 
 	private static String myPid() {
-		return "_" + android.os.Process.myPid();
+		return new StringBuffer("_").append(android.os.Process.myPid()).toString();
 	}
 
 	private NoHttpCache(Context context, File cacheDir, long maxZize, int maxCount) {

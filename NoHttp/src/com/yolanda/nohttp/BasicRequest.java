@@ -38,7 +38,7 @@ public interface BasicRequest extends Queueable, Startable, SignCancelable {
 	/**
 	 * return method of request
 	 */
-	int getRequestMethod();
+	RequestMethod getRequestMethod();
 
 	/**
 	 * If you are allowed to access the Https directly, then the true will be returned if the certificate is required to
@@ -91,20 +91,25 @@ public interface BasicRequest extends Queueable, Startable, SignCancelable {
 	 * Get all Heads
 	 */
 	Headers headers();
-	
+
 	/**
 	 * When you start the request
 	 */
 	void onPreExecute();
-	
+
 	/**
 	 * Send request data, give priority to RequestBody, and then send the form data
 	 */
 	void onWriteRequestBody(OutputStream outputStream);
-	
+
 	/**
 	 * Get get of this request
 	 */
 	Object getTag();
+
+	/**
+	 * Get of cache data
+	 */
+	String getCacheKey();
 
 }

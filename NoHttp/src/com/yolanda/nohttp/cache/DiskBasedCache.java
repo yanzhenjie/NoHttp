@@ -105,7 +105,7 @@ public class DiskBasedCache implements Cache {
 	 * Returns the cache entry with the specified key if it exists, null otherwise.
 	 */
 	@Override
-	public synchronized Entry get(String key) {
+	public synchronized Entrance get(String key) {
 		CacheHeader entry = mEntries.get(key);
 		// if the entry does not exist, return.
 		if (entry == null) {
@@ -181,7 +181,7 @@ public class DiskBasedCache implements Cache {
 	 */
 	@Override
 	public synchronized void invalidate(String key, boolean fullExpire) {
-		Entry entry = get(key);
+		Entrance entry = get(key);
 		if (entry != null) {
 			entry.softTtl = 0;
 			if (fullExpire) {
@@ -196,7 +196,7 @@ public class DiskBasedCache implements Cache {
 	 * Puts the entry with the specified key into the cache.
 	 */
 	@Override
-	public synchronized void put(String key, Entry entry) {
+	public synchronized void put(String key, Entrance entry) {
 		pruneIfNeeded(entry.data.length);
 		File file = getFileForKey(key);
 		try {
@@ -372,7 +372,7 @@ public class DiskBasedCache implements Cache {
 		 * @param key The key that identifies the cache entry
 		 * @param entry The cache entry.
 		 */
-		public CacheHeader(String key, Entry entry) {
+		public CacheHeader(String key, Entrance entry) {
 			this.key = key;
 			this.size = entry.data.length;
 			this.etag = entry.etag;
@@ -413,8 +413,8 @@ public class DiskBasedCache implements Cache {
 		/**
 		 * Creates a cache entry for the specified data.
 		 */
-		public Entry toCacheEntry(byte[] data) {
-			Entry e = new Entry();
+		public Entrance toCacheEntry(byte[] data) {
+			Entrance e = new Entrance();
 			e.data = data;
 			e.etag = etag;
 			e.serverDate = serverDate;

@@ -101,15 +101,15 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 			try {
 				httpConnection = getHttpConnection(request);
 				httpConnection.connect();
-				Logger.i("-------Send reqeust data start-------");
+				// write request body to stream
 				writeRequestBody(httpConnection, request);
-				Logger.i("-------Send request data end-------");
+				
 				Logger.i("-------Response start-------");
 				responseCode = httpConnection.getResponseCode();
 				Logger.d("ResponseCode: " + responseCode);
 
 				Map<String, List<String>> responseHeaders = httpConnection.getHeaderFields();
-				headers = Headers.parseMultimap(responseHeaders);
+				headers = HeaderParser.parseMultimap(responseHeaders);
 				for (String headName : responseHeaders.keySet()) {
 					List<String> headValues = responseHeaders.get(headName);
 					for (String headValue : headValues) {

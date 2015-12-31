@@ -15,6 +15,7 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.cache.CacheMode;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -87,4 +88,13 @@ public interface ImplRequest {
 	 * Set tag of task, Will return to you at the time of the task response
 	 */
 	void setTag(Object tag);
+
+	/**
+	 * Set key of request result.
+	 * All the data will be saved in the same folder, so you should ensure that key is the only, otherwise the data will be replaced
+	 * 
+	 * @param key Unique key
+	 * @param Cache policy
+	 */
+	void setCacheKey(String key, CacheMode cacheMode);
 }

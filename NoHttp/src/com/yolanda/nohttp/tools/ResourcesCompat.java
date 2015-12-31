@@ -16,11 +16,13 @@
 package com.yolanda.nohttp.tools;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -28,6 +30,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.StrikethroughSpan;
+import android.view.View;
 import android.widget.TextView;
 
 /**
@@ -53,11 +56,10 @@ public class ResourcesCompat {
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	public static Drawable getDrawable(Resources resources, int resId, Theme theme) {
-		if (VERSION.SDK_INT > 20) {
+		if (VERSION.SDK_INT > 20)
 			return resources.getDrawable(resId, theme);// heigh than leve21
-		} else {
+		else
 			return resources.getDrawable(resId);// small than leve21
-		}
 	}
 
 	public static void setLeftDrawable(TextView textView, Drawable leftDrawable) {
@@ -110,9 +112,8 @@ public class ResourcesCompat {
 	}
 
 	public static void setDrawableBounds(Drawable drawable) {
-		if (drawable != null) {
+		if (drawable != null)
 			drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
-		}
 	}
 
 	public static int getColor(Context context, int resId) {
@@ -130,11 +131,10 @@ public class ResourcesCompat {
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	public static int getColor(Resources resources, int resId, Theme theme) {
-		if (VERSION.SDK_INT > 22) {
+		if (VERSION.SDK_INT > 22)
 			return resources.getColor(resId, theme);// heigh than leve21
-		} else {
+		else
 			return resources.getColor(resId);// small than leve21
-		}
 	}
 
 	public static ColorStateList getColorStateList(Context context, int resId) {
@@ -152,11 +152,20 @@ public class ResourcesCompat {
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	public static ColorStateList getColorStateList(Resources resources, int resId, Theme theme) {
-		if (VERSION.SDK_INT > 22) {
+		if (VERSION.SDK_INT > 22)
 			return resources.getColorStateList(resId, theme);// heigh than leve21
-		} else {
+		else
 			return resources.getColorStateList(resId);// small than leve21
-		}
+
+	}
+
+	@SuppressWarnings("deprecation")
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	public static void setBackground(View view, Drawable background) {
+		if (VERSION.SDK_INT > 15)
+			view.setBackground(background);
+		else
+			view.setBackgroundDrawable(background);
 	}
 
 	public static SpannableString getScaleText(String content, int start, int end, int px) {
@@ -168,9 +177,8 @@ public class ResourcesCompat {
 	public static SpannableString getColotText(String content, String colorText, int color) {
 		SpannableString stringSpan = new SpannableString(content);
 		int index = content.indexOf(colorText);
-		if (index != -1) {
+		if (index != -1)
 			stringSpan.setSpan(new ForegroundColorSpan(color), 0, index, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		}
 		return stringSpan;
 	}
 

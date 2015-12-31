@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
@@ -44,24 +45,26 @@ import android.text.TextUtils;
 public abstract class BasicConnection {
 
 	/**
-	 * Create a Http connection object, but do not establish a connection, where the request header information is set
-	 * up, including Cookie
+	 * Create a Http connection object, but do not establish a connection, where the request header information is set up, including Cookie
 	 */
-	@TargetApi(Build.VERSION_CODES.KITKAT)
 	protected HttpURLConnection getHttpConnection(BasicRequest request) throws IOException, URISyntaxException {
+		// 1.Pre operation notice
 		request.onPreExecute();
+
+		// 2.Build URL
 		String urlStr = request.url();
 		Logger.d("Reuqest adress:" + urlStr);
 		if (android.os.Build.VERSION.SDK_INT < 9)
 			System.setProperty("http.keepAlive", "false");
 		URL url = new URL(urlStr);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		if ("https".equals(url.getProtocol()))
+		if ("https".equalsIgnoreCase(url.getProtocol()))
 			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) connection, request);
-		int requestMethod = request.getRequestMethod();
-		String method = RequestMethod.METHOD[requestMethod];
-		Logger.d("Request method:" + method);
-		connection.setRequestMethod(method);
+
+		// 3. Base attribute
+		String requestMethod = request.getRequestMethod().toString();
+		Logger.d("Request method:" + requestMethod);
+		connection.setRequestMethod(requestMethod);
 		connection.setDoInput(true);
 		connection.setDoOutput(request.isOutPutMethod());
 		connection.setConnectTimeout(request.getConnectTimeout());
@@ -69,35 +72,31 @@ public abstract class BasicConnection {
 		connection.setUseCaches(false);
 		connection.setInstanceFollowRedirects(true);
 
-		if (request.isOutPutMethod() && request.hasBinary()) {
-			connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + request.getBoundary());
-		} else {
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + request.getParamsEncoding());
-		}
+		// 4.Set request headers
+		setHeaders(url.toURI(), connection, request);
 
+		return connection;
+	}
+
+	/**
+	 * Set request headers
+	 */
+	private void setHeaders(URI uri, HttpURLConnection connection, BasicRequest request) throws IOException {
+		// 1.Build Headers
 		Headers headers = request.headers();
 
+		// 2.Set content Length
 		if (request.isOutPutMethod()) {
 			long contentLength = request.getContentLength();
-			if (contentLength < 0) {
-				connection.setChunkedStreamingMode(256 * 1024);
-			} else if (contentLength < Integer.MAX_VALUE) {
-				connection.setFixedLengthStreamingMode((int) contentLength);
-			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-				connection.setFixedLengthStreamingMode(contentLength);
-			} else {
-				connection.setChunkedStreamingMode(256 * 1024);
-			}
+			setContentLength(connection, contentLength);
 			headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
 		}
 
 		// TODO Authorization:
 
+		// 3.Base header
 		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);// gzip, deflate, sdch;
 		headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT); // text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
-
-		// 请求时：no-cache、no-store、max-age=0、max-stale、min-fresh、only-if-cached
-		// 响应时：public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age、s-maxage
 		if (headers.get(Headers.HEAD_KEY_CACHE_CONTROL) == null)
 			headers.set(Headers.HEAD_KEY_CACHE_CONTROL, Headers.HEAD_VALUE_CACHE_CONTROL);
 		if (headers.get(Headers.HEAD_KEY_CONNECTION) == null)
@@ -105,16 +104,50 @@ public abstract class BasicConnection {
 		if (headers.get(Headers.HEAD_KEY_USER_AGENT) == null)
 			headers.set(Headers.HEAD_KEY_USER_AGENT, getUserAgent());
 
-		// 1.Parse cookie of CookieManger
-		// Capture the request headers added so far so that they can be offered to the CookieHandler.
-		// This is mostly to stay close to the RI; it is unlikely any of the headers above would
-		// affect cookie choice besides "Host".
-		CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-		Map<String, List<String>> cookieMaps = cookieManager.get(url.toURI(), Collections.<String, List<String>> emptyMap());
-		// Add any new cookies to the request.
-		Headers.addCookiesToHeaders(headers, cookieMaps);
+		// 4.Add cookie to headers
+		setCookies(uri, headers);
 
-		Map<String, String> cookies = Headers.parseRequestCookie(headers);
+		// 5.Adds all request header to httoConnection
+		Logger.i("-------Set request headers start-------");
+		for (int i = 0; i < headers.size(); i++) {
+			String name = headers.name(i);
+			String value = headers.value(i);
+			Logger.i(name + ": " + value);
+			connection.addRequestProperty(name, value);
+		}
+
+		if (request.isOutPutMethod() && request.hasBinary()) {
+			connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + request.getBoundary());
+		} else {
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + request.getParamsEncoding());
+		}
+		Logger.i("-------Set request headers end-------");
+	}
+
+	/**
+	 * Set content length
+	 */
+	@TargetApi(Build.VERSION_CODES.KITKAT)
+	private void setContentLength(HttpURLConnection connection, long contentLength) {
+		if (contentLength < Integer.MAX_VALUE && contentLength > 0) {
+			connection.setFixedLengthStreamingMode((int) contentLength);
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			connection.setFixedLengthStreamingMode(contentLength);
+		} else {
+			connection.setChunkedStreamingMode(256 * 1024);
+		}
+	}
+
+	/**
+	 * Set cookie
+	 */
+	private void setCookies(URI uri, Headers headers) throws IOException {
+		CookieManager cookieManager = NoHttp.getDefaultCookieManager();
+		Map<String, List<String>> cookieMaps = cookieManager.get(uri, Collections.<String, List<String>> emptyMap());
+		// Add any new cookies to the request.
+		HeaderParser.addCookiesToHeaders(headers, cookieMaps);
+
+		Map<String, String> cookies = HeaderParser.parseRequestCookie(headers);
 		headers.removeAll(Headers.HEAD_KEY_COOKIE);
 		headers.removeAll(Headers.HEAD_KEY_COOKIE2);
 		for (Map.Entry<String, String> entry : cookies.entrySet()) {
@@ -123,17 +156,6 @@ public abstract class BasicConnection {
 			if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value))
 				headers.add(name, value);
 		}
-
-		// 2.Adds all request header to httoConnection
-		Logger.i("-------Send request headers start-------");
-		for (int i = 0; i < headers.size(); i++) {
-			String name = headers.name(i);
-			String value = headers.value(i);
-			Logger.i(name + ": " + value);
-			connection.addRequestProperty(name, value);
-		}
-		Logger.i("-------Send request headers end-------");
-		return connection;
 	}
 
 	/**
@@ -141,9 +163,11 @@ public abstract class BasicConnection {
 	 */
 	protected <T> void writeRequestBody(HttpURLConnection connection, Request<T> request) throws IOException {
 		if (request.isOutPutMethod()) {
+			Logger.i("-------Send reqeust data start-------");
 			BufferedOutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
 			request.onWriteRequestBody(outputStream);
 			outputStream.close();
+			Logger.i("-------Send request data end-------");
 		}
 	}
 
@@ -170,7 +194,7 @@ public abstract class BasicConnection {
 	/**
 	 * this requestMethod and responseCode has ResponseBody ?
 	 */
-	public static boolean hasResponseBody(int requestMethod, int responseCode) {
+	public static boolean hasResponseBody(RequestMethod requestMethod, int responseCode) {
 		return requestMethod != RequestMethod.HEAD && hasResponseBody(responseCode);
 	}
 

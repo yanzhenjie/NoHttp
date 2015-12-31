@@ -36,7 +36,7 @@ public abstract class Binary implements Cancelable {
 	 */
 	public final void onWriteBinary(CommonRequest request, OutputStream outputStream) throws IOException {
 		if (outputStream instanceof CounterOutputStream) {
-			((CounterOutputStream) outputStream).addLong(onMeasureLength());
+			((CounterOutputStream) outputStream).write(onMeasureLength());
 		} else {
 			onWriteByteArray(request, outputStream);
 		}

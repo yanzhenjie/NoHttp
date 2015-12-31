@@ -125,7 +125,7 @@ public class RestResponser<T> implements Response<T> {
 
 	@Override
 	public List<HttpCookie> getCookies() {
-		return HeaderParser.parseCookie(headers);
+		return HeaderParser.parseResponseCookie(headers);
 	}
 
 	@Override

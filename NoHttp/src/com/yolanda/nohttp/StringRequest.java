@@ -28,7 +28,7 @@ public class StringRequest extends RestRequestor<String> {
 		this(url, RequestMethod.GET);
 	}
 
-	public StringRequest(String url, int requestMethod) {
+	public StringRequest(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
 	}
 

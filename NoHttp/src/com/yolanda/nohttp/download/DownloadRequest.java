@@ -43,7 +43,7 @@ public abstract class DownloadRequest extends CommonRequest {
 	 * @param url
 	 * @param requestMethod
 	 */
-	public DownloadRequest(String url, int requestMethod) {
+	public DownloadRequest(String url, RequestMethod requestMethod) {
 		super(url, RequestMethod.GET);
 	}
 

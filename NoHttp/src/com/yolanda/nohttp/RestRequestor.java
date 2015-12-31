@@ -47,14 +47,14 @@ public abstract class RestRequestor<T> extends Request<T> {
 	 * @param url request adress, like: http://www.google.com
 	 * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
 	 */
-	public RestRequestor(String url, int requestMethod) {
+	public RestRequestor(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
 		this.mParamMap = new LinkedHashMap<String, Object>();
 	}
 
 	@Override
 	public void add(String key, CharSequence value) {
-		mParamMap.put(key, String.valueOf(value));
+		mParamMap.put(key, value == null ? "" : value);
 	}
 
 	@Override

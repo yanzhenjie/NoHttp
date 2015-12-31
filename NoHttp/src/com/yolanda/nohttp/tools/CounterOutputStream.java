@@ -47,7 +47,7 @@ public class CounterOutputStream extends OutputStream {
 		}
 	}
 
-	public void addLong(long count) {
+	public void write(long count) {
 		if (count > 0)
 			lenght.addAndGet(count);
 	}

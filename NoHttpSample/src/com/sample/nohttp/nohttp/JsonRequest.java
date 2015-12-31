@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import com.yolanda.nohttp.HeaderParser;
 import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.RestRequestor;
 
 /**
@@ -31,7 +32,7 @@ import com.yolanda.nohttp.RestRequestor;
  */
 public class JsonRequest extends RestRequestor<JSONObject> {
 
-	public JsonRequest(String url, int requestMethod) {
+	public JsonRequest(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
 	}
 

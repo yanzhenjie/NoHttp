@@ -39,7 +39,7 @@ public abstract class Request<T> extends CommonRequest {
 	 * @param url request adress, like: http://www.google.com
 	 * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
 	 */
-	public Request(String url, int requestMethod) {
+	public Request(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
 	}
 

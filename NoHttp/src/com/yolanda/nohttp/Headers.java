@@ -17,15 +17,9 @@ package com.yolanda.nohttp;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
-
-import android.text.TextUtils;
 
 /**
  * Head of http, reqeust or response</br>
@@ -208,104 +202,4 @@ public final class Headers {
 		this.namesAndValues.clear();
 	}
 
-	private static final Comparator<String> FIELD_NAME_COMPARATOR = new Comparator<String>() {
-		// @FindBugsSuppressWarnings("ES_COMPARING_PARAMETER_STRING_WITH_EQ")
-		@Override
-		public int compare(String a, String b) {
-			if (a == b) {
-				return 0;
-			} else if (a == null) {
-				return -1;
-			} else if (b == null) {
-				return 1;
-			} else {
-				return String.CASE_INSENSITIVE_ORDER.compare(a, b);
-			}
-		}
-	};
-
-	/**
-	 * Get all the requests
-	 */
-	public static Map<String, List<String>> toMultimap(Headers headers) {
-		Map<String, List<String>> result = new TreeMap<String, List<String>>(FIELD_NAME_COMPARATOR);
-		for (int i = 0, size = headers.size(); i < size && headers != null; i++) {
-			String name = headers.name(i);
-			String value = headers.value(i);
-
-			List<String> allValues = new ArrayList<String>();
-			List<String> otherValues = result.get(name);
-			if (otherValues != null)
-				allValues.addAll(otherValues);
-			allValues.add(value);
-			result.put(name, Collections.unmodifiableList(allValues));
-		}
-		return Collections.unmodifiableMap(result);
-	}
-
-	/**
-	 * Parse Header from Map to {@link Headers}
-	 */
-	public static Headers parseMultimap(Map<String, List<String>> headers) {
-		Headers returnHeaders = new Headers();
-		if (headers != null)
-			for (Map.Entry<String, List<String>> headEntry : headers.entrySet()) {
-				String name = headEntry.getKey();
-				if (!TextUtils.isEmpty(name))
-					for (String value : headEntry.getValue())
-						if (!TextUtils.isEmpty(value))
-							returnHeaders.add(name, value);
-			}
-		return returnHeaders;
-	}
-
-	/**
-	 * Add "Cookie" of the headers to request header
-	 */
-	public static void addCookiesToHeaders(Headers headers, Map<String, List<String>> cookieHeader) {
-		if (cookieHeader != null && headers != null)
-			for (Map.Entry<String, List<String>> entry : cookieHeader.entrySet()) {
-				String key = entry.getKey();
-				List<String> value = entry.getValue();
-				if ((HEAD_KEY_COOKIE.equalsIgnoreCase(key) || HEAD_KEY_COOKIE2.equalsIgnoreCase(key)) && !value.isEmpty())
-					headers.add(key, buildCookieHeader(value));
-			}
-	}
-
-	/**
-	 * The request for analysis in the Cookie head into two pairs: Cookie and Cookie2
-	 */
-	public static Map<String, String> parseRequestCookie(Headers headers) {
-		Map<String, String> map = new HashMap<String, String>();
-		if (headers != null) {
-			map.put(HEAD_KEY_COOKIE, "");
-			map.put(HEAD_KEY_COOKIE2, "");
-			for (int i = 0; i < headers.size(); i++) {
-				if (HEAD_KEY_COOKIE.equalsIgnoreCase(headers.name(i))) {
-					String cookie = map.get(HEAD_KEY_COOKIE) + headers.value(i) + "; ";
-					map.put(HEAD_KEY_COOKIE, cookie);
-				} else if (HEAD_KEY_COOKIE2.equalsIgnoreCase(headers.name(i))) {
-					String cookie2 = map.get(HEAD_KEY_COOKIE2) + headers.value(i) + "; ";
-					map.put(HEAD_KEY_COOKIE2, cookie2);
-				}
-			}
-		}
-		return map;
-	}
-
-	/**
-	 * Send all cookies in one big header, as recommended by
-	 * <a href="http://tools.ietf.org/html/rfc6265#section-4.2.1">RFC 6265</a>.
-	 */
-	public static String buildCookieHeader(List<String> cookies) {
-		if (cookies.size() == 1)
-			return cookies.get(0);
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0, size = cookies.size(); i < size; i++) {
-			if (i > 0)
-				sb.append("; ");
-			sb.append(cookies.get(i));
-		}
-		return sb.toString();
-	}
 }

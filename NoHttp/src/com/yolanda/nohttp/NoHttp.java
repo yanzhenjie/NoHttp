@@ -119,7 +119,7 @@ public class NoHttp {
 	/**
 	 * Create a String type request, custom request method, method from {@link #RequestMethod}
 	 */
-	public static Request<String> createStringRequest(String url, int requestMethod) {
+	public static Request<String> createStringRequest(String url, RequestMethod requestMethod) {
 		return new StringRequest(url, requestMethod);
 	}
 

@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Set;
 
+import com.yolanda.nohttp.cache.CacheMode;
 import com.yolanda.nohttp.security.Certificate;
 import com.yolanda.nohttp.tools.CounterOutputStream;
 
@@ -44,7 +45,7 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	/**
 	 * Request method
 	 */
-	protected int mRequestMethod;
+	protected RequestMethod mRequestMethod;
 	/**
 	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
 	 */
@@ -90,6 +91,17 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	 */
 	protected Object mTag;
 
+	/* ===== Cache ===== */
+
+	/**
+	 * Cache key
+	 */
+	protected String mCacheKey;
+	/**
+	 * Cache mode
+	 */
+	protected CacheMode mCacheMode;
+
 	/**
 	 * Create a request, RequestMethod is {@link RequestMethod#Get}
 	 * 
@@ -105,11 +117,9 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	 * @param url request adress, like: http://www.google.com
 	 * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
 	 */
-	public CommonRequest(String url, int requestMethod) {
+	public CommonRequest(String url, RequestMethod requestMethod) {
 		if (TextUtils.isEmpty(url))
 			throw new IllegalArgumentException("url is null");
-		if (requestMethod < RequestMethod.GET || requestMethod > RequestMethod.PATCH)
-			throw new IllegalArgumentException("RequestMethod error, value shuld from RequestMethod");
 		this.url = url;
 		this.mRequestMethod = requestMethod;
 		this.mheaders = new Headers();
@@ -137,7 +147,7 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	}
 
 	@Override
-	public int getRequestMethod() {
+	public RequestMethod getRequestMethod() {
 		return mRequestMethod;
 	}
 
@@ -164,17 +174,17 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	@Override
 	public boolean isOutPutMethod() {
 		switch (mRequestMethod) {
-		case RequestMethod.GET:
+		case GET:
 			return false;
-		case RequestMethod.POST:
-		case RequestMethod.PUT:
+		case POST:
+		case PUT:
 			return true;
-		case RequestMethod.DELETE:// DELETE
-		case RequestMethod.HEAD:// HEAD
-		case RequestMethod.OPTIONS:// OPTIONS
-		case RequestMethod.TRACE:// TRACE
+		case DELETE:
+		case HEAD:
+		case OPTIONS:
+		case TRACE:
 			return false;
-		case RequestMethod.PATCH:// PATCH
+		case PATCH:
 			return true;
 		default:
 			return false;
@@ -482,5 +492,18 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 			}
 		}
 		return sb.toString();
+	}
+
+	/* ======Cache===== */
+
+	@Override
+	public void setCacheKey(String key, CacheMode cacheMode) {
+		this.mCacheKey = key;
+		this.mCacheMode = cacheMode;
+	}
+
+	@Override
+	public String getCacheKey() {
+		return mCacheKey;
 	}
 }

@@ -17,6 +17,7 @@ package com.yolanda.nohttp;
 
 import java.net.HttpCookie;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,32 +34,9 @@ import android.text.TextUtils;
 public class HeaderParser {
 
 	/**
-	 * Analysis of the response from the server Cookie
-	 */
-	public static List<HttpCookie> parseCookie(Map<String, List<String>> responseHeaders) {
-		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
-		if (responseHeaders != null)
-			for (Map.Entry<String, List<String>> entry : responseHeaders.entrySet()) {
-				String key = entry.getKey();
-				if (key != null && (key.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE) || key.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE2))) {
-					for (String cookieStr : entry.getValue()) {
-						try {
-							for (HttpCookie cookie : HttpCookie.parse(cookieStr)) {
-								cookies.add(cookie);
-							}
-						} catch (IllegalArgumentException e) {
-							Logger.w(e);
-						}
-					}
-				}
-			}
-		return cookies;
-	}
-
-	/**
 	 * Parse Cookie of Response Headers, Only "Set-cookie" and "Set-cookie2" pair will be parsed
 	 */
-	public static List<HttpCookie> parseCookie(Headers headers) {
+	public static List<HttpCookie> parseResponseCookie(Headers headers) {
 		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
 		for (int i = 0; headers != null && i < headers.size(); i++) {
 			String name = headers.name(i);
@@ -79,70 +57,54 @@ public class HeaderParser {
 	}
 
 	/**
-	 * A value of the header information
-	 * 
-	 * @param responseHeaders http Response Headers
-	 * @param key like {@code charset}
-	 * @param defaultValue list {@code utf-8}
-	 * @return If you have a value key, you will return the parsed value if you don't return the default value
+	 * The request for analysis in the Cookie head into two pairs: Cookie and Cookie2
 	 */
-	public static String parseHeadValue(Map<String, List<String>> responseHeaders, String key, String defaultValue) {
-		if (responseHeaders != null)
-			for (String name : responseHeaders.keySet()) {
-				List<String> values = responseHeaders.get(name);
-				String result = parseHeadValue(values, key, "");
-				if (TextUtils.isEmpty(result)) {
-					continue;
-				} else {
-					defaultValue = result;
-					break;
+	public static Map<String, String> parseRequestCookie(Headers headers) {
+		Map<String, String> map = new HashMap<String, String>();
+		if (headers != null) {
+			map.put(Headers.HEAD_KEY_COOKIE, "");
+			map.put(Headers.HEAD_KEY_COOKIE2, "");
+			for (int i = 0; i < headers.size(); i++) {
+				if (Headers.HEAD_KEY_COOKIE.equalsIgnoreCase(headers.name(i))) {
+					String cookie = map.get(Headers.HEAD_KEY_COOKIE) + headers.value(i) + "; ";
+					map.put(Headers.HEAD_KEY_COOKIE, cookie);
+				} else if (Headers.HEAD_KEY_COOKIE2.equalsIgnoreCase(headers.name(i))) {
+					String cookie2 = map.get(Headers.HEAD_KEY_COOKIE2) + headers.value(i) + "; ";
+					map.put(Headers.HEAD_KEY_COOKIE2, cookie2);
 				}
-			}
-		return defaultValue;
-	}
-
-	/**
-	 * A value of the header information
-	 * 
-	 * @param responseHeaders http Response Headers
-	 * @param key like {@code charset}
-	 * @param defaultValue list {@code utf-8}
-	 * @return If you have a value key, you will return the parsed value if you don't return the default value
-	 */
-	public static String parseHeadValue(Headers responseHeaders, String key, String defaultValue) {
-		if (responseHeaders != null)
-			for (String name : responseHeaders.names()) {
-				List<String> values = responseHeaders.values(name);
-				String result = parseHeadValue(values, key, "");
-				if (TextUtils.isEmpty(result)) {
-					continue;
-				} else {
-					defaultValue = result;
-					break;
-				}
-			}
-		return defaultValue;
-	}
-
-	/**
-	 * A value of value of one of the corresponding heads of Http
-	 * 
-	 * @param responseHeaderValues Value of one of the corresponding heads of Http
-	 * @param key like {@code charset}
-	 * @param defaultValue list {@code utf-8}
-	 * @return If you have a value key, you will return the parsed value if you don't return the default value
-	 */
-	public static String parseHeadValue(List<String> responseHeaderValues, String key, String defaultValue) {
-		for (int i = 0; responseHeaderValues != null && i < responseHeaderValues.size(); i++) {
-			String result = parseHeadValue(responseHeaderValues.get(i), key, "");
-			if (TextUtils.isEmpty(result)) {
-				continue;
-			} else {
-				defaultValue = result;
-				break;
 			}
 		}
-		return defaultValue;
+		return map;
+	}
+
+	/**
+	 * Parse Header from Map to {@link Headers}
+	 */
+	public static Headers parseMultimap(Map<String, List<String>> headers) {
+		Headers returnHeaders = new Headers();
+		if (headers != null)
+			for (Map.Entry<String, List<String>> headEntry : headers.entrySet()) {
+				String name = headEntry.getKey();
+				if (!TextUtils.isEmpty(name))
+					for (String value : headEntry.getValue())
+						if (!TextUtils.isEmpty(value))
+							returnHeaders.add(name, value);
+			}
+		return returnHeaders;
+	}
+
+	/**
+	 * Add "Cookie" of the headers to request header
+	 */
+	public static void addCookiesToHeaders(Headers headers, Map<String, List<String>> cookieHeader) {
+		if (cookieHeader != null && headers != null)
+			for (Map.Entry<String, List<String>> entry : cookieHeader.entrySet()) {
+				String key = entry.getKey();
+				List<String> value = entry.getValue();
+				if ((Headers.HEAD_KEY_COOKIE.equalsIgnoreCase(key) || Headers.HEAD_KEY_COOKIE2.equalsIgnoreCase(key)) && !value.isEmpty()) {
+					headers.add(key, TextUtils.join("; ", value));
+				}
+			}
 	}
 
 	/**

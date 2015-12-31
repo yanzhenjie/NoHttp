@@ -71,7 +71,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 
 	@Override
 	public void onClick(View v) {
-		int method = RequestMethod.GET;// 赋一个默认值
+		RequestMethod method = RequestMethod.GET;// 赋一个默认值
 		// 点击不同的按钮，改变请求方法
 		switch (v.getId()) {
 		case R.id.btn_patch:

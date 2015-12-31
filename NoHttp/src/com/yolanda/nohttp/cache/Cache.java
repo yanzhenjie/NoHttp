@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,83 +19,108 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * </br>Created in Dec 14, 2015 5:52:41 PM
+ * </br>
+ * Created in Dec 14, 2015 5:52:41 PM
+ * 
  * @author YOLANDA;
  */
 public interface Cache {
-    /**
-     * Retrieves an entry from the cache.
-     * @param key Cache key
-     * @return An {@link Entry} or null in the event of a cache miss
-     */
-    public Entry get(String key);
 
-    /**
-     * Adds or replaces an entry to the cache.
-     * @param key Cache key
-     * @param entry Data to store and metadata for cache coherency, TTL, etc.
-     */
-    public void put(String key, Entry entry);
+	/**
+	 * Retrieves an entry from the cache.
+	 * 
+	 * @param key Cache key
+	 * @return An {@link Entrance} or null in the event of a cache miss
+	 */
+	public Entrance get(String key);
 
-    /**
-     * Performs any potentially long-running actions needed to initialize the cache;
-     * will be called from a worker thread.
-     */
-    public void initialize();
+	/**
+	 * Adds or replaces an entry to the cache.
+	 * 
+	 * @param key Cache key
+	 * @param entry Data to store and metadata for cache coherency, TTL, etc.
+	 */
+	public void put(String key, Entrance entry);
 
-    /**
-     * Invalidates an entry in the cache.
-     * @param key Cache key
-     * @param fullExpire True to fully expire the entry, false to soft expire
-     */
-    public void invalidate(String key, boolean fullExpire);
+	/**
+	 * Performs any potentially long-running actions needed to initialize the cache;
+	 * will be called from a worker thread.
+	 */
+	public void initialize();
 
-    /**
-     * Removes an entry from the cache.
-     * @param key Cache key
-     */
-    public void remove(String key);
+	/**
+	 * Invalidates an entry in the cache.
+	 * 
+	 * @param key Cache key
+	 * @param fullExpire True to fully expire the entry, false to soft expire
+	 */
+	public void invalidate(String key, boolean fullExpire);
 
-    /**
-     * Empties the cache.
-     */
-    public void clear();
+	/**
+	 * Removes an entry from the cache.
+	 * 
+	 * @param key Cache key
+	 */
+	public void remove(String key);
 
-    /**
-     * Data and metadata for an entry returned by the cache.
-     */
-    public static class Entry {
-        /** The data returned from cache. */
-        public byte[] data;
+	/**
+	 * Empties the cache.
+	 */
+	public void clear();
 
-        /** ETag for cache coherency. */
-        public String etag;
+	/**
+	 * Data and metadata for an entry returned by the cache.
+	 */
+	public static class Entrance {
 
-        /** Date of this response as reported by the server. */
-        public long serverDate;
+		/**
+		 * The data returned from cache.
+		 */
+		public byte[] data;
 
-        /** The last modified date for the requested object. */
-        public long lastModified;
+		/**
+		 * ETag for cache coherency.
+		 */
+		public String etag;
 
-        /** TTL for this record. */
-        public long ttl;
+		/**
+		 * Date of this response as reported by the server.
+		 */
+		public long serverDate;
 
-        /** Soft TTL for this record. */
-        public long softTtl;
+		/**
+		 * The last modified date for the requested object.
+		 */
+		public long lastModified;
 
-        /** Immutable response headers as received from server; must be non-null. */
-        public Map<String, String> responseHeaders = Collections.emptyMap();
+		/**
+		 * TTL for this record.
+		 */
+		public long ttl;
 
-        /** True if the entry is expired. */
-        public boolean isExpired() {
-            return this.ttl < System.currentTimeMillis();
-        }
+		/**
+		 * Soft TTL for this record.
+		 */
+		public long softTtl;
 
-        /** True if a refresh is needed from the original data source. */
-        public boolean refreshNeeded() {
-            return this.softTtl < System.currentTimeMillis();
-        }
-    }
+		/**
+		 * Immutable response headers as received from server; must be non-null.
+		 */
+		public Map<String, String> responseHeaders = Collections.emptyMap();
+
+		/**
+		 * True if the entry is expired.
+		 */
+		public boolean isExpired() {
+			return this.ttl < System.currentTimeMillis();
+		}
+
+		/**
+		 * True if a refresh is needed from the original data source.
+		 */
+		public boolean refreshNeeded() {
+			return this.softTtl < System.currentTimeMillis();
+		}
+	}
 
 }
-
