@@ -15,7 +15,9 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.cache.CacheMode;
+import java.net.Proxy;
+
+import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -25,6 +27,11 @@ import com.yolanda.nohttp.security.Certificate;
  * @author YOLANDA;
  */
 public interface ImplRequest {
+
+	/**
+	 * Set proxy server
+	 */
+	void setProxy(Proxy proxy);
 
 	/**
 	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
@@ -94,7 +101,13 @@ public interface ImplRequest {
 	 * All the data will be saved in the same folder, so you should ensure that key is the only, otherwise the data will be replaced
 	 * 
 	 * @param key Unique key
-	 * @param Cache policy
 	 */
-	void setCacheKey(String key, CacheMode cacheMode);
+	void setCacheKey(String key);
+
+	/**
+	 * Sets the entities that are read in the local cache
+	 * 
+	 * @param entrance A meaningful entity, including header information and message
+	 */
+	void setCacheEntrance(Cache.Entrance entrance);
 }

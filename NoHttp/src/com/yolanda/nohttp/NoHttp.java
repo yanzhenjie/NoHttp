@@ -51,11 +51,7 @@ public class NoHttp {
 	/**
 	 * RequestQueue default thread size, value is {@value}
 	 */
-	public static final int DEFAULT_REQUEST_THREAD_SIZE = 3;
-	/**
-	 * DownloadQueue default thread size, value is {@value}
-	 */
-	public static final int DEFAULT_DOWNLOAD_THREAD_SIZE = 2;
+	public static final int DEFAULT_THREAD_SIZE = 1;
 
 	/**
 	 * Context
@@ -99,7 +95,7 @@ public class NoHttp {
 	 * Create a request queue, the default thread pool number is {@link NoHttp#DEFAULT_REQUEST_THREAD_SIZE}
 	 */
 	public static RequestQueue newRequestQueue() {
-		return newRequestQueue(DEFAULT_REQUEST_THREAD_SIZE);
+		return newRequestQueue(DEFAULT_THREAD_SIZE);
 	}
 
 	/**
@@ -154,7 +150,7 @@ public class NoHttp {
 	 * Create a new download queue, the default thread pool number is {@link NoHttp#DEFAULT_DOWNLOAD_THREAD_SIZE}
 	 */
 	public static DownloadQueue newDownloadQueue() {
-		return newDownloadQueue(DEFAULT_DOWNLOAD_THREAD_SIZE);
+		return newDownloadQueue(DEFAULT_THREAD_SIZE);
 	}
 
 	/**

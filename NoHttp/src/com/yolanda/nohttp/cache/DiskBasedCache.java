@@ -25,12 +25,11 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 
 import android.os.SystemClock;
@@ -361,7 +360,7 @@ public class DiskBasedCache implements Cache {
 		public long softTtl;
 
 		/** Headers from the response resulting in this cache entry. */
-		public Map<String, String> responseHeaders;
+		public Headers responseHeaders;
 
 		private CacheHeader() {
 		}
@@ -405,7 +404,7 @@ public class DiskBasedCache implements Cache {
 			entry.lastModified = readLong(is);
 			entry.ttl = readLong(is);
 			entry.softTtl = readLong(is);
-			entry.responseHeaders = readStringStringMap(is);
+			entry.responseHeaders = readStringHeaders(is);
 
 			return entry;
 		}
@@ -437,7 +436,7 @@ public class DiskBasedCache implements Cache {
 				writeLong(os, lastModified);
 				writeLong(os, ttl);
 				writeLong(os, softTtl);
-				writeStringStringMap(responseHeaders, os);
+				writeStringHeaders(responseHeaders, os);
 				os.flush();
 				return true;
 			} catch (IOException e) {
@@ -545,25 +544,25 @@ public class DiskBasedCache implements Cache {
 		return new String(b, "UTF-8");
 	}
 
-	static void writeStringStringMap(Map<String, String> map, OutputStream os) throws IOException {
-		if (map != null) {
-			writeInt(os, map.size());
-			for (Map.Entry<String, String> entry : map.entrySet()) {
-				writeString(os, entry.getKey());
-				writeString(os, entry.getValue());
+	static void writeStringHeaders(Headers headers, OutputStream os) throws IOException {
+		if (headers != null) {
+			writeInt(os, headers.size());
+			for (int i = 0; i < headers.size(); i++) {
+				writeString(os, headers.name(i));
+				writeString(os, headers.value(i));
 			}
 		} else {
 			writeInt(os, 0);
 		}
 	}
 
-	static Map<String, String> readStringStringMap(InputStream is) throws IOException {
+	static Headers readStringHeaders(InputStream is) throws IOException {
 		int size = readInt(is);
-		Map<String, String> result = (size == 0) ? Collections.<String, String> emptyMap() : new HashMap<String, String>(size);
+		Headers result = new Headers();
 		for (int i = 0; i < size; i++) {
 			String key = readString(is).intern();
 			String value = readString(is).intern();
-			result.put(key, value);
+			result.add(key, value);
 		}
 		return result;
 	}

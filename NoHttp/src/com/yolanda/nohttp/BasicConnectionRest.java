@@ -24,8 +24,8 @@ package com.yolanda.nohttp;
 public interface BasicConnectionRest {
 
 	/**
-	 * Execute a request
+	 * Execute a sync request
 	 */
-	<T> Response<T> request(Request<T> request);
+	HttpResponse request(BasicRequest request);
 
 }

@@ -22,7 +22,7 @@ import java.util.Map;
  * 
  * @author YOLANDA
  */
-public abstract class Request<T> extends CommonRequest {
+public abstract class Request<T> extends CommonRequest<T> {
 
 	/**
 	 * Create a request, RequestMethod is {@link RequestMethod#Get}
@@ -129,9 +129,10 @@ public abstract class Request<T> extends CommonRequest {
 	 * @param params params map
 	 */
 	public abstract void add(Map<String, String> params);
-	
+
 	/**
 	 * set all param
+	 * 
 	 * @param params
 	 */
 	public abstract void set(Map<String, String> params);
@@ -145,9 +146,4 @@ public abstract class Request<T> extends CommonRequest {
 	 * Remove all request param
 	 */
 	public abstract void removeAll();
-
-	/**
-	 * Parse response
-	 */
-	public abstract T parseResponse(String url, String contentType, byte[] byteArray);
 }

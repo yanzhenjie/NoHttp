@@ -16,10 +16,12 @@
 package com.yolanda.nohttp;
 
 import java.io.OutputStream;
+import java.net.Proxy;
 
 import com.yolanda.nohttp.able.Queueable;
 import com.yolanda.nohttp.able.SignCancelable;
 import com.yolanda.nohttp.able.Startable;
+import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -39,6 +41,11 @@ public interface BasicRequest extends Queueable, Startable, SignCancelable {
 	 * return method of request
 	 */
 	RequestMethod getRequestMethod();
+	
+	/**
+	 * Get proxy server
+	 */
+	Proxy getProxy();
 
 	/**
 	 * If you are allowed to access the Https directly, then the true will be returned if the certificate is required to
@@ -108,8 +115,18 @@ public interface BasicRequest extends Queueable, Startable, SignCancelable {
 	Object getTag();
 
 	/**
+	 * Do you need to cache
+	 */
+	boolean needCache();
+	
+	/**
 	 * Get of cache data
 	 */
 	String getCacheKey();
+
+	/**
+	 * Get the entities that are read in the local cache
+	 */
+	Cache.Entrance getCacheEntrance();
 
 }

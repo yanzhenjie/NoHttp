@@ -13,34 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.cache;
+package com.yolanda.nohttp;
 
 /**
  * </br>
- * Created in Dec 31, 2015 4:32:50 PM
+ * Created in Jan 6, 2016 5:45:51 PM
  * 
  * @author YOLANDA;
  */
-public enum CacheMode {
+public interface BasicConnectionManager<T> {
 
-	/**
-	 * First request network, after the failure of the operation to load the cache
-	 */
-	LOAD_CACHE_REQUEST_FAILED,
-
-	/**
-	 * Request for success after the cache
-	 */
-	SAVE_CACHE_REQUEST_SUCCEED,
-
-	/**
-	 * First load the cache, after the failure of the operation of the network request
-	 */
-	REQUEST_NETWORK_LOAD_FAILED,
-
-	/**
-	 * Just request network
-	 */
-	REQUEST_NETWORK_ONLY
+	Response<T> handleRequest(CommonRequest<T> request);
 
 }

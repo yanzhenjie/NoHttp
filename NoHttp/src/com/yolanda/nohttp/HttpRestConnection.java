@@ -27,8 +27,6 @@ import java.util.zip.GZIPInputStream;
 import com.yolanda.nohttp.tools.NetUtil;
 
 import android.content.Context;
-import android.os.SystemClock;
-import android.text.TextUtils;
 import android.webkit.URLUtil;
 
 /**
@@ -77,25 +75,22 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 	 * Initiate the request, and parse the response results
 	 */
 	@Override
-	public <T> Response<T> request(Request<T> request) {
-		long startTime = SystemClock.elapsedRealtime();
-		if (request == null) {
+	public HttpResponse request(BasicRequest request) {
+		if (request == null)
 			throw new IllegalArgumentException("reqeust == null");
-		}
+
 		Logger.d("--------------Reuqest start--------------");
 
-		String url = request.url();
-		Object tag = request.getTag();
+		int responseCode = 0;
 		boolean isSucceed = false;
-		int responseCode = -1;
-		Headers headers = null;
-		byte[] byteArray = null;
-		T result = null;
+		Headers responseHeaders = null;
+		byte[] responseBody = null;
 
-		if (!URLUtil.isValidUrl(request.url()))
-			byteArray = "URL error".getBytes();
+		String url = request.url();
+		if (!URLUtil.isValidUrl(url))
+			responseBody = new StringBuffer("URL error: ").append(url).toString().getBytes();
 		else if (!NetUtil.isNetworkAvailable(mContext)) {
-			byteArray = "Network error".getBytes();
+			responseBody = "Network error".getBytes();
 		} else {
 			HttpURLConnection httpConnection = null;
 			try {
@@ -103,52 +98,39 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 				httpConnection.connect();
 				// write request body to stream
 				writeRequestBody(httpConnection, request);
-				
+
 				Logger.i("-------Response start-------");
 				responseCode = httpConnection.getResponseCode();
 				Logger.d("ResponseCode: " + responseCode);
 
-				Map<String, List<String>> responseHeaders = httpConnection.getHeaderFields();
-				headers = HeaderParser.parseMultimap(responseHeaders);
-				for (String headName : responseHeaders.keySet()) {
-					List<String> headValues = responseHeaders.get(headName);
-					for (String headValue : headValues) {
-						StringBuffer buffer = new StringBuffer();
-						if (!TextUtils.isEmpty(headName)) {
-							buffer.append(headName);
-							buffer.append(": ");
-						}
-						if (!TextUtils.isEmpty(headValue))
-							buffer.append(headValue);
-						Logger.d(buffer.toString());
-					}
-				}
+				// handle headers
+				Map<String, List<String>> httpHeaders = httpConnection.getHeaderFields();
+				responseHeaders = HeaderParser.parseMultimap(httpHeaders);
+				responseHeaders.add(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(responseCode));
 
+				// handle cookie
 				CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-				// 这里解析的是set-cookie2和set-cookie
-				cookieManager.put(new URI(request.url()), responseHeaders);
+				cookieManager.put(new URI(url), httpHeaders);
 
-				isSucceed = true;
-
+				// handle body
 				if (hasResponseBody(request.getRequestMethod(), responseCode)) {
-					String contentEncoding = httpConnection.getContentEncoding();
 					InputStream inputStream = null;
 					try {
 						inputStream = httpConnection.getInputStream();
 					} catch (IOException e) {
-						isSucceed = false;
 						inputStream = httpConnection.getErrorStream();
 					}
+					String contentEncoding = httpConnection.getContentEncoding();
 					if (HeaderParser.isGzipContent(contentEncoding))
 						inputStream = new GZIPInputStream(inputStream);
-					byteArray = readResponseBody(inputStream);
+					responseBody = readResponseBody(inputStream);
 					inputStream.close();
 				}
+
+				isSucceed = true;// Deal successfully with all
 			} catch (Exception e) {
-				request.takeQueue(false);
-				isSucceed = false;
 				String exceptionInfo = getExcetionMessage(e);
-				byteArray = exceptionInfo.getBytes();
+				responseBody = exceptionInfo.getBytes();
 				Logger.e(e);
 			} finally {
 				if (httpConnection != null)
@@ -156,11 +138,8 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 				Logger.i("-------Response end-------");
 			}
 		}
-		if (isSucceed && byteArray != null)
-			result = request.parseResponse(url, headers.get(Headers.HEAD_KEY_CONTENT_TYPE), byteArray);
 		Logger.d("--------------Reqeust finish--------------");
-		long endTime = SystemClock.elapsedRealtime();
-		return new RestResponser<T>(url, isSucceed, responseCode, headers, byteArray, tag, result, endTime - startTime);
+		return new HttpResponse(isSucceed, responseCode, responseHeaders, responseBody);
 	}
 
 	@Override

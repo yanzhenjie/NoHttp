@@ -39,7 +39,7 @@ public class RequestDispatcher extends Thread {
 	/**
 	 * Request queue
 	 */
-	private final BlockingQueue<NetworkRequestor<?>> mRequestQueue;
+	private final BlockingQueue<HttpRequest<?>> mRequestQueue;
 	/**
 	 * HTTP request actuator interface
 	 */
@@ -55,7 +55,7 @@ public class RequestDispatcher extends Thread {
 	 * @param reqeustQueue Request queue
 	 * @param connectionRest Network request task actuator
 	 */
-	public RequestDispatcher(BlockingQueue<NetworkRequestor<?>> reqeustQueue, BasicConnectionRest connectionRest) {
+	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, BasicConnectionRest connectionRest) {
 		mRequestQueue = reqeustQueue;
 		mConnectionRest = connectionRest;
 	}
@@ -72,7 +72,7 @@ public class RequestDispatcher extends Thread {
 	public void run() {
 		Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 		while (true) {
-			NetworkRequestor<?> request;
+			final HttpRequest<?> request;
 			try {
 				request = mRequestQueue.take();
 			} catch (InterruptedException e) {
@@ -93,6 +93,7 @@ public class RequestDispatcher extends Thread {
 			// finish
 			final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
 			Response<?> response = mConnectionRest.request(request.request);
+			request.request.takeQueue(false);
 			if (request.request.isCanceled()) {
 				finishThread.onFinished();
 			} else {

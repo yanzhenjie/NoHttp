@@ -17,6 +17,8 @@ package com.yolanda.nohttp;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.yolanda.nohttp.cache.Cache;
+
 /**
  * Requet Queue</br>
  * Created in Oct 19, 2015 8:36:22 AM
@@ -24,14 +26,28 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author YOLANDA
  */
 public class RequestQueue {
+
+	/**
+	 * Read disk cache queue
+	 */
+	private final LinkedBlockingQueue<HttpRequest<?>> mReadDiskQueue = new LinkedBlockingQueue<HttpRequest<?>>();
 	/**
 	 * Save reuest task
 	 */
-	private final LinkedBlockingQueue<NetworkRequestor<?>> mRequestQueue = new LinkedBlockingQueue<NetworkRequestor<?>>();
+	private final LinkedBlockingQueue<HttpRequest<?>> mRequestQueue = new LinkedBlockingQueue<HttpRequest<?>>();
+
+	/**
+	 * Cache read interface
+	 */
+	private Cache mCache;
 	/**
 	 * HTTP request actuator interface
 	 */
 	private final BasicConnectionRest mConnectionRest;
+	/**
+	 * Disk cache dispter
+	 */
+	private ReadDiskDispather mDiskDispather;
 
 	/**
 	 * Request queue polling thread array
@@ -44,7 +60,8 @@ public class RequestQueue {
 	 * @param httpStack Download the network task execution interface, where you need to implement the download tasks that have been implemented.
 	 * @param threadPoolSize Number of thread pool
 	 */
-	public RequestQueue(BasicConnectionRest httpStack, int threadPoolSize) {
+	public RequestQueue(Cache cache, BasicConnectionRest httpStack, int threadPoolSize) {
+		mCache = cache;
 		mConnectionRest = httpStack;
 		mDispatchers = new RequestDispatcher[threadPoolSize];
 	}
@@ -55,6 +72,10 @@ public class RequestQueue {
 	 */
 	public void start() {
 		stop();
+
+		mDiskDispather = new ReadDiskDispather(mReadDiskQueue, mRequestQueue, mCache);
+		mDiskDispather.start();
+
 		for (int i = 0; i < mDispatchers.length; i++) {
 			RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mConnectionRest);
 			mDispatchers[i] = networkDispatcher;
@@ -69,7 +90,7 @@ public class RequestQueue {
 		if (!request.inQueue()) {
 			request.takeQueue(true);
 			request.reverseCancle();
-			mRequestQueue.add(new NetworkRequestor<T>(what, request, responseListener));
+			mRequestQueue.add(new HttpRequest<T>(what, request, responseListener));
 		}
 	}
 
@@ -77,6 +98,9 @@ public class RequestQueue {
 	 * Polling the queue will not be executed, and this will not be canceled.
 	 */
 	public void stop() {
+		if (mDiskDispather != null) {
+			mDiskDispather.quit();
+		}
 		for (int i = 0; i < mDispatchers.length; i++) {
 			if (mDispatchers[i] != null)
 				mDispatchers[i].quit();
@@ -90,7 +114,7 @@ public class RequestQueue {
 	 */
 	public void cancelBySign(Object sign) {
 		synchronized (mRequestQueue) {
-			for (NetworkRequestor<?> request : mRequestQueue)
+			for (HttpRequest<?> request : mRequestQueue)
 				request.request.cancelBySign(sign);
 		}
 	}
@@ -100,7 +124,7 @@ public class RequestQueue {
 	 */
 	public void cancelAll() {
 		synchronized (mRequestQueue) {
-			for (NetworkRequestor<?> request : mRequestQueue)
+			for (HttpRequest<?> request : mRequestQueue)
 				request.request.cancel();
 		}
 	}

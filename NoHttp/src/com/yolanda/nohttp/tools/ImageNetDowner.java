@@ -74,7 +74,7 @@ public class ImageNetDowner {
 		File file = new File(cachePath);
 		if (file.exists() && file.isFile())
 			file.delete();
-		else if (!file.exists())
+		if (!file.exists())
 			file.mkdirs();
 	}
 
@@ -93,7 +93,7 @@ public class ImageNetDowner {
 		buffer.append(File.separator);
 		buffer.append(getMa5ForString(imageUrl));
 		buffer.append(".png");
-		downloadImage(imageUrl, downListener, buffer.toString(), tag);
+		downloadImage(imageUrl, downListener, buffer.toString(), tag, timeOut);
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class ImageNetDowner {
 					holder.isSucceed = true;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logger.w(e);
 			}
 			mPoster.obtainMessage(0, holder).sendToTarget();
 		}

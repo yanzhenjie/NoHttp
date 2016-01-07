@@ -33,15 +33,15 @@ public class StringRequest extends RestRequestor<String> {
 	}
 
 	@Override
-	public String parseResponse(String url, String contentType, byte[] byteArray) {
+	public String parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
 		String result = null;
-		if (byteArray != null && byteArray.length > 0) {
+		if (responseBody != null && responseBody.length > 0) {
 			try {
-				String charset = HeaderParser.parseHeadValue(contentType, "charset", "");
-				result = new String(byteArray, charset);
+				String charset = HeaderParser.parseHeadValue(responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE), "charset", "");
+				result = new String(responseBody, charset);
 			} catch (UnsupportedEncodingException e) {
-				Logger.w("Charset error in ContentType returned by the server：" + contentType);
-				result = new String(byteArray);
+				Logger.w("Charset error in ContentType returned by the server：" + responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE));
+				result = new String(responseBody);
 			}
 		}
 		return result;

@@ -31,21 +31,39 @@ public final class Headers {
 
 	public static final String HEAD_KEY_ACCEPT = "Accept";
 
-	public static final String HEAD_VALUE_ACCEPT = "*/*";
+	public static final String HEAD_VALUE_ACCEPT_All = "*/*";
+	
+	public static final String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
 
+	public static final String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate, sdch";
+	
+	public static final String HEAD_KYE_ACCEPT_RANGES = "Accept-Ranges";
+	
 	public static final String HEAD_KEY_CONTENT_TYPE = "Content-Type";
 
 	public static final String HEAD_KEY_CONTENT_LENGTH = "Content-Length";
 
-	public static final String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
-
-	public static final String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate, sdch";
-
+	public static final String HEAD_KEY_CONTENT_RANGE = "Content-Range";
+	
 	public static final String HEAD_KEY_CACHE_CONTROL = "Cache-Control";
 
 	public static final String HEAD_VALUE_CACHE_CONTROL = "no-cache";
 
 	public static final String HEAD_KEY_CONNECTION = "Connection";
+
+	public static final String HEAD_KEY_DATE = "Date";
+
+	public static final String HEAD_KEY_EXPIRES = "Expires";
+
+	public static final String HEAD_KEY_ETAG = "ETag";
+	
+	public static final String HEAD_KEY_IF_MODIFIED_SINCE = "If-Modified-Since";
+	
+	public static final String HEAD_KEY_IF_NONE_MATCH = "If-None-Match";
+
+	public static final String HEAD_KEY_RESPONSE_CODE = "ResponseCode";
+
+	public static final String HEAD_KEY_LAST_MODIFIED = "Last-Modified";
 
 	public static final String HEAD_VALUE_CONNECTION = "Keep-Alive";
 
@@ -69,6 +87,13 @@ public final class Headers {
 		checkNameAndValue(name, value);
 		removeAll(name);
 		addSummation(name, value);
+	}
+
+	public void setAll(Headers headers) {
+		int size = headers.size();
+		for (int i = 0; i < size; i++) {
+			set(headers.name(i), headers.value(i));
+		}
 	}
 
 	/**
@@ -113,8 +138,8 @@ public final class Headers {
 	}
 
 	private void checkNameAndValue(String name, String value) {
-		if (name == null || name.isEmpty())
-			throw new IllegalArgumentException("name == null or name is empty");
+		if (name == null)
+			throw new IllegalArgumentException("name == null");
 		for (int i = 0, length = name.length(); i < length; i++) {
 			char c = name.charAt(i);
 			if (c <= '\u001f' || c >= '\u007f') {
@@ -180,7 +205,7 @@ public final class Headers {
 	 * Get All Header value
 	 */
 	public List<String> values(String name) {
-		List<String> result = Collections.emptyList();
+		List<String> result = null;
 		for (int i = 0, size = namesAndValues.size(); i < size; i++) {
 			if (name.equalsIgnoreCase(name(i))) {
 				if (result == null)
@@ -188,6 +213,8 @@ public final class Headers {
 				result.add(value(i));
 			}
 		}
+		if (result == null)
+			result = Collections.emptyList();
 		return Collections.unmodifiableList(result);
 	}
 

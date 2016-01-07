@@ -90,7 +90,7 @@ class DownloadDispatch extends Thread {
 				continue;
 
 			request.downloadRequest.start();
-			
+
 			mDownloader.download(request.what, request.downloadRequest, new DownloadListener() {
 
 				@Override
@@ -128,6 +128,7 @@ class DownloadDispatch extends Thread {
 					getPosterHandler().post(threadPoster);
 				}
 			});
+			request.downloadRequest.takeQueue(false);
 		}
 	}
 

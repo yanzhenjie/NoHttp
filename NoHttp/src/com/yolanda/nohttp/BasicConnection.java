@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +58,13 @@ public abstract class BasicConnection {
 		if (android.os.Build.VERSION.SDK_INT < 9)
 			System.setProperty("http.keepAlive", "false");
 		URL url = new URL(urlStr);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		if ("https".equalsIgnoreCase(url.getProtocol()))
+		HttpURLConnection connection = null;
+		Proxy proxy = request.getProxy();
+		if (proxy == null)
+			connection = (HttpURLConnection) url.openConnection();
+		else
+			connection = (HttpURLConnection) url.openConnection(proxy);
+		if (connection instanceof HttpsURLConnection)
 			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) connection, request);
 
 		// 3. Base attribute
@@ -96,7 +102,7 @@ public abstract class BasicConnection {
 
 		// 3.Base header
 		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);// gzip, deflate, sdch;
-		headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT); // text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+		headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_All); // text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
 		if (headers.get(Headers.HEAD_KEY_CACHE_CONTROL) == null)
 			headers.set(Headers.HEAD_KEY_CACHE_CONTROL, Headers.HEAD_VALUE_CACHE_CONTROL);
 		if (headers.get(Headers.HEAD_KEY_CONNECTION) == null)
@@ -143,7 +149,7 @@ public abstract class BasicConnection {
 	 */
 	private void setCookies(URI uri, Headers headers) throws IOException {
 		CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-		Map<String, List<String>> cookieMaps = cookieManager.get(uri, Collections.<String, List<String>> emptyMap());
+		Map<String, List<String>> cookieMaps = cookieManager.get(uri, new HashMap<String, List<String>>());
 		// Add any new cookies to the request.
 		HeaderParser.addCookiesToHeaders(headers, cookieMaps);
 
@@ -161,7 +167,7 @@ public abstract class BasicConnection {
 	/**
 	 * Send the request data to the server
 	 */
-	protected <T> void writeRequestBody(HttpURLConnection connection, Request<T> request) throws IOException {
+	protected void writeRequestBody(HttpURLConnection connection, BasicRequest request) throws IOException {
 		if (request.isOutPutMethod()) {
 			Logger.i("-------Send reqeust data start-------");
 			BufferedOutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());

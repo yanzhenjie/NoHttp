@@ -77,14 +77,14 @@ public class FileBinary extends Binary {
 	}
 
 	@Override
-	protected void onWriteByteArray(CommonRequest request, OutputStream outputStream) {
+	protected void onWriteByteArray(CommonRequest<?> request, OutputStream outputStream) {
 		if (this.file != null && isRun) {
 			isStarted = true;
 			try {
 				RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
 				int len = -1;
 				byte[] buffer = new byte[1024];
-				while (!request.isCaneled && (len = accessFile.read(buffer)) != -1) {
+				while (!request.isCanceled() && (len = accessFile.read(buffer)) != -1) {
 					outputStream.write(buffer, 0, len);
 				}
 				accessFile.close();

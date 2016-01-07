@@ -18,10 +18,12 @@ package com.yolanda.nohttp;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Proxy;
 import java.net.URLEncoder;
 import java.util.Set;
 
-import com.yolanda.nohttp.cache.CacheMode;
+import com.yolanda.nohttp.cache.Cache;
+import com.yolanda.nohttp.cache.Cache.Entrance;
 import com.yolanda.nohttp.security.Certificate;
 import com.yolanda.nohttp.tools.CounterOutputStream;
 
@@ -32,7 +34,7 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public abstract class CommonRequest implements ImplRequest, BasicRequest {
+public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 
 	protected final String BOUNDARY = createBoundry();
 	protected final String START_BOUNDARY = "--" + BOUNDARY;
@@ -41,66 +43,70 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	/**
 	 * Target adress
 	 */
-	protected String url;
+	private String url;
 	/**
 	 * Request method
 	 */
-	protected RequestMethod mRequestMethod;
+	private RequestMethod mRequestMethod;
+	/**
+	 * Proxy server
+	 */
+	private Proxy mProxy;
 	/**
 	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
 	 */
-	protected boolean isAllowHttps = true;
+	private boolean isAllowHttps = true;
 	/**
 	 * Connect http timeout
 	 */
-	protected int mConnectTimeout = NoHttp.TIMEOUT_8S;
+	private int mConnectTimeout = NoHttp.TIMEOUT_8S;
 	/**
 	 * Read data timeout
 	 */
-	protected int mReadTimeout = NoHttp.TIMEOUT_8S;
+	private int mReadTimeout = NoHttp.TIMEOUT_8S;
 	/**
 	 * Request heads
 	 */
-	protected Headers mheaders;
+	private Headers mheaders;
 	/**
 	 * Https certificate
 	 */
-	protected Certificate mCertificate;
+	private Certificate mCertificate;
 	/**
 	 * RequestBody
 	 */
-	protected byte[] mRequestBody;
+	private byte[] mRequestBody;
 	/**
 	 * Queue tag
 	 */
-	protected boolean inQueue = false;
+	private boolean inQueue = false;
 	/**
 	 * The record has started.
 	 */
-	protected boolean isStart = false;
+	private boolean isStart = false;
 	/**
 	 * Has been canceled
 	 */
-	protected boolean isCaneled = false;
+	private boolean isCaneled = false;
 	/**
 	 * Cancel sign
 	 */
-	protected Object cancelSign;
+	private Object cancelSign;
 	/**
 	 * Tag of request
 	 */
-	protected Object mTag;
+	private Object mTag;
 
 	/* ===== Cache ===== */
 
 	/**
 	 * Cache key
 	 */
-	protected String mCacheKey;
+	private String mCacheKey;
 	/**
-	 * Cache mode
+	 * Cache entrance
 	 */
-	protected CacheMode mCacheMode;
+	private Cache.Entrance mEntrance;
 
 	/**
 	 * Create a request, RequestMethod is {@link RequestMethod#Get}
@@ -149,6 +155,16 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	@Override
 	public RequestMethod getRequestMethod() {
 		return mRequestMethod;
+	}
+
+	@Override
+	public void setProxy(Proxy proxy) {
+		this.mProxy = proxy;
+	}
+
+	@Override
+	public Proxy getProxy() {
+		return mProxy;
 	}
 
 	@Override
@@ -497,13 +513,32 @@ public abstract class CommonRequest implements ImplRequest, BasicRequest {
 	/* ======Cache===== */
 
 	@Override
-	public void setCacheKey(String key, CacheMode cacheMode) {
+	public boolean needCache() {
+		return !TextUtils.isEmpty(getCacheKey());
+	}
+
+	@Override
+	public void setCacheKey(String key) {
 		this.mCacheKey = key;
-		this.mCacheMode = cacheMode;
 	}
 
 	@Override
 	public String getCacheKey() {
-		return mCacheKey;
+		return TextUtils.isEmpty(mCacheKey) ? buildUrl() : mCacheKey;
 	}
+
+	@Override
+	public void setCacheEntrance(Entrance entrance) {
+		this.mEntrance = entrance;
+	}
+
+	@Override
+	public Entrance getCacheEntrance() {
+		return mEntrance;
+	}
+
+	/**
+	 * Parse response
+	 */
+	public abstract T parseResponse(String url, Headers responseHeaders, byte[] responseBody);
 }

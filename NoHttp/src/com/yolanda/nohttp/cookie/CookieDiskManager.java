@@ -18,6 +18,8 @@ package com.yolanda.nohttp.cookie;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.yolanda.nohttp.Logger;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -111,7 +113,7 @@ class CookieDiskManager {
 		Cursor cursor = null;
 		try {
 			cursor = execute.rawQuery(sql.toString(), null);
-			while (cursor.moveToNext()) {
+			while (!cursor.isClosed() && cursor.moveToNext()) {
 				try {
 					CookieEntity cookie = new CookieEntity();
 					int idIndex = cursor.getColumnIndex(CookieDisker.ID);
@@ -168,11 +170,11 @@ class CookieDiskManager {
 
 					cookies.add(cookie);
 				} catch (Throwable e) {
-					e.printStackTrace();
+					Logger.w(e);
 				}
 			}
 		} catch (Throwable e) {
-			e.printStackTrace();
+			Logger.w(e);
 		}
 		finish(cursor);
 		return cookies;

@@ -15,8 +15,7 @@
  */
 package com.yolanda.nohttp.cache;
 
-import java.util.Collections;
-import java.util.Map;
+import com.yolanda.nohttp.Headers;
 
 /**
  * </br>
@@ -106,7 +105,7 @@ public interface Cache {
 		/**
 		 * Immutable response headers as received from server; must be non-null.
 		 */
-		public Map<String, String> responseHeaders = Collections.emptyMap();
+		public Headers responseHeaders = new Headers();
 
 		/**
 		 * True if the entry is expired.

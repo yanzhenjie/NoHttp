@@ -77,20 +77,18 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
 	@Override
 	public void download(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-		if (downloadRequest == null) {
+		if (downloadRequest == null)
 			throw new IllegalArgumentException("downloadRequest == null");
-		}
-		if (downloadListener == null) {
+		if (downloadListener == null)
 			throw new IllegalArgumentException("downloadListener == null");
-		}
+
 		if (!NetUtil.isNetworkAvailable(mContext)) {
-			downloadRequest.takeQueue(false);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_NETWORK_NOT_AVAILABLE, "Network is not available");
 			return;
 		}
+
 		// 地址验证
 		if (!URLUtil.isValidUrl(downloadRequest.url())) {
-			downloadRequest.takeQueue(false);
 			downloadListener.onDownloadError(what, StatusCode.ERROR_URL_SYNTAX_ERROR, "URL is wrong");
 			return;
 		}
@@ -108,7 +106,6 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				if (downloadRequest.isDeleteOld()) {
 					lastFile.delete();
 				} else {
-					downloadRequest.takeQueue(false);
 					downloadListener.onStart(what, true, lastFile.length(), new Headers(), lastFile.length());
 					downloadListener.onProgress(what, 100, lastFile.length());
 					Logger.d("-------Donwload finish-------");
@@ -157,7 +154,6 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				}
 			}
 			if (downloadRequest.isCanceled()) {
-				downloadRequest.takeQueue(false);
 				Log.i("NoHttpDownloader", "Download request is canceled");
 				downloadListener.onCancel(what);
 				return;
@@ -174,7 +170,6 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 					try {
 						totalLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
 					} catch (Exception e) {
-						downloadRequest.takeQueue(false);
 						String erroeMessage = "Content-Range error in Server HTTP header information";
 						Logger.e(erroeMessage);
 						downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_EXCEPTION, erroeMessage);
@@ -184,14 +179,12 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			} else if (responseCode == 200) {
 				totalLength = httpConnection.getContentLength();// 直接下载
 			} else {
-				downloadRequest.takeQueue(false);
 				downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, "Server responseCode error: " + responseCode);
 				return;
 			}
 
 			// 保存空间判断
 			if (FileUtil.getDirSize(downloadRequest.getFileDir()) < totalLength) {
-				downloadRequest.takeQueue(false);
 				downloadListener.onDownloadError(what, StatusCode.ERROR_STORAGE_NOT_ENOUGH, "Specify the location, save space");
 				return;
 			}
@@ -214,7 +207,6 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
 			while (((len = inputStream.read(buffer)) != -1)) {
 				if (downloadRequest.isCanceled()) {
-					downloadRequest.takeQueue(false);
 					Log.i("NoHttpDownloader", "Download request is canceled");
 					downloadListener.onCancel(what);
 					break;
@@ -247,7 +239,6 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, getExcetionMessage(e));
 		} finally {
 			Logger.i("----------Response End----------");
-			downloadRequest.takeQueue(false);
 			try {
 				if (inputStream != null)
 					inputStream.close();

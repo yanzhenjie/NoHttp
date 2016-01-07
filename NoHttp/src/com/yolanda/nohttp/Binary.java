@@ -34,7 +34,7 @@ public abstract class Binary implements Cancelable {
 	/**
 	 * Return the byteArray of file
 	 */
-	public final void onWriteBinary(CommonRequest request, OutputStream outputStream) throws IOException {
+	public final void onWriteBinary(CommonRequest<?> request, OutputStream outputStream) throws IOException {
 		if (outputStream instanceof CounterOutputStream) {
 			((CounterOutputStream) outputStream).write(onMeasureLength());
 		} else {
@@ -50,7 +50,7 @@ public abstract class Binary implements Cancelable {
 	/**
 	 * Return the byteArray of file
 	 */
-	protected abstract void onWriteByteArray(CommonRequest request, OutputStream outputStream);
+	protected abstract void onWriteByteArray(CommonRequest<?> request, OutputStream outputStream);
 
 	/**
 	 * Return the fileName
