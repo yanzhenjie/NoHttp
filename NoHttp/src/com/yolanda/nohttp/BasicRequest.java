@@ -21,7 +21,6 @@ import java.net.Proxy;
 import com.yolanda.nohttp.able.Queueable;
 import com.yolanda.nohttp.able.SignCancelable;
 import com.yolanda.nohttp.able.Startable;
-import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -123,10 +122,5 @@ public interface BasicRequest extends Queueable, Startable, SignCancelable {
 	 * Get of cache data
 	 */
 	String getCacheKey();
-
-	/**
-	 * Get the entities that are read in the local cache
-	 */
-	Cache.Entrance getCacheEntrance();
 
 }

@@ -236,7 +236,7 @@ public class HeaderParser {
 	 */
 	private static long parseDateAsEpoch(String dateStr) {
 		try {
-			return HttpDateTime.parse(dateStr);
+			return HttpDateTime.parseToMillis(dateStr);
 		} catch (IllegalArgumentException e) {
 			return 0;
 		}

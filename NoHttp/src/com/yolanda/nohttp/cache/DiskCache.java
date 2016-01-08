@@ -40,7 +40,7 @@ import android.os.SystemClock;
  * 
  * @author YOLANDA;
  */
-public class DiskBasedCache implements Cache {
+public class DiskCache implements Cache {
 
 	/** Map of the Key, CacheHeader pairs */
 	private final Map<String, CacheHeader> mEntries = new LinkedHashMap<String, CacheHeader>(16, .75f, true);
@@ -55,7 +55,7 @@ public class DiskBasedCache implements Cache {
 	private final int mMaxCacheSizeInBytes;
 
 	/** Default maximum disk usage in bytes. */
-	private static final int DEFAULT_DISK_USAGE_BYTES = 10 * 1024 * 1024;
+	public static final int DEFAULT_DISK_USAGE_BYTES = 20 * 1024 * 1024;
 
 	/** High water mark percentage for the cache */
 	private static final float HYSTERESIS_FACTOR = 0.9f;
@@ -69,7 +69,7 @@ public class DiskBasedCache implements Cache {
 	 * @param rootDirectory The root directory of the cache.
 	 * @param maxCacheSizeInBytes The maximum size of the cache in bytes.
 	 */
-	public DiskBasedCache(File rootDirectory, int maxCacheSizeInBytes) {
+	public DiskCache(File rootDirectory, int maxCacheSizeInBytes) {
 		mRootDirectory = rootDirectory;
 		mMaxCacheSizeInBytes = maxCacheSizeInBytes;
 	}
@@ -80,7 +80,7 @@ public class DiskBasedCache implements Cache {
 	 * 
 	 * @param rootDirectory The root directory of the cache.
 	 */
-	public DiskBasedCache(File rootDirectory) {
+	public DiskCache(File rootDirectory) {
 		this(rootDirectory, DEFAULT_DISK_USAGE_BYTES);
 	}
 
@@ -154,9 +154,9 @@ public class DiskBasedCache implements Cache {
 			BufferedInputStream fis = null;
 			try {
 				fis = new BufferedInputStream(new FileInputStream(file));
-				CacheHeader entry = CacheHeader.readHeader(fis);
-				entry.size = file.length();
-				putEntry(entry.key, entry);
+				CacheHeader cacheHeader = CacheHeader.readHeader(fis);
+				cacheHeader.size = file.length();
+				putEntry(cacheHeader.key, cacheHeader);
 			} catch (IOException e) {
 				if (file != null) {
 					file.delete();
@@ -170,25 +170,6 @@ public class DiskBasedCache implements Cache {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Invalidates an entry in the cache.
-	 * 
-	 * @param key Cache key
-	 * @param fullExpire True to fully expire the entry, false to soft expire
-	 */
-	@Override
-	public synchronized void invalidate(String key, boolean fullExpire) {
-		Entrance entry = get(key);
-		if (entry != null) {
-			entry.softTtl = 0;
-			if (fullExpire) {
-				entry.ttl = 0;
-			}
-			put(key, entry);
-		}
-
 	}
 
 	/**

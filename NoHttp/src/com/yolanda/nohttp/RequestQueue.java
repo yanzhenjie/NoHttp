@@ -17,8 +17,6 @@ package com.yolanda.nohttp;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.yolanda.nohttp.cache.Cache;
-
 /**
  * Requet Queue</br>
  * Created in Oct 19, 2015 8:36:22 AM
@@ -28,26 +26,14 @@ import com.yolanda.nohttp.cache.Cache;
 public class RequestQueue {
 
 	/**
-	 * Read disk cache queue
-	 */
-	private final LinkedBlockingQueue<HttpRequest<?>> mReadDiskQueue = new LinkedBlockingQueue<HttpRequest<?>>();
-	/**
 	 * Save reuest task
 	 */
 	private final LinkedBlockingQueue<HttpRequest<?>> mRequestQueue = new LinkedBlockingQueue<HttpRequest<?>>();
 
 	/**
-	 * Cache read interface
-	 */
-	private Cache mCache;
-	/**
 	 * HTTP request actuator interface
 	 */
-	private final BasicConnectionRest mConnectionRest;
-	/**
-	 * Disk cache dispter
-	 */
-	private ReadDiskDispather mDiskDispather;
+	private final BasicConnectionManager mConnectionManager;
 
 	/**
 	 * Request queue polling thread array
@@ -60,9 +46,8 @@ public class RequestQueue {
 	 * @param httpStack Download the network task execution interface, where you need to implement the download tasks that have been implemented.
 	 * @param threadPoolSize Number of thread pool
 	 */
-	public RequestQueue(Cache cache, BasicConnectionRest httpStack, int threadPoolSize) {
-		mCache = cache;
-		mConnectionRest = httpStack;
+	public RequestQueue(BasicConnectionManager connectionManager, int threadPoolSize) {
+		mConnectionManager = connectionManager;
 		mDispatchers = new RequestDispatcher[threadPoolSize];
 	}
 
@@ -72,12 +57,8 @@ public class RequestQueue {
 	 */
 	public void start() {
 		stop();
-
-		mDiskDispather = new ReadDiskDispather(mReadDiskQueue, mRequestQueue, mCache);
-		mDiskDispather.start();
-
 		for (int i = 0; i < mDispatchers.length; i++) {
-			RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mConnectionRest);
+			RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mConnectionManager);
 			mDispatchers[i] = networkDispatcher;
 			networkDispatcher.start();
 		}
@@ -98,9 +79,6 @@ public class RequestQueue {
 	 * Polling the queue will not be executed, and this will not be canceled.
 	 */
 	public void stop() {
-		if (mDiskDispather != null) {
-			mDiskDispather.quit();
-		}
 		for (int i = 0; i < mDispatchers.length; i++) {
 			if (mDispatchers[i] != null)
 				mDispatchers[i].quit();

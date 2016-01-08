@@ -20,13 +20,13 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA
  */
-class HttpRequest<T> {
+class HttpRequest<E> {
 
 	public final int what;
-	public final Request<T> request;
-	public final OnResponseListener<T> responseListener;
+	public final Request<E> request;
+	public final OnResponseListener<E> responseListener;
 
-	public HttpRequest(int what, Request<T> request, OnResponseListener<T> responseListener) {
+	public HttpRequest(int what, Request<E> request, OnResponseListener<E> responseListener) {
 		super();
 		this.what = what;
 		this.request = request;

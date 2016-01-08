@@ -22,8 +22,6 @@ import java.net.Proxy;
 import java.net.URLEncoder;
 import java.util.Set;
 
-import com.yolanda.nohttp.cache.Cache;
-import com.yolanda.nohttp.cache.Cache.Entrance;
 import com.yolanda.nohttp.security.Certificate;
 import com.yolanda.nohttp.tools.CounterOutputStream;
 
@@ -103,10 +101,6 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	 * Cache key
 	 */
 	private String mCacheKey;
-	/**
-	 * Cache entrance
-	 */
-	private Cache.Entrance mEntrance;
 
 	/**
 	 * Create a request, RequestMethod is {@link RequestMethod#Get}
@@ -322,6 +316,7 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	 */
 	protected void writePushBody(OutputStream outputStream) {
 		try {
+			Logger.d("RequestBody: " + mRequestBody);
 			outputStream.write(mRequestBody);
 		} catch (IOException e) {
 			Logger.e(e);
@@ -525,16 +520,6 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	@Override
 	public String getCacheKey() {
 		return TextUtils.isEmpty(mCacheKey) ? buildUrl() : mCacheKey;
-	}
-
-	@Override
-	public void setCacheEntrance(Entrance entrance) {
-		this.mEntrance = entrance;
-	}
-
-	@Override
-	public Entrance getCacheEntrance() {
-		return mEntrance;
 	}
 
 	/**

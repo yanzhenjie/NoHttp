@@ -24,7 +24,7 @@ import com.yolanda.nohttp.RequestMethod;
  * 
  * @author YOLANDA
  */
-public abstract class DownloadRequest extends CommonRequest {
+public abstract class DownloadRequest extends CommonRequest<Void> {
 
 	/**
 	 * Also didn't download to start download again
@@ -38,7 +38,7 @@ public abstract class DownloadRequest extends CommonRequest {
 	 * Has the download is complete, not to download operation
 	 */
 	public static final int STATUS_FINISH = 2;
-	
+
 	/**
 	 * @param url
 	 * @param requestMethod

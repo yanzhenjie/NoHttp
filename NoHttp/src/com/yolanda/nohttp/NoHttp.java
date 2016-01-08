@@ -15,9 +15,12 @@
  */
 package com.yolanda.nohttp;
 
+import java.io.File;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
+import com.yolanda.nohttp.cache.Cache;
+import com.yolanda.nohttp.cache.DiskCache;
 import com.yolanda.nohttp.cookie.DiskCookieStore;
 import com.yolanda.nohttp.download.DownloadConnection;
 import com.yolanda.nohttp.download.DownloadListener;
@@ -36,6 +39,10 @@ import android.widget.ImageView;
  * @author YOLANDA
  */
 public class NoHttp {
+	/**
+	 * NoHttp cache dir
+	 */
+	private static final String DEFAULT_CACHE_DIR = "NoHttp";
 	/**
 	 * Default charset of request body, value is {@value}
 	 */
@@ -64,6 +71,11 @@ public class NoHttp {
 	private static CookieManager sCookieManager;
 
 	/**
+	 * Sync Connection manager
+	 */
+	private static BasicConnectionManager mBasicConnectionManager;
+
+	/**
 	 * Initialization NoHttp, Should invoke on {@link Application#onCreate()}
 	 */
 	public static void init(Application application) {
@@ -80,20 +92,22 @@ public class NoHttp {
 		return sApplication;
 	}
 
-	/**
-	 * Create a new request queue
-	 * 
-	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
-	 */
-	public static RequestQueue newRequestQueue(int threadPoolSize) {
-		RequestQueue requestQueue = new RequestQueue(HttpRestConnection.getInstance(getContext()), threadPoolSize);
+	public static RequestQueue newRequestQueue(BasicConnectionManager connectionManager, int threadPoolSize) {
+		RequestQueue requestQueue = new RequestQueue(connectionManager, threadPoolSize);
 		requestQueue.start();
 		return requestQueue;
 	}
 
-	/**
-	 * Create a request queue, the default thread pool number is {@link NoHttp#DEFAULT_REQUEST_THREAD_SIZE}
-	 */
+	public static RequestQueue newRequestQueue(Cache cache, BasicConnectionRest connectionRest, int threadPoolSize) {
+		cache.initialize();
+		return newRequestQueue(new ConnectionManager(cache, connectionRest), threadPoolSize);
+	}
+
+	public static RequestQueue newRequestQueue(int threadPoolSize) {
+		File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
+		return newRequestQueue(new DiskCache(cacheDir), HttpRestConnection.getInstance(getContext()), threadPoolSize);
+	}
+
 	public static RequestQueue newRequestQueue() {
 		return newRequestQueue(DEFAULT_THREAD_SIZE);
 	}
@@ -133,17 +147,36 @@ public class NoHttp {
 		return new ImageRequest(url, maxWidth, maxHeight, config, scaleType);
 	}
 
-	/**
-	 * To start a synchronization request, the request task will be triggered at the current thread, and the thread can
-	 * be used.
-	 * 
-	 * @param request The packaging of the HTTP request parameter
-	 */
-	public static <T> Response<T> startRequestSync(Request<T> request) {
+	private static BasicConnectionManager createSyncConnectionManager() {
+		if (mBasicConnectionManager == null) {
+			File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
+			Cache cache = new DiskCache(cacheDir);
+			cache.initialize();
+
+			BasicConnectionRest connectionRest = HttpRestConnection.getInstance(getContext());
+			mBasicConnectionManager = new ConnectionManager(cache, connectionRest);
+		}
+		return mBasicConnectionManager;
+	}
+
+	public static <T> Response<T> startRequestSync(Cache cache, BasicConnectionRest connectionRest, Request<T> request) {
 		Response<T> response = null;
-		if (request != null)
-			response = HttpRestConnection.getInstance(getContext()).request(request);
+		if (cache != null && connectionRest != null && request != null)
+			response = createSyncConnectionManager().handleRequest(request);
 		return response;
+	}
+
+	public static <T> Response<T> startRequestSync(Cache cache, Request<T> request) {
+		return startRequestSync(cache, HttpRestConnection.getInstance(getContext()), request);
+	}
+
+	public static <T> Response<T> startRequestSync(BasicConnectionRest connectionRest, Request<T> request) {
+		File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
+		return startRequestSync(new DiskCache(cacheDir), connectionRest, request);
+	}
+
+	public static <T> Response<T> startRequestSync(Request<T> request) {
+		return startRequestSync(HttpRestConnection.getInstance(getContext()), request);
 	}
 
 	/**

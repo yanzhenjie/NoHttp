@@ -52,12 +52,6 @@ public class RestDownloadRequestor extends DownloadRequest {
 		this.mFileName = filename;
 		this.isRange = isRange;
 		this.isDeleteOld = isDeleteOld;
-		this.mheaders = new Headers();
-	}
-
-	@Override
-	public String url() {
-		return this.url;
 	}
 
 	@Override
@@ -113,6 +107,11 @@ public class RestDownloadRequestor extends DownloadRequest {
 
 	@Override
 	protected Object value(String key) {
+		return null;
+	}
+
+	@Override
+	public Void parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
 		return null;
 	}
 }

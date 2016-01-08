@@ -21,8 +21,8 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA;
  */
-public interface BasicConnectionManager<T> {
+public interface BasicConnectionManager {
 
-	Response<T> handleRequest(CommonRequest<T> request);
+	<T> Response<T> handleRequest(CommonRequest<T> request);
 
 }

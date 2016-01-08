@@ -109,8 +109,10 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 				responseHeaders.add(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(responseCode));
 
 				// handle cookie
-				CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-				cookieManager.put(new URI(url), httpHeaders);
+				if (httpHeaders != null) {
+					CookieManager cookieManager = NoHttp.getDefaultCookieManager();
+					cookieManager.put(new URI(url), httpHeaders);
+				}
 
 				// handle body
 				if (hasResponseBody(request.getRequestMethod(), responseCode)) {

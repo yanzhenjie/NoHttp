@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.yolanda.nohttp.HeaderParser;
+import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.RestRequestor;
@@ -41,16 +42,16 @@ public class JsonRequest extends RestRequestor<JSONObject> {
 	}
 
 	@Override
-	public JSONObject parseResponse(String url, String contentType, byte[] byteArray) {
+	public JSONObject parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
 		String jsonString = null;
 		JSONObject jsonObject = null;
-		if (byteArray != null && byteArray.length > 0) {
+		if (responseBody != null && responseBody.length > 0) {
 			try {
-				String charset = HeaderParser.parseHeadValue(contentType, "charset", "");
-				jsonString = new String(byteArray, charset);
+				String charset = HeaderParser.parseHeadValue(responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE), "charset", "");
+				jsonString = new String(responseBody, charset);
 			} catch (UnsupportedEncodingException e) {
-				Logger.w("Charset error in ContentType returned by the server：" + contentType);
-				jsonString = new String(byteArray);
+				Logger.w("Charset error in ContentType returned by the server：" + responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE));
+				jsonString = new String(responseBody);
 			}
 		}
 		// 这里先模拟一段Json

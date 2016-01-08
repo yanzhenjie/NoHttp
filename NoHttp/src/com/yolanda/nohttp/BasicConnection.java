@@ -154,8 +154,10 @@ public abstract class BasicConnection {
 		HeaderParser.addCookiesToHeaders(headers, cookieMaps);
 
 		Map<String, String> cookies = HeaderParser.parseRequestCookie(headers);
+		// Remove developer cookie
 		headers.removeAll(Headers.HEAD_KEY_COOKIE);
 		headers.removeAll(Headers.HEAD_KEY_COOKIE2);
+		// Add database cookie and developer cookie
 		for (Map.Entry<String, String> entry : cookies.entrySet()) {
 			String name = entry.getKey();
 			String value = entry.getValue();

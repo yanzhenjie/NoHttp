@@ -17,7 +17,6 @@ package com.yolanda.nohttp;
 
 import java.net.Proxy;
 
-import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.security.Certificate;
 
 /**
@@ -103,11 +102,4 @@ public interface ImplRequest {
 	 * @param key Unique key
 	 */
 	void setCacheKey(String key);
-
-	/**
-	 * Sets the entities that are read in the local cache
-	 * 
-	 * @param entrance A meaningful entity, including header information and message
-	 */
-	void setCacheEntrance(Cache.Entrance entrance);
 }

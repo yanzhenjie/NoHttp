@@ -43,7 +43,7 @@ public class RequestDispatcher extends Thread {
 	/**
 	 * HTTP request actuator interface
 	 */
-	private final BasicConnectionRest mConnectionRest;
+	private final BasicConnectionManager mConnectionManager;
 	/**
 	 * Whether the current request queue polling thread is out of
 	 */
@@ -55,9 +55,9 @@ public class RequestDispatcher extends Thread {
 	 * @param reqeustQueue Request queue
 	 * @param connectionRest Network request task actuator
 	 */
-	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, BasicConnectionRest connectionRest) {
+	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, BasicConnectionManager connectionManager) {
 		mRequestQueue = reqeustQueue;
-		mConnectionRest = connectionRest;
+		mConnectionManager = connectionManager;
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class RequestDispatcher extends Thread {
 			getPosterHandler().post(startThread);
 			// finish
 			final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
-			Response<?> response = mConnectionRest.request(request.request);
+			Response<?> response = mConnectionManager.handleRequest(request.request);
 			request.request.takeQueue(false);
 			if (request.request.isCanceled()) {
 				finishThread.onFinished();
