@@ -79,8 +79,10 @@ public class NoHttp {
 	 * Initialization NoHttp, Should invoke on {@link Application#onCreate()}
 	 */
 	public static void init(Application application) {
-		sApplication = application;
-		sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
+		if (sApplication == null) {
+			sApplication = application;
+			sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
+		}
 	}
 
 	/**
@@ -99,13 +101,12 @@ public class NoHttp {
 	}
 
 	public static RequestQueue newRequestQueue(Cache cache, BasicConnectionRest connectionRest, int threadPoolSize) {
-		cache.initialize();
 		return newRequestQueue(new ConnectionManager(cache, connectionRest), threadPoolSize);
 	}
 
 	public static RequestQueue newRequestQueue(int threadPoolSize) {
 		File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
-		return newRequestQueue(new DiskCache(cacheDir), HttpRestConnection.getInstance(getContext()), threadPoolSize);
+		return newRequestQueue(new DiskCache(cacheDir), new HttpRestConnection(getContext()), threadPoolSize);
 	}
 
 	public static RequestQueue newRequestQueue() {
@@ -147,13 +148,12 @@ public class NoHttp {
 		return new ImageRequest(url, maxWidth, maxHeight, config, scaleType);
 	}
 
-	private static BasicConnectionManager createSyncConnectionManager() {
+	private synchronized static BasicConnectionManager createSyncConnectionManager() {
 		if (mBasicConnectionManager == null) {
 			File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
 			Cache cache = new DiskCache(cacheDir);
-			cache.initialize();
 
-			BasicConnectionRest connectionRest = HttpRestConnection.getInstance(getContext());
+			BasicConnectionRest connectionRest = new HttpRestConnection(getContext());
 			mBasicConnectionManager = new ConnectionManager(cache, connectionRest);
 		}
 		return mBasicConnectionManager;
@@ -167,7 +167,7 @@ public class NoHttp {
 	}
 
 	public static <T> Response<T> startRequestSync(Cache cache, Request<T> request) {
-		return startRequestSync(cache, HttpRestConnection.getInstance(getContext()), request);
+		return startRequestSync(cache, new HttpRestConnection(getContext()), request);
 	}
 
 	public static <T> Response<T> startRequestSync(BasicConnectionRest connectionRest, Request<T> request) {
@@ -176,7 +176,7 @@ public class NoHttp {
 	}
 
 	public static <T> Response<T> startRequestSync(Request<T> request) {
-		return startRequestSync(HttpRestConnection.getInstance(getContext()), request);
+		return startRequestSync(new HttpRestConnection(getContext()), request);
 	}
 
 	/**

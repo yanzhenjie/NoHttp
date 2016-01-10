@@ -64,6 +64,16 @@ public class DiskCache implements Cache {
 	private static final int CACHE_MAGIC = 0x20150306;
 
 	/**
+	 * Constructs an instance of the DiskBasedCache at the specified directory using
+	 * the default maximum cache size of 5MB.
+	 * 
+	 * @param rootDirectory The root directory of the cache.
+	 */
+	public DiskCache(File rootDirectory) {
+		this(rootDirectory, DEFAULT_DISK_USAGE_BYTES);
+	}
+
+	/**
 	 * Constructs an instance of the DiskBasedCache at the specified directory.
 	 * 
 	 * @param rootDirectory The root directory of the cache.
@@ -72,16 +82,45 @@ public class DiskCache implements Cache {
 	public DiskCache(File rootDirectory, int maxCacheSizeInBytes) {
 		mRootDirectory = rootDirectory;
 		mMaxCacheSizeInBytes = maxCacheSizeInBytes;
+		initialize();
 	}
 
 	/**
-	 * Constructs an instance of the DiskBasedCache at the specified directory using
-	 * the default maximum cache size of 5MB.
-	 * 
-	 * @param rootDirectory The root directory of the cache.
+	 * Initializes the DiskBasedCache by scanning for all files currently in the
+	 * specified root directory. Creates the root directory if necessary.
 	 */
-	public DiskCache(File rootDirectory) {
-		this(rootDirectory, DEFAULT_DISK_USAGE_BYTES);
+	private synchronized void initialize() {
+		if (!mRootDirectory.exists()) {
+			if (!mRootDirectory.mkdirs()) {
+				Logger.e("Unable to create cache dir %s", mRootDirectory.getAbsolutePath());
+			}
+			return;
+		}
+
+		File[] files = mRootDirectory.listFiles();
+		if (files == null) {
+			return;
+		}
+		for (File file : files) {
+			BufferedInputStream fis = null;
+			try {
+				fis = new BufferedInputStream(new FileInputStream(file));
+				CacheHeader cacheHeader = CacheHeader.readHeader(fis);
+				cacheHeader.size = file.length();
+				putEntry(cacheHeader.key, cacheHeader);
+			} catch (IOException e) {
+				if (file != null) {
+					file.delete();
+				}
+			} finally {
+				try {
+					if (fis != null) {
+						fis.close();
+					}
+				} catch (IOException ignored) {
+				}
+			}
+		}
 	}
 
 	/**
@@ -134,61 +173,22 @@ public class DiskCache implements Cache {
 	}
 
 	/**
-	 * Initializes the DiskBasedCache by scanning for all files currently in the
-	 * specified root directory. Creates the root directory if necessary.
-	 */
-	@Override
-	public synchronized void initialize() {
-		if (!mRootDirectory.exists()) {
-			if (!mRootDirectory.mkdirs()) {
-				Logger.e("Unable to create cache dir %s", mRootDirectory.getAbsolutePath());
-			}
-			return;
-		}
-
-		File[] files = mRootDirectory.listFiles();
-		if (files == null) {
-			return;
-		}
-		for (File file : files) {
-			BufferedInputStream fis = null;
-			try {
-				fis = new BufferedInputStream(new FileInputStream(file));
-				CacheHeader cacheHeader = CacheHeader.readHeader(fis);
-				cacheHeader.size = file.length();
-				putEntry(cacheHeader.key, cacheHeader);
-			} catch (IOException e) {
-				if (file != null) {
-					file.delete();
-				}
-			} finally {
-				try {
-					if (fis != null) {
-						fis.close();
-					}
-				} catch (IOException ignored) {
-				}
-			}
-		}
-	}
-
-	/**
 	 * Puts the entry with the specified key into the cache.
 	 */
 	@Override
-	public synchronized void put(String key, Entrance entry) {
-		pruneIfNeeded(entry.data.length);
+	public synchronized void put(String key, Entrance entrance) {
+		pruneIfNeeded(entrance.data.length);
 		File file = getFileForKey(key);
 		try {
 			BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(file));
-			CacheHeader e = new CacheHeader(key, entry);
+			CacheHeader e = new CacheHeader(key, entrance);
 			boolean success = e.writeHeader(fos);
 			if (!success) {
 				fos.close();
 				Logger.d("Failed to write header for %s", file.getAbsolutePath());
 				throw new IOException();
 			}
-			fos.write(entry.data);
+			fos.write(entrance.data);
 			fos.close();
 			putEntry(key, e);
 			return;
@@ -228,7 +228,7 @@ public class DiskCache implements Cache {
 	/**
 	 * Returns a file object for the given cache key.
 	 */
-	public File getFileForKey(String key) {
+	private File getFileForKey(String key) {
 		return new File(mRootDirectory, getFilenameForKey(key));
 	}
 
@@ -315,7 +315,7 @@ public class DiskCache implements Cache {
 	 * Handles holding onto the cache headers for an entry.
 	 */
 	// Visible for testing.
-	static class CacheHeader {
+	private static class CacheHeader {
 		/**
 		 * The size of the data identified by this CacheHeader. (This is not
 		 * serialized to disk.

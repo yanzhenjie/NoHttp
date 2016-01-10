@@ -19,13 +19,11 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +44,8 @@ import android.text.TextUtils;
 public abstract class BasicConnection {
 
 	/**
-	 * Create a Http connection object, but do not establish a connection, where the request header information is set up, including Cookie
+	 * Create a Http connection object, but do not establish a connection, where the request header information is set
+	 * up, including Cookie
 	 */
 	protected HttpURLConnection getHttpConnection(BasicRequest request) throws IOException, URISyntaxException {
 		// 1.Pre operation notice
@@ -87,40 +86,45 @@ public abstract class BasicConnection {
 	/**
 	 * Set request headers
 	 */
-	private void setHeaders(URI uri, HttpURLConnection connection, BasicRequest request) throws IOException {
+	@TargetApi(Build.VERSION_CODES.KITKAT)
+	private void setHeaders(URI uri, HttpURLConnection connection, BasicRequest request) {
 		// 1.Build Headers
 		Headers headers = request.headers();
 
 		// 2.Set content Length
 		if (request.isOutPutMethod()) {
 			long contentLength = request.getContentLength();
-			setContentLength(connection, contentLength);
+			if (contentLength < Integer.MAX_VALUE && contentLength > 0) {
+				connection.setFixedLengthStreamingMode((int) contentLength);
+			} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				connection.setFixedLengthStreamingMode(contentLength);
+			} else {
+				connection.setChunkedStreamingMode(256 * 1024);
+			}
 			headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
 		}
 
 		// TODO Authorization:
 
 		// 3.Base header
-		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);// gzip, deflate, sdch;
-		headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_All); // text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
-		if (headers.get(Headers.HEAD_KEY_CACHE_CONTROL) == null)
-			headers.set(Headers.HEAD_KEY_CACHE_CONTROL, Headers.HEAD_VALUE_CACHE_CONTROL);
-		if (headers.get(Headers.HEAD_KEY_CONNECTION) == null)
-			headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION);
-		if (headers.get(Headers.HEAD_KEY_USER_AGENT) == null)
+		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
+		headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_All);
+		if (headers.getValue(Headers.HEAD_KEY_USER_AGENT, 0) == null)
 			headers.set(Headers.HEAD_KEY_USER_AGENT, getUserAgent());
 
 		// 4.Add cookie to headers
-		setCookies(uri, headers);
+		try {
+			headers.addCookie(uri, NoHttp.getDefaultCookieManager());
+		} catch (IOException e) {
+			Logger.e(e);
+		}
+
+		Map<String, String> requestHeaders = headers.toRequestHeaders();
 
 		// 5.Adds all request header to httoConnection
 		Logger.i("-------Set request headers start-------");
-		for (int i = 0; i < headers.size(); i++) {
-			String name = headers.name(i);
-			String value = headers.value(i);
-			Logger.i(name + ": " + value);
-			connection.addRequestProperty(name, value);
-		}
+		for (Map.Entry<String, String> headerEntry : requestHeaders.entrySet())
+			connection.setRequestProperty(headerEntry.getKey(), headerEntry.getValue());
 
 		if (request.isOutPutMethod() && request.hasBinary()) {
 			connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + request.getBoundary());
@@ -130,40 +134,20 @@ public abstract class BasicConnection {
 		Logger.i("-------Set request headers end-------");
 	}
 
-	/**
-	 * Set content length
-	 */
-	@TargetApi(Build.VERSION_CODES.KITKAT)
-	private void setContentLength(HttpURLConnection connection, long contentLength) {
-		if (contentLength < Integer.MAX_VALUE && contentLength > 0) {
-			connection.setFixedLengthStreamingMode((int) contentLength);
-		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			connection.setFixedLengthStreamingMode(contentLength);
-		} else {
-			connection.setChunkedStreamingMode(256 * 1024);
+	protected Headers parseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> reponseHeaders) throws IOException, URISyntaxException {
+		Headers headers = new HttpHeaders(responseCode, responseMessage);
+		// handle cookie
+		NoHttp.getDefaultCookieManager().put(uri, reponseHeaders);
+		// handle headers
+		reponseHeaders.remove(null);
+		headers.set(reponseHeaders);
+		// print
+		for (String headName : headers.keySet()) {
+			List<String> headValues = headers.getValues(headName);
+			String headValue = TextUtils.join("; ", headValues);
+			Logger.i(new StringBuffer(headName).append(": ").append(headValue).toString());
 		}
-	}
-
-	/**
-	 * Set cookie
-	 */
-	private void setCookies(URI uri, Headers headers) throws IOException {
-		CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-		Map<String, List<String>> cookieMaps = cookieManager.get(uri, new HashMap<String, List<String>>());
-		// Add any new cookies to the request.
-		HeaderParser.addCookiesToHeaders(headers, cookieMaps);
-
-		Map<String, String> cookies = HeaderParser.parseRequestCookie(headers);
-		// Remove developer cookie
-		headers.removeAll(Headers.HEAD_KEY_COOKIE);
-		headers.removeAll(Headers.HEAD_KEY_COOKIE2);
-		// Add database cookie and developer cookie
-		for (Map.Entry<String, String> entry : cookies.entrySet()) {
-			String name = entry.getKey();
-			String value = entry.getValue();
-			if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value))
-				headers.add(name, value);
-		}
+		return headers;
 	}
 
 	/**

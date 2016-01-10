@@ -38,11 +38,6 @@ public class RestResponser<T> implements Response<T> {
 	private final boolean isSucceed;
 
 	/**
-	 * Http response code
-	 */
-	private final int responseCode;
-
-	/**
 	 * Http response Headers
 	 */
 	private final Headers headers;
@@ -66,10 +61,9 @@ public class RestResponser<T> implements Response<T> {
 	 */
 	private final long mNetworkMillis;
 
-	public RestResponser(String url, boolean isSucceed, int responseCode, Headers headers, byte[] byteArray, Object tag, T result, long millis) {
+	public RestResponser(String url, boolean isSucceed, Headers headers, byte[] byteArray, Object tag, T result, long millis) {
 		this.url = url;
 		this.isSucceed = isSucceed;
-		this.responseCode = responseCode;
 		this.headers = headers;
 		this.byteArray = byteArray;
 		this.tag = tag;
@@ -88,44 +82,13 @@ public class RestResponser<T> implements Response<T> {
 	}
 
 	@Override
-	public int getResponseCode() {
-		return responseCode;
-	}
-
-	@Override
 	public Headers getHeaders() {
 		return headers;
 	}
 
 	@Override
-	public List<String> getHeaders(String key) {
-		if (headers == null)
-			return null;
-		return headers.values(key);
-	}
-
-	@Override
-	public String getContentType() {
-		if (headers == null)
-			return null;
-		return headers.get(Headers.HEAD_KEY_CONTENT_TYPE);
-	}
-
-	@Override
-	public int getContentLength() {
-		int contentLength = 0;
-		try {
-			if (headers != null)
-				contentLength = Integer.valueOf(headers.get(Headers.HEAD_KEY_CONTENT_LENGTH));
-		} catch (NumberFormatException e) {
-			Logger.wtf(e);
-		}
-		return contentLength;
-	}
-
-	@Override
 	public List<HttpCookie> getCookies() {
-		return HeaderParser.parseResponseCookie(headers);
+		return headers.getCookies();
 	}
 
 	@Override
@@ -162,9 +125,9 @@ public class RestResponser<T> implements Response<T> {
 		StringBuilder builder = new StringBuilder();
 		Headers headers = getHeaders();
 		if (headers != null) {
-			Set<String> keys = headers.names();
+			Set<String> keys = headers.keySet();
 			for (String key : keys) {
-				List<String> values = headers.values(key);
+				List<String> values = headers.getValues(key);
 				for (String value : values) {
 					if (key != null) {
 						builder.append(key).append(": ");

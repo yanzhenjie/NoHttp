@@ -53,25 +53,33 @@ public class ConnectionManager implements BasicConnectionManager {
 		Headers responseHeaders = httpResponse.responseHeaders;
 		byte[] responseBody = httpResponse.responseBody;
 
+		Response<T> returnResponse = null;
+
 		if (httpResponse.isSucceed) {
 			if (httpResponse.responseCode == 304) {
 				if (entrance == null) { // maybe server error responseCode
-					return new RestResponser<T>(url, true, 304, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
+					returnResponse = new RestResponser<T>(url, true, 304, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
 				} else {
 					entrance.responseHeaders.setAll(responseHeaders);
 					result = request.parseResponse(url, entrance.responseHeaders, entrance.data);
-					return new RestResponser<T>(url, true, 304, entrance.responseHeaders, entrance.data, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
+					returnResponse = new RestResponser<T>(url, true, 304, entrance.responseHeaders, entrance.data, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
 				}
+			} else {
+				if (responseBody == null) /* such as responseCode is 204 */
+					responseBody = new byte[0];
+
+				result = request.parseResponse(url, responseHeaders, responseBody);
+				returnResponse = new RestResponser<T>(url, true, httpResponse.responseCode, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
 			}
-
-			if (responseBody == null) /* such as responseCode is 204 */
-				responseBody = new byte[0];
-
-			result = request.parseResponse(url, responseHeaders, responseBody);
-			return new RestResponser<T>(url, true, httpResponse.responseCode, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
 		} else {
-			return new RestResponser<T>(url, false, httpResponse.responseCode, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
+			returnResponse = new RestResponser<T>(url, false, httpResponse.responseCode, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
 		}
+		if (request.needCache()) {
+			if (entrance == null)
+				entrance = HeaderParser.parseCacheHeaders(responseHeaders, responseBody);
+			mCache.put(request.getCacheKey(), entrance);
+		}
+		return returnResponse;
 	}
 
 	private void handleCacheHeader(CommonRequest<?> request, Cache.Entrance entry) {
@@ -83,9 +91,8 @@ public class ConnectionManager implements BasicConnectionManager {
 				request.setHeader(Headers.HEAD_KEY_IF_NONE_MATCH, entry.etag);
 
 			if (entry.lastModified > 0) {
-				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.parseToGTM(entry.lastModified));
+				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatToGTM(entry.lastModified));
 			}
 		}
 	}
-
 }

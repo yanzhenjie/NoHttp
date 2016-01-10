@@ -17,11 +17,8 @@ package com.yolanda.nohttp;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import com.yolanda.nohttp.tools.NetUtil;
@@ -45,30 +42,13 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 	 * User-Agent of request
 	 */
 	private final String userAgent;
-	/**
-	 * Singleton pattern: Keep the object
-	 */
-	private static HttpRestConnection _INSTANCE;
-
-	/**
-	 * To create a singleton pattern entrance
-	 * 
-	 * @return Return my implementation
-	 */
-	public static BasicConnectionRest getInstance(Context context) {
-		synchronized (HttpRestConnection.class) {
-			if (_INSTANCE == null)
-				_INSTANCE = new HttpRestConnection(context.getApplicationContext());
-		}
-		return _INSTANCE;
-	}
 
 	/**
 	 * lock public
 	 */
-	private HttpRestConnection(Context context) {
-		this.mContext = context;
-		userAgent = UserAgent.getUserAgent(context);
+	public HttpRestConnection(Context context) {
+		this.mContext = context.getApplicationContext();
+		userAgent = UserAgent.getUserAgent(mContext);
 	}
 
 	/**
@@ -83,7 +63,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 
 		int responseCode = 0;
 		boolean isSucceed = false;
-		Headers responseHeaders = null;
+		Headers responseHeaders = new HttpHeaders();
 		byte[] responseBody = null;
 
 		String url = request.url();
@@ -100,19 +80,10 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 				writeRequestBody(httpConnection, request);
 
 				Logger.i("-------Response start-------");
+				httpConnection.connect();
 				responseCode = httpConnection.getResponseCode();
+				responseHeaders = parseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
 				Logger.d("ResponseCode: " + responseCode);
-
-				// handle headers
-				Map<String, List<String>> httpHeaders = httpConnection.getHeaderFields();
-				responseHeaders = HeaderParser.parseMultimap(httpHeaders);
-				responseHeaders.add(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(responseCode));
-
-				// handle cookie
-				if (httpHeaders != null) {
-					CookieManager cookieManager = NoHttp.getDefaultCookieManager();
-					cookieManager.put(new URI(url), httpHeaders);
-				}
 
 				// handle body
 				if (hasResponseBody(request.getRequestMethod(), responseCode)) {
@@ -122,7 +93,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 					} catch (IOException e) {
 						inputStream = httpConnection.getErrorStream();
 					}
-					String contentEncoding = httpConnection.getContentEncoding();
+					String contentEncoding = responseHeaders.getContentEncoding();
 					if (HeaderParser.isGzipContent(contentEncoding))
 						inputStream = new GZIPInputStream(inputStream);
 					responseBody = readResponseBody(inputStream);
@@ -141,7 +112,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 			}
 		}
 		Logger.d("--------------Reqeust finish--------------");
-		return new HttpResponse(isSucceed, responseCode, responseHeaders, responseBody);
+		return new HttpResponse(isSucceed, responseHeaders, responseBody);
 	}
 
 	@Override

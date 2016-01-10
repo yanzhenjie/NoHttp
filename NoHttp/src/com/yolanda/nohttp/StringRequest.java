@@ -37,10 +37,10 @@ public class StringRequest extends RestRequestor<String> {
 		String result = null;
 		if (responseBody != null && responseBody.length > 0) {
 			try {
-				String charset = HeaderParser.parseHeadValue(responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE), "charset", "");
+				String charset = HeaderParser.parseHeadValue(responseHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0), "charset", "");
 				result = new String(responseBody, charset);
 			} catch (UnsupportedEncodingException e) {
-				Logger.w("Charset error in ContentType returned by the server：" + responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE));
+				Logger.w("Charset error in ContentType returned by the server：" + responseHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0));
 				result = new String(responseBody);
 			}
 		}

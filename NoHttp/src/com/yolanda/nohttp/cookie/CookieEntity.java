@@ -20,6 +20,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 
 import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.db.DBId;
 
 import android.text.TextUtils;
 
@@ -29,7 +30,7 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA;
  */
-class CookieEntity implements Serializable {
+class CookieEntity implements DBId, Serializable {
 
 	private static final long serialVersionUID = 6374381323722046732L;
 
@@ -100,6 +101,7 @@ class CookieEntity implements Serializable {
 	/**
 	 * @return the id
 	 */
+	@Override
 	public long getId() {
 		return id;
 	}

@@ -37,39 +37,9 @@ public interface Response<T> {
 	boolean isSucceed();
 
 	/**
-	 * Get http responseCode
-	 */
-	int getResponseCode();
-
-	/**
 	 * Get http response headers
 	 */
 	Headers getHeaders();
-
-	/**
-	 * Returns the value of the header field specified by {@code key} or {@code
-	 * null} if there is no field with this name. The base implementation of
-	 * this method returns always {@code null}.
-	 * 
-	 * @param key the name of the header field.
-	 * @return the value of the header field.
-	 */
-	List<String> getHeaders(String key);
-
-	/**
-	 * Returns the MIME-type of the content specified by the response header
-	 * field {@code content-type} or {@code null} if type is unknown.
-	 *
-	 * @return the value of the response header field {@code content-type}.
-	 */
-	String getContentType();
-
-	/**
-	 * Returns the content length in bytes specified by the response header
-	 * field {@code content-length} or {@code -1} if this field is not set or
-	 * cannot be represented as an {@code int}.
-	 */
-	int getContentLength();
 
 	/**
 	 * Get http response Cookie

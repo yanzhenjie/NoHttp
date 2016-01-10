@@ -21,14 +21,14 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import com.yolanda.nohttp.BasicConnection;
 import com.yolanda.nohttp.HeaderParser;
 import com.yolanda.nohttp.Headers;
+import com.yolanda.nohttp.HttpHeaders;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.UserAgent;
 import com.yolanda.nohttp.tools.FileUtil;
@@ -88,7 +88,8 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 		}
 
 		// 地址验证
-		if (!URLUtil.isValidUrl(downloadRequest.url())) {
+		String url = downloadRequest.url();
+		if (!URLUtil.isValidUrl(url)) {
 			downloadListener.onDownloadError(what, StatusCode.ERROR_URL_SYNTAX_ERROR, "URL is wrong");
 			return;
 		}
@@ -106,7 +107,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				if (downloadRequest.isDeleteOld()) {
 					lastFile.delete();
 				} else {
-					downloadListener.onStart(what, true, lastFile.length(), new Headers(), lastFile.length());
+					downloadListener.onStart(what, true, lastFile.length(), new HttpHeaders(), lastFile.length());
 					downloadListener.onProgress(what, 100, lastFile.length());
 					Logger.d("-------Donwload finish-------");
 					downloadListener.onFinish(what, lastFile.getAbsolutePath());
@@ -136,23 +137,11 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			}
 
 			Logger.i("----------Response Start----------");
+			httpConnection.connect();
 			int responseCode = httpConnection.getResponseCode();
+			Headers httpHeaders = parseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
 			Logger.d("ResponseCode: " + responseCode);
 
-			Map<String, List<String>> responseHeaders = httpConnection.getHeaderFields();
-			for (String headName : responseHeaders.keySet()) {
-				List<String> headValues = responseHeaders.get(headName);
-				for (String headValue : headValues) {
-					StringBuffer buffer = new StringBuffer();
-					if (!TextUtils.isEmpty(headName)) {
-						buffer.append(headName);
-						buffer.append(": ");
-					}
-					if (!TextUtils.isEmpty(headValue))
-						buffer.append(headValue);
-					Logger.d(buffer.toString());
-				}
-			}
 			if (downloadRequest.isCanceled()) {
 				Log.i("NoHttpDownloader", "Download request is canceled");
 				downloadListener.onCancel(what);
@@ -165,7 +154,8 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			// 更新文件总大小
 			if (responseCode == 206) {
 				// Content-Range: bytes [文件块的开始字节]-[文件的总大小 - 1]/[文件的总大小]
-				String range = httpConnection.getHeaderField("Content-Range");// 事例：Content-Range:bytes 1024-2047/2048
+				String range = httpHeaders.getValue(Headers.HEAD_KEY_CONTENT_RANGE, 0);// 事例：Content-Range:bytes
+																						// 1024-2047/2048
 				if (!TextUtils.isEmpty(range)) {
 					try {
 						totalLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
@@ -177,7 +167,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 					}
 				}
 			} else if (responseCode == 200) {
-				totalLength = httpConnection.getContentLength();// 直接下载
+				totalLength = httpHeaders.getContentLength();// 直接下载
 			} else {
 				downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, "Server responseCode error: " + responseCode);
 				return;
@@ -190,9 +180,9 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			}
 			// 通知开始下载了
 			Logger.d("-------Download start-------");
-			downloadListener.onStart(what, tempFileLength > 0, tempFileLength, HeaderParser.parseMultimap(responseHeaders), totalLength);
+			downloadListener.onStart(what, tempFileLength > 0, tempFileLength, httpHeaders, totalLength);
 			inputStream = httpConnection.getInputStream();
-			String contentEncoding = httpConnection.getContentEncoding();
+			String contentEncoding = httpHeaders.getContentEncoding();
 			if (HeaderParser.isGzipContent(contentEncoding))
 				inputStream = new GZIPInputStream(inputStream);
 

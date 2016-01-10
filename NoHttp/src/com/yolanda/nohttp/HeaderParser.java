@@ -16,11 +16,13 @@
 package com.yolanda.nohttp;
 
 import java.net.HttpCookie;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import com.yolanda.nohttp.cache.Cache;
@@ -35,81 +37,6 @@ import android.text.TextUtils;
  * @author YOLANDA
  */
 public class HeaderParser {
-
-	/**
-	 * Parse Cookie of Response Headers, Only "Set-cookie" and "Set-cookie2" pair will be parsed
-	 */
-	public static List<HttpCookie> parseResponseCookie(Headers responseHeaders) {
-		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
-		for (int i = 0; responseHeaders != null && i < responseHeaders.size(); i++) {
-			String name = responseHeaders.name(i);
-			if (name != null && (name.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE) || name.equalsIgnoreCase(Headers.HEAD_KEY_SET_COOKIE2))) {
-				List<String> cookieValues = responseHeaders.values(name);
-				for (String cookieStr : cookieValues) {
-					try {
-						for (HttpCookie cookie : HttpCookie.parse(cookieStr)) {// 这里解析的是set-cookie2和set-cookie
-							cookies.add(cookie);
-						}
-					} catch (IllegalArgumentException e) {
-						Logger.w(e);
-					}
-				}
-			}
-		}
-		return cookies;
-	}
-
-	/**
-	 * The request for analysis in the Cookie head into two pairs: Cookie and Cookie2
-	 */
-	public static Map<String, String> parseRequestCookie(Headers requestHeaders) {
-		Map<String, String> map = new HashMap<String, String>();
-		if (requestHeaders != null) {
-			map.put(Headers.HEAD_KEY_COOKIE, "");
-			map.put(Headers.HEAD_KEY_COOKIE2, "");
-			for (int i = 0; i < requestHeaders.size(); i++) {
-				if (Headers.HEAD_KEY_COOKIE.equalsIgnoreCase(requestHeaders.name(i))) {
-					String cookie = map.get(Headers.HEAD_KEY_COOKIE) + requestHeaders.value(i) + "; ";
-					map.put(Headers.HEAD_KEY_COOKIE, cookie);
-				} else if (Headers.HEAD_KEY_COOKIE2.equalsIgnoreCase(requestHeaders.name(i))) {
-					String cookie2 = map.get(Headers.HEAD_KEY_COOKIE2) + requestHeaders.value(i) + "; ";
-					map.put(Headers.HEAD_KEY_COOKIE2, cookie2);
-				}
-			}
-		}
-		return map;
-	}
-
-	/**
-	 * Parse Header from Map to Headers
-	 */
-	public static Headers parseMultimap(Map<String, List<String>> headers) {
-		Headers returnHeaders = new Headers();
-		if (headers != null)
-			for (Map.Entry<String, List<String>> headEntry : headers.entrySet()) {
-				String name = headEntry.getKey();
-				for (String value : headEntry.getValue())
-					returnHeaders.add(name, value);
-			}
-		return returnHeaders;
-	}
-
-	/**
-	 * Add "Cookie" and "Cookie2" of the headers to request header
-	 * 
-	 * @param requestHeaders From the source
-	 * @param cookieHeader To be added to the destination
-	 */
-	public static void addCookiesToHeaders(Headers requestHeaders, Map<String, List<String>> cookieHeader) {
-		if (cookieHeader != null && requestHeaders != null)
-			for (Map.Entry<String, List<String>> entry : cookieHeader.entrySet()) {
-				String key = entry.getKey();
-				List<String> value = entry.getValue();
-				if ((Headers.HEAD_KEY_COOKIE.equalsIgnoreCase(key) || Headers.HEAD_KEY_COOKIE2.equalsIgnoreCase(key)) && !value.isEmpty()) {
-					requestHeaders.add(key, TextUtils.join("; ", value));
-				}
-			}
-	}
 
 	/**
 	 * A value of the header information
@@ -234,11 +161,12 @@ public class HeaderParser {
 	/**
 	 * Parse date in RFC1123 format, and return its value as epoch
 	 */
-	private static long parseDateAsEpoch(String dateStr) {
+	private static long parseDateAsEpoch(String gmtTime) {
 		try {
-			return HttpDateTime.parseToMillis(dateStr);
-		} catch (IllegalArgumentException e) {
-			return 0;
+			return HttpDateTime.parseToMillis(gmtTime);
+		} catch (ParseException e) {
+			Logger.w(e);
+			return System.currentTimeMillis();
 		}
 	}
 

@@ -28,28 +28,26 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 class CookieDisker extends SQLiteOpenHelper {
 
-	public final static String DB_COOKIE_NAME = "_nohttp_cookies_db.db";
-	public final static int DB_COOKIE_VERSION = 1;
+	public static final String DB_COOKIE_NAME = "_nohttp_cookies_db.db";
+	public static final int DB_COOKIE_VERSION = 1;
 
-	public final static String TABLE_NAME = "cookies_table";
-	public final static String ALL = "*";
-	public final static String ID = "_id";
-	public final static String URI = "uri";
-	public final static String NAME = "name";
-	public final static String VALUE = "value";
-	public final static String COMMENT = "comment";
-	public final static String COMMENTURL = "comment_url";
-	public final static String DISCARD = "discard";
-	public final static String DOMAIN = "domain";
-	public final static String EXPIRY = "expiry";
-	public final static String PATH = "path";
-	public final static String PORTLIST = "portlist";
-	public final static String SECURE = "secure";
-	public final static String VERSION = "version";
+	public static final String TABLE_NAME = "cookies_table";
+	public static final String URI = "uri";
+	public static final String NAME = "name";
+	public static final String VALUE = "value";
+	public static final String COMMENT = "comment";
+	public static final String COMMENTURL = "comment_url";
+	public static final String DISCARD = "discard";
+	public static final String DOMAIN = "domain";
+	public static final String EXPIRY = "expiry";
+	public static final String PATH = "path";
+	public static final String PORTLIST = "portlist";
+	public static final String SECURE = "secure";
+	public static final String VERSION = "version";
 
-	private final static String SQL_CREATE_TABLE = "CREATE TABLE cookies_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, name TEXT, value TEXT, comment TEXT, comment_url TEXT, discard TEXT, domain TEXT, expiry INTEGER, path TEXT, portlist TEXT, secure TEXT, version INTEGER)";
-	private final static String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cookie_unique_index ON cookies_table(\"name\", \"domain\", \"path\")";
-	private final static String SQL_DELETE_TABLE = "DROP TABLE cookies_table";
+	private static final String SQL_CREATE_TABLE = "CREATE TABLE cookies_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, name TEXT, value TEXT, comment TEXT, comment_url TEXT, discard TEXT, domain TEXT, expiry INTEGER, path TEXT, portlist TEXT, secure TEXT, version INTEGER)";
+	private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cookie_unique_index ON cookies_table(\"name\", \"domain\", \"path\")";
+	private static final String SQL_DELETE_TABLE = "DROP TABLE cookies_table";
 
 	public CookieDisker() {
 		super(NoHttp.getContext(), DB_COOKIE_NAME, null, DB_COOKIE_VERSION);

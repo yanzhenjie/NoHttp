@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.cookie;
+package com.yolanda.nohttp.db;
 
 import java.util.List;
 import java.util.regex.Pattern;

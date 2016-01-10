@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
+package com.yolanda.nohttp.cache;
 
 /**
- * </br>
- * Created in Jan 6, 2016 5:19:13 PM
+ * Created in Jan 10, 2016 12:45:34 AM
  * 
- * @author YOLANDA;
+ * @author YOLANDA
  */
-public class HttpResponse {
+public class DiskCacheStore implements Cache<CacheEntity> {
 
-	public final boolean isSucceed;
-	public final byte[] responseBody;
-	public final Headers responseHeaders;
-
-	public HttpResponse(boolean isSucceed, Headers responseHeaders, byte[] responseBody) {
-		this.isSucceed = isSucceed;
-		this.responseHeaders = responseHeaders;
-		this.responseBody = responseBody;
+	@Override
+	public CacheEntity get(String key) {
+		return null;
 	}
+
+	@Override
+	public void put(String key, CacheEntity entrance) {
+	}
+
+	@Override
+	public void remove(String key) {
+	}
+
+	@Override
+	public void clear() {
+	}
+
 }

@@ -42,6 +42,7 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	 * Target adress
 	 */
 	private String url;
+	private String buildUrl;
 	/**
 	 * Request method
 	 */
@@ -65,7 +66,7 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	/**
 	 * Request heads
 	 */
-	private Headers mheaders;
+	private Headers mHeaders;
 	/**
 	 * Https certificate
 	 */
@@ -122,12 +123,14 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 			throw new IllegalArgumentException("url is null");
 		this.url = url;
 		this.mRequestMethod = requestMethod;
-		this.mheaders = new Headers();
+		this.mHeaders = new HttpHeaders();
 	}
 
 	@Override
 	public String url() {
-		return buildUrl();
+		if (TextUtils.isEmpty(buildUrl))
+			buildUrl = buildUrl();
+		return buildUrl;
 	}
 
 	/**
@@ -223,27 +226,27 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 
 	@Override
 	public void setHeader(String name, String value) {
-		mheaders.set(name, value);
+		mHeaders.set(name, value);
 	}
 
 	@Override
 	public void addHeader(String name, String value) {
-		mheaders.add(name, value);
+		mHeaders.add(name, value);
 	}
 
 	@Override
 	public Headers headers() {
-		return this.mheaders;
+		return this.mHeaders;
 	}
 
 	@Override
 	public void removeHeader(String name) {
-		mheaders.removeAll(name);
+		mHeaders.remove(name);
 	}
 
 	@Override
 	public void removeAllHeaders() {
-		mheaders.clear();
+		mHeaders.clear();
 	}
 
 	@Override
@@ -291,7 +294,7 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	public void setRequestBody(String requestBody) {
 		if (!TextUtils.isEmpty(requestBody))
 			try {
-				this.mRequestBody = URLEncoder.encode(requestBody, getParamsEncoding()).getBytes();
+				this.mRequestBody = URLEncoder.encode(requestBody, getParamsEncoding()).getBytes(NoHttp.CHARSET_UTF8);
 			} catch (UnsupportedEncodingException e) {
 				Logger.e(e);
 			}
@@ -509,7 +512,7 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 
 	@Override
 	public boolean needCache() {
-		return !TextUtils.isEmpty(getCacheKey());
+		return RequestMethod.GET == getRequestMethod();
 	}
 
 	@Override
