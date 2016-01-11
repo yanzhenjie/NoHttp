@@ -58,9 +58,6 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 		values.put(CacheDisker.KEY, cacheEntity.getKey());
 		values.put(CacheDisker.HEAD, cacheEntity.getResponseHeadersJson());
 		values.put(CacheDisker.DATA, cacheEntity.getDataString());
-		values.put(CacheDisker.ETAG, cacheEntity.getEtag());
-		values.put(CacheDisker.SERVE_RDATE, cacheEntity.getServerDate());
-		values.put(CacheDisker.LAST_MODIFIED, cacheEntity.getLastModified());
 		long id = -1;
 		try {
 			id = execute.replace(getTableName(), null, values);
@@ -82,7 +79,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 			while (!cursor.isClosed() && cursor.moveToNext()) {
 				try {
 					CacheEntity cacheEntity = new CacheEntity();
-					int idIndex = cursor.getColumnIndex(DBManager.ID_FIELD);
+					int idIndex = cursor.getColumnIndex(CacheEntity.ID);
 					if (idIndex >= 0)
 						cacheEntity.setId(cursor.getInt(idIndex));
 
@@ -98,17 +95,6 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 					if (dataIndex >= 0)
 						cacheEntity.setDataString(cursor.getString(dataIndex));
 
-					int etagIndex = cursor.getColumnIndex(CacheDisker.ETAG);
-					if (etagIndex >= 0)
-						cacheEntity.setEtag(cursor.getString(etagIndex));
-
-					int dateIndex = cursor.getColumnIndex(CacheDisker.SERVE_RDATE);
-					if (dateIndex >= 0)
-						cacheEntity.setServerDate(cursor.getLong(dateIndex));
-
-					int lastModifiedIndex = cursor.getColumnIndex(CacheDisker.LAST_MODIFIED);
-					if (lastModifiedIndex >= 0)
-						cacheEntity.setLastModified(cursor.getLong(lastModifiedIndex));
 					cacheEntities.add(cacheEntity);
 				} catch (Throwable e) {
 					Logger.w(e);

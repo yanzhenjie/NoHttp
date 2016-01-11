@@ -15,28 +15,52 @@
  */
 package com.yolanda.nohttp.cache;
 
+import java.util.List;
+
+import com.yolanda.nohttp.db.DBManager;
+import com.yolanda.nohttp.db.Where;
+import com.yolanda.nohttp.db.Where.Options;
+
 /**
  * Created in Jan 10, 2016 12:45:34 AM
  * 
  * @author YOLANDA
  */
-public class DiskCacheStore implements Cache<CacheEntity> {
+public enum DiskCacheStore implements Cache<CacheEntity> {
+
+	INSTANCE;
+
+	private DBManager<CacheEntity> mManager;
+
+	private DiskCacheStore() {
+		mManager = CacheDiskManager.getInstance();
+	}
 
 	@Override
 	public CacheEntity get(String key) {
-		return null;
+		Where where = new Where(CacheDisker.KEY, Options.EQUAL, key);
+		List<CacheEntity> cacheEntities = mManager.get(CacheDisker.ALL, where.get(), null, null, null);
+		return cacheEntities.size() > 0 ? cacheEntities.get(0) : null;
 	}
 
 	@Override
-	public void put(String key, CacheEntity entrance) {
+	public CacheEntity put(String key, CacheEntity entrance) {
+		entrance.setKey(key);
+		mManager.replace(entrance);
+		return entrance;
 	}
 
 	@Override
-	public void remove(String key) {
+	public boolean remove(String key) {
+		if (key == null)
+			return true;
+		Where where = new Where(CacheDisker.KEY, Options.EQUAL, key);
+		return mManager.delete(where.toString());
 	}
 
 	@Override
-	public void clear() {
+	public boolean clear() {
+		return mManager.deleteAll();
 	}
 
 }

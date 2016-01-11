@@ -91,7 +91,7 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 			while (!cursor.isClosed() && cursor.moveToNext()) {
 				try {
 					CookieEntity cookie = new CookieEntity();
-					int idIndex = cursor.getColumnIndex(ID_FIELD);
+					int idIndex = cursor.getColumnIndex(CookieDisker.ID);
 					if (idIndex >= 0)
 						cookie.setId(cursor.getInt(idIndex));
 

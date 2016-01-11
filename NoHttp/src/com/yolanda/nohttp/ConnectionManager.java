@@ -16,6 +16,7 @@
 package com.yolanda.nohttp;
 
 import com.yolanda.nohttp.cache.Cache;
+import com.yolanda.nohttp.cache.CacheEntity;
 import com.yolanda.nohttp.tools.HttpDateTime;
 
 import android.os.SystemClock;
@@ -30,9 +31,9 @@ public class ConnectionManager implements BasicConnectionManager {
 
 	private BasicConnectionRest mConnectionRest;
 
-	private Cache mCache;
+	private Cache<CacheEntity> mCache;
 
-	public ConnectionManager(Cache cache, BasicConnectionRest connectionRest) {
+	public ConnectionManager(Cache<CacheEntity> cache, BasicConnectionRest connectionRest) {
 		this.mCache = cache;
 		this.mConnectionRest = connectionRest;
 	}
@@ -44,8 +45,8 @@ public class ConnectionManager implements BasicConnectionManager {
 		String url = request.url();
 
 		// handle cache header
-		Cache.Entrance entrance = mCache.get(request.getCacheKey());
-		handleCacheHeader(request, entrance);
+		CacheEntity cacheEntity = mCache.get(request.getCacheKey());
+		handleCacheHeader(request, cacheEntity);
 
 		// request network
 		final HttpResponse httpResponse = mConnectionRest.request(request);
@@ -57,12 +58,12 @@ public class ConnectionManager implements BasicConnectionManager {
 
 		if (httpResponse.isSucceed) {
 			if (httpResponse.responseCode == 304) {
-				if (entrance == null) { // maybe server error responseCode
+				if (cacheEntity == null) { // maybe server error responseCode
 					returnResponse = new RestResponser<T>(url, true, 304, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
 				} else {
-					entrance.responseHeaders.setAll(responseHeaders);
-					result = request.parseResponse(url, entrance.responseHeaders, entrance.data);
-					returnResponse = new RestResponser<T>(url, true, 304, entrance.responseHeaders, entrance.data, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
+					cacheEntity.responseHeaders.setAll(responseHeaders);
+					result = request.parseResponse(url, cacheEntity.responseHeaders, cacheEntity.data);
+					returnResponse = new RestResponser<T>(url, true, 304, cacheEntity.responseHeaders, cacheEntity.data, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
 				}
 			} else {
 				if (responseBody == null) /* such as responseCode is 204 */
@@ -75,23 +76,23 @@ public class ConnectionManager implements BasicConnectionManager {
 			returnResponse = new RestResponser<T>(url, false, httpResponse.responseCode, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
 		}
 		if (request.needCache()) {
-			if (entrance == null)
-				entrance = HeaderParser.parseCacheHeaders(responseHeaders, responseBody);
-			mCache.put(request.getCacheKey(), entrance);
+			if (cacheEntity == null)
+				cacheEntity = HeaderParser.parseCacheHeaders(responseHeaders, responseBody);
+			mCache.put(request.getCacheKey(), cacheEntity);
 		}
 		return returnResponse;
 	}
 
-	private void handleCacheHeader(CommonRequest<?> request, Cache.Entrance entry) {
-		if (entry == null) {
+	private void handleCacheHeader(CommonRequest<?> request, CacheEntity cacheEntity) {
+		if (cacheEntity == null) {
 			request.removeHeader(Headers.HEAD_KEY_IF_NONE_MATCH);
 			request.removeHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE);
 		} else {
-			if (entry.etag != null)
-				request.setHeader(Headers.HEAD_KEY_IF_NONE_MATCH, entry.etag);
+			if (cacheEntity.etag != null)
+				request.setHeader(Headers.HEAD_KEY_IF_NONE_MATCH, cacheEntity.etag);
 
-			if (entry.lastModified > 0) {
-				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatToGTM(entry.lastModified));
+			if (cacheEntity.lastModified > 0) {
+				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatToGTM(cacheEntity.lastModified));
 			}
 		}
 	}

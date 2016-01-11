@@ -25,17 +25,15 @@ import com.yolanda.nohttp.HttpHeaders;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.db.DBId;
+import com.yolanda.nohttp.db.Field;
 
 /**
  * Created in Jan 10, 2016 12:43:10 AM
  * 
  * @author YOLANDA
  */
-class CacheEntity implements DBId, Serializable {
+public class CacheEntity implements DBId, Field, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1234857234793L;
 
 	private long id;
@@ -52,16 +50,6 @@ class CacheEntity implements DBId, Serializable {
 	private byte[] data = {};
 
 	/**
-	 * ETag for cache coherency.
-	 */
-	private String etag = "";
-
-	/**
-	 * Date of this response as reported by the server.
-	 */
-	private long serverDate = 0;
-
-	/**
 	 * The last modified date for the requested object.
 	 */
 	private long lastModified = 0;
@@ -70,15 +58,12 @@ class CacheEntity implements DBId, Serializable {
 		super();
 	}
 
-	public CacheEntity(long id, String key, Headers responseHeaders, byte[] data, String etag, long serverDate, long lastModified) {
+	public CacheEntity(long id, String key, Headers responseHeaders, byte[] data) {
 		super();
 		this.id = id;
 		this.key = key;
 		this.responseHeaders = responseHeaders;
 		this.data = data;
-		this.etag = etag;
-		this.serverDate = serverDate;
-		this.lastModified = lastModified;
 	}
 
 	/**
@@ -164,34 +149,6 @@ class CacheEntity implements DBId, Serializable {
 		} catch (UnsupportedEncodingException e) {
 			return new String(data);
 		}
-	}
-
-	/**
-	 * @return the etag
-	 */
-	public String getEtag() {
-		return etag;
-	}
-
-	/**
-	 * @param etag the etag to set
-	 */
-	public void setEtag(String etag) {
-		this.etag = etag;
-	}
-
-	/**
-	 * @return the serverDate
-	 */
-	public long getServerDate() {
-		return serverDate;
-	}
-
-	/**
-	 * @param serverDate the serverDate to set
-	 */
-	public void setServerDate(long serverDate) {
-		this.serverDate = serverDate;
 	}
 
 	/**

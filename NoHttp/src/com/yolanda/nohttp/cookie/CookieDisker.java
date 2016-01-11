@@ -16,6 +16,7 @@
 package com.yolanda.nohttp.cookie;
 
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.db.Field;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -26,7 +27,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * 
  * @author YOLANDA;
  */
-class CookieDisker extends SQLiteOpenHelper {
+class CookieDisker extends SQLiteOpenHelper implements Field {
 
 	public static final String DB_COOKIE_NAME = "_nohttp_cookies_db.db";
 	public static final int DB_COOKIE_VERSION = 1;

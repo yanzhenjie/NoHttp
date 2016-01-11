@@ -93,8 +93,7 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 					} catch (IOException e) {
 						inputStream = httpConnection.getErrorStream();
 					}
-					String contentEncoding = responseHeaders.getContentEncoding();
-					if (HeaderParser.isGzipContent(contentEncoding))
+					if (HeaderParser.isGzipContent(responseHeaders.getContentEncoding()))
 						inputStream = new GZIPInputStream(inputStream);
 					responseBody = readResponseBody(inputStream);
 					inputStream.close();

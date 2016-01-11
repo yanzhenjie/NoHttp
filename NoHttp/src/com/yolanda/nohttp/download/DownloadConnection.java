@@ -182,8 +182,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			Logger.d("-------Download start-------");
 			downloadListener.onStart(what, tempFileLength > 0, tempFileLength, httpHeaders, totalLength);
 			inputStream = httpConnection.getInputStream();
-			String contentEncoding = httpHeaders.getContentEncoding();
-			if (HeaderParser.isGzipContent(contentEncoding))
+			if (HeaderParser.isGzipContent(httpHeaders.getContentEncoding()))
 				inputStream = new GZIPInputStream(inputStream);
 
 			RandomAccessFile randomAccessFile = new RandomAccessFile(tempFile, "rw");

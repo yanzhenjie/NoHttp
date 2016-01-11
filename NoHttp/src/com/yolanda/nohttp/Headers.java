@@ -86,6 +86,8 @@ public interface Headers extends MultiMap<String, String> {
 	Map<String, String> toRequestHeaders();
 
 	Map<String, List<String>> toResponseHeaders();
+	
+	String getCacheControl();
 
 	String getContentEncoding();
 

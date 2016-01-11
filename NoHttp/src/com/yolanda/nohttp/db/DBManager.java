@@ -32,10 +32,6 @@ import android.text.TextUtils;
  */
 public abstract class DBManager<T extends DBId> {
 
-	public static final String ALL_FIELD = "*";
-
-	public static final String ID_FIELD = "_id";
-
 	private SQLiteOpenHelper disker;
 
 	public DBManager(SQLiteOpenHelper disker) {
@@ -63,7 +59,7 @@ public abstract class DBManager<T extends DBId> {
 	}
 
 	public int count() {
-		return count(ID_FIELD);
+		return count(Field.ID);
 	}
 
 	public int count(String columnName) {
@@ -83,7 +79,7 @@ public abstract class DBManager<T extends DBId> {
 	}
 
 	public boolean delete(List<T> ts) {
-		StringBuilder where = new StringBuilder(ID_FIELD).append(" IN(");
+		StringBuilder where = new StringBuilder(Field.ID).append(" IN(");
 		for (T t : ts) {
 			long id = t.getId();
 			if (id > 0) {
@@ -114,7 +110,7 @@ public abstract class DBManager<T extends DBId> {
 	}
 
 	public List<T> getAll() {
-		return getAll(ALL_FIELD);
+		return getAll(Field.ALL);
 	}
 
 	public List<T> getAll(String columnName) {

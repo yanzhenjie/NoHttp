@@ -16,6 +16,7 @@
 package com.yolanda.nohttp.cache;
 
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.db.Field;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -25,7 +26,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * 
  * @author YOLANDA
  */
-class CacheDisker extends SQLiteOpenHelper {
+class CacheDisker extends SQLiteOpenHelper implements Field {
 
 	public static final String DB_CACHE_NAME = "_nohttp_cache_db.db";
 	public static final int DB_CACHE_VERSION = 1;
@@ -34,11 +35,8 @@ class CacheDisker extends SQLiteOpenHelper {
 	public static final String KEY = "key";
 	public static final String HEAD = "head";
 	public static final String DATA = "data";
-	public static final String ETAG = "etag";
-	public static final String SERVE_RDATE = "server_date";
-	public static final String LAST_MODIFIED = "last_modified";
 
-	private static final String SQL_CREATE_TABLE = "CREATE TABLE cache_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, head TEXT, data TEXT, etag TEXT, server_date INTEGER, last_modified INTEGER)";
+	private static final String SQL_CREATE_TABLE = "CREATE TABLE cache_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, head TEXT, data TEXT)";
 	private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cache_unique_index ON cache_table(\"key\")";
 	private static final String SQL_DELETE_TABLE = "DROP TABLE cache_table";
 

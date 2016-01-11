@@ -15,12 +15,12 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.File;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
 import com.yolanda.nohttp.cache.Cache;
-import com.yolanda.nohttp.cache.DiskCache;
+import com.yolanda.nohttp.cache.CacheEntity;
+import com.yolanda.nohttp.cache.DiskCacheStore;
 import com.yolanda.nohttp.cookie.DiskCookieStore;
 import com.yolanda.nohttp.download.DownloadConnection;
 import com.yolanda.nohttp.download.DownloadListener;
@@ -39,10 +39,6 @@ import android.widget.ImageView;
  * @author YOLANDA
  */
 public class NoHttp {
-	/**
-	 * NoHttp cache dir
-	 */
-	private static final String DEFAULT_CACHE_DIR = "NoHttp";
 	/**
 	 * Default charset of request body, value is {@value}
 	 */
@@ -100,13 +96,12 @@ public class NoHttp {
 		return requestQueue;
 	}
 
-	public static RequestQueue newRequestQueue(Cache cache, BasicConnectionRest connectionRest, int threadPoolSize) {
+	public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, BasicConnectionRest connectionRest, int threadPoolSize) {
 		return newRequestQueue(new ConnectionManager(cache, connectionRest), threadPoolSize);
 	}
 
 	public static RequestQueue newRequestQueue(int threadPoolSize) {
-		File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
-		return newRequestQueue(new DiskCache(cacheDir), new HttpRestConnection(getContext()), threadPoolSize);
+		return newRequestQueue(DiskCacheStore.INSTANCE, new HttpRestConnection(getContext()), threadPoolSize);
 	}
 
 	public static RequestQueue newRequestQueue() {
@@ -150,33 +145,29 @@ public class NoHttp {
 
 	private synchronized static BasicConnectionManager createSyncConnectionManager() {
 		if (mBasicConnectionManager == null) {
-			File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
-			Cache cache = new DiskCache(cacheDir);
-
 			BasicConnectionRest connectionRest = new HttpRestConnection(getContext());
-			mBasicConnectionManager = new ConnectionManager(cache, connectionRest);
+			mBasicConnectionManager = new ConnectionManager(DiskCacheStore.INSTANCE, connectionRest);
 		}
 		return mBasicConnectionManager;
 	}
 
-	public static <T> Response<T> startRequestSync(Cache cache, BasicConnectionRest connectionRest, Request<T> request) {
+	public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, BasicConnectionRest connectionRest, Request<T> request) {
 		Response<T> response = null;
 		if (cache != null && connectionRest != null && request != null)
 			response = createSyncConnectionManager().handleRequest(request);
 		return response;
 	}
 
-	public static <T> Response<T> startRequestSync(Cache cache, Request<T> request) {
+	public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, Request<T> request) {
 		return startRequestSync(cache, new HttpRestConnection(getContext()), request);
 	}
 
 	public static <T> Response<T> startRequestSync(BasicConnectionRest connectionRest, Request<T> request) {
-		File cacheDir = new File(getContext().getCacheDir(), DEFAULT_CACHE_DIR);
-		return startRequestSync(new DiskCache(cacheDir), connectionRest, request);
+		return startRequestSync(DiskCacheStore.INSTANCE, connectionRest, request);
 	}
 
 	public static <T> Response<T> startRequestSync(Request<T> request) {
-		return startRequestSync(new HttpRestConnection(getContext()), request);
+		return startRequestSync(DiskCacheStore.INSTANCE, new HttpRestConnection(getContext()), request);
 	}
 
 	/**

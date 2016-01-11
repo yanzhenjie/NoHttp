@@ -15,18 +15,11 @@
  */
 package com.yolanda.nohttp;
 
-import java.net.HttpCookie;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import com.yolanda.nohttp.cache.Cache;
-import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.cache.CacheEntity;
 
 import android.text.TextUtils;
 
@@ -78,9 +71,7 @@ public class HeaderParser {
 	 * @param byteArray The network response to parse body from
 	 * @return a cache entrance for the given response, or null if the response is not cacheable.
 	 */
-	public static Cache.Entrance parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
-		long now = System.currentTimeMillis();
-
+	public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
 		long serverDate = 0;
 		long lastModified = 0;
 		long serverExpires = 0;
@@ -92,19 +83,15 @@ public class HeaderParser {
 		boolean mustRevalidate = false;
 
 		String serverEtag = null;
-		String headerValue;
 
-		headerValue = responseHeaders.get(Headers.HEAD_KEY_DATE);
-		if (headerValue != null) {
-			serverDate = parseDateAsEpoch(headerValue);
-		}
+		serverDate = responseHeaders.getDate();
 
-		headerValue = responseHeaders.get(Headers.HEAD_KEY_CACHE_CONTROL);
-		if (headerValue != null) {
+		String cacheControl = responseHeaders.getCacheControl();
+		if (cacheControl != null) {
 			hasCacheControl = true;
-			String[] tokens = headerValue.split(",");
-			for (int i = 0; i < tokens.length; i++) {
-				String token = tokens[i].trim();
+			StringTokenizer tokens = new StringTokenizer(cacheControl, ",");
+			while (tokens.hasMoreElements()) {
+				String token = tokens.nextToken().trim().toLowerCase(Locale.getDefault());
 				if (token.equals("no-cache") || token.equals("no-store")) {
 					return null;
 				} else if (token.startsWith("max-age=")) {
@@ -123,30 +110,24 @@ public class HeaderParser {
 			}
 		}
 
-		headerValue = responseHeaders.get(Headers.HEAD_KEY_EXPIRES);
-		if (headerValue != null) {
-			serverExpires = parseDateAsEpoch(headerValue);
-		}
+		serverExpires = responseHeaders.getExpiration();
 
-		headerValue = responseHeaders.get(Headers.HEAD_KEY_LAST_MODIFIED);
-		if (headerValue != null) {
-			lastModified = parseDateAsEpoch(headerValue);
-		}
+		lastModified = responseHeaders.getLastModified();
 
-		serverEtag = responseHeaders.get(Headers.HEAD_KEY_ETAG);
+		serverEtag = responseHeaders.getETag();
 
 		// Cache-Control takes precedence over an Expires header, even if both exist and Expires
 		// is more restrictive.
 		if (hasCacheControl) {
-			softExpire = now + maxAge * 1000;
+			softExpire = serverDate + maxAge * 1000;
 			finalExpire = mustRevalidate ? softExpire : softExpire + staleWhileRevalidate * 1000;
 		} else if (serverDate > 0 && serverExpires >= serverDate) {
 			// Default semantic for Expire header in HTTP specification is softExpire.
-			softExpire = now + (serverExpires - serverDate);
+			softExpire = serverDate + (serverExpires - serverDate);
 			finalExpire = softExpire;
 		}
 
-		Cache.Entrance entrance = new Cache.Entrance();
+		CacheEntity entrance = new CacheEntity();
 		entrance.data = responseBody;
 		entrance.etag = serverEtag;
 		entrance.softTtl = softExpire;
@@ -157,17 +138,4 @@ public class HeaderParser {
 
 		return entrance;
 	}
-
-	/**
-	 * Parse date in RFC1123 format, and return its value as epoch
-	 */
-	private static long parseDateAsEpoch(String gmtTime) {
-		try {
-			return HttpDateTime.parseToMillis(gmtTime);
-		} catch (ParseException e) {
-			Logger.w(e);
-			return System.currentTimeMillis();
-		}
-	}
-
 }

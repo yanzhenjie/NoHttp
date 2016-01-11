@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.cache;
+package com.yolanda.nohttp.db;
 
 /**
  * </br>
- * Created in Dec 14, 2015 5:52:41 PM
+ * Created in Jan 11, 2016 12:46:38 PM
  * 
  * @author YOLANDA;
  */
-public interface Cache<T> {
+public interface Field {
 
-	public T get(String key);
+	public static final String ID = "_id";
+	
+	public static final String ALL = "*";
 
-	public T put(String key, T entrance);
-
-	public boolean remove(String key);
-
-	public boolean clear();
 }

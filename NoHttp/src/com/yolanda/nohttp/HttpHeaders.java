@@ -124,6 +124,11 @@ public class HttpHeaders extends LinkedMultiMap<String, String>implements Header
 	}
 
 	@Override
+	public String getCacheControl() {
+		return getValue(HEAD_KEY_CACHE_CONTROL, 0);
+	}
+
+	@Override
 	public String getContentEncoding() {
 		return getValue(HEAD_KEY_CONTENT_ENCODING, 0);
 	}

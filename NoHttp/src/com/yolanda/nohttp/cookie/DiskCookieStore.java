@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.yolanda.nohttp.db.DBManager;
+import com.yolanda.nohttp.db.Field;
 import com.yolanda.nohttp.db.Where;
 import com.yolanda.nohttp.db.Where.Options;
 
@@ -106,7 +107,7 @@ public enum DiskCookieStore implements CookieStore {
 
 		where.or(CookieDisker.URI, Options.EQUAL, uri.toString());
 
-		List<CookieEntity> cookieList = mManager.get(DBManager.ALL_FIELD, where.toString(), null, null, null);
+		List<CookieEntity> cookieList = mManager.get(Field.ID, where.get(), null, null, null);
 		List<HttpCookie> returnedCookies = new ArrayList<HttpCookie>();
 		for (CookieEntity cookieEntity : cookieList)
 			returnedCookies.add(cookieEntity.toHttpCookie());
@@ -180,7 +181,7 @@ public enum DiskCookieStore implements CookieStore {
 	private void trimSize() {
 		int count = mManager.count();
 		if (count > MAX_COOKIE_SIZE + 10) {
-			List<CookieEntity> rmList = mManager.get(DBManager.ALL_FIELD, null, null, Integer.toString(count - MAX_COOKIE_SIZE), null);
+			List<CookieEntity> rmList = mManager.get(Field.ALL, null, null, Integer.toString(count - MAX_COOKIE_SIZE), null);
 			if (rmList != null)
 				mManager.delete(rmList);
 		}
