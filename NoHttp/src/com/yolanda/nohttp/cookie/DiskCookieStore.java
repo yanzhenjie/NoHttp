@@ -22,6 +22,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.yolanda.nohttp.db.DBManager;
 import com.yolanda.nohttp.db.Field;
@@ -45,11 +47,14 @@ public enum DiskCookieStore implements CookieStore {
 	 */
 	private final static int MAX_COOKIE_SIZE = 8888;
 
+	private Lock mLock;
+
 	private DBManager<CookieEntity> mManager;
 
 	private CookieStoreListener mCookieStoreListener;
 
 	private DiskCookieStore() {
+		mLock = new ReentrantLock();
 		mManager = CookieDiskManager.getInstance();
 	}
 
@@ -61,12 +66,17 @@ public enum DiskCookieStore implements CookieStore {
 	public void add(URI uri, HttpCookie cookie) {
 		if (cookie == null)
 			return;
-		if (mCookieStoreListener != null)
-			mCookieStoreListener.onSaveCookie(uri, cookie);
-		uri = getEffectiveURI(uri);
-		if (cookie != null) {
-			mManager.replace(new CookieEntity(uri, cookie));
-			trimSize();
+		mLock.lock();
+		try {
+			if (mCookieStoreListener != null)
+				mCookieStoreListener.onSaveCookie(uri, cookie);
+			uri = getEffectiveURI(uri);
+			if (cookie != null) {
+				mManager.replace(new CookieEntity(uri, cookie));
+				trimSize();
+			}
+		} finally {
+			mLock.unlock();
 		}
 	}
 
@@ -74,97 +84,122 @@ public enum DiskCookieStore implements CookieStore {
 	public List<HttpCookie> get(URI uri) {
 		if (uri == null)
 			return Collections.emptyList();
-		uri = getEffectiveURI(uri);
-		deleteExpiryCookies();
-		Where where = new Where();
-		String host = uri.getHost();
-		if (!TextUtils.isEmpty(host)) {
-			Where subWhere = new Where(CookieDisker.DOMAIN, Options.EQUAL, host);
-			int lastDot = host.lastIndexOf(".");
-			if (lastDot > 1) {
-				lastDot = host.lastIndexOf(".", lastDot - 1);
-				if (lastDot > 0) {
-					String domain = host.substring(lastDot, host.length());
-					if (!TextUtils.isEmpty(domain))
-						subWhere.or(CookieDisker.DOMAIN, Options.EQUAL, domain).bracket();
+		mLock.lock();
+		try {
+			uri = getEffectiveURI(uri);
+			deleteExpiryCookies();
+			Where where = new Where();
+			String host = uri.getHost();
+			if (!TextUtils.isEmpty(host)) {
+				Where subWhere = new Where(CookieDisker.DOMAIN, Options.EQUAL, host);
+				int lastDot = host.lastIndexOf(".");
+				if (lastDot > 1) {
+					lastDot = host.lastIndexOf(".", lastDot - 1);
+					if (lastDot > 0) {
+						String domain = host.substring(lastDot, host.length());
+						if (!TextUtils.isEmpty(domain))
+							subWhere.or(CookieDisker.DOMAIN, Options.EQUAL, domain).bracket();
+					}
 				}
+				where.set(subWhere.get());
 			}
-			where.set(subWhere.get());
-		}
 
-		String path = uri.getPath();
-		if (!TextUtils.isEmpty(path)) {
-			Where subWhere = new Where(CookieDisker.PATH, Options.EQUAL, path).or(CookieDisker.PATH, Options.EQUAL, "/").orNull(CookieDisker.PATH);
-			int lastSplit = path.lastIndexOf("/");
-			while (lastSplit > 0) {
-				path = path.substring(0, lastSplit);
-				subWhere.or(CookieDisker.PATH, Options.EQUAL, path);
-				lastSplit = path.lastIndexOf("/");
+			String path = uri.getPath();
+			if (!TextUtils.isEmpty(path)) {
+				Where subWhere = new Where(CookieDisker.PATH, Options.EQUAL, path).or(CookieDisker.PATH, Options.EQUAL, "/").orNull(CookieDisker.PATH);
+				int lastSplit = path.lastIndexOf("/");
+				while (lastSplit > 0) {
+					path = path.substring(0, lastSplit);
+					subWhere.or(CookieDisker.PATH, Options.EQUAL, path);
+					lastSplit = path.lastIndexOf("/");
+				}
+				subWhere.bracket();
+				where.and(subWhere);
 			}
-			subWhere.bracket();
-			where.and(subWhere);
+
+			where.or(CookieDisker.URI, Options.EQUAL, uri.toString());
+
+			List<CookieEntity> cookieList = mManager.get(Field.ID, where.get(), null, null, null);
+			List<HttpCookie> returnedCookies = new ArrayList<HttpCookie>();
+			for (CookieEntity cookieEntity : cookieList)
+				returnedCookies.add(cookieEntity.toHttpCookie());
+			return returnedCookies;
+		} finally {
+			mLock.unlock();
 		}
-
-		where.or(CookieDisker.URI, Options.EQUAL, uri.toString());
-
-		List<CookieEntity> cookieList = mManager.get(Field.ID, where.get(), null, null, null);
-		List<HttpCookie> returnedCookies = new ArrayList<HttpCookie>();
-		for (CookieEntity cookieEntity : cookieList)
-			returnedCookies.add(cookieEntity.toHttpCookie());
-		return returnedCookies;
 	}
 
 	@Override
 	public List<HttpCookie> getCookies() {
-		List<HttpCookie> rt = new ArrayList<HttpCookie>();
-		deleteExpiryCookies();
-		List<CookieEntity> cookieEntityList = mManager.getAll();
-		for (CookieEntity cookieEntity : cookieEntityList)
-			rt.add(cookieEntity.toHttpCookie());
-		return rt;
+		mLock.lock();
+		try {
+			List<HttpCookie> rt = new ArrayList<HttpCookie>();
+			deleteExpiryCookies();
+			List<CookieEntity> cookieEntityList = mManager.getAll();
+			for (CookieEntity cookieEntity : cookieEntityList)
+				rt.add(cookieEntity.toHttpCookie());
+			return rt;
+		} finally {
+			mLock.unlock();
+		}
 	}
 
 	@Override
 	public List<URI> getURIs() {
-		List<URI> uris = new ArrayList<URI>();
-		List<CookieEntity> uriList = mManager.getAll(CookieDisker.URI);
-		for (CookieEntity cookie : uriList) {
-			String uri = cookie.getUri();
-			if (!TextUtils.isEmpty(uri))
-				try {
-					uris.add(new URI(uri));
-				} catch (Throwable e) {
-					e.printStackTrace();
-					StringBuilder where = new StringBuilder(CookieDisker.URI).append('=').append(uri);
-					mManager.delete(where.toString());
-				}
+		mLock.lock();
+		try {
+			List<URI> uris = new ArrayList<URI>();
+			List<CookieEntity> uriList = mManager.getAll(CookieDisker.URI);
+			for (CookieEntity cookie : uriList) {
+				String uri = cookie.getUri();
+				if (!TextUtils.isEmpty(uri))
+					try {
+						uris.add(new URI(uri));
+					} catch (Throwable e) {
+						e.printStackTrace();
+						StringBuilder where = new StringBuilder(CookieDisker.URI).append('=').append(uri);
+						mManager.delete(where.toString());
+					}
+			}
+			return uris;
+		} finally {
+			mLock.unlock();
 		}
-		return uris;
 	}
 
 	@Override
 	public boolean remove(URI uri, HttpCookie httpCookie) {
-		if (httpCookie == null)
+		if (uri != null || httpCookie == null)
 			return true;
-		if (mCookieStoreListener != null)
-			mCookieStoreListener.onRemoveCookie(uri, httpCookie);
-		CookieEntity cookie = new CookieEntity(uri, httpCookie);
-		Where where = new Where(CookieDisker.NAME, Options.EQUAL, cookie.getName());
+		mLock.lock();
+		try {
+			if (mCookieStoreListener != null)
+				mCookieStoreListener.onRemoveCookie(uri, httpCookie);
+			CookieEntity cookie = new CookieEntity(uri, httpCookie);
+			Where where = new Where(CookieDisker.NAME, Options.EQUAL, cookie.getName());
 
-		String domain = cookie.getDomain();
-		if (!TextUtils.isEmpty(domain))
-			where.and(CookieDisker.DOMAIN, Options.EQUAL, domain);
+			String domain = cookie.getDomain();
+			if (!TextUtils.isEmpty(domain))
+				where.and(CookieDisker.DOMAIN, Options.EQUAL, domain);
 
-		String path = cookie.getPath();
-		if (!TextUtils.isEmpty(path))
-			where.and(CookieDisker.PATH, Options.EQUAL, path);
+			String path = cookie.getPath();
+			if (!TextUtils.isEmpty(path))
+				where.and(CookieDisker.PATH, Options.EQUAL, path);
 
-		return mManager.delete(where.toString());
+			return mManager.delete(where.toString());
+		} finally {
+			mLock.unlock();
+		}
 	}
 
 	@Override
 	public boolean removeAll() {
-		return mManager.deleteAll();
+		mLock.lock();
+		try {
+			return mManager.deleteAll();
+		} finally {
+			mLock.unlock();
+		}
 	}
 
 	/**
