@@ -82,8 +82,8 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 				Logger.i("-------Response start-------");
 				httpConnection.connect();
 				responseCode = httpConnection.getResponseCode();
-				responseHeaders = parseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
 				Logger.d("ResponseCode: " + responseCode);
+				responseHeaders = parseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
 
 				// handle body
 				if (hasResponseBody(request.getRequestMethod(), responseCode)) {

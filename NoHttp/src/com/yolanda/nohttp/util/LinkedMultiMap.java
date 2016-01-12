@@ -35,6 +35,8 @@ public class LinkedMultiMap<K, V> implements MultiMap<K, V> {
 
 	@Override
 	public void add(K key, V value) {
+		if (key == null)
+			return;
 		if (!mSource.containsKey(key))
 			mSource.put(key, new ArrayList<V>(2));
 		mSource.get(key).add(value);
@@ -42,17 +44,18 @@ public class LinkedMultiMap<K, V> implements MultiMap<K, V> {
 
 	@Override
 	public void set(K key, V value) {
-		if (!mSource.containsKey(key))
-			mSource.put(key, new ArrayList<V>());
-		else
+		if (mSource.containsKey(key))
 			mSource.get(key).clear();
-		mSource.get(key).add(value);
+		add(key, value);
 	}
 
 	@Override
 	public void set(Map<K, List<V>> headers) {
 		mSource.clear();
-		mSource.putAll(headers);
+		if (headers != null) {
+			headers.remove(null);
+			mSource.putAll(headers);
+		}
 	}
 
 	@Override
@@ -107,4 +110,5 @@ public class LinkedMultiMap<K, V> implements MultiMap<K, V> {
 	public boolean containsKey(K key) {
 		return mSource.containsKey(key);
 	}
+
 }

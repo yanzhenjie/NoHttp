@@ -66,31 +66,22 @@ public class HeaderParser {
 
 	/**
 	 * Extracts a {@link Cache.Entry} from a {@link NetworkResponse}.
-	 *
-	 * @param response The network response to parse headers from
-	 * @param byteArray The network response to parse body from
-	 * @return a cache entrance for the given response, or null if the response is not cacheable.
 	 */
-	public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
-		long serverDate = 0;
-		long lastModified = 0;
-		long serverExpires = 0;
-		long softExpire = 0;
-		long finalExpire = 0;
+	public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody, long startReqeustTime, long hasResponseTime) {
+		long now = System.currentTimeMillis();
+
+		long serverDate = responseHeaders.getDate();
+		long lastModified = responseHeaders.getLastModified();
+		long serverExpires = responseHeaders.getExpiration();
+
 		long maxAge = 0;
 		long staleWhileRevalidate = 0;
-		boolean hasCacheControl = false;
 		boolean mustRevalidate = false;
-
-		String serverEtag = null;
-
-		serverDate = responseHeaders.getDate();
 
 		String cacheControl = responseHeaders.getCacheControl();
 		if (cacheControl != null) {
-			hasCacheControl = true;
 			StringTokenizer tokens = new StringTokenizer(cacheControl, ",");
-			while (tokens.hasMoreElements()) {
+			while (tokens.hasMoreTokens()) {
 				String token = tokens.nextToken().trim().toLowerCase(Locale.getDefault());
 				if (token.equals("no-cache") || token.equals("no-store")) {
 					return null;
@@ -110,32 +101,32 @@ public class HeaderParser {
 			}
 		}
 
-		serverExpires = responseHeaders.getExpiration();
+		CacheEntity entry = new CacheEntity();
 
-		lastModified = responseHeaders.getLastModified();
+		long apparentAge = Math.max(0, hasResponseTime - serverDate);
+		long correctedReceivedAge = Math.max(apparentAge, maxAge);
+		long responseDelay = hasResponseTime - startReqeustTime;
+		long correctedInitialAge = correctedReceivedAge + responseDelay;
+		long residentTime = now - hasResponseTime;
+		long currentAge = correctedInitialAge + residentTime;
 
-		serverEtag = responseHeaders.getETag();
+		// long softExpire = 0;
+		// long finalExpire = 0;
+		//
+		// if (cacheControl != null) {
+		// softExpire = now + maxAge * 1000;
+		// finalExpire = mustRevalidate ? softExpire : softExpire + staleWhileRevalidate * 1000;
+		// } else if (serverDate > 0 && serverExpires >= serverDate) {
+		// softExpire = now + (serverExpires - serverDate);
+		// finalExpire = softExpire;
+		// }
+		//
+		// entry.data = responseBody;
+		// entry.softTtl = softExpire;
+		// entry.ttl = finalExpire;
+		// entry.lastModified = lastModified;
+		// entry.responseHeaders = headers;
 
-		// Cache-Control takes precedence over an Expires header, even if both exist and Expires
-		// is more restrictive.
-		if (hasCacheControl) {
-			softExpire = serverDate + maxAge * 1000;
-			finalExpire = mustRevalidate ? softExpire : softExpire + staleWhileRevalidate * 1000;
-		} else if (serverDate > 0 && serverExpires >= serverDate) {
-			// Default semantic for Expire header in HTTP specification is softExpire.
-			softExpire = serverDate + (serverExpires - serverDate);
-			finalExpire = softExpire;
-		}
-
-		CacheEntity entrance = new CacheEntity();
-		entrance.data = responseBody;
-		entrance.etag = serverEtag;
-		entrance.softTtl = softExpire;
-		entrance.ttl = finalExpire;
-		entrance.serverDate = serverDate;
-		entrance.lastModified = lastModified;
-		entrance.responseHeaders = responseHeaders;
-
-		return entrance;
+		return entry;
 	}
 }

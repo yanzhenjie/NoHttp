@@ -123,8 +123,12 @@ public abstract class BasicConnection {
 
 		// 5.Adds all request header to httoConnection
 		Logger.i("-------Set request headers start-------");
-		for (Map.Entry<String, String> headerEntry : requestHeaders.entrySet())
-			connection.setRequestProperty(headerEntry.getKey(), headerEntry.getValue());
+		for (Map.Entry<String, String> headerEntry : requestHeaders.entrySet()) {
+			String headKey = headerEntry.getKey();
+			String headValue = headerEntry.getValue();
+			Logger.i(headKey + ": " + headValue);
+			connection.setRequestProperty(headKey, headValue);
+		}
 
 		if (request.isOutPutMethod() && request.hasBinary()) {
 			connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + request.getBoundary());
@@ -139,13 +143,18 @@ public abstract class BasicConnection {
 		// handle cookie
 		NoHttp.getDefaultCookieManager().put(uri, reponseHeaders);
 		// handle headers
-		reponseHeaders.remove(null);
 		headers.set(reponseHeaders);
 		// print
-		for (String headName : headers.keySet()) {
-			List<String> headValues = headers.getValues(headName);
-			String headValue = TextUtils.join("; ", headValues);
-			Logger.i(new StringBuffer(headName).append(": ").append(headValue).toString());
+		for (String headKey : headers.keySet()) {
+			List<String> headValues = headers.getValues(headKey);
+			for (String headValue : headValues) {
+				StringBuilder builder = new StringBuilder();
+				if (!TextUtils.isEmpty(headKey))
+					builder.append(headKey).append(": ");
+				if (!TextUtils.isEmpty(headValue))
+					builder.append(headValue);
+				Logger.i(builder.toString());
+			}
 		}
 		return headers;
 	}

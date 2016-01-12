@@ -30,18 +30,21 @@ import java.util.TimeZone;
  */
 public final class HttpDateTime {
 
-	private static final String FORMAT = "EEE, dd MMM y HH:mm:ss 'GMT'";
+	public static final String FORMAT_HTTP_DATA = "EEE, dd MMM y HH:mm:ss 'GMT'";
+
+	public static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
 
 	public static long parseToMillis(String gmtTime) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat(FORMAT, Locale.US);
+		SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_HTTP_DATA, Locale.US);
+		formatter.setTimeZone(GMT_TIME_ZONE);
 		Date date = formatter.parse(gmtTime);
 		return date.getTime();
 	}
 
 	public static String formatToGTM(long milliseconds) {
 		Date date = new Date(milliseconds);
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT, Locale.US);
-		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT_HTTP_DATA, Locale.US);
+		simpleDateFormat.setTimeZone(GMT_TIME_ZONE);
 		return simpleDateFormat.format(date);
 	}
 

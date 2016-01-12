@@ -179,15 +179,14 @@ public class HttpHeaders extends LinkedMultiMap<String, String>implements Header
 	}
 
 	private long getDateField(String key) {
-		long date = 0;
 		String value = getValue(key, 0);
 		if (value != null)
 			try {
-				date = HttpDateTime.parseToMillis(value);
+				return HttpDateTime.parseToMillis(value);
 			} catch (ParseException e) {
-				e.printStackTrace();
+				Logger.w(e);
 			}
-		return date;
+		return System.currentTimeMillis();
 	}
 
 }
