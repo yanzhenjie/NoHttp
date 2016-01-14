@@ -90,6 +90,7 @@ public class RequestDispatcher extends Thread {
 			final ThreadPoster startThread = new ThreadPoster(request.what, request.responseListener);
 			startThread.onStart();
 			getPosterHandler().post(startThread);
+
 			// finish
 			final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
 			Response<?> response = mConnectionManager.handleRequest(request.request);
@@ -99,8 +100,8 @@ public class RequestDispatcher extends Thread {
 			} else {
 				finishThread.onResponse(response);
 			}
-			request.request.takeQueue(false);
 			getPosterHandler().post(finishThread);
+			request.request.finish();
 		}
 	}
 
@@ -150,16 +151,17 @@ public class RequestDispatcher extends Thread {
 					responseListener.onStart(what);
 				} else if (command == COMMAND_FINISH) {
 					responseListener.onFinish(what);
-				} else if (command == COMMAND_RESPONSE && response != null) {
+				} else if (command == COMMAND_RESPONSE) {
 					responseListener.onFinish(what);
-					if (response.isSucceed()) {
-						responseListener.onSucceed(what, response);
+					if (response == null) {
+						responseListener.onFailed(what, null, null, null, 0, 0);
 					} else {
-						responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), response.getHeaders().getResponseCode(), response.getNetworkMillis());
+						if (response.isSucceed()) {
+							responseListener.onSucceed(what, response);
+						} else {
+							responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), response.getHeaders().getResponseCode(), response.getNetworkMillis());
+						}
 					}
-				} else if (response == null) {
-					responseListener.onFinish(what);
-					responseListener.onFailed(what, null, null, null, 0, 0);
 				}
 			}
 		}

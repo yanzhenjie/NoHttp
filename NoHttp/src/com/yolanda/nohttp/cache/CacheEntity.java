@@ -53,6 +53,8 @@ public class CacheEntity implements DBId, Field, Serializable {
 	 * The last modified date for the requested object.
 	 */
 	private long lastModified = 0;
+	
+	private long localExpire;
 
 	public CacheEntity() {
 		super();
@@ -163,6 +165,20 @@ public class CacheEntity implements DBId, Field, Serializable {
 	 */
 	public void setLastModified(long lastModified) {
 		this.lastModified = lastModified;
+	}
+
+	/**
+	 * @return the localExpire
+	 */
+	public long getLocalExpire() {
+		return localExpire;
+	}
+
+	/**
+	 * @param localExpire the localExpire to set
+	 */
+	public void setLocalExpire(long localExpire) {
+		this.localExpire = localExpire;
 	}
 
 }

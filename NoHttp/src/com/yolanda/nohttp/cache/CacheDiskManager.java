@@ -69,13 +69,13 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 	}
 
 	@Override
-	public List<CacheEntity> get(String columnName, String where, String orderBy, String limit, String offset) {
+	public List<CacheEntity> get(String querySql) {
 		SQLiteDatabase execute = openReader();
 
 		List<CacheEntity> cacheEntities = new ArrayList<CacheEntity>();
 		Cursor cursor = null;
 		try {
-			cursor = execute.rawQuery(getSelectSql(columnName, where, orderBy, limit, offset), null);
+			cursor = execute.rawQuery(querySql, null);
 			while (!cursor.isClosed() && cursor.moveToNext()) {
 				try {
 					CacheEntity cacheEntity = new CacheEntity();

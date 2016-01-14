@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.cache;
+package com.yolanda.nohttp.able;
 
 /**
- * </br>
- * Created in Dec 14, 2015 5:52:41 PM
+ * Created in Jan 13, 2016 10:34:48 PM
  * 
- * @author YOLANDA;
+ * @author YOLANDA
  */
-public interface Cache<T> {
+public interface Finishable {
 
-	T get(String key);
+	boolean isFinished();
 
-	T put(String key, T entrance);
+	void finish();
 
-	boolean remove(String key);
-
-	boolean clear();
 }

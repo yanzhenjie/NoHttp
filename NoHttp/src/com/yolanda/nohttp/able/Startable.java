@@ -20,16 +20,16 @@ package com.yolanda.nohttp.able;
  * 
  * @author YOLANDA;
  */
-public abstract interface Startable {
+public interface Startable {
 
 	/**
 	 * Start request
 	 */
-	public abstract void start();
+	void start();
 
 	/**
 	 * Judge whether the object is to begin.
 	 */
-	public abstract boolean isStarted();
+	boolean isStarted();
 
 }

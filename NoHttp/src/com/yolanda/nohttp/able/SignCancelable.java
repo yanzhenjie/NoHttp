@@ -20,16 +20,16 @@ package com.yolanda.nohttp.able;
  * 
  * @author YOLANDA;
  */
-public abstract interface SignCancelable extends Cancelable {
+public interface SignCancelable extends Cancelable {
 
 	/**
 	 * Cancel request by sign
 	 */
-	public abstract void cancelBySign(Object sign);
+	void cancelBySign(Object sign);
 
 	/**
 	 * Set cancel sign
 	 */
-	public abstract void setCancelSign(Object object);
+	void setCancelSign(Object object);
 
 }

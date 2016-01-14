@@ -119,7 +119,7 @@ public enum DiskCookieStore implements CookieStore {
 
 			where.or(CookieDisker.URI, Options.EQUAL, uri.toString());
 
-			List<CookieEntity> cookieList = mManager.get(Field.ID, where.get(), null, null, null);
+			List<CookieEntity> cookieList = mManager.get(Field.ALL, where.get(), null, null, null);
 			List<HttpCookie> returnedCookies = new ArrayList<HttpCookie>();
 			for (CookieEntity cookieEntity : cookieList)
 				returnedCookies.add(cookieEntity.toHttpCookie());

@@ -20,16 +20,16 @@ package com.yolanda.nohttp.able;
  * 
  * @author YOLANDA;
  */
-public abstract interface Queueable {
+public interface Queueable {
 
 	/**
 	 * Judge whether the object is in the queue.
 	 */
-	public abstract boolean inQueue();
+	boolean inQueue();
 
 	/**
 	 * Tags removed or added to the queue
 	 */
-	public abstract void takeQueue(boolean queue);
+	void takeQueue(boolean queue);
 
 }

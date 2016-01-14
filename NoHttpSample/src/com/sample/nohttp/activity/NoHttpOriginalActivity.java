@@ -96,11 +96,8 @@ public class NoHttpOriginalActivity extends Activity {
 			((TextView) findViewById(R.id.tv_status)).setText(result);
 			response.getTag();// 拿到保持的tag
 			response.getByteArray();// 拿到byte[]数据
-			response.getContentLength();
-			response.getContentType();
 			response.getCookies();// 拿到cookie
 			response.getHeaders();// 拿到响应头
-			response.getResponseCode();// 拿到响应码
 			response.isSucceed();// 是否成功，如果在onResponse中判断，肯定豆都是true
 		}
 

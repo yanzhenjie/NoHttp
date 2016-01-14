@@ -48,4 +48,8 @@ public final class HttpDateTime {
 		return simpleDateFormat.format(date);
 	}
 
+	public static long getMaxExpiry() {
+		return System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 365 * 100L;
+	}
+
 }

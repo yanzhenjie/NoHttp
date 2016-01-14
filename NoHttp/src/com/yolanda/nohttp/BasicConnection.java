@@ -54,8 +54,6 @@ public abstract class BasicConnection {
 		// 2.Build URL
 		String urlStr = request.url();
 		Logger.d("Reuqest adress:" + urlStr);
-		if (android.os.Build.VERSION.SDK_INT < 9)
-			System.setProperty("http.keepAlive", "false");
 		URL url = new URL(urlStr);
 		HttpURLConnection connection = null;
 		Proxy proxy = request.getProxy();
@@ -139,11 +137,14 @@ public abstract class BasicConnection {
 	}
 
 	protected Headers parseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> reponseHeaders) throws IOException, URISyntaxException {
-		Headers headers = new HttpHeaders(responseCode, responseMessage);
 		// handle cookie
 		NoHttp.getDefaultCookieManager().put(uri, reponseHeaders);
+
 		// handle headers
+		Headers headers = new HttpHeaders();
 		headers.set(reponseHeaders);
+		headers.set(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(responseCode));
+		headers.set(Headers.HEAD_KEY_RESPONSE_MESSAGE, responseMessage);
 		// print
 		for (String headKey : headers.keySet()) {
 			List<String> headValues = headers.getValues(headKey);

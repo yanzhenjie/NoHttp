@@ -129,6 +129,7 @@ class DownloadDispatch extends Thread {
 				}
 			});
 			request.downloadRequest.takeQueue(false);
+			request.downloadRequest.finish();
 		}
 	}
 

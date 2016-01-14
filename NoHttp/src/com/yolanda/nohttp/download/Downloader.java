@@ -21,7 +21,7 @@ package com.yolanda.nohttp.download;
  * 
  * @author YOLANDA
  */
-public abstract interface Downloader {
+public interface Downloader {
 
 	/**
 	 * Execute a download task
@@ -32,6 +32,6 @@ public abstract interface Downloader {
 	 * 
 	 * @param downloadListener The download process monitor
 	 */
-	public abstract void download(int what, DownloadRequest downloadRequest, DownloadListener downloadListener);
+	void download(int what, DownloadRequest downloadRequest, DownloadListener downloadListener);
 
 }

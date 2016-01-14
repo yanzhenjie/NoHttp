@@ -88,6 +88,10 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	 */
 	private boolean isCaneled = false;
 	/**
+	 * Request is finished
+	 */
+	private boolean isFinished = false;
+	/**
 	 * Cancel sign
 	 */
 	private Object cancelSign;
@@ -252,13 +256,7 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	@Override
 	public long getContentLength() {
 		CounterOutputStream outputStream = new CounterOutputStream();
-		if (mRequestBody == null && hasBinary()) {
-			writeFormStreamData(outputStream);
-		} else if (mRequestBody == null) {
-			writeCommonStreamData(outputStream);
-		} else {
-			writePushBody(outputStream);
-		}
+		onWriteRequestBody(outputStream);
 		long contentLength = outputStream.get();
 		return contentLength;
 	}
@@ -474,6 +472,16 @@ public abstract class CommonRequest<T> implements ImplRequest, BasicRequest {
 	@Override
 	public boolean isCanceled() {
 		return isCaneled;
+	}
+
+	@Override
+	public void finish() {
+		isFinished = true;
+	}
+
+	@Override
+	public boolean isFinished() {
+		return isFinished;
 	}
 
 	/**

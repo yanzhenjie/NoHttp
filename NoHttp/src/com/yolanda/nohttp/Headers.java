@@ -33,6 +33,10 @@ import com.yolanda.nohttp.util.MultiMap;
  */
 public interface Headers extends MultiMap<String, String> {
 
+	static final String HEAD_KEY_RESPONSE_CODE = "ResponseCode";
+
+	static final String HEAD_KEY_RESPONSE_MESSAGE = "ResponseMessage";
+
 	public static final String HEAD_KEY_ACCEPT = "Accept";
 
 	public static final String HEAD_VALUE_ACCEPT_All = "*/*";
@@ -49,6 +53,9 @@ public interface Headers extends MultiMap<String, String> {
 
 	public static final String HEAD_KEY_CONTENT_ENCODING = "Content-Encoding";
 
+	/**
+	 * Http1.1 Cache Control
+	 */
 	public static final String HEAD_KEY_CONTENT_RANGE = "Content-Range";
 
 	public static final String HEAD_KEY_CACHE_CONTROL = "Cache-Control";
@@ -58,6 +65,11 @@ public interface Headers extends MultiMap<String, String> {
 	public static final String HEAD_KEY_EXPIRES = "Expires";
 
 	public static final String HEAD_KEY_ETAG = "ETag";
+
+	/**
+	 * Http1.0 Cache Control
+	 */
+	public static final String HEAD_KEY_PRAGMA = "Pragma";
 
 	public static final String HEAD_KEY_IF_MODIFIED_SINCE = "If-Modified-Since";
 
@@ -75,7 +87,9 @@ public interface Headers extends MultiMap<String, String> {
 
 	public static final String HEAD_KEY_SET_COOKIE2 = "Set-Cookie2";
 
-	List<HttpCookie> getCookies();
+	void addAll(Headers headers);
+
+	void setAll(Headers headers);
 
 	void addCookie(URI uri, CookieHandler cookieHandler) throws IOException;
 
@@ -86,7 +100,9 @@ public interface Headers extends MultiMap<String, String> {
 	Map<String, String> toRequestHeaders();
 
 	Map<String, List<String>> toResponseHeaders();
-	
+
+	List<HttpCookie> getCookies();
+
 	String getCacheControl();
 
 	String getContentEncoding();

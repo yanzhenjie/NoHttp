@@ -43,7 +43,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	/**
 	 * 请求地址，你运行demo时，这里换成你的地址
 	 */
-	private String mTargetUrl = "http://192.168.1.112/HttpServer/NoHttp";
+	private String mTargetUrl = "http://192.168.1.136/HttpServer/UserHead";
 	/**
 	 * 请求对象
 	 */
@@ -110,7 +110,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 		mRequest.setAllowHttps(true);
 
 		// 设置代理
-		SocketAddress sa = new InetSocketAddress("192.168.1.112", 8888);
+		SocketAddress sa = new InetSocketAddress("192.168.1.136", 8888);
 		Proxy proxy = new Proxy(Proxy.Type.HTTP, sa);
 		mRequest.setProxy(proxy);
 

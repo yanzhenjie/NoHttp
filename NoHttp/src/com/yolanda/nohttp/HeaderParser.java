@@ -67,19 +67,19 @@ public class HeaderParser {
 	/**
 	 * Extracts a {@link Cache.Entry} from a {@link NetworkResponse}.
 	 */
-	public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody, long startReqeustTime, long hasResponseTime) {
+	public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
 		long now = System.currentTimeMillis();
 
-		long serverDate = responseHeaders.getDate();
+		long date = responseHeaders.getDate();
 		long lastModified = responseHeaders.getLastModified();
-		long serverExpires = responseHeaders.getExpiration();
+		long expires = responseHeaders.getExpiration();
 
 		long maxAge = 0;
 		long staleWhileRevalidate = 0;
 		boolean mustRevalidate = false;
 
 		String cacheControl = responseHeaders.getCacheControl();
-		if (cacheControl != null) {
+		if (!TextUtils.isEmpty(cacheControl)) {
 			StringTokenizer tokens = new StringTokenizer(cacheControl, ",");
 			while (tokens.hasMoreTokens()) {
 				String token = tokens.nextToken().trim().toLowerCase(Locale.getDefault());
@@ -101,32 +101,26 @@ public class HeaderParser {
 			}
 		}
 
-		CacheEntity entry = new CacheEntity();
+		CacheEntity cacheEntity = new CacheEntity();
+		long localExpire = 0;// 缓存相对于本地的到期时间
 
-		long apparentAge = Math.max(0, hasResponseTime - serverDate);
-		long correctedReceivedAge = Math.max(apparentAge, maxAge);
-		long responseDelay = hasResponseTime - startReqeustTime;
-		long correctedInitialAge = correctedReceivedAge + responseDelay;
-		long residentTime = now - hasResponseTime;
-		long currentAge = correctedInitialAge + residentTime;
+		// If must-revalidate, When the cache expiration, mandatory validation from the server
+		// Http1.1
+		if (!TextUtils.isEmpty(cacheControl)) {
+			localExpire = now + maxAge * 1000;
+			if (mustRevalidate)
+				localExpire += staleWhileRevalidate * 1000;
+		}
+		// Http1.0
+		else if (date > 0 && expires >= date) {
+			localExpire = now + (expires - date);
+		}
 
-		// long softExpire = 0;
-		// long finalExpire = 0;
-		//
-		// if (cacheControl != null) {
-		// softExpire = now + maxAge * 1000;
-		// finalExpire = mustRevalidate ? softExpire : softExpire + staleWhileRevalidate * 1000;
-		// } else if (serverDate > 0 && serverExpires >= serverDate) {
-		// softExpire = now + (serverExpires - serverDate);
-		// finalExpire = softExpire;
-		// }
-		//
-		// entry.data = responseBody;
-		// entry.softTtl = softExpire;
-		// entry.ttl = finalExpire;
-		// entry.lastModified = lastModified;
-		// entry.responseHeaders = headers;
+		cacheEntity.setData(responseBody);
+		cacheEntity.setLocalExpire(localExpire);
+		cacheEntity.setLastModified(lastModified);
+		cacheEntity.setResponseHeaders(responseHeaders);
 
-		return entry;
+		return cacheEntity;
 	}
 }

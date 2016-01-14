@@ -18,6 +18,7 @@ package com.yolanda.nohttp;
 import java.io.OutputStream;
 import java.net.Proxy;
 
+import com.yolanda.nohttp.able.Finishable;
 import com.yolanda.nohttp.able.Queueable;
 import com.yolanda.nohttp.able.SignCancelable;
 import com.yolanda.nohttp.able.Startable;
@@ -29,7 +30,7 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA;
  */
-public interface BasicRequest extends Queueable, Startable, SignCancelable {
+public interface BasicRequest extends Queueable, Startable, SignCancelable, Finishable {
 
 	/**
 	 * Return url of request

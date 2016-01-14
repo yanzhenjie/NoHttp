@@ -47,10 +47,10 @@ public class JsonRequest extends RestRequestor<JSONObject> {
 		JSONObject jsonObject = null;
 		if (responseBody != null && responseBody.length > 0) {
 			try {
-				String charset = HeaderParser.parseHeadValue(responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE), "charset", "");
+				String charset = HeaderParser.parseHeadValue(responseHeaders.getContentType(), "charset", "");
 				jsonString = new String(responseBody, charset);
 			} catch (UnsupportedEncodingException e) {
-				Logger.w("Charset error in ContentType returned by the server：" + responseHeaders.get(Headers.HEAD_KEY_CONTENT_TYPE));
+				Logger.w("Charset error in ContentType returned by the server：" + responseHeaders.getContentType());
 				jsonString = new String(responseBody);
 			}
 		}

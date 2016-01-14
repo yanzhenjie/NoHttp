@@ -77,17 +77,14 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 		return id;
 	}
 
-	/**
-	 * Get Cookie List
-	 */
 	@Override
-	public List<CookieEntity> get(String columnName, String where, String orderBy, String limit, String offset) {
+	public List<CookieEntity> get(String querySql) {
 		SQLiteDatabase execute = openReader();
 
 		List<CookieEntity> cookies = new ArrayList<CookieEntity>();
 		Cursor cursor = null;
 		try {
-			cursor = execute.rawQuery(getSelectSql(columnName, where, orderBy, limit, offset), null);
+			cursor = execute.rawQuery(querySql, null);
 			while (!cursor.isClosed() && cursor.moveToNext()) {
 				try {
 					CookieEntity cookie = new CookieEntity();

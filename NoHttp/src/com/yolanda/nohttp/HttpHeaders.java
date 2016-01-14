@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,31 +44,27 @@ import android.text.TextUtils;
  */
 public class HttpHeaders extends LinkedMultiMap<String, String>implements Headers {
 
-	private int responseCode;
-	private String responseMessage;
-
 	public HttpHeaders() {
 	}
 
-	HttpHeaders(int responseCode, String responseMessage) {
-		this.responseCode = responseCode;
-		this.responseMessage = responseMessage;
+	@Override
+	public void addAll(Headers headers) {
+		if (headers != null) {
+			Set<String> keySet = headers.keySet();
+			for (String key : keySet) {
+				add(key, headers.getValues(key));
+			}
+		}
 	}
 
 	@Override
-	public List<HttpCookie> getCookies() {
-		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
-		for (String key : keySet()) {
-			if (key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE) || key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE2)) {
-				String name = getValue(key, 0);
-				List<String> cookieValues = getValues(name);
-				for (String cookieStr : cookieValues) {
-					for (HttpCookie cookie : HttpCookie.parse(cookieStr))
-						cookies.add(cookie);
-				}
+	public void setAll(Headers headers) {
+		if (headers != null) {
+			Set<String> keySet = headers.keySet();
+			for (String key : keySet) {
+				set(key, headers.getValues(key));
 			}
 		}
-		return cookies;
 	}
 
 	@Override
@@ -119,13 +116,30 @@ public class HttpHeaders extends LinkedMultiMap<String, String>implements Header
 	}
 
 	@Override
-	public String toString() {
-		return toJSONString();
+	public List<HttpCookie> getCookies() {
+		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
+		for (String key : keySet()) {
+			if (key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE) || key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE2)) {
+				String name = getValue(key, 0);
+				List<String> cookieValues = getValues(name);
+				for (String cookieStr : cookieValues) {
+					for (HttpCookie cookie : HttpCookie.parse(cookieStr))
+						cookies.add(cookie);
+				}
+			}
+		}
+		return cookies;
 	}
 
 	@Override
 	public String getCacheControl() {
-		return getValue(HEAD_KEY_CACHE_CONTROL, 0);
+		// first http1.1, second http1.0
+		List<String> cacheControls = getValues(HEAD_KEY_CACHE_CONTROL);
+		if (cacheControls == null)
+			cacheControls = getValues(HEAD_KEY_PRAGMA);
+		if (cacheControls == null)
+			cacheControls = new ArrayList<String>();
+		return TextUtils.join(",", cacheControls);
 	}
 
 	@Override
@@ -145,12 +159,19 @@ public class HttpHeaders extends LinkedMultiMap<String, String>implements Header
 
 	@Override
 	public int getResponseCode() {
-		return responseCode;
+		String responseCode = getValue(HEAD_KEY_RESPONSE_CODE, 0);
+		int code = 0;
+		try {
+			code = Integer.parseInt(responseCode);
+		} catch (NumberFormatException e) {
+			Logger.w(e);
+		}
+		return code;
 	}
 
 	@Override
 	public String getResponseMessage() {
-		return responseMessage;
+		return getValue(HEAD_KEY_RESPONSE_MESSAGE, 0);
 	}
 
 	@Override
@@ -186,7 +207,12 @@ public class HttpHeaders extends LinkedMultiMap<String, String>implements Header
 			} catch (ParseException e) {
 				Logger.w(e);
 			}
-		return System.currentTimeMillis();
+		return 0;
+	}
+
+	@Override
+	public String toString() {
+		return toJSONString();
 	}
 
 }

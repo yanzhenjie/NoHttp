@@ -45,11 +45,18 @@ public class ConnectionManager implements BasicConnectionManager {
 		String url = request.url();
 
 		// handle cache header
-		CacheEntity cacheEntity = mCache.get(request.getCacheKey());
-		handleCacheHeader(request, cacheEntity);
+		CacheEntity cacheEntity = null;
+		if (request.needCache())
+			cacheEntity = mCache.get(request.getCacheKey());
 
-		// request network
-		final HttpResponse httpResponse = mConnectionRest.request(request);
+		// handle response
+		HttpResponse httpResponse = null;
+		if (cacheEntity == null || cacheEntity.getLocalExpire() < System.currentTimeMillis()) {
+			if (cacheEntity != null)
+				handleCacheHeader(request, cacheEntity);
+			httpResponse = mConnectionRest.request(request);
+		} else
+			httpResponse = new HttpResponse(true, cacheEntity.getResponseHeaders(), cacheEntity.getData());
 
 		Headers responseHeaders = httpResponse.responseHeaders;
 		byte[] responseBody = httpResponse.responseBody;
@@ -57,24 +64,26 @@ public class ConnectionManager implements BasicConnectionManager {
 		Response<T> returnResponse = null;
 
 		if (httpResponse.isSucceed) {
-			if (httpResponse.responseCode == 304) {
-				if (cacheEntity == null) { // maybe server error responseCode
-					returnResponse = new RestResponser<T>(url, true, 304, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
-				} else {
-					cacheEntity.responseHeaders.setAll(responseHeaders);
-					result = request.parseResponse(url, cacheEntity.responseHeaders, cacheEntity.data);
-					returnResponse = new RestResponser<T>(url, true, 304, cacheEntity.responseHeaders, cacheEntity.data, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
+			if (responseHeaders.getResponseCode() == 304) {
+				// maybe server error responseCode
+				if (cacheEntity == null)
+					returnResponse = new RestResponser<T>(url, true, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
+				else {
+					cacheEntity.getResponseHeaders().setAll(responseHeaders);
+					Headers headers = cacheEntity.getResponseHeaders();
+					byte[] body = cacheEntity.getData();
+					result = request.parseResponse(url, headers, body);
+					returnResponse = new RestResponser<T>(url, true, headers, body, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
 				}
 			} else {
 				if (responseBody == null) /* such as responseCode is 204 */
 					responseBody = new byte[0];
 
 				result = request.parseResponse(url, responseHeaders, responseBody);
-				returnResponse = new RestResponser<T>(url, true, httpResponse.responseCode, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
+				returnResponse = new RestResponser<T>(url, true, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
 			}
-		} else {
-			returnResponse = new RestResponser<T>(url, false, httpResponse.responseCode, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
-		}
+		} else
+			returnResponse = new RestResponser<T>(url, false, null, null, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
 		if (request.needCache()) {
 			if (cacheEntity == null)
 				cacheEntity = HeaderParser.parseCacheHeaders(responseHeaders, responseBody);
@@ -88,12 +97,14 @@ public class ConnectionManager implements BasicConnectionManager {
 			request.removeHeader(Headers.HEAD_KEY_IF_NONE_MATCH);
 			request.removeHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE);
 		} else {
-			if (cacheEntity.etag != null)
-				request.setHeader(Headers.HEAD_KEY_IF_NONE_MATCH, cacheEntity.etag);
+			Headers headers = cacheEntity.getResponseHeaders();
+			String eTag = headers.getETag();
+			if (eTag != null)
+				request.setHeader(Headers.HEAD_KEY_IF_NONE_MATCH, eTag);
 
-			if (cacheEntity.lastModified > 0) {
-				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatToGTM(cacheEntity.lastModified));
-			}
+			long lastModified = headers.getLastModified();
+			if (lastModified > 0)
+				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatToGTM(lastModified));
 		}
 	}
 }

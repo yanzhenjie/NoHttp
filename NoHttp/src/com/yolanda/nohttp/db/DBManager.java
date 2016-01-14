@@ -38,31 +38,31 @@ public abstract class DBManager<T extends DBId> {
 		this.disker = disker;
 	}
 
-	protected SQLiteDatabase openReader() {
+	protected final SQLiteDatabase openReader() {
 		return disker.getReadableDatabase();
 	}
 
-	protected SQLiteDatabase openWriter() {
+	protected final SQLiteDatabase openWriter() {
 		return disker.getWritableDatabase();
 	}
 
-	protected void finish(SQLiteDatabase execute) {
+	protected final void finish(SQLiteDatabase execute) {
 		if (execute != null && execute.isOpen()) {
 			execute.close();
 		}
 	}
 
-	protected void finish(SQLiteDatabase execute, Cursor cursor) {
+	protected final void finish(SQLiteDatabase execute, Cursor cursor) {
 		if (cursor != null && !cursor.isClosed())
 			cursor.close();
 		finish(execute);
 	}
 
-	public int count() {
+	public final int count() {
 		return count(Field.ID);
 	}
 
-	public int count(String columnName) {
+	public final int count(String columnName) {
 		SQLiteDatabase execute = openReader();
 		StringBuilder sql = new StringBuilder("select count(").append(columnName).append(") from ").append(getTableName());
 		Cursor cursor = execute.rawQuery(sql.toString(), null);
@@ -74,11 +74,11 @@ public abstract class DBManager<T extends DBId> {
 		return count;
 	}
 
-	public boolean deleteAll() {
+	public final boolean deleteAll() {
 		return delete("1=1");
 	}
 
-	public boolean delete(List<T> ts) {
+	public final boolean delete(List<T> ts) {
 		StringBuilder where = new StringBuilder(Field.ID).append(" IN(");
 		for (T t : ts) {
 			long id = t.getId();
@@ -93,7 +93,7 @@ public abstract class DBManager<T extends DBId> {
 		return delete(where.toString());
 	}
 
-	public boolean delete(String where) {
+	public final boolean delete(String where) {
 		if (TextUtils.isEmpty(where))
 			return true;
 		SQLiteDatabase execute = openWriter();
@@ -109,17 +109,23 @@ public abstract class DBManager<T extends DBId> {
 		return result;
 	}
 
-	public List<T> getAll() {
+	public final List<T> getAll() {
 		return getAll(Field.ALL);
 	}
 
-	public List<T> getAll(String columnName) {
+	public final List<T> getAll(String columnName) {
 		return get(columnName, null, null, null, null);
 	}
 
-	protected String getSelectSql(String columnName, String where, String orderBy, String limit, String offset) {
-		StringBuilder sql = new StringBuilder("select ").append(columnName).append(" from ");
-		sql.append(getTableName());
+	public final List<T> get(String columnName, String where, String orderBy, String limit, String offset) {
+		return get(getSelectSql(columnName, where, orderBy, limit, offset));
+	}
+
+	/**
+	 * Create query sql
+	 */
+	private final String getSelectSql(String columnName, String where, String orderBy, String limit, String offset) {
+		StringBuilder sql = new StringBuilder("select ").append(columnName).append(" from ").append(getTableName());
 		if (!TextUtils.isEmpty(where)) {
 			sql.append(" where ");
 			sql.append(where);
@@ -139,9 +145,9 @@ public abstract class DBManager<T extends DBId> {
 		return sql.toString();
 	}
 
-	public abstract long replace(T t);
+	public abstract List<T> get(String querySql);
 
-	public abstract List<T> get(String columnName, String where, String orderBy, String limit, String offset);
+	public abstract long replace(T t);
 
 	protected abstract String getTableName();
 

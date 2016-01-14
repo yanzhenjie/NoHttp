@@ -32,7 +32,7 @@ public interface DownloadListener {
 	 * @param statusCode Error code, used to distinguish what kind of mistake; value from {@link StatusCode}
 	 * @param errorMessage error message
 	 */
-	public abstract void onDownloadError(int what, int statusCode, CharSequence errorMessage);
+	void onDownloadError(int what, int statusCode, CharSequence errorMessage);
 
 	/**
 	 * When this download task starts the callback method
@@ -44,7 +44,7 @@ public interface DownloadListener {
 	 * @param responseHeaders Server response headers
 	 * @param allCount Total file size
 	 */
-	public abstract void onStart(int what, boolean isResume, long beforeLength, Headers responseHeaders, long allCount);
+	void onStart(int what, boolean isResume, long beforeLength, Headers responseHeaders, long allCount);
 
 	/**
 	 * When the download process change
@@ -53,7 +53,7 @@ public interface DownloadListener {
 	 * @param progress This method is the time to change the progress of the download.
 	 * @param fileCount Have downloaded the file size
 	 */
-	public abstract void onProgress(int what, int progress, long fileCount);
+	void onProgress(int what, int progress, long fileCount);
 
 	/**
 	 * Download is complete.
@@ -61,12 +61,12 @@ public interface DownloadListener {
 	 * @param what Which is used to mark the download tasks.
 	 * @param filePath Where is the file after the download is complete.
 	 */
-	public abstract void onFinish(int what, String filePath);
+	void onFinish(int what, String filePath);
 
 	/**
 	 * Download request is canceled
 	 * 
 	 * @param what Which is used to mark the download tasks
 	 */
-	public abstract void onCancel(int what);
+	void onCancel(int what);
 }

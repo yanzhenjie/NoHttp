@@ -35,11 +35,18 @@ public class LinkedMultiMap<K, V> implements MultiMap<K, V> {
 
 	@Override
 	public void add(K key, V value) {
-		if (key == null)
-			return;
-		if (!mSource.containsKey(key))
-			mSource.put(key, new ArrayList<V>(2));
-		mSource.get(key).add(value);
+		if (key != null) {
+			if (!mSource.containsKey(key))
+				mSource.put(key, new ArrayList<V>(2));
+			mSource.get(key).add(value);
+		}
+	}
+
+	@Override
+	public void add(K key, List<V> values) {
+		for (V value : values) {
+			add(key, value);
+		}
 	}
 
 	@Override
@@ -50,11 +57,22 @@ public class LinkedMultiMap<K, V> implements MultiMap<K, V> {
 	}
 
 	@Override
-	public void set(Map<K, List<V>> headers) {
+	public void set(K key, List<V> values) {
+		if (mSource.containsKey(key))
+			mSource.get(key).clear();
+		add(key, values);
+	}
+
+	@Override
+	public void set(Map<K, List<V>> map) {
 		mSource.clear();
-		if (headers != null) {
-			headers.remove(null);
-			mSource.putAll(headers);
+		if (map != null) {
+			for (Map.Entry<K, List<V>> entry : map.entrySet()) {
+				K key = entry.getKey();
+				List<V> values = entry.getValue();
+				if (key != null)
+					add(key, values);
+			}
 		}
 	}
 

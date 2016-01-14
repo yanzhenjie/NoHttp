@@ -18,11 +18,11 @@ package com.yolanda.nohttp.cookie;
 import java.io.Serializable;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.util.Date;
 
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.db.DBId;
-
-import android.text.TextUtils;
+import com.yolanda.nohttp.tools.HttpDateTime;
 
 /**
  * </br>
@@ -37,8 +37,6 @@ class CookieEntity implements DBId, Serializable {
 	/**
 	 * max expiry: 100 years
 	 */
-	public static final long MAX_EXPIRY = System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 30L * 12L * 100L;
-
 	private long id = -1;
 	private String uri; // cookie add by this uri.
 	private String name;
@@ -47,7 +45,7 @@ class CookieEntity implements DBId, Serializable {
 	private String commentURL;
 	private boolean discard;
 	private String domain;
-	private long expiry = MAX_EXPIRY;
+	private long expiry = HttpDateTime.getMaxExpiry();
 	private String path;
 	private String portList;
 	private boolean secure;
@@ -66,21 +64,23 @@ class CookieEntity implements DBId, Serializable {
 		this.domain = cookie.getDomain();
 		long maxAge = cookie.getMaxAge();
 		Logger.d("maxAge: " + maxAge);
-		if (maxAge != -1) {
+		if (maxAge != -1) { // session
 			this.expiry = (maxAge * 1000) + System.currentTimeMillis();
 			if (this.expiry < 0) {
-				this.expiry = MAX_EXPIRY;
+				this.expiry = HttpDateTime.getMaxExpiry();
 			}
 		}
 		this.path = cookie.getPath();
 		this.portList = cookie.getPortlist();
 		this.secure = cookie.getSecure();
 		this.version = cookie.getVersion();
-		Logger.d("Save Cookie. Uri: " + uri + "; Name: " + name + "; Value: " + value + "; Comment: " + comment + "; CommmentURL: " + commentURL + "; Discard: " + discard + "; Domain: " + domain
-				+ "; MaxAge: " + expiry + " ms; Path: " + path + "; PortList: " + portList + "; Secure: " + secure + "; Version" + version);
+		Logger.d("Save cookie print");
+		print();
 	}
 
 	public HttpCookie toHttpCookie() {
+		Logger.d("ToHttpCookit cookie print");
+		print();
 		HttpCookie cookie = new HttpCookie(name, value);
 		cookie.setComment(comment);
 		cookie.setCommentURL(commentURL);
@@ -94,8 +94,12 @@ class CookieEntity implements DBId, Serializable {
 		return cookie;
 	}
 
-	public boolean isNull() {
-		return id == -1 && TextUtils.isEmpty(uri) && TextUtils.isEmpty(name) && TextUtils.isEmpty(value) && TextUtils.isEmpty(domain) && TextUtils.isEmpty(path);
+	private void print() {
+		Logger.d("Cookie expiry: " + new Date(expiry).toString());
+		Logger.d("Uri: " + uri + "; Name: " + name + "; Value: " + value);
+		Logger.d("Comment: " + comment + "; CommmentURL: " + commentURL + "; Discard: " + discard);
+		Logger.d("Domain: " + domain + "; Expiry: " + expiry + "; Path: " + path);
+		Logger.d("PortList: " + portList + "; Secure: " + secure + "; Version" + version);
 	}
 
 	/**
