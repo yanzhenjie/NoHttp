@@ -15,6 +15,7 @@
  */
 package com.sample.nohttp;
 
+import com.sample.nohttp.nohttp.MyCookieManager;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 
@@ -40,6 +41,7 @@ public class SampleApplication extends Application {
 		Logger.setDebug(true);// 开始NoHttp的调试模式，这样就能看到请求过程和日志
 
 		NoHttp.init(this);
+		NoHttp.setDefaultCookieManager(new MyCookieManager());
 
 		// 设置默认的Cookie管理器，不设置的话NoHttp会自动替你完成Cookie的维护
 		// 设置Cookit管理器的好处是APP初始化的时候加载必要的Cookie，但是也可以在每个Request对象中添加Cookie

@@ -15,10 +15,10 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URI;
@@ -28,8 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 
-import com.yolanda.nohttp.security.SecureVerifier;
+import com.yolanda.nohttp.util.Writer;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -41,19 +42,19 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public abstract class BasicConnection {
+public class BasicConnection {
 
 	/**
 	 * Create a Http connection object, but do not establish a connection, where the request header information is set
 	 * up, including Cookie
 	 */
-	protected HttpURLConnection getHttpConnection(BasicRequest request) throws IOException, URISyntaxException {
+	protected HttpURLConnection getHttpConnection(ImplServerRequest request) throws IOException, URISyntaxException {
 		// 1.Pre operation notice
 		request.onPreExecute();
 
 		// 2.Build URL
 		String urlStr = request.url();
-		Logger.d("Reuqest adress:" + urlStr);
+		Logger.d("Reuqest adress: " + urlStr);
 		URL url = new URL(urlStr);
 		HttpURLConnection connection = null;
 		Proxy proxy = request.getProxy();
@@ -61,12 +62,17 @@ public abstract class BasicConnection {
 			connection = (HttpURLConnection) url.openConnection();
 		else
 			connection = (HttpURLConnection) url.openConnection(proxy);
-		if (connection instanceof HttpsURLConnection)
-			SecureVerifier.getInstance().doVerifier((HttpsURLConnection) connection, request);
+
+		if (connection instanceof HttpsURLConnection) {
+			SSLSocketFactory sslSocketFactory = request.getSSLSocketFactory();
+			if (sslSocketFactory != null) {
+				((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
+			}
+		}
 
 		// 3. Base attribute
 		String requestMethod = request.getRequestMethod().toString();
-		Logger.d("Request method:" + requestMethod);
+		Logger.d("Request method: " + requestMethod);
 		connection.setRequestMethod(requestMethod);
 		connection.setDoInput(true);
 		connection.setDoOutput(request.isOutPutMethod());
@@ -78,6 +84,10 @@ public abstract class BasicConnection {
 		// 4.Set request headers
 		setHeaders(url.toURI(), connection, request);
 
+		// 5. Write request body
+		connection.connect();
+		// write request body to stream
+		writeRequestBody(connection.getOutputStream(), request);
 		return connection;
 	}
 
@@ -85,7 +95,7 @@ public abstract class BasicConnection {
 	 * Set request headers
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
-	private void setHeaders(URI uri, HttpURLConnection connection, BasicRequest request) {
+	private void setHeaders(URI uri, HttpURLConnection connection, ImplServerRequest request) {
 		// 1.Build Headers
 		Headers headers = request.headers();
 
@@ -105,10 +115,12 @@ public abstract class BasicConnection {
 		// TODO Authorization:
 
 		// 3.Base header
-		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
-		headers.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_All);
+		// to fix bug: accidental EOFException before API 19
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
+			headers.set("Connection", "close");
+		headers.set("Accept-Encoding", "gzip, deflate, sdch");
 		if (headers.getValue(Headers.HEAD_KEY_USER_AGENT, 0) == null)
-			headers.set(Headers.HEAD_KEY_USER_AGENT, getUserAgent());
+			headers.set(Headers.HEAD_KEY_USER_AGENT, UserAgent.getUserAgent(NoHttp.getContext()));
 
 		// 4.Add cookie to headers
 		try {
@@ -160,18 +172,22 @@ public abstract class BasicConnection {
 		return headers;
 	}
 
+	/* ====================Wirte request body==================== */
+
 	/**
 	 * Send the request data to the server
 	 */
-	protected void writeRequestBody(HttpURLConnection connection, BasicRequest request) throws IOException {
+	protected void writeRequestBody(OutputStream outputStream, ImplServerRequest request) throws IOException {
 		if (request.isOutPutMethod()) {
 			Logger.i("-------Send reqeust data start-------");
-			BufferedOutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
-			request.onWriteRequestBody(outputStream);
+			Writer writer = new Writer(outputStream);
+			request.onWriteRequestBody(writer);
 			outputStream.close();
 			Logger.i("-------Send request data end-------");
 		}
 	}
+
+	/* ====================Read response body=================== */
 
 	/**
 	 * To read information from the server's response
@@ -187,11 +203,6 @@ public abstract class BasicConnection {
 		content.close();
 		return content.toByteArray();
 	}
-
-	/**
-	 * Get User-Agent
-	 */
-	protected abstract String getUserAgent();
 
 	/**
 	 * this requestMethod and responseCode has ResponseBody ?
@@ -262,4 +273,5 @@ public abstract class BasicConnection {
 		}
 		return exceptionInfo.toString();
 	}
+
 }

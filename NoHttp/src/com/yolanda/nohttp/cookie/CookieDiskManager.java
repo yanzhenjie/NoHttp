@@ -42,9 +42,8 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 	}
 
 	public synchronized static DBManager<CookieEntity> getInstance() {
-		if (_Instance == null) {
+		if (_Instance == null)
 			_Instance = new CookieDiskManager();
-		}
 		return _Instance;
 	}
 
@@ -69,6 +68,7 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 		values.put(CookieDisker.VERSION, cookie.getVersion());
 		long id = -1;
 		try {
+			print(values.toString());
 			id = execute.replace(CookieDisker.TABLE_NAME, null, values);
 		} catch (Throwable e) {
 			Logger.w(e);
@@ -140,13 +140,14 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 					if (versionIndex >= 0)
 						cookie.setVersion(cursor.getInt(versionIndex));
 
+					print(cookie.toString());
 					cookies.add(cookie);
 				} catch (Throwable e) {
-					Logger.w(e);
+					Logger.e(e);
 				}
 			}
 		} catch (Throwable e) {
-			Logger.w(e);
+			Logger.e(e);
 		}
 		finish(execute, cursor);
 		return cookies;

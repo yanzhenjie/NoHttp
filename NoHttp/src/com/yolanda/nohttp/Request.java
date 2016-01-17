@@ -22,26 +22,7 @@ import java.util.Map;
  * 
  * @author YOLANDA
  */
-public abstract class Request<T> extends CommonRequest<T> {
-
-	/**
-	 * Create a request, RequestMethod is {@link RequestMethod#Get}
-	 * 
-	 * @param url request adress, like: http://www.google.com
-	 */
-	public Request(String url) {
-		super(url, RequestMethod.GET);
-	}
-
-	/**
-	 * Create a request
-	 * 
-	 * @param url request adress, like: http://www.google.com
-	 * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
-	 */
-	public Request(String url, RequestMethod requestMethod) {
-		super(url, requestMethod);
-	}
+public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 
 	/**
 	 * Add <code>CharSequence</code> param
@@ -49,7 +30,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, CharSequence value);
+	void add(String key, CharSequence value);
 
 	/**
 	 * Add <code>Integer</code> param
@@ -57,7 +38,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, int value);
+	void add(String key, int value);
 
 	/**
 	 * Add <code>Long</code> param
@@ -65,7 +46,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, long value);
+	void add(String key, long value);
 
 	/**
 	 * Add <code>Boolean</code> param
@@ -73,7 +54,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, boolean value);
+	void add(String key, boolean value);
 
 	/**
 	 * Add <code>char</code> param
@@ -81,7 +62,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, char value);
+	void add(String key, char value);
 
 	/**
 	 * Add <code>Double</code> param
@@ -89,7 +70,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, double value);
+	void add(String key, double value);
 
 	/**
 	 * Add <code>Float</code> param
@@ -97,7 +78,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, float value);
+	void add(String key, float value);
 
 	/**
 	 * Add <code>Short</code> param
@@ -105,7 +86,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	public abstract void add(String key, short value);
+	void add(String key, short value);
 
 	/**
 	 * Add <code>Byte</code> param
@@ -113,7 +94,7 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param value Param value 0 x01, for example, the result is 1
 	 */
-	public abstract void add(String key, byte value);
+	void add(String key, byte value);
 
 	/**
 	 * Add <code>File</code> param; NoHttp already has a default implementation: {@link FileBinary}
@@ -121,29 +102,34 @@ public abstract class Request<T> extends CommonRequest<T> {
 	 * @param key Param name
 	 * @param binary Param value
 	 */
-	public abstract void add(String key, Binary binary);
+	void add(String key, Binary binary);
 
 	/**
 	 * add all param
 	 * 
 	 * @param params params map
 	 */
-	public abstract void add(Map<String, String> params);
+	void add(Map<String, String> params);
 
 	/**
 	 * set all param
 	 * 
 	 * @param params
 	 */
-	public abstract void set(Map<String, String> params);
+	void set(Map<String, String> params);
 
 	/**
 	 * Remove a request param by key
 	 */
-	public abstract void remove(String key);
+	void remove(String key);
 
 	/**
 	 * Remove all request param
 	 */
-	public abstract void removeAll();
+	void removeAll();
+
+	/**
+	 * Parse response
+	 */
+	T parseResponse(String url, Headers responseHeaders, byte[] responseBody);
 }

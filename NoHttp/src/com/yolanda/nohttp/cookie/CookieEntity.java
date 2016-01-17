@@ -18,11 +18,10 @@ package com.yolanda.nohttp.cookie;
 import java.io.Serializable;
 import java.net.HttpCookie;
 import java.net.URI;
-import java.util.Date;
 
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.db.DBId;
-import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.util.HttpDateTime;
 
 /**
  * </br>
@@ -45,7 +44,7 @@ class CookieEntity implements DBId, Serializable {
 	private String commentURL;
 	private boolean discard;
 	private String domain;
-	private long expiry = HttpDateTime.getMaxExpiry();
+	private long expiry;
 	private String path;
 	private String portList;
 	private boolean secure;
@@ -63,24 +62,19 @@ class CookieEntity implements DBId, Serializable {
 		this.discard = cookie.getDiscard();
 		this.domain = cookie.getDomain();
 		long maxAge = cookie.getMaxAge();
-		Logger.d("maxAge: " + maxAge);
-		if (maxAge != -1) { // session
+		Logger.d(new StringBuilder("save cookie: name=").append(name).append("; value=").append(value).append("; age=").append(maxAge).toString());
+		if (maxAge != -1) { // session, temp cookie
 			this.expiry = (maxAge * 1000) + System.currentTimeMillis();
-			if (this.expiry < 0) {
-				this.expiry = HttpDateTime.getMaxExpiry();
-			}
+			if (this.expiry < 0)
+				this.expiry = HttpDateTime.getMaxExpiryMillis();
 		}
 		this.path = cookie.getPath();
 		this.portList = cookie.getPortlist();
 		this.secure = cookie.getSecure();
 		this.version = cookie.getVersion();
-		Logger.d("Save cookie print");
-		print();
 	}
 
 	public HttpCookie toHttpCookie() {
-		Logger.d("ToHttpCookit cookie print");
-		print();
 		HttpCookie cookie = new HttpCookie(name, value);
 		cookie.setComment(comment);
 		cookie.setCommentURL(commentURL);
@@ -92,14 +86,6 @@ class CookieEntity implements DBId, Serializable {
 		cookie.setSecure(secure);
 		cookie.setVersion(version);
 		return cookie;
-	}
-
-	private void print() {
-		Logger.d("Cookie expiry: " + new Date(expiry).toString());
-		Logger.d("Uri: " + uri + "; Name: " + name + "; Value: " + value);
-		Logger.d("Comment: " + comment + "; CommmentURL: " + commentURL + "; Discard: " + discard);
-		Logger.d("Domain: " + domain + "; Expiry: " + expiry + "; Path: " + path);
-		Logger.d("PortList: " + portList + "; Secure: " + secure + "; Version" + version);
 	}
 
 	/**

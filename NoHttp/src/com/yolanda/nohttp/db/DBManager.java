@@ -24,6 +24,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * Created in Jan 10, 2016 8:18:28 PM
@@ -31,6 +32,8 @@ import android.text.TextUtils;
  * @author YOLANDA
  */
 public abstract class DBManager<T extends DBId> {
+
+	private static final boolean DEBUG = false;
 
 	private SQLiteOpenHelper disker;
 
@@ -64,8 +67,10 @@ public abstract class DBManager<T extends DBId> {
 
 	public final int count(String columnName) {
 		SQLiteDatabase execute = openReader();
-		StringBuilder sql = new StringBuilder("select count(").append(columnName).append(") from ").append(getTableName());
-		Cursor cursor = execute.rawQuery(sql.toString(), null);
+		StringBuilder sqlBuild = new StringBuilder("SELECT COUNT(").append(columnName).append(") FROM ").append(getTableName());
+		String sql = sqlBuild.toString();
+		print(sql);
+		Cursor cursor = execute.rawQuery(sql, null);
 		int count = 0;
 		if (cursor.moveToNext()) {
 			count = cursor.getInt(0);
@@ -97,12 +102,14 @@ public abstract class DBManager<T extends DBId> {
 		if (TextUtils.isEmpty(where))
 			return true;
 		SQLiteDatabase execute = openWriter();
-		StringBuilder sql = new StringBuilder("delete from ").append(getTableName()).append(" where ").append(where);
+		StringBuilder sqlBuild = new StringBuilder("DELETE FROM ").append(getTableName()).append(" WHERE ").append(where);
 		boolean result = true;
 		try {
-			execute.execSQL(sql.toString());
+			String sql = sqlBuild.toString();
+			print(sql);
+			execute.execSQL(sql);
 		} catch (SQLException e) {
-			Logger.w(e);
+			Logger.e(e);
 			result = false;
 		}
 		finish(execute);
@@ -125,24 +132,26 @@ public abstract class DBManager<T extends DBId> {
 	 * Create query sql
 	 */
 	private final String getSelectSql(String columnName, String where, String orderBy, String limit, String offset) {
-		StringBuilder sql = new StringBuilder("select ").append(columnName).append(" from ").append(getTableName());
+		StringBuilder sqlBuild = new StringBuilder("SELECT ").append(columnName).append(" FROM ").append(getTableName());
 		if (!TextUtils.isEmpty(where)) {
-			sql.append(" where ");
-			sql.append(where);
+			sqlBuild.append(" WHERE ");
+			sqlBuild.append(where);
 		}
 		if (!TextUtils.isEmpty(orderBy)) {
-			sql.append(" order by ");
-			sql.append(orderBy);
+			sqlBuild.append(" ORDER BY ");
+			sqlBuild.append(orderBy);
 		}
 		if (!TextUtils.isEmpty(limit)) {
-			sql.append(" limit ");
-			sql.append(limit);
+			sqlBuild.append(" LIMIT ");
+			sqlBuild.append(limit);
 		}
 		if (!TextUtils.isEmpty(limit) && !TextUtils.isEmpty(offset)) {
-			sql.append(" offset ");
-			sql.append(offset);
+			sqlBuild.append(" OFFSET ");
+			sqlBuild.append(offset);
 		}
-		return sql.toString();
+		String sql = sqlBuild.toString();
+		print(sql);
+		return sqlBuild.toString();
 	}
 
 	public abstract List<T> get(String querySql);
@@ -150,5 +159,10 @@ public abstract class DBManager<T extends DBId> {
 	public abstract long replace(T t);
 
 	protected abstract String getTableName();
+
+	protected void print(String print) {
+		if (DEBUG)
+			Log.d("NoHttp", print);
+	}
 
 }

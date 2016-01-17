@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright © YOLANDA. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp;
+package com.yolanda.nohttp.util;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * </br>
- * Created in Jan 6, 2016 5:45:51 PM
+ * Created in Jan 10, 2016 5:00:07 PM
  * 
- * @author YOLANDA;
+ * @author YOLANDA
  */
-public interface BasicConnectionManager {
+public interface MultiValueMap<K, V> {
 
-	<T> Response<T> handleRequest(CommonRequest<T> request);
+	void add(K key, V value);
+
+	void add(K key, List<V> values);
+
+	void set(K key, V value);
+
+	void set(K key, List<V> values);
+
+	void set(Map<K, List<V>> values);
+
+	void remove(K key);
+
+	void clear();
+
+	Set<K> keySet();
+
+	List<V> values();
+
+	List<V> getValues(K key);
+
+	V getValue(K key, int index);
+
+	int size();
+
+	boolean isEmpt();
+
+	boolean containsKey(K key);
 
 }

@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
-import android.util.Log;
-
 /**
  * A default implementation of Binary</br>
  * All the methods are called in Son thread.</br>
@@ -30,7 +28,7 @@ import android.util.Log;
  * 
  * @author YOLANDA
  */
-public class FileBinary extends Binary {
+public class FileBinary implements Binary {
 
 	private File file;
 
@@ -39,8 +37,6 @@ public class FileBinary extends Binary {
 	private String mimeType;
 
 	private String charSet;
-
-	private boolean isStarted = false;
 
 	private boolean isRun = true;
 
@@ -58,33 +54,29 @@ public class FileBinary extends Binary {
 
 	public FileBinary(File file, String fileName, String mimeType, String charSet) {
 		if (file == null) {
-			Log.e("NoHttp", fileName + " is null file");
+			throw new IllegalArgumentException("File is null");
 		} else if (!file.exists()) {
-			Log.e("NoHttp", fileName + " is non-existent");
+			throw new IllegalArgumentException("File isn't exists");
 		}
 		this.file = file;
 		this.fileName = fileName;
 		this.mimeType = mimeType;
 		this.charSet = charSet;
 	}
-	
+
 	@Override
-	protected long onMeasureLength() {
-		if(file != null) {
-			return this.file.length();
-		}
-		return 0;
+	public long getLength() {
+		return this.file.length();
 	}
 
 	@Override
-	protected void onWriteByteArray(CommonRequest<?> request, OutputStream outputStream) {
+	public void onWriteBinary(OutputStream outputStream) {
 		if (this.file != null && isRun) {
-			isStarted = true;
 			try {
 				RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
 				int len = -1;
 				byte[] buffer = new byte[1024];
-				while (!request.isCanceled() && (len = accessFile.read(buffer)) != -1) {
+				while (isRun && (len = accessFile.read(buffer)) != -1) {
 					outputStream.write(buffer, 0, len);
 				}
 				accessFile.close();
@@ -111,8 +103,6 @@ public class FileBinary extends Binary {
 
 	@Override
 	public void cancel() {
-		if (isStarted)
-			throw new RuntimeException("Upload action has begun, can not be canceled");
 		this.isRun = false;
 	}
 

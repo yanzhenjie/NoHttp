@@ -17,6 +17,8 @@ package com.yolanda.nohttp;
 
 import java.io.UnsupportedEncodingException;
 
+import com.yolanda.nohttp.util.HeaderParser;
+
 /**
  * Created in Jul 28, 2015 7:33:52 PM
  * 

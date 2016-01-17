@@ -25,7 +25,7 @@ import java.util.Set;
  * 
  * @author YOLANDA
  */
-public abstract class RestRequestor<T> extends Request<T> {
+public abstract class RestRequestor<T> extends BasicRequest<T> {
 
 	/**
 	 * Param collection

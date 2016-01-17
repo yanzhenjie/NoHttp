@@ -26,15 +26,14 @@ import java.net.UnknownHostException;
 import java.util.zip.GZIPInputStream;
 
 import com.yolanda.nohttp.BasicConnection;
-import com.yolanda.nohttp.HeaderParser;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.HttpHeaders;
 import com.yolanda.nohttp.Logger;
-import com.yolanda.nohttp.UserAgent;
-import com.yolanda.nohttp.tools.FileUtil;
-import com.yolanda.nohttp.tools.NetUtil;
+import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.util.FileUtil;
+import com.yolanda.nohttp.util.HeaderParser;
+import com.yolanda.nohttp.util.NetUtil;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.URLUtil;
@@ -47,32 +46,7 @@ import android.webkit.URLUtil;
  */
 public class DownloadConnection extends BasicConnection implements Downloader {
 
-	/**
-	 * Sigle model
-	 */
-	private static DownloadConnection _Downloader;
-	/**
-	 * User-Agent of request
-	 */
-	private final String userAgent;
-	/**
-	 * context
-	 */
-	private Context mContext;
-
-	private DownloadConnection(Context context) {
-		this.mContext = context;
-		userAgent = UserAgent.getUserAgent(context.getApplicationContext());
-	}
-
-	/**
-	 * The object that is obtained by downloading the network task execution object, if no, is created, and the
-	 * singleton pattern
-	 */
-	public static Downloader getInstance(Context context) {
-		if (_Downloader == null)
-			_Downloader = new DownloadConnection(context.getApplicationContext());
-		return _Downloader;
+	public DownloadConnection() {
 	}
 
 	@Override
@@ -82,7 +56,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 		if (downloadListener == null)
 			throw new IllegalArgumentException("downloadListener == null");
 
-		if (!NetUtil.isNetworkAvailable(mContext)) {
+		if (!NetUtil.isNetworkAvailable(NoHttp.getContext())) {
 			downloadListener.onDownloadError(what, StatusCode.ERROR_NETWORK_NOT_AVAILABLE, "Network is not available");
 			return;
 		}
@@ -237,10 +211,4 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				httpConnection.disconnect();
 		}
 	}
-
-	@Override
-	protected String getUserAgent() {
-		return userAgent;
-	}
-
 }

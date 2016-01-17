@@ -33,7 +33,7 @@ public class RequestQueue {
 	/**
 	 * HTTP request actuator interface
 	 */
-	private final BasicConnectionManager mConnectionManager;
+	private final ImplConnectionManager mConnectionManager;
 
 	/**
 	 * Request queue polling thread array
@@ -46,7 +46,7 @@ public class RequestQueue {
 	 * @param httpStack Download the network task execution interface, where you need to implement the download tasks that have been implemented.
 	 * @param threadPoolSize Number of thread pool
 	 */
-	public RequestQueue(BasicConnectionManager connectionManager, int threadPoolSize) {
+	public RequestQueue(ImplConnectionManager connectionManager, int threadPoolSize) {
 		mConnectionManager = connectionManager;
 		mDispatchers = new RequestDispatcher[threadPoolSize];
 	}

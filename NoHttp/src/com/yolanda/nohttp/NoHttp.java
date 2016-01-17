@@ -23,11 +23,10 @@ import com.yolanda.nohttp.cache.CacheEntity;
 import com.yolanda.nohttp.cache.DiskCacheStore;
 import com.yolanda.nohttp.cookie.DiskCookieStore;
 import com.yolanda.nohttp.download.DownloadConnection;
-import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadQueue;
 import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.download.RestDownloadRequestor;
-import com.yolanda.nohttp.security.SecureVerifier;
+import com.yolanda.nohttp.util.PRNGFixes;
 
 import android.app.Application;
 import android.graphics.Bitmap;
@@ -69,7 +68,7 @@ public class NoHttp {
 	/**
 	 * Sync Connection manager
 	 */
-	private static BasicConnectionManager mBasicConnectionManager;
+	private static ImplConnectionManager mBasicConnectionManager;
 
 	/**
 	 * Initialization NoHttp, Should invoke on {@link Application#onCreate()}
@@ -77,6 +76,7 @@ public class NoHttp {
 	public static void init(Application application) {
 		if (sApplication == null) {
 			sApplication = application;
+			PRNGFixes.apply();
 			sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
 		}
 	}
@@ -90,18 +90,18 @@ public class NoHttp {
 		return sApplication;
 	}
 
-	public static RequestQueue newRequestQueue(BasicConnectionManager connectionManager, int threadPoolSize) {
+	public static RequestQueue newRequestQueue(ImplConnectionManager connectionManager, int threadPoolSize) {
 		RequestQueue requestQueue = new RequestQueue(connectionManager, threadPoolSize);
 		requestQueue.start();
 		return requestQueue;
 	}
 
-	public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, BasicConnectionRest connectionRest, int threadPoolSize) {
+	public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, ImplRestConnection connectionRest, int threadPoolSize) {
 		return newRequestQueue(new ConnectionManager(cache, connectionRest), threadPoolSize);
 	}
 
 	public static RequestQueue newRequestQueue(int threadPoolSize) {
-		return newRequestQueue(DiskCacheStore.INSTANCE, new HttpRestConnection(getContext()), threadPoolSize);
+		return newRequestQueue(DiskCacheStore.INSTANCE, new HttpRestConnection(), threadPoolSize);
 	}
 
 	public static RequestQueue newRequestQueue() {
@@ -143,15 +143,15 @@ public class NoHttp {
 		return new ImageRequest(url, maxWidth, maxHeight, config, scaleType);
 	}
 
-	private synchronized static BasicConnectionManager createSyncConnectionManager() {
+	private synchronized static ImplConnectionManager createSyncConnectionManager() {
 		if (mBasicConnectionManager == null) {
-			BasicConnectionRest connectionRest = new HttpRestConnection(getContext());
+			ImplRestConnection connectionRest = new HttpRestConnection();
 			mBasicConnectionManager = new ConnectionManager(DiskCacheStore.INSTANCE, connectionRest);
 		}
 		return mBasicConnectionManager;
 	}
 
-	public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, BasicConnectionRest connectionRest, Request<T> request) {
+	public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, ImplRestConnection connectionRest, Request<T> request) {
 		Response<T> response = null;
 		if (cache != null && connectionRest != null && request != null)
 			response = createSyncConnectionManager().handleRequest(request);
@@ -159,15 +159,15 @@ public class NoHttp {
 	}
 
 	public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, Request<T> request) {
-		return startRequestSync(cache, new HttpRestConnection(getContext()), request);
+		return startRequestSync(cache, new HttpRestConnection(), request);
 	}
 
-	public static <T> Response<T> startRequestSync(BasicConnectionRest connectionRest, Request<T> request) {
+	public static <T> Response<T> startRequestSync(ImplRestConnection connectionRest, Request<T> request) {
 		return startRequestSync(DiskCacheStore.INSTANCE, connectionRest, request);
 	}
 
 	public static <T> Response<T> startRequestSync(Request<T> request) {
-		return startRequestSync(DiskCacheStore.INSTANCE, new HttpRestConnection(getContext()), request);
+		return startRequestSync(DiskCacheStore.INSTANCE, new HttpRestConnection(), request);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class NoHttp {
 	 * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
 	 */
 	public static DownloadQueue newDownloadQueue(int threadPoolSize) {
-		DownloadQueue downloadQueue = new DownloadQueue(DownloadConnection.getInstance(getContext()), threadPoolSize);
+		DownloadQueue downloadQueue = new DownloadQueue(new DownloadConnection(), threadPoolSize);
 		downloadQueue.start();
 		return downloadQueue;
 	}
@@ -199,22 +199,6 @@ public class NoHttp {
 	 */
 	public static DownloadRequest createDownloadRequest(String url, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
 		return new RestDownloadRequestor(url, fileFloder, filename, isRange, isDeleteOld);
-	}
-
-	/**
-	 * Start a sync Download
-	 */
-	public static void downloadSync(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-		DownloadConnection.getInstance(getContext()).download(what, downloadRequest, downloadListener);
-	}
-
-	/**
-	 * Sets up if all HTTPS certificates are allowed, if you set the true, the certificate parameter will be ignored
-	 * 
-	 * @param isAll True is allowed, false is not disallowed, false need to verify the certificate
-	 */
-	public static void setAllowAllHttps(boolean isAll) {
-		SecureVerifier.getInstance().setAllowAllHttps(isAll);
 	}
 
 	/**

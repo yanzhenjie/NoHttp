@@ -46,37 +46,45 @@ public enum DiskCookieStore implements CookieStore {
 	 * Cookie max count in disk
 	 */
 	private final static int MAX_COOKIE_SIZE = 8888;
-
+	/**
+	 * Database sync lock
+	 */
 	private Lock mLock;
-
+	/**
+	 * DbManager
+	 */
 	private DBManager<CookieEntity> mManager;
-
+	/**
+	 * when Add and remove cookie notify
+	 */
 	private CookieStoreListener mCookieStoreListener;
 
 	private DiskCookieStore() {
 		mLock = new ReentrantLock();
 		mManager = CookieDiskManager.getInstance();
+		deleteTempCookie();
 	}
 
+	/**
+	 * The callback when adding and deleting cookies
+	 */
 	public void setCookieStoreListener(CookieStoreListener mCookieStoreListener) {
 		this.mCookieStoreListener = mCookieStoreListener;
 	}
 
 	@Override
 	public void add(URI uri, HttpCookie cookie) {
-		if (cookie == null)
-			return;
-		mLock.lock();
-		try {
-			if (mCookieStoreListener != null)
-				mCookieStoreListener.onSaveCookie(uri, cookie);
-			uri = getEffectiveURI(uri);
-			if (cookie != null) {
+		if (uri != null && cookie != null) {
+			mLock.lock();
+			try {
+				uri = getEffectiveURI(uri);
+				if (mCookieStoreListener != null)
+					mCookieStoreListener.onSaveCookie(uri, cookie);
 				mManager.replace(new CookieEntity(uri, cookie));
 				trimSize();
+			} finally {
+				mLock.unlock();
 			}
-		} finally {
-			mLock.unlock();
 		}
 	}
 
@@ -203,10 +211,19 @@ public enum DiskCookieStore implements CookieStore {
 	}
 
 	/**
+	 * Delete all temp cookie
+	 */
+	private void deleteTempCookie() {
+		Where where = new Where(CookieDisker.EXPIRY, Options.EQUAL, 0);
+		mManager.delete(where.get());
+	}
+
+	/**
 	 * Delete all expired cookies
 	 */
 	private void deleteExpiryCookies() {
 		Where where = new Where(CookieDisker.EXPIRY, Options.THAN_SMALL, System.currentTimeMillis());
+		where.and(CookieDisker.EXPIRY, Options.ThAN_LARGE, 0);
 		mManager.delete(where.get());
 	}
 

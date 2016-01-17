@@ -21,9 +21,9 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.zip.GZIPInputStream;
 
-import com.yolanda.nohttp.tools.NetUtil;
+import com.yolanda.nohttp.util.HeaderParser;
+import com.yolanda.nohttp.util.NetUtil;
 
-import android.content.Context;
 import android.webkit.URLUtil;
 
 /**
@@ -32,30 +32,16 @@ import android.webkit.URLUtil;
  * 
  * @author YOLANDA
  */
-public final class HttpRestConnection extends BasicConnection implements BasicConnectionRest {
+public final class HttpRestConnection extends BasicConnection implements ImplRestConnection {
 
-	/**
-	 * context
-	 */
-	private final Context mContext;
-	/**
-	 * User-Agent of request
-	 */
-	private final String userAgent;
-
-	/**
-	 * lock public
-	 */
-	public HttpRestConnection(Context context) {
-		this.mContext = context.getApplicationContext();
-		userAgent = UserAgent.getUserAgent(mContext);
+	public HttpRestConnection() {
 	}
 
 	/**
 	 * Initiate the request, and parse the response results
 	 */
 	@Override
-	public HttpResponse request(BasicRequest request) {
+	public HttpResponse request(ImplServerRequest request) {
 		if (request == null)
 			throw new IllegalArgumentException("reqeust == null");
 
@@ -69,18 +55,14 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 		String url = request.url();
 		if (!URLUtil.isValidUrl(url))
 			responseBody = new StringBuffer("URL error: ").append(url).toString().getBytes();
-		else if (!NetUtil.isNetworkAvailable(mContext)) {
+		else if (!NetUtil.isNetworkAvailable(NoHttp.getContext())) {
 			responseBody = "Network error".getBytes();
 		} else {
 			HttpURLConnection httpConnection = null;
 			try {
 				httpConnection = getHttpConnection(request);
-				httpConnection.connect();
-				// write request body to stream
-				writeRequestBody(httpConnection, request);
 
 				Logger.i("-------Response start-------");
-				httpConnection.connect();
 				responseCode = httpConnection.getResponseCode();
 				Logger.d("ResponseCode: " + responseCode);
 				responseHeaders = parseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
@@ -113,10 +95,4 @@ public final class HttpRestConnection extends BasicConnection implements BasicCo
 		Logger.d("--------------Reqeust finish--------------");
 		return new HttpResponse(isSucceed, responseHeaders, responseBody);
 	}
-
-	@Override
-	protected String getUserAgent() {
-		return userAgent;
-	}
-
 }

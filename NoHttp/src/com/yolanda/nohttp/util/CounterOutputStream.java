@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.tools;
+package com.yolanda.nohttp.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -36,17 +32,6 @@ public class CounterOutputStream extends OutputStream {
 	public CounterOutputStream() {
 	}
 
-	public void addFile(File file) {
-		lenght.addAndGet(file.length());
-	}
-
-	public void addStream(InputStream inputStream) {
-		long length = getInputStreamLength(inputStream);
-		if (length > 0) {
-			lenght.addAndGet(length);
-		}
-	}
-
 	public void write(long count) {
 		if (count > 0)
 			lenght.addAndGet(count);
@@ -58,7 +43,7 @@ public class CounterOutputStream extends OutputStream {
 
 	@Override
 	public void write(int oneByte) throws IOException {
-		lenght.addAndGet(1);
+		lenght.addAndGet(oneByte);
 	}
 
 	@Override
@@ -69,15 +54,5 @@ public class CounterOutputStream extends OutputStream {
 	@Override
 	public void write(byte[] buffer, int offset, int count) throws IOException {
 		lenght.addAndGet(count);
-	}
-
-	public static long getInputStreamLength(InputStream inputStream) {
-		try {
-			if (inputStream instanceof FileInputStream || inputStream instanceof ByteArrayInputStream) {
-				return inputStream.available();
-			}
-		} catch (Throwable e) {
-		}
-		return 0;
 	}
 }

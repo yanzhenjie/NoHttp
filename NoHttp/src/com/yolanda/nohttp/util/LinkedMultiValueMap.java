@@ -26,11 +26,11 @@ import java.util.Set;
  * 
  * @author YOLANDA
  */
-public class LinkedMultiMap<K, V> implements MultiMap<K, V> {
+public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V> {
 
 	protected Map<K, List<V>> mSource = new LinkedHashMap<K, List<V>>();
 
-	public LinkedMultiMap() {
+	public LinkedMultiValueMap() {
 	}
 
 	@Override

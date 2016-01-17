@@ -17,7 +17,12 @@ package com.yolanda.nohttp;
 
 import java.net.Proxy;
 
-import com.yolanda.nohttp.security.Certificate;
+import javax.net.ssl.SSLSocketFactory;
+
+import com.yolanda.nohttp.able.Finishable;
+import com.yolanda.nohttp.able.Queueable;
+import com.yolanda.nohttp.able.SignCancelable;
+import com.yolanda.nohttp.able.Startable;
 
 /**
  * </br>
@@ -25,24 +30,14 @@ import com.yolanda.nohttp.security.Certificate;
  * 
  * @author YOLANDA;
  */
-public interface ImplRequest {
+public interface ImplClientRequest extends Queueable, Startable, SignCancelable, Finishable {
 
 	/**
 	 * Set proxy server
 	 */
 	void setProxy(Proxy proxy);
 
-	/**
-	 * Whether this request is allowed to be directly passed through Https, not a certificate validation
-	 * 
-	 * @param isAllowHttps the isAllowHttps to set
-	 */
-	void setAllowHttps(boolean isAllowHttps);
-
-	/**
-	 * Sets the {@code Certificate} of https
-	 */
-	void setCertificate(Certificate mCertificate);
+	void setSSLSocketFactory(SSLSocketFactory socketFactory);
 
 	/**
 	 * Sets the connection timeout time
@@ -97,9 +92,11 @@ public interface ImplRequest {
 
 	/**
 	 * Set key of request result.
-	 * All the data will be saved in the same folder, so you should ensure that key is the only, otherwise the data will be replaced
+	 * All the data will be saved in the same folder, so you should ensure that key is the only, otherwise the data will
+	 * be replaced
 	 * 
 	 * @param key Unique key
 	 */
 	void setCacheKey(String key);
+
 }

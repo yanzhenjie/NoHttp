@@ -16,8 +16,6 @@
 package com.yolanda.nohttp.download;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Set;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
@@ -47,7 +45,11 @@ public class RestDownloadRequestor extends DownloadRequest {
 	private final boolean isDeleteOld;
 
 	public RestDownloadRequestor(String url, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
-		super(url, RequestMethod.GET);
+		this(url, RequestMethod.GET, fileFloder, filename, isRange, isDeleteOld);
+	}
+
+	public RestDownloadRequestor(String url, RequestMethod requestMethod, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
+		super(url, requestMethod);
 		this.mFileDir = fileFloder;
 		this.mFileName = filename;
 		this.isRange = isRange;
@@ -98,16 +100,6 @@ public class RestDownloadRequestor extends DownloadRequest {
 			}
 		}
 		return STATUS_RESTART;
-	}
-
-	@Override
-	protected Set<String> keySet() {
-		return Collections.emptySet();
-	}
-
-	@Override
-	protected Object value(String key) {
-		return null;
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class RequestDispatcher extends Thread {
 	/**
 	 * HTTP request actuator interface
 	 */
-	private final BasicConnectionManager mConnectionManager;
+	private final ImplConnectionManager mConnectionManager;
 	/**
 	 * Whether the current request queue polling thread is out of
 	 */
@@ -55,7 +55,7 @@ public class RequestDispatcher extends Thread {
 	 * @param reqeustQueue Request queue
 	 * @param connectionRest Network request task actuator
 	 */
-	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, BasicConnectionManager connectionManager) {
+	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, ImplConnectionManager connectionManager) {
 		mRequestQueue = reqeustQueue;
 		mConnectionManager = connectionManager;
 	}
@@ -158,6 +158,8 @@ public class RequestDispatcher extends Thread {
 					} else {
 						if (response.isSucceed()) {
 							responseListener.onSucceed(what, response);
+						} else if (response.getHeaders() == null) {
+							responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), -1, response.getNetworkMillis());
 						} else {
 							responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), response.getHeaders().getResponseCode(), response.getNetworkMillis());
 						}

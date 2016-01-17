@@ -21,11 +21,11 @@ package com.yolanda.nohttp;
  * 
  * @author YOLANDA
  */
-public interface BasicConnectionRest {
+public interface ImplRestConnection {
 
 	/**
 	 * Execute a sync request
 	 */
-	HttpResponse request(BasicRequest request);
+	HttpResponse request(ImplServerRequest request);
 
 }

@@ -73,8 +73,8 @@ public class NoHttpCookieActivity extends Activity implements View.OnClickListen
 		NoHttp.setDefaultCookieManager(cookieManager);
 
 		// 并且这里你可以初始化一些Cookie到CookieManger，例如：
-		Map<String, List<String>> heads = new HashMap<>();
-		List<String> cookies = new ArrayList<>();
+		Map<String, List<String>> heads = new HashMap<String, List<String>>();
+		List<String> cookies = new ArrayList<String>();
 		cookies.add("sessionId=dsjl2345");
 		cookies.add("userInfo=yolanda");
 		heads.put("Set-Cookie", cookies);

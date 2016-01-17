@@ -16,30 +16,40 @@
 package com.sample.nohttp.nohttp;
 
 import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpCookie;
+import java.net.URI;
+
+import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.cookie.CookieStoreListener;
+import com.yolanda.nohttp.cookie.DiskCookieStore;
+import com.yolanda.nohttp.tools.HttpDateTime;
 
 /**
  * Created in Oct 23, 2015 2:16:17 PM
  * 
  * @author YOLANDA
  */
-public class MyCookieManager extends CookieManager {
+public class MyCookieManager extends CookieManager implements CookieStoreListener {
 
 	/**
 	 * NoHttp会替你维护Cookie，这里可以用自己的CookieManger，添加一些必要的Cookie
 	 */
 	public MyCookieManager() {
-//		String cookieString = "sessionid=f564fsaf3asd4f6as35";
-//		Map<String, List<String>> map = new HashMap<>();
-//		List<String> lists = new ArrayList<>();
-//		lists.add(cookieString);
-//		map.put("Set-Cookie", lists);
-//		try {
-//			put(new URI("http://www.baidu.com"), map);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (URISyntaxException e) {
-//			e.printStackTrace();
-//		}
+		super(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
+		DiskCookieStore.INSTANCE.setCookieStoreListener(this);
+	}
+
+	@Override
+	public void onSaveCookie(URI uri, HttpCookie cookie) {
+		Logger.i("添加Cookie");
+		if ("JSESSIONID".equalsIgnoreCase(cookie.getName())) {
+			cookie.setMaxAge(HttpDateTime.getMaxExpiryMillis());
+		}
+	}
+
+	@Override
+	public void onRemoveCookie(URI uri, HttpCookie cookie) {
 	}
 
 }

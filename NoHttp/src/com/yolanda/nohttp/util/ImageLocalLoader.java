@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.tools;
+package com.yolanda.nohttp.util;
 
 import java.io.BufferedInputStream;
 import java.io.File;

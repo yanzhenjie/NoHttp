@@ -32,8 +32,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.yolanda.nohttp.tools.HttpDateTime;
-import com.yolanda.nohttp.util.LinkedMultiMap;
+import com.yolanda.nohttp.util.HttpDateTime;
+import com.yolanda.nohttp.util.LinkedMultiValueMap;
 
 import android.text.TextUtils;
 
@@ -42,7 +42,7 @@ import android.text.TextUtils;
  * 
  * @author YOLANDA
  */
-public class HttpHeaders extends LinkedMultiMap<String, String>implements Headers {
+public class HttpHeaders extends LinkedMultiValueMap<String, String>implements Headers {
 
 	public HttpHeaders() {
 	}

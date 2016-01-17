@@ -15,8 +15,8 @@
  */
 package com.yolanda.nohttp.download;
 
-import com.yolanda.nohttp.CommonRequest;
 import com.yolanda.nohttp.RequestMethod;
+import com.yolanda.nohttp.RestRequestor;
 
 /**
  * Download task request interface</br>
@@ -24,7 +24,7 @@ import com.yolanda.nohttp.RequestMethod;
  * 
  * @author YOLANDA
  */
-public abstract class DownloadRequest extends CommonRequest<Void> {
+public abstract class DownloadRequest extends RestRequestor<Void> {
 
 	/**
 	 * Also didn't download to start download again
@@ -41,17 +41,13 @@ public abstract class DownloadRequest extends CommonRequest<Void> {
 
 	/**
 	 * @param url
-	 * @param requestMethod
-	 */
-	public DownloadRequest(String url, RequestMethod requestMethod) {
-		super(url, RequestMethod.GET);
-	}
-
-	/**
-	 * @param url
 	 */
 	public DownloadRequest(String url) {
-		super(url);
+		this(url, RequestMethod.GET);
+	}
+
+	public DownloadRequest(String url, RequestMethod requestMethod) {
+		super(url, requestMethod);
 	}
 
 	/**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.tools;
+package com.yolanda.nohttp.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,8 +48,8 @@ public final class HttpDateTime {
 		return simpleDateFormat.format(date);
 	}
 
-	public static long getMaxExpiry() {
-		return System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 365 * 100L;
+	public static long getMaxExpiryMillis() {
+		return System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 365L * 100L;
 	}
 
 }

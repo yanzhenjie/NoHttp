@@ -134,7 +134,7 @@ public class Where {
 		return this;
 	}
 
-	public final Where or(CharSequence columnName, Options op, CharSequence value) {
+	public final Where or(CharSequence columnName, Options op, Object value) {
 		return or().add(columnName, op, value);
 	}
 

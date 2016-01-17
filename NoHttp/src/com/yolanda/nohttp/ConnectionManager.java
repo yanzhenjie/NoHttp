@@ -17,7 +17,8 @@ package com.yolanda.nohttp;
 
 import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
-import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.util.HeaderParser;
+import com.yolanda.nohttp.util.HttpDateTime;
 
 import android.os.SystemClock;
 
@@ -27,19 +28,19 @@ import android.os.SystemClock;
  * 
  * @author YOLANDA;
  */
-public class ConnectionManager implements BasicConnectionManager {
+public class ConnectionManager implements ImplConnectionManager {
 
-	private BasicConnectionRest mConnectionRest;
+	private ImplRestConnection mConnectionRest;
 
 	private Cache<CacheEntity> mCache;
 
-	public ConnectionManager(Cache<CacheEntity> cache, BasicConnectionRest connectionRest) {
+	public ConnectionManager(Cache<CacheEntity> cache, ImplRestConnection connectionRest) {
 		this.mCache = cache;
 		this.mConnectionRest = connectionRest;
 	}
 
 	@Override
-	public <T> Response<T> handleRequest(CommonRequest<T> request) {
+	public <T> Response<T> handleRequest(Request<T> request) {
 		long requestStart = SystemClock.elapsedRealtime();
 		T result = null;
 		String url = request.url();
@@ -92,7 +93,7 @@ public class ConnectionManager implements BasicConnectionManager {
 		return returnResponse;
 	}
 
-	private void handleCacheHeader(CommonRequest<?> request, CacheEntity cacheEntity) {
+	private void handleCacheHeader(Request<?> request, CacheEntity cacheEntity) {
 		if (cacheEntity == null) {
 			request.removeHeader(Headers.HEAD_KEY_IF_NONE_MATCH);
 			request.removeHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE);

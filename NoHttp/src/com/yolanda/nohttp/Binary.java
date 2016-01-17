@@ -15,11 +15,9 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 import com.yolanda.nohttp.able.Cancelable;
-import com.yolanda.nohttp.tools.CounterOutputStream;
 
 /**
  * File interface</br>
@@ -29,41 +27,30 @@ import com.yolanda.nohttp.tools.CounterOutputStream;
  * 
  * @author YOLANDA
  */
-public abstract class Binary implements Cancelable {
-
-	/**
-	 * Return the byteArray of file
-	 */
-	public final void onWriteBinary(CommonRequest<?> request, OutputStream outputStream) throws IOException {
-		if (outputStream instanceof CounterOutputStream) {
-			((CounterOutputStream) outputStream).write(onMeasureLength());
-		} else {
-			onWriteByteArray(request, outputStream);
-		}
-	}
+public interface Binary extends Cancelable {
 
 	/**
 	 * Length of measurement
 	 */
-	protected abstract long onMeasureLength();
+	long getLength();
 
 	/**
 	 * Return the byteArray of file
 	 */
-	protected abstract void onWriteByteArray(CommonRequest<?> request, OutputStream outputStream);
+	void onWriteBinary(OutputStream outputStream);
 
 	/**
 	 * Return the fileName
 	 */
-	public abstract String getFileName();
+	String getFileName();
 
 	/**
 	 * Return mimeType of stream
 	 */
-	public abstract String getMimeType();
+	String getMimeType();
 
 	/**
 	 * Get file charset
 	 */
-	public abstract String getCharset();
+	String getCharset();
 }
