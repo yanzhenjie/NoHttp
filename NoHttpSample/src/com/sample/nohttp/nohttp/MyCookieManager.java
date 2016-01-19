@@ -20,10 +20,9 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.URI;
 
-import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.cookie.CookieStoreListener;
 import com.yolanda.nohttp.cookie.DiskCookieStore;
-import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.util.HttpDateTime;
 
 /**
  * Created in Oct 23, 2015 2:16:17 PM
@@ -42,7 +41,6 @@ public class MyCookieManager extends CookieManager implements CookieStoreListene
 
 	@Override
 	public void onSaveCookie(URI uri, HttpCookie cookie) {
-		Logger.i("添加Cookie");
 		if ("JSESSIONID".equalsIgnoreCase(cookie.getName())) {
 			cookie.setMaxAge(HttpDateTime.getMaxExpiryMillis());
 		}

@@ -19,6 +19,7 @@ import java.io.File;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
+import com.yolanda.nohttp.RestRequestor;
 
 /**
  * Download the implementation class of the parameter request, and convert it to the object of the network download</br>
@@ -26,7 +27,7 @@ import com.yolanda.nohttp.RequestMethod;
  * 
  * @author YOLANDA
  */
-public class RestDownloadRequestor extends DownloadRequest {
+public class RestDownloadRequestor extends RestRequestor<Void>implements DownloadRequest {
 	/**
 	 * File the target folder
 	 */
@@ -74,16 +75,6 @@ public class RestDownloadRequestor extends DownloadRequest {
 	@Override
 	public boolean isDeleteOld() {
 		return this.isDeleteOld;
-	}
-
-	@Override
-	public boolean isOutPutMethod() {
-		return false;
-	}
-
-	@Override
-	public boolean hasBinary() {
-		return false;
 	}
 
 	@Override

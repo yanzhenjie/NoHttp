@@ -16,6 +16,8 @@
 package com.yolanda.nohttp.able;
 
 /**
+ * Queue interface
+ * </br>
  * Created in Nov 12, 2015 5:59:29 PM
  * 
  * @author YOLANDA;
@@ -23,12 +25,14 @@ package com.yolanda.nohttp.able;
 public interface Queueable {
 
 	/**
-	 * Judge whether the object is in the queue.
+	 * Are already in the queue ?
 	 */
 	boolean inQueue();
 
 	/**
-	 * Tags removed or added to the queue
+	 * Added to the queue, or removed from the queue
+	 * 
+	 * @param queue True: re added to the queue, false: removed from the queue
 	 */
 	void takeQueue(boolean queue);
 

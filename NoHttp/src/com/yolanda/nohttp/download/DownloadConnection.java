@@ -104,17 +104,15 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 				tempFile.setWritable(true, true);
 			}
 
-			httpConnection = getHttpConnection(downloadRequest);
 			if (downloadRequest.isRange()) {
 				String range = "bytes=" + tempFileLength + "-";
-				httpConnection.setRequestProperty("Range", range);// 从1024开始下载：Range:bytes=1024-
+				downloadRequest.setHeader("Range", range);// 从1024开始下载：Range:bytes=1024-
 			}
 
+			httpConnection = getHttpConnection(downloadRequest);
 			Logger.i("----------Response Start----------");
-			httpConnection.connect();
 			int responseCode = httpConnection.getResponseCode();
-			Headers httpHeaders = parseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
-			Logger.d("ResponseCode: " + responseCode);
+			Headers httpHeaders = parseResponseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
 
 			if (downloadRequest.isCanceled()) {
 				Log.i("NoHttpDownloader", "Download request is canceled");

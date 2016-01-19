@@ -15,10 +15,6 @@
  */
 package com.sample.nohttp.activity.method;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.SocketAddress;
-
 import com.sample.nohttp.R;
 import com.sample.nohttp.nohttp.CallServer;
 import com.sample.nohttp.nohttp.HttpCallback;
@@ -43,7 +39,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	/**
 	 * 请求地址，你运行demo时，这里换成你的地址
 	 */
-	private String mTargetUrl = "http://192.168.1.112/HttpServer/TestCookie";
+	private String mTargetUrl = "http://192.168.1.136/HttpServer/RedirectRequest";
 	/**
 	 * 请求对象
 	 */
@@ -107,12 +103,6 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 		// 创建request时传入url和method
 		mRequest = NoHttp.createStringRequest(mTargetUrl, method);
 		// github是https的请求，这里直接允许，不做证书验证，具体Https的使用请看NoHttpsActivity
-		mRequest.setAllowHttps(true);
-
-		// 设置代理
-		SocketAddress sa = new InetSocketAddress("192.168.1.112", 8888);
-		Proxy proxy = new Proxy(Proxy.Type.HTTP, sa);
-		mRequest.setProxy(proxy);
 
 		mRequest.add("userName", "yolanda");// String类型
 		mRequest.add("userPass", "yolanda.pass");

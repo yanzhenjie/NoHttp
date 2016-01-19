@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.net.HttpCookie;
 import java.net.URI;
 
-import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.db.DBId;
 import com.yolanda.nohttp.util.HttpDateTime;
 
@@ -62,7 +61,6 @@ class CookieEntity implements DBId, Serializable {
 		this.discard = cookie.getDiscard();
 		this.domain = cookie.getDomain();
 		long maxAge = cookie.getMaxAge();
-		Logger.d(new StringBuilder("save cookie: name=").append(name).append("; value=").append(value).append("; age=").append(maxAge).toString());
 		if (maxAge != -1) { // session, temp cookie
 			this.expiry = (maxAge * 1000) + System.currentTimeMillis();
 			if (this.expiry < 0)

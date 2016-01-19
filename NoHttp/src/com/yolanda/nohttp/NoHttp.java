@@ -15,6 +15,7 @@
  */
 package com.yolanda.nohttp;
 
+import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
@@ -63,12 +64,7 @@ public class NoHttp {
 	/**
 	 * Cookie
 	 */
-	private static CookieManager sCookieManager;
-
-	/**
-	 * Sync Connection manager
-	 */
-	private static ImplConnectionManager mBasicConnectionManager;
+	private static CookieHandler sCookieHandler;
 
 	/**
 	 * Initialization NoHttp, Should invoke on {@link Application#onCreate()}
@@ -77,7 +73,7 @@ public class NoHttp {
 		if (sApplication == null) {
 			sApplication = application;
 			PRNGFixes.apply();
-			sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
+			sCookieHandler = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
 		}
 	}
 
@@ -86,18 +82,18 @@ public class NoHttp {
 	 */
 	public static Application getContext() {
 		if (sApplication == null)
-			throw new ExceptionInInitializerError("please invoke NoHttp.init(Application) on Application#onCreate()");
+			throw new ExceptionInInitializerError("Please invoke NoHttp.init(Application) on Application#onCreate()");
 		return sApplication;
 	}
 
-	public static RequestQueue newRequestQueue(ImplConnectionManager connectionManager, int threadPoolSize) {
+	public static RequestQueue newRequestQueue(ImplRestExecutor connectionManager, int threadPoolSize) {
 		RequestQueue requestQueue = new RequestQueue(connectionManager, threadPoolSize);
 		requestQueue.start();
 		return requestQueue;
 	}
 
 	public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, ImplRestConnection connectionRest, int threadPoolSize) {
-		return newRequestQueue(new ConnectionManager(cache, connectionRest), threadPoolSize);
+		return newRequestQueue(new HttpRestExecutor(cache, connectionRest), threadPoolSize);
 	}
 
 	public static RequestQueue newRequestQueue(int threadPoolSize) {
@@ -133,28 +129,27 @@ public class NoHttp {
 	 * Create a Image type request
 	 */
 	public static Request<Bitmap> createImageRequest(String url) {
-		return createImageRequest(url, 1000, 1000, Bitmap.Config.ARGB_8888, ImageView.ScaleType.CENTER_INSIDE);
+		return createImageRequest(url, RequestMethod.GET);
 	}
 
 	/**
 	 * Create a Image type request
 	 */
-	public static Request<Bitmap> createImageRequest(String url, int maxWidth, int maxHeight, Bitmap.Config config, ImageView.ScaleType scaleType) {
-		return new ImageRequest(url, maxWidth, maxHeight, config, scaleType);
+	public static Request<Bitmap> createImageRequest(String url, RequestMethod requestMethod) {
+		return createImageRequest(url, requestMethod, 1000, 1000, Bitmap.Config.ARGB_8888, ImageView.ScaleType.CENTER_INSIDE);
 	}
 
-	private synchronized static ImplConnectionManager createSyncConnectionManager() {
-		if (mBasicConnectionManager == null) {
-			ImplRestConnection connectionRest = new HttpRestConnection();
-			mBasicConnectionManager = new ConnectionManager(DiskCacheStore.INSTANCE, connectionRest);
-		}
-		return mBasicConnectionManager;
+	/**
+	 * Create a Image type request
+	 */
+	public static Request<Bitmap> createImageRequest(String url, RequestMethod requestMethod, int maxWidth, int maxHeight, Bitmap.Config config, ImageView.ScaleType scaleType) {
+		return new ImageRequest(url, requestMethod, maxWidth, maxHeight, config, scaleType);
 	}
 
 	public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, ImplRestConnection connectionRest, Request<T> request) {
 		Response<T> response = null;
 		if (cache != null && connectionRest != null && request != null)
-			response = createSyncConnectionManager().handleRequest(request);
+			response = HttpRestExecutor.getInstance(DiskCacheStore.INSTANCE, new HttpRestConnection()).handleRequest(request);
 		return response;
 	}
 
@@ -204,17 +199,17 @@ public class NoHttp {
 	/**
 	 * Returns the system-wide cookie handler or {@code null} if not set.
 	 */
-	public static CookieManager getDefaultCookieManager() {
-		return sCookieManager;
+	public static CookieHandler getDefaultCookieHandler() {
+		return sCookieHandler;
 	}
 
 	/**
 	 * Sets the system-wide cookie manager
 	 */
-	public static void setDefaultCookieManager(CookieManager cookieManager) {
-		if (cookieManager == null)
-			throw new IllegalArgumentException("cookieManager == null");
-		sCookieManager = cookieManager;
+	public static void setDefaultCookieHandler(CookieHandler cookieHandler) {
+		if (cookieHandler == null)
+			throw new IllegalArgumentException("CookieHandler == null");
+		sCookieHandler = cookieHandler;
 	}
 
 	private NoHttp() {

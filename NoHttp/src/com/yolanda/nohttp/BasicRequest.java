@@ -35,9 +35,14 @@ import android.text.TextUtils;
  */
 public abstract class BasicRequest<T> implements Request<T> {
 
-	protected final String BOUNDARY = createBoundry();
-	protected final String START_BOUNDARY = "--" + BOUNDARY;
-	protected final String END_BOUNDARY = START_BOUNDARY + "--";
+	private final String boundary = createBoundry();
+	private final String start_boundary = "--" + boundary;
+	private final String end_boundary = start_boundary + "--";
+
+	/**
+	 * User Agent
+	 */
+	private static String userAgent;
 
 	/**
 	 * Target adress
@@ -137,7 +142,7 @@ public abstract class BasicRequest<T> implements Request<T> {
 	 */
 	protected final String buildUrl() {
 		StringBuffer urlBuffer = new StringBuffer(url);
-		if (!isOutPutMethod() && keySet().size() > 0) {
+		if (!doOutPut() && keySet().size() > 0) {
 			StringBuffer paramBuffer = buildCommonParams();
 			if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
 				urlBuffer.append("&");
@@ -151,6 +156,21 @@ public abstract class BasicRequest<T> implements Request<T> {
 	@Override
 	public RequestMethod getRequestMethod() {
 		return mRequestMethod;
+	}
+
+	@Override
+	public boolean needCache() {
+		return RequestMethod.GET == getRequestMethod();
+	}
+
+	@Override
+	public void setCacheKey(String key) {
+		this.mCacheKey = key;
+	}
+
+	@Override
+	public String getCacheKey() {
+		return TextUtils.isEmpty(mCacheKey) ? buildUrl() : mCacheKey;
 	}
 
 	@Override
@@ -174,18 +194,16 @@ public abstract class BasicRequest<T> implements Request<T> {
 	}
 
 	@Override
-	public boolean isOutPutMethod() {
+	public boolean doOutPut() {
 		switch (mRequestMethod) {
 		case GET:
-			return false;
-		case POST:
-		case PUT:
-			return true;
 		case DELETE:
 		case HEAD:
 		case OPTIONS:
 		case TRACE:
 			return false;
+		case POST:
+		case PUT:
 		case PATCH:
 			return true;
 		default:
@@ -224,11 +242,6 @@ public abstract class BasicRequest<T> implements Request<T> {
 	}
 
 	@Override
-	public Headers headers() {
-		return this.mHeaders;
-	}
-
-	@Override
 	public void removeHeader(String name) {
 		mHeaders.remove(name);
 	}
@@ -236,6 +249,11 @@ public abstract class BasicRequest<T> implements Request<T> {
 	@Override
 	public void removeAllHeaders() {
 		mHeaders.clear();
+	}
+
+	@Override
+	public Headers headers() {
+		return this.mHeaders;
 	}
 
 	@Override
@@ -247,25 +265,21 @@ public abstract class BasicRequest<T> implements Request<T> {
 	}
 
 	@Override
-	public final String getBoundary() {
-		return BOUNDARY;
-	}
-
-	@Override
-	public String getParamsEncoding() {
-		return NoHttp.CHARSET_UTF8;
-	}
-
-	@Override
-	public boolean hasBinary() {
-		Set<String> keys = keySet();
-		for (String key : keys) {
-			Object value = value(key);
-			if (value instanceof Binary) {
-				return true;
-			}
+	public String getContentType() {
+		StringBuilder contentTypeBuild = new StringBuilder();
+		if (doOutPut() && hasBinary()) {
+			contentTypeBuild.append("multipart/form-data; boundary=").append(boundary);
+		} else {
+			contentTypeBuild.append("application/x-www-form-urlencoded; charset=").append(getParamsEncoding());
 		}
-		return false;
+		return contentTypeBuild.toString();
+	}
+
+	@Override
+	public String getUserAgent() {
+		if (TextUtils.isEmpty(userAgent))
+			userAgent = UserAgent.getUserAgent(NoHttp.getContext());
+		return userAgent;
 	}
 
 	@Override
@@ -277,7 +291,7 @@ public abstract class BasicRequest<T> implements Request<T> {
 	public void setRequestBody(String requestBody) {
 		if (!TextUtils.isEmpty(requestBody))
 			try {
-				this.mRequestBody = URLEncoder.encode(requestBody, getParamsEncoding()).getBytes(NoHttp.CHARSET_UTF8);
+				this.mRequestBody = requestBody.getBytes(getParamsEncoding());
 			} catch (UnsupportedEncodingException e) {
 				Logger.e(e);
 			}
@@ -288,35 +302,90 @@ public abstract class BasicRequest<T> implements Request<T> {
 	}
 
 	@Override
-	public void onWriteRequestBody(Writer outputStream) {
+	public void onWriteRequestBody(Writer writer) {
 		if (mRequestBody == null && hasBinary())
-			writeFormStreamData(outputStream);
+			writeFormStreamData(writer);
 		else if (mRequestBody == null)
-			writeCommonStreamData(outputStream);
+			writeCommonStreamData(writer);
 		else
-			writePushBody(outputStream);
+			writeRequestBody(writer);
 	}
 
 	/**
-	 * Send request {@code RequestBody}
+	 * Send form data
 	 */
-	protected void writePushBody(Writer outputStream) {
+	protected void writeFormStreamData(Writer writer) {
 		try {
-			Logger.d("RequestBody: " + mRequestBody);
-			outputStream.write(mRequestBody);
+			Set<String> keys = keySet();
+			for (String key : keys) {// 文件或者图片
+				Object value = value(key);
+				if (value != null && value instanceof String) {
+					writeFormString(writer, key, value.toString());
+				} else if (value != null && value instanceof Binary) {
+					writeFormBinary(writer, key, (Binary) value);
+				}
+			}
+			writer.write(("\r\n" + end_boundary + "\r\n").getBytes());
 		} catch (IOException e) {
 			Logger.e(e);
 		}
 	}
 
 	/**
+	 * Send text data in a form
+	 */
+	private void writeFormString(Writer writer, String key, String value) throws IOException {
+		print(writer.isPrint(), key + " = " + value);
+
+		StringBuilder stringFieldBuilder = new StringBuilder(start_boundary).append("\r\n");
+
+		stringFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"\r\n");
+		stringFieldBuilder.append("Content-Type: text/plain; charset=").append(getParamsEncoding()).append("\r\n\r\n");
+
+		writer.write(stringFieldBuilder.toString().getBytes());
+
+		writer.write(value.getBytes(getParamsEncoding()));
+		writer.write("\r\n".getBytes());
+	}
+
+	/**
+	 * Send binary data in a form
+	 */
+	private void writeFormBinary(Writer writer, String key, Binary value) throws IOException {
+		print(writer.isPrint(), key + " is Binary");
+
+		StringBuilder binaryFieldBuilder = new StringBuilder(start_boundary).append("\r\n");
+		binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"").append(value.getFileName()).append("\"\r\n");
+
+		binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
+		binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
+
+		writer.write(binaryFieldBuilder.toString().getBytes());
+
+		writer.write(value);
+		writer.write("\r\n".getBytes());
+	}
+
+	/**
 	 * Send non form data
 	 */
-	protected void writeCommonStreamData(Writer outputStream) {
+	protected void writeCommonStreamData(Writer writer) {
 		String requestBody = buildCommonParams().toString();
-		Logger.d("RequestBody: " + requestBody);
+		print(writer.isPrint(), "RequestBody: " + requestBody);
 		try {
-			outputStream.write(requestBody.getBytes());
+			writer.write(requestBody.getBytes());
+		} catch (IOException e) {
+			Logger.e(e);
+		}
+	}
+
+	/**
+	 * Send request {@code RequestBody}
+	 */
+	protected void writeRequestBody(Writer writer) {
+		try {
+			print(writer.isPrint(), "RequestBody: " + mRequestBody);
+			writer.write(mRequestBody);
 		} catch (IOException e) {
 			Logger.e(e);
 		}
@@ -345,61 +414,6 @@ public abstract class BasicRequest<T> implements Request<T> {
 		if (paramBuffer.length() > 0)
 			paramBuffer.deleteCharAt(0);
 		return paramBuffer;
-	}
-
-	/**
-	 * Send form data
-	 */
-	protected void writeFormStreamData(Writer outputStream) {
-		try {
-			Set<String> keys = keySet();
-			for (String key : keys) {// 文件或者图片
-				Object value = value(key);
-				if (value != null && value instanceof CharSequence) {
-					writeFormString(outputStream, key, value.toString());
-				} else if (value != null && value instanceof Binary) {
-					writeFormBinary(outputStream, key, (Binary) value);
-				}
-			}
-			outputStream.write(("\r\n" + END_BOUNDARY + "\r\n").getBytes());
-		} catch (IOException e) {
-			Logger.e(e);
-		}
-	}
-
-	/**
-	 * Send text data in a form
-	 */
-	private void writeFormString(Writer outputStream, String key, String value) throws IOException {
-		Logger.i(key + " = " + value);
-
-		StringBuilder stringFieldBuilder = new StringBuilder(START_BOUNDARY).append("\r\n");
-
-		stringFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"\r\n");
-		stringFieldBuilder.append("Content-Type: text/plain; charset=").append(getParamsEncoding()).append("\r\n\r\n");
-
-		outputStream.write(stringFieldBuilder.toString().getBytes());
-
-		outputStream.write(value.getBytes());
-		outputStream.write("\r\n".getBytes());
-	}
-
-	/**
-	 * Send binary data in a form
-	 */
-	private void writeFormBinary(Writer outputStream, String key, Binary value) throws IOException {
-		Logger.i(key + " is File");
-
-		StringBuilder binaryFieldBuilder = new StringBuilder(START_BOUNDARY).append("\r\n");
-		binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"").append(value.getFileName()).append("\"\r\n");
-
-		binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
-		binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
-
-		outputStream.write(binaryFieldBuilder.toString().getBytes());
-
-		outputStream.write(value);
-		outputStream.write("\r\n".getBytes());
 	}
 
 	@Override
@@ -469,6 +483,10 @@ public abstract class BasicRequest<T> implements Request<T> {
 		return isFinished;
 	}
 
+	public String getParamsEncoding() {
+		return NoHttp.CHARSET_UTF8;
+	}
+
 	/**
 	 * Get the parameters set
 	 */
@@ -481,12 +499,32 @@ public abstract class BasicRequest<T> implements Request<T> {
 	 */
 	protected abstract Object value(String key);
 
+	protected boolean hasBinary() {
+		Set<String> keys = keySet();
+		for (String key : keys) {
+			Object value = value(key);
+			if (value instanceof Binary) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected String getBoundry() {
+		return boundary;
+	}
+
+	private void print(boolean isPrint, String msg) {
+		if (isPrint)
+			Logger.d(msg);
+	}
+
 	/**
 	 * Randomly generated boundary mark
 	 * 
 	 * @return random code
 	 */
-	public static final String createBoundry() {
+	protected static final String createBoundry() {
 		StringBuffer sb = new StringBuffer("--------");
 		for (int t = 1; t < 12; t++) {
 			long time = System.currentTimeMillis() + t;
@@ -501,20 +539,4 @@ public abstract class BasicRequest<T> implements Request<T> {
 		return sb.toString();
 	}
 
-	/* ======Cache===== */
-
-	@Override
-	public boolean needCache() {
-		return RequestMethod.GET == getRequestMethod();
-	}
-
-	@Override
-	public void setCacheKey(String key) {
-		this.mCacheKey = key;
-	}
-
-	@Override
-	public String getCacheKey() {
-		return TextUtils.isEmpty(mCacheKey) ? buildUrl() : mCacheKey;
-	}
 }

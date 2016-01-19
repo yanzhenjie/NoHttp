@@ -20,11 +20,11 @@ import java.io.UnsupportedEncodingException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.yolanda.nohttp.HeaderParser;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.RestRequestor;
+import com.yolanda.nohttp.util.HeaderParser;
 
 /**
  * Created in Oct 23, 2015 8:07:41 PM

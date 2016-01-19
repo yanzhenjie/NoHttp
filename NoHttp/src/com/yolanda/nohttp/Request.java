@@ -30,7 +30,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	 * @param key Param name
 	 * @param value Param value
 	 */
-	void add(String key, CharSequence value);
+	void add(String key, String value);
 
 	/**
 	 * Add <code>Integer</code> param
@@ -121,7 +121,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	/**
 	 * Remove a request param by key
 	 */
-	void remove(String key);
+	Object remove(String key);
 
 	/**
 	 * Remove all request param

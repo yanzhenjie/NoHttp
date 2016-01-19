@@ -39,8 +39,8 @@ public class ImageRequest extends RestRequestor<Bitmap> {
 	/** Decoding lock so that we don't decode more than one image at a time (to avoid OOM's) */
 	private static final Object DECODE_LOCK = new Object();
 
-	public ImageRequest(String url, int maxWidth, int maxHeight, Bitmap.Config decodeConfig, ImageView.ScaleType scaleType) {
-		super(url, RequestMethod.GET);
+	public ImageRequest(String url, RequestMethod requestMethod, int maxWidth, int maxHeight, Bitmap.Config decodeConfig, ImageView.ScaleType scaleType) {
+		super(url, requestMethod);
 		this.mMaxWidth = maxWidth;
 		this.mMaxHeight = maxHeight;
 		this.mDecodeConfig = decodeConfig;

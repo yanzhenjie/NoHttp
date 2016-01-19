@@ -26,15 +26,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
+ * Cache database management
+ * </br>
  * Created in Jan 10, 2016 12:42:29 AM
  * 
  * @author YOLANDA
  */
 class CacheDiskManager extends DBManager<CacheEntity> {
 
-	/**
-	 * Instance
-	 */
 	private static DBManager<CacheEntity> _Instance;
 
 	private CacheDiskManager() {
@@ -48,16 +47,13 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 		return _Instance;
 	}
 
-	/**
-	 * Add or update by index(key)
-	 */
 	@Override
 	public long replace(CacheEntity cacheEntity) {
 		SQLiteDatabase execute = openWriter();
 		ContentValues values = new ContentValues();
 		values.put(CacheDisker.KEY, cacheEntity.getKey());
 		values.put(CacheDisker.HEAD, cacheEntity.getResponseHeadersJson());
-		values.put(CacheDisker.DATA, cacheEntity.getDataString());
+		values.put(CacheDisker.DATA, cacheEntity.getData());
 		long id = -1;
 		try {
 			id = execute.replace(getTableName(), null, values);
@@ -93,7 +89,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 
 					int dataIndex = cursor.getColumnIndex(CacheDisker.DATA);
 					if (dataIndex >= 0)
-						cacheEntity.setDataString(cursor.getString(dataIndex));
+						cacheEntity.setData(cursor.getBlob(dataIndex));
 
 					cacheEntities.add(cacheEntity);
 				} catch (Throwable e) {

@@ -47,6 +47,10 @@ public class NoHttpImageActivity extends Activity implements HttpCallback<Bitmap
 	 */
 	private TextView mStatus;
 
+	private String url = "http://192.168.1.136/HttpServer/ImageDownload";
+
+	// private String url = "http://a1.qpic.cn/psb?/V13FzpwG3JdUAq/.y.rmni00WJydktHAv9kFaRHIJ.xZDZYyjwV72Hnu.Q!/b/dG8AAAAAAAAA&bo=LAEsAQAAAAAFByQ!&rf=viewer_4";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,7 +64,6 @@ public class NoHttpImageActivity extends Activity implements HttpCallback<Bitmap
 		findViewById(R.id.btn_reqeust_iamge).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String url = "http://a1.qpic.cn/psb?/V13FzpwG3JdUAq/.y.rmni00WJydktHAv9kFaRHIJ.xZDZYyjwV72Hnu.Q!/b/dG8AAAAAAAAA&bo=LAEsAQAAAAAFByQ!&rf=viewer_4";
 				Request<Bitmap> request = NoHttp.createImageRequest(url);
 				CallServer.getRequestInstance().add(NoHttpImageActivity.this, 0, request, NoHttpImageActivity.this);
 			}

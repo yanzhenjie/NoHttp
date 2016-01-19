@@ -15,7 +15,6 @@
  */
 package com.yolanda.nohttp.util;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -23,7 +22,6 @@ import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Build.VERSION;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
@@ -53,13 +51,13 @@ public class ResourcesCompat {
 		return getDrawable(resources, resId, null);
 	}
 
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	@SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
 	public static Drawable getDrawable(Resources resources, int resId, Theme theme) {
-		if (VERSION.SDK_INT > 20)
-			return resources.getDrawable(resId, theme);// heigh than leve21
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+			return resources.getDrawable(resId, theme);
 		else
-			return resources.getDrawable(resId);// small than leve21
+			return resources.getDrawable(resId);
 	}
 
 	public static void setLeftDrawable(TextView textView, Drawable leftDrawable) {
@@ -128,13 +126,13 @@ public class ResourcesCompat {
 		return getColor(resources, resId, null);
 	}
 
-	@SuppressLint("NewApi")
+	@TargetApi(Build.VERSION_CODES.M)
 	@SuppressWarnings("deprecation")
 	public static int getColor(Resources resources, int resId, Theme theme) {
-		if (VERSION.SDK_INT > 22)
-			return resources.getColor(resId, theme);// heigh than leve21
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+			return resources.getColor(resId, theme);
 		else
-			return resources.getColor(resId);// small than leve21
+			return resources.getColor(resId);
 	}
 
 	public static ColorStateList getColorStateList(Context context, int resId) {
@@ -149,20 +147,20 @@ public class ResourcesCompat {
 		return getColorStateList(resources, resId, null);
 	}
 
-	@SuppressLint("NewApi")
+	@TargetApi(Build.VERSION_CODES.M)
 	@SuppressWarnings("deprecation")
 	public static ColorStateList getColorStateList(Resources resources, int resId, Theme theme) {
-		if (VERSION.SDK_INT > 22)
-			return resources.getColorStateList(resId, theme);// heigh than leve21
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+			return resources.getColorStateList(resId, theme);
 		else
-			return resources.getColorStateList(resId);// small than leve21
+			return resources.getColorStateList(resId);
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	@SuppressWarnings("deprecation")
 	public static void setBackground(View view, Drawable background) {
-		if (VERSION.SDK_INT > 15)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			view.setBackground(background);
 		else
 			view.setBackgroundDrawable(background);

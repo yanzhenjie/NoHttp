@@ -37,6 +37,15 @@ public interface ImplClientRequest extends Queueable, Startable, SignCancelable,
 	 */
 	void setProxy(Proxy proxy);
 
+	/**
+	 * Set key of request result.
+	 * All the data will be saved in the same folder, so you should ensure that key is the only, otherwise the data will
+	 * be replaced
+	 * 
+	 * @param key Unique key
+	 */
+	void setCacheKey(String key);
+
 	void setSSLSocketFactory(SSLSocketFactory socketFactory);
 
 	/**
@@ -89,14 +98,5 @@ public interface ImplClientRequest extends Queueable, Startable, SignCancelable,
 	 * Set tag of task, Will return to you at the time of the task response
 	 */
 	void setTag(Object tag);
-
-	/**
-	 * Set key of request result.
-	 * All the data will be saved in the same folder, so you should ensure that key is the only, otherwise the data will
-	 * be replaced
-	 * 
-	 * @param key Unique key
-	 */
-	void setCacheKey(String key);
 
 }

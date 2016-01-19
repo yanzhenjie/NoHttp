@@ -16,6 +16,8 @@
 package com.yolanda.nohttp.able;
 
 /**
+ * According to the sign cancel interface
+ * </br>
  * Created in Nov 12, 2015 5:11:56 PM
  * 
  * @author YOLANDA;
@@ -23,7 +25,7 @@ package com.yolanda.nohttp.able;
 public interface SignCancelable extends Cancelable {
 
 	/**
-	 * Cancel request by sign
+	 * Cancel operation by contrast the sign
 	 */
 	void cancelBySign(Object sign);
 

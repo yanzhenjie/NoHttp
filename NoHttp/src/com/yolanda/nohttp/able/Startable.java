@@ -16,6 +16,8 @@
 package com.yolanda.nohttp.able;
 
 /**
+ * Start interface
+ * </br>
  * Created in Nov 12, 2015 5:03:54 PM
  * 
  * @author YOLANDA;
@@ -23,12 +25,12 @@ package com.yolanda.nohttp.able;
 public interface Startable {
 
 	/**
-	 * Start request
+	 * Start operation
 	 */
 	void start();
 
 	/**
-	 * Judge whether the object is to begin.
+	 * Has it been started ?
 	 */
 	boolean isStarted();
 

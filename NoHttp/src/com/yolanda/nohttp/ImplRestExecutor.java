@@ -13,30 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.able;
+package com.yolanda.nohttp;
 
 /**
- * Cancel interface
  * </br>
- * Created in Dec 17, 2015 11:42:10 AM
+ * Created in Jan 6, 2016 5:45:51 PM
  * 
  * @author YOLANDA;
  */
-public interface Cancelable {
+public interface ImplRestExecutor {
 
-	/**
-	 * Cancel operation
-	 */
-	void cancel();
-
-	/**
-	 * Has it been cancelled ?
-	 */
-	boolean isCanceled();
-
-	/**
-	 * Anti cancellation
-	 */
-	void reverseCancle();
+	<T> Response<T> handleRequest(Request<T> request);
 
 }

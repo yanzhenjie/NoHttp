@@ -23,7 +23,6 @@ import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.RequestQueue;
 import com.yolanda.nohttp.Response;
-import com.yolanda.nohttp.security.Certificate;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -72,12 +71,6 @@ public class NoHttpOriginalActivity extends Activity {
 		request.addHeader("Author", "session=ysd354fas6f13");
 		request.addHeader("Dasfs", "ds65fasf1");
 		request.addHeader("Htiky", "4fa9f16f1asfwae65s");
-
-		// 如果是https请求
-		// 1.直接允许https请求
-		request.setAllowHttps(true);
-		// 2.添加https证书
-		request.setCertificate(new Certificate(this, R.raw.keystore, "yolanda"));
 
 		// 为开发者保持一个tag，在请求完成后原样返回
 		request.setTag(new Object());

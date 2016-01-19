@@ -37,6 +37,10 @@ public interface Headers extends MultiValueMap<String, String> {
 
 	static final String HEAD_KEY_RESPONSE_MESSAGE = "ResponseMessage";
 
+	public static final String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
+
+	public static final String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate, sdch";
+
 	public static final String HEAD_KEY_CONTENT_TYPE = "Content-Type";
 
 	public static final String HEAD_KEY_CONTENT_LENGTH = "Content-Length";
@@ -46,6 +50,12 @@ public interface Headers extends MultiValueMap<String, String> {
 	public static final String HEAD_KEY_CONTENT_RANGE = "Content-Range";
 
 	public static final String HEAD_KEY_CACHE_CONTROL = "Cache-Control";
+
+	public static final String HEAD_KEY_CONNECTION = "Connection";
+
+	public static final String HEAD_VALUE_CONNECTION_KEEP_ALIVE = "keep-alive";
+
+	public static final String HEAD_VALUE_CONNECTION_CLOSE = "close";
 
 	public static final String HEAD_KEY_DATE = "Date";
 

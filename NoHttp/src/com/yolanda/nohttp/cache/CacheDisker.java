@@ -22,6 +22,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
+ * Cache database operation class
+ * </br>
  * Created in Jan 10, 2016 12:39:15 AM
  * 
  * @author YOLANDA
@@ -36,7 +38,7 @@ class CacheDisker extends SQLiteOpenHelper implements Field {
 	public static final String HEAD = "head";
 	public static final String DATA = "data";
 
-	private static final String SQL_CREATE_TABLE = "CREATE TABLE cache_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, head TEXT, data TEXT)";
+	private static final String SQL_CREATE_TABLE = "CREATE TABLE cache_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, head TEXT, data BLOB)";
 	private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cache_unique_index ON cache_table(\"key\")";
 	private static final String SQL_DELETE_TABLE = "DROP TABLE cache_table";
 

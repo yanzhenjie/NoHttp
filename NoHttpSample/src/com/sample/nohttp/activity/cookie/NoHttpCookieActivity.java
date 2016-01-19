@@ -70,7 +70,7 @@ public class NoHttpCookieActivity extends Activity implements View.OnClickListen
 
 		// NoHttp会自动维持Cookie，如果开发者自己管理Cookie，设置CookieManager即可
 		CookieManager cookieManager = new CookieManager();
-		NoHttp.setDefaultCookieManager(cookieManager);
+		NoHttp.setDefaultCookieHandler(cookieManager);
 
 		// 并且这里你可以初始化一些Cookie到CookieManger，例如：
 		Map<String, List<String>> heads = new HashMap<String, List<String>>();

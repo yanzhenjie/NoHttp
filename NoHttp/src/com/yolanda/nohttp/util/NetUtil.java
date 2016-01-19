@@ -24,13 +24,14 @@ import java.util.regex.Pattern;
 
 import com.yolanda.nohttp.Logger;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
-import android.os.Build.VERSION;
+import android.os.Build;
+import android.provider.Settings;
 
 /**
  * Created in Jul 31, 2015 1:19:47 PM
@@ -41,30 +42,31 @@ public class NetUtil {
 
 	/**
 	 * Open network settings page
+	 * 
 	 * @param context context
 	 */
 	public static void openSetting(Context context) {
-		if (android.os.Build.VERSION.SDK_INT > 10) {
-			context.startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+			context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
 		} else {
-			context.startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+			context.startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
 		}
 	}
-	
+
 	/**
 	 * Check the netwoek is enable
 	 * 
 	 * @param context Access to {@code ConnectivityManager} services
 	 * @return Available returns true, unavailable returns false
 	 */
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	@SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (connectivity == null) {
 			return false;
 		} else {
-			if (VERSION.SDK_INT >= 21) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				Network[] networks = connectivity.getAllNetworks();
 				for (Network network : networks) {
 					NetworkInfo networkInfo = connectivity.getNetworkInfo(network);
@@ -87,11 +89,11 @@ public class NetUtil {
 	 * @param context Access to {@code ConnectivityManager} services
 	 * @return Open return true, close returns false
 	 */
-	@SuppressLint("NewApi")
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public boolean isWifiConnected(Context context) {
 		if (context != null) {
 			ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			if (VERSION.SDK_INT >= 21) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				Network[] networks = mConnectivityManager.getAllNetworks();
 				for (Network network : networks) {
 					NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
@@ -114,10 +116,10 @@ public class NetUtil {
 	 * @param context Access to {@code ConnectivityManager} services
 	 * @return Open return true, close returns false
 	 */
-	@SuppressLint("NewApi")
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public boolean isMobileConnected(Context context) {
 		ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		if (VERSION.SDK_INT >= 21) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			Network[] networks = mConnectivityManager.getAllNetworks();
 			for (Network network : networks) {
 				NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
@@ -222,7 +224,7 @@ public class NetUtil {
 	// 未压缩过的IPv6地址检查
 	private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
 	// 压缩过的IPv6地址检查
-	private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                  // 0-6
+	private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                           // 0-6
 			"::" + "(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)$");// 0-6 hex fields
 
 	/**

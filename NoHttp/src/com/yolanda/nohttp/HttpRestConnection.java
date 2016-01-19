@@ -55,17 +55,15 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
 		String url = request.url();
 		if (!URLUtil.isValidUrl(url))
 			responseBody = new StringBuffer("URL error: ").append(url).toString().getBytes();
-		else if (!NetUtil.isNetworkAvailable(NoHttp.getContext())) {
+		else if (!NetUtil.isNetworkAvailable(NoHttp.getContext()))
 			responseBody = "Network error".getBytes();
-		} else {
+		else {
 			HttpURLConnection httpConnection = null;
 			try {
 				httpConnection = getHttpConnection(request);
-
-				Logger.i("-------Response start-------");
+				Logger.d("-------Response start-------");
 				responseCode = httpConnection.getResponseCode();
-				Logger.d("ResponseCode: " + responseCode);
-				responseHeaders = parseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
+				responseHeaders = parseResponseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
 
 				// handle body
 				if (hasResponseBody(request.getRequestMethod(), responseCode)) {
@@ -89,7 +87,7 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
 			} finally {
 				if (httpConnection != null)
 					httpConnection.disconnect();
-				Logger.i("-------Response end-------");
+				Logger.d("-------Response end-------");
 			}
 		}
 		Logger.d("--------------Reqeust finish--------------");

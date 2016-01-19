@@ -36,6 +36,10 @@ public class StringRequest extends RestRequestor<String> {
 
 	@Override
 	public String parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+		return parseResponseString(url, responseHeaders, responseBody);
+	}
+
+	public static final String parseResponseString(String url, Headers responseHeaders, byte[] responseBody) {
 		String result = null;
 		if (responseBody != null && responseBody.length > 0) {
 			try {

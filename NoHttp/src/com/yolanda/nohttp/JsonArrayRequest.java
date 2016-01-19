@@ -15,14 +15,34 @@
  */
 package com.yolanda.nohttp;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 /**
  * </br>
- * Created in Jan 6, 2016 5:45:51 PM
+ * Created in Jan 19, 2016 3:32:28 PM
  * 
  * @author YOLANDA;
  */
-public interface ImplConnectionManager {
+public class JsonArrayRequest extends RestRequestor<JSONArray> {
 
-	<T> Response<T> handleRequest(Request<T> request);
+	public JsonArrayRequest(String url) {
+		this(url, RequestMethod.POST);
+	}
+
+	public JsonArrayRequest(String url, RequestMethod requestMethod) {
+		super(url, requestMethod);
+	}
+
+	@Override
+	public JSONArray parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+		String josnStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
+		try {
+			return new JSONArray(josnStr);
+		} catch (JSONException e) {
+			Logger.e(e);
+		}
+		return null;
+	}
 
 }

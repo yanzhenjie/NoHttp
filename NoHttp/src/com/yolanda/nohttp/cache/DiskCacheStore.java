@@ -54,7 +54,7 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
 	}
 
 	@Override
-	public CacheEntity put(String key, CacheEntity entrance) {
+	public CacheEntity replace(String key, CacheEntity entrance) {
 		mLock.lock();
 		try {
 			entrance.setKey(key);

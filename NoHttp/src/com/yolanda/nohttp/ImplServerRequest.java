@@ -35,16 +35,14 @@ public interface ImplServerRequest {
 	String url();
 
 	/**
+	 * return method of request
+	 */
+	RequestMethod getRequestMethod();
+
+	/**
 	 * Do you need to cache
 	 */
 	boolean needCache();
-
-	/**
-	 * Get proxy server
-	 */
-	Proxy getProxy();
-	
-	SSLSocketFactory getSSLSocketFactory();
 
 	/**
 	 * Get of cache data
@@ -52,14 +50,16 @@ public interface ImplServerRequest {
 	String getCacheKey();
 
 	/**
-	 * return method of request
+	 * Get proxy server
 	 */
-	RequestMethod getRequestMethod();
+	Proxy getProxy();
+
+	SSLSocketFactory getSSLSocketFactory();
 
 	/**
 	 * If the request is POST, PUT, PATCH, the true should be returned.
 	 */
-	boolean isOutPutMethod();
+	boolean doOutPut();
 
 	/**
 	 * Get the connection timeout time, Unit is a millisecond
@@ -72,30 +72,19 @@ public interface ImplServerRequest {
 	int getReadTimeout();
 
 	/**
-	 * If the argument contains {@code Binary}
+	 * Get all Heads
 	 */
-	boolean hasBinary();
-
-	/**
-	 * Get Boundary of data
-	 */
-	String getBoundary();
-
-	/**
-	 * Get Encoding of request param
-	 */
-	String getParamsEncoding();
+	Headers headers();
 
 	/**
 	 * Get content length
 	 */
 	long getContentLength();
 
-	/**
-	 * Get all Heads
-	 */
-	Headers headers();
-	
+	String getContentType();
+
+	String getUserAgent();
+
 	/**
 	 * When you start the request
 	 */
@@ -104,7 +93,7 @@ public interface ImplServerRequest {
 	/**
 	 * Send request data, give priority to RequestBody, and then send the form data
 	 */
-	void onWriteRequestBody(Writer outputStream);
+	void onWriteRequestBody(Writer writer);
 
 	/**
 	 * Get get of this request

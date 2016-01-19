@@ -15,8 +15,7 @@
  */
 package com.yolanda.nohttp.download;
 
-import com.yolanda.nohttp.RequestMethod;
-import com.yolanda.nohttp.RestRequestor;
+import com.yolanda.nohttp.Request;
 
 /**
  * Download task request interface</br>
@@ -24,7 +23,7 @@ import com.yolanda.nohttp.RestRequestor;
  * 
  * @author YOLANDA
  */
-public abstract class DownloadRequest extends RestRequestor<Void> {
+public interface DownloadRequest extends Request<Void> {
 
 	/**
 	 * Also didn't download to start download again
@@ -40,35 +39,24 @@ public abstract class DownloadRequest extends RestRequestor<Void> {
 	public static final int STATUS_FINISH = 2;
 
 	/**
-	 * @param url
-	 */
-	public DownloadRequest(String url) {
-		this(url, RequestMethod.GET);
-	}
-
-	public DownloadRequest(String url, RequestMethod requestMethod) {
-		super(url, requestMethod);
-	}
-
-	/**
 	 * Return the mFileDir
 	 */
-	public abstract String getFileDir();
+	String getFileDir();
 
 	/**
 	 * Return the mFileName
 	 */
-	public abstract String getFileName();
+	String getFileName();
 
 	/**
 	 * Return the isRange
 	 */
-	public abstract boolean isRange();
+	boolean isRange();
 
 	/**
 	 * If there is a old files, whether to delete the old files
 	 */
-	public abstract boolean isDeleteOld();
+	boolean isDeleteOld();
 
 	/**
 	 * Query before download status
@@ -80,5 +68,5 @@ public abstract class DownloadRequest extends RestRequestor<Void> {
 	 * @see #STATUS_RESUME
 	 * @see #STATUS_FINISH
 	 */
-	public abstract int checkBeforeStatus();
+	int checkBeforeStatus();
 }

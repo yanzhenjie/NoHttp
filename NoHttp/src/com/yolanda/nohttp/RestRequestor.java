@@ -53,7 +53,7 @@ public abstract class RestRequestor<T> extends BasicRequest<T> {
 	}
 
 	@Override
-	public void add(String key, CharSequence value) {
+	public void add(String key, String value) {
 		mParamMap.put(key, value == null ? "" : value);
 	}
 
@@ -117,8 +117,8 @@ public abstract class RestRequestor<T> extends BasicRequest<T> {
 	}
 
 	@Override
-	public void remove(String key) {
-		mParamMap.remove(key);
+	public Object remove(String key) {
+		return mParamMap.remove(key);
 	}
 
 	@Override

@@ -15,7 +15,7 @@
  */
 package com.yolanda.nohttp.util;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.StatFs;
 
@@ -29,12 +29,12 @@ public class FileUtil {
 	/**
 	 * Access to a directory available size
 	 */
-	@SuppressLint("NewApi")
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	@SuppressWarnings("deprecation")
 	public static long getDirSize(String path) {
 		StatFs stat = new StatFs(path);
 		long blockSize, availableBlocks;
-		if (Build.VERSION.SDK_INT >= 18) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 			blockSize = stat.getBlockSizeLong();
 			availableBlocks = stat.getAvailableBlocksLong();
 		} else {

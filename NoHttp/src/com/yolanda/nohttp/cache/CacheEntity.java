@@ -16,14 +16,12 @@
 package com.yolanda.nohttp.cache;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 
 import org.json.JSONException;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.HttpHeaders;
 import com.yolanda.nohttp.Logger;
-import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.db.DBId;
 import com.yolanda.nohttp.db.Field;
 
@@ -135,22 +133,6 @@ public class CacheEntity implements DBId, Field, Serializable {
 	 */
 	public void setData(byte[] data) {
 		this.data = data;
-	}
-
-	public void setDataString(String dataString) {
-		try {
-			data = dataString.getBytes(NoHttp.CHARSET_UTF8);
-		} catch (UnsupportedEncodingException e) {
-			data = new byte[] {};
-		}
-	}
-
-	public String getDataString() {
-		try {
-			return new String(data, NoHttp.CHARSET_UTF8);
-		} catch (UnsupportedEncodingException e) {
-			return new String(data);
-		}
 	}
 
 	/**

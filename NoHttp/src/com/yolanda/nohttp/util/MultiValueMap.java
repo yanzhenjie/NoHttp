@@ -44,9 +44,9 @@ public interface MultiValueMap<K, V> {
 
 	List<V> values();
 
-	List<V> getValues(K key);
-
 	V getValue(K key, int index);
+
+	List<V> getValues(K key);
 
 	int size();
 

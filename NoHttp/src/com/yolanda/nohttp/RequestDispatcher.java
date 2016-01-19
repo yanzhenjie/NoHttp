@@ -43,7 +43,7 @@ public class RequestDispatcher extends Thread {
 	/**
 	 * HTTP request actuator interface
 	 */
-	private final ImplConnectionManager mConnectionManager;
+	private final ImplRestExecutor mConnectionManager;
 	/**
 	 * Whether the current request queue polling thread is out of
 	 */
@@ -55,7 +55,7 @@ public class RequestDispatcher extends Thread {
 	 * @param reqeustQueue Request queue
 	 * @param connectionRest Network request task actuator
 	 */
-	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, ImplConnectionManager connectionManager) {
+	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, ImplRestExecutor connectionManager) {
 		mRequestQueue = reqeustQueue;
 		mConnectionManager = connectionManager;
 	}

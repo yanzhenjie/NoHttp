@@ -28,15 +28,23 @@ import android.os.SystemClock;
  * 
  * @author YOLANDA;
  */
-public class ConnectionManager implements ImplConnectionManager {
+public class HttpRestExecutor implements ImplRestExecutor {
 
-	private ImplRestConnection mConnectionRest;
+	private static HttpRestExecutor _INSTANCE;
+
+	public static HttpRestExecutor getInstance(Cache<CacheEntity> cache, ImplRestConnection connection) {
+		if (_INSTANCE == null)
+			_INSTANCE = new HttpRestExecutor(cache, connection);
+		return _INSTANCE;
+	}
+
+	private ImplRestConnection mConnection;
 
 	private Cache<CacheEntity> mCache;
 
-	public ConnectionManager(Cache<CacheEntity> cache, ImplRestConnection connectionRest) {
+	public HttpRestExecutor(Cache<CacheEntity> cache, ImplRestConnection connection) {
 		this.mCache = cache;
-		this.mConnectionRest = connectionRest;
+		this.mConnection = connection;
 	}
 
 	@Override
@@ -55,7 +63,7 @@ public class ConnectionManager implements ImplConnectionManager {
 		if (cacheEntity == null || cacheEntity.getLocalExpire() < System.currentTimeMillis()) {
 			if (cacheEntity != null)
 				handleCacheHeader(request, cacheEntity);
-			httpResponse = mConnectionRest.request(request);
+			httpResponse = mConnection.request(request);
 		} else
 			httpResponse = new HttpResponse(true, cacheEntity.getResponseHeaders(), cacheEntity.getData());
 
@@ -88,7 +96,7 @@ public class ConnectionManager implements ImplConnectionManager {
 		if (request.needCache()) {
 			if (cacheEntity == null)
 				cacheEntity = HeaderParser.parseCacheHeaders(responseHeaders, responseBody);
-			mCache.put(request.getCacheKey(), cacheEntity);
+			mCache.replace(request.getCacheKey(), cacheEntity);
 		}
 		return returnResponse;
 	}

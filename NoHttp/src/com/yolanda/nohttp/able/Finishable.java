@@ -16,14 +16,22 @@
 package com.yolanda.nohttp.able;
 
 /**
+ * Finish interface
+ * </br>
  * Created in Jan 13, 2016 10:34:48 PM
  * 
  * @author YOLANDA
  */
 public interface Finishable {
 
+	/**
+	 * Has it been finished ?
+	 */
 	boolean isFinished();
 
+	/**
+	 * Finish operation
+	 */
 	void finish();
 
 }

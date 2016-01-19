@@ -22,7 +22,6 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
-import com.yolanda.nohttp.security.Certificate;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -71,28 +70,6 @@ public class NoHttpsActivity extends Activity implements View.OnClickListener, H
 		String url = "https://kyfw.12306.cn/otn";
 		// 初始化url和method
 		Request<String> httpsRequest = NoHttp.createStringRequest(url, RequestMethod.POST);
-
-		// Certificate对象有三个参数
-		// 1.context
-		// 2.证书在assets中的路径名称, 例如: assets/srca.cer, 传入: srca.cer, 例如: assets/static/srca.cer, 传入: static/srca.cer
-		// 3.证书密码，没有传入null/""
-
-		// 以下四种方法都可以加载自定义证书去请求https
-
-		/** assets中证书, 第一种: 没有密码 **/
-		Certificate certificate = new Certificate(this, "srca.cer", "");
-
-		/** assets中证书, 第二种: 有密码 **/
-		// Certificate certificate2 = new Certificate(this, "keystore.bks", "yolanda");
-
-		/** res/raw中证书, 第一种: 没有密码 **/
-		// Certificate certificate3 = new Certificate(this, R.raw.srca, null);
-
-		/** res/raw中证书, 第二种: 有密码 **/
-		// Certificate certificate4 = new Certificate(this, R.raw.keystore, "yolanda");
-
-		// 这里使用第一种，使用哪种都可以
-		httpsRequest.setCertificate(certificate);
 		CallServer.getRequestInstance().add(this, 0, httpsRequest, this);
 	}
 
@@ -103,9 +80,6 @@ public class NoHttpsActivity extends Activity implements View.OnClickListener, H
 		String url = "https://kyfw.12306.cn/otn";
 		// 初始化url和method
 		Request<String> httpsRequest = NoHttp.createStringRequest(url, RequestMethod.POST);
-
-		// 这里如果不需要证书，直接允许这个https的请求
-		httpsRequest.setAllowHttps(true);
 
 		CallServer.getRequestInstance().add(this, 0, httpsRequest, this);
 	}

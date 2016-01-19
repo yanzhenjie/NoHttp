@@ -29,8 +29,15 @@ public class Writer {
 
 	private OutputStream mOutputStream;
 
+	private boolean isPrint;
+
 	public Writer(OutputStream outputStream) {
 		this.mOutputStream = outputStream;
+	}
+
+	public Writer(OutputStream outputStream, boolean isPrint) {
+		this.mOutputStream = outputStream;
+		this.isPrint = isPrint;
 	}
 
 	public void write(int b) throws IOException {
@@ -51,5 +58,9 @@ public class Writer {
 		} else {
 			binary.onWriteBinary(mOutputStream);
 		}
+	}
+
+	public boolean isPrint() {
+		return isPrint;
 	}
 }
