@@ -32,7 +32,7 @@ public interface DownloadListener {
 	 * @param statusCode Error code, used to distinguish what kind of mistake; value from {@link StatusCode}
 	 * @param errorMessage error message
 	 */
-	void onDownloadError(int what, int statusCode, CharSequence errorMessage);
+	void onDownloadError(int what, StatusCode statusCode, CharSequence errorMessage);
 
 	/**
 	 * When this download task starts the callback method

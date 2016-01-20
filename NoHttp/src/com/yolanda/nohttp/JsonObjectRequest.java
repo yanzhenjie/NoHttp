@@ -26,12 +26,19 @@ import org.json.JSONObject;
  */
 public class JsonObjectRequest extends RestRequestor<JSONObject> {
 
+	public static final String ACCEPT = "application/json";
+
 	public JsonObjectRequest(String url) {
 		super(url);
 	}
 
 	public JsonObjectRequest(String url, RequestMethod requestMethod) {
 		super(url, requestMethod);
+	}
+
+	@Override
+	public String getAccept() {
+		return ACCEPT;
 	}
 
 	@Override

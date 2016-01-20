@@ -19,7 +19,7 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.cache.Cache;
+import com.yolanda.nohttp.HttpResponse;
 import com.yolanda.nohttp.cache.CacheEntity;
 
 import android.text.TextUtils;
@@ -66,7 +66,7 @@ public class HeaderParser {
 	}
 
 	/**
-	 * Extracts a {@link Cache.Entry} from a {@link NetworkResponse}.
+	 * Extracts a {@link CacheEntity} from a {@link HttpResponse}.
 	 */
 	public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
 		long now = System.currentTimeMillis();
@@ -105,7 +105,7 @@ public class HeaderParser {
 		CacheEntity cacheEntity = new CacheEntity();
 		long localExpire = 0;// 缓存相对于本地的到期时间
 
-		// If must-revalidate, When the cache expiration, mandatory validation from the server
+		// If must-revalidate, 当缓存过期时, 强制从服务器验证
 		// Http1.1
 		if (!TextUtils.isEmpty(cacheControl)) {
 			localExpire = now + maxAge * 1000;

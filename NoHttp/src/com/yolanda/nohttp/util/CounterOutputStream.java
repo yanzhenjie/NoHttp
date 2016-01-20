@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * Measure the length of the flow
  * </br>
  * Created in Dec 17, 2015 2:57:46 PM
  * 

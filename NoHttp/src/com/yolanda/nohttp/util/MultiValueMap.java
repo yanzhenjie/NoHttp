@@ -20,38 +20,82 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Can save multiple the value of the map
+ * </br>
  * Created in Jan 10, 2016 5:00:07 PM
  * 
  * @author YOLANDA
  */
 public interface MultiValueMap<K, V> {
 
+	/**
+	 * Add a value for a key
+	 */
 	void add(K key, V value);
 
+	/**
+	 * Add more value to a key
+	 */
 	void add(K key, List<V> values);
 
+	/**
+	 * Set the value for a key, if the key has the value, delete all of the old value, then the new value added
+	 */
 	void set(K key, V value);
 
+	/**
+	 * @see #set(Object, Object)
+	 */
 	void set(K key, List<V> values);
 
+	/**
+	 * The removal of all key/value pair, add new keys to enter
+	 */
 	void set(Map<K, List<V>> values);
 
+	/**
+	 * Delete a key-value
+	 */
 	void remove(K key);
 
+	/**
+	 * Remove all key-value
+	 */
 	void clear();
 
+	/**
+	 * Get the key set
+	 */
 	Set<K> keySet();
 
+	/**
+	 * To get all key of all values
+	 */
 	List<V> values();
 
+	/**
+	 * To get the key of the at index value
+	 */
 	V getValue(K key, int index);
 
+	/**
+	 * To get key of all values
+	 */
 	List<V> getValues(K key);
 
+	/**
+	 * The size of the map
+	 */
 	int size();
 
+	/**
+	 * If the map has no value
+	 */
 	boolean isEmpt();
 
+	/**
+	 * Whether the map with a key
+	 */
 	boolean containsKey(K key);
 
 }

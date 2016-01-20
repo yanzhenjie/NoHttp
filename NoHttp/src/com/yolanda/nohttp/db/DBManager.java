@@ -27,6 +27,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
+ * Database management generic class, has realized the basic functions, inheritance of the subclass only need to implement {@link #replace(DBId)}, {@link #get(String)} and
+ * {@link #getTableName(String)}
+ * </br>
  * Created in Jan 10, 2016 8:18:28 PM
  * 
  * @author YOLANDA
@@ -34,55 +37,87 @@ import android.util.Log;
 public abstract class DBManager<T extends DBId> {
 
 	private static final boolean DEBUG = false;
-
+	/**
+	 * A helper class to manage database creation and version management.
+	 */
 	private SQLiteOpenHelper disker;
 
 	public DBManager(SQLiteOpenHelper disker) {
 		this.disker = disker;
 	}
 
+	/**
+	 * Open the database when the read data
+	 */
 	protected final SQLiteDatabase openReader() {
 		return disker.getReadableDatabase();
 	}
 
+	/**
+	 * Open the database when the write data
+	 */
 	protected final SQLiteDatabase openWriter() {
 		return disker.getWritableDatabase();
 	}
 
-	protected final void finish(SQLiteDatabase execute) {
+	/**
+	 * Close the database when reading data
+	 */
+	protected final void readFinish(SQLiteDatabase execute, Cursor cursor) {
+		if (cursor != null && !cursor.isClosed())
+			cursor.close();
+		writeFinish(execute);
+	}
+
+	/**
+	 * Close the database when writing data
+	 */
+	protected final void writeFinish(SQLiteDatabase execute) {
 		if (execute != null && execute.isOpen()) {
 			execute.close();
 		}
 	}
 
-	protected final void finish(SQLiteDatabase execute, Cursor cursor) {
-		if (cursor != null && !cursor.isClosed())
-			cursor.close();
-		finish(execute);
-	}
-
+	/**
+	 * The query id number
+	 */
 	public final int count() {
-		return count(Field.ID);
+		return countColumn(Field.ID);
 	}
 
-	public final int count(String columnName) {
-		SQLiteDatabase execute = openReader();
+	/**
+	 * According to the "column" query "column" number
+	 */
+	public final int countColumn(String columnName) {
 		StringBuilder sqlBuild = new StringBuilder("SELECT COUNT(").append(columnName).append(") FROM ").append(getTableName());
-		String sql = sqlBuild.toString();
+		return count(sqlBuild.toString());
+	}
+
+	/**
+	 * According to the "column" query number
+	 */
+	public final int count(String sql) {
+		SQLiteDatabase execute = openReader();
 		print(sql);
 		Cursor cursor = execute.rawQuery(sql, null);
 		int count = 0;
 		if (cursor.moveToNext()) {
 			count = cursor.getInt(0);
 		}
-		finish(execute, cursor);
+		readFinish(execute, cursor);
 		return count;
 	}
 
+	/**
+	 * Delete all data
+	 */
 	public final boolean deleteAll() {
 		return delete("1=1");
 	}
 
+	/**
+	 * Delete the data list
+	 */
 	public final boolean delete(List<T> ts) {
 		StringBuilder where = new StringBuilder(Field.ID).append(" IN(");
 		for (T t : ts) {
@@ -98,6 +133,9 @@ public abstract class DBManager<T extends DBId> {
 		return delete(where.toString());
 	}
 
+	/**
+	 * According to the where to delete data
+	 */
 	public final boolean delete(String where) {
 		if (TextUtils.isEmpty(where))
 			return true;
@@ -112,18 +150,36 @@ public abstract class DBManager<T extends DBId> {
 			Logger.e(e);
 			result = false;
 		}
-		finish(execute);
+		writeFinish(execute);
 		return result;
 	}
 
+	/**
+	 * Query all data
+	 */
 	public final List<T> getAll() {
 		return getAll(Field.ALL);
 	}
 
+	/**
+	 * All the data query a column
+	 * 
+	 * @param columnName ColumnName
+	 */
 	public final List<T> getAll(String columnName) {
 		return get(columnName, null, null, null, null);
 	}
 
+	/**
+	 * All the data query a column
+	 * 
+	 * @param columnName Such as: *
+	 * @param where Such as: age > 20
+	 * @param orderBy Such as: age
+	 * @param limit Such as
+	 * @param offset
+	 * @return
+	 */
 	public final List<T> get(String columnName, String where, String orderBy, String limit, String offset) {
 		return get(getSelectSql(columnName, where, orderBy, limit, offset));
 	}
@@ -154,12 +210,24 @@ public abstract class DBManager<T extends DBId> {
 		return sqlBuild.toString();
 	}
 
+	/**
+	 * According to the SQL query data list
+	 */
 	public abstract List<T> get(String querySql);
 
+	/**
+	 * According to the unique index adds or updates a row data
+	 */
 	public abstract long replace(T t);
 
+	/**
+	 * Table name should be
+	 */
 	protected abstract String getTableName();
 
+	/**
+	 * Print the test data
+	 */
 	protected void print(String print) {
 		if (DEBUG)
 			Log.d("NoHttp", print);

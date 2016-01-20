@@ -199,11 +199,16 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String>implements H
 		return getDateField(HEAD_KEY_LAST_MODIFIED);
 	}
 
+	@Override
+	public String getLocation() {
+		return getValue(HEAD_KEY_LOCATION, 0);
+	}
+
 	private long getDateField(String key) {
 		String value = getValue(key, 0);
 		if (value != null)
 			try {
-				return HttpDateTime.parseToMillis(value);
+				return HttpDateTime.parseGMTToMillis(value);
 			} catch (ParseException e) {
 				Logger.w(e);
 			}

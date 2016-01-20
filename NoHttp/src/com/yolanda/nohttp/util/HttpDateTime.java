@@ -34,20 +34,36 @@ public final class HttpDateTime {
 
 	public static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
 
-	public static long parseToMillis(String gmtTime) throws ParseException {
+	/**
+	 * Parsing the TimeZone of time in milliseconds
+	 * 
+	 * @param gmtTime GRM Time, Format such as: {@value #FORMAT_HTTP_DATA}
+	 * @return The number of milliseconds from 1970.1.1
+	 * @throws ParseException if an error occurs during parsing.
+	 */
+	public static long parseGMTToMillis(String gmtTime) throws ParseException {
 		SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_HTTP_DATA, Locale.US);
 		formatter.setTimeZone(GMT_TIME_ZONE);
 		Date date = formatter.parse(gmtTime);
 		return date.getTime();
 	}
 
-	public static String formatToGTM(long milliseconds) {
+	/**
+	 * Parsing the TimeZone of time from milliseconds
+	 * 
+	 * @param milliseconds The number of milliseconds from 1970.1.1
+	 * @return GRM Time, Format such as: {@value #FORMAT_HTTP_DATA}
+	 */
+	public static String formatMillisToGMT(long milliseconds) {
 		Date date = new Date(milliseconds);
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT_HTTP_DATA, Locale.US);
 		simpleDateFormat.setTimeZone(GMT_TIME_ZONE);
 		return simpleDateFormat.format(date);
 	}
 
+	/**
+	 * Returned the local number of milliseconds after 100
+	 */
 	public static long getMaxExpiryMillis() {
 		return System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 365L * 100L;
 	}

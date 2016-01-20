@@ -48,6 +48,11 @@ public class ImageRequest extends RestRequestor<Bitmap> {
 	}
 
 	@Override
+	public String getAccept() {
+		return "image/*";
+	}
+
+	@Override
 	public Bitmap parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
 		synchronized (DECODE_LOCK) {
 			Bitmap bitmap = null;

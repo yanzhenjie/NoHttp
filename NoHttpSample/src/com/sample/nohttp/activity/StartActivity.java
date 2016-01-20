@@ -18,7 +18,6 @@ package com.sample.nohttp.activity;
 import com.sample.nohttp.R;
 import com.sample.nohttp.activity.cancel.NoHttpCancelActivity;
 import com.sample.nohttp.activity.cookie.NoHttpCookieActivity;
-import com.sample.nohttp.activity.define.NoHttpDefineRequestActivity;
 import com.sample.nohttp.activity.download.NoHttpDownloadActivity;
 import com.sample.nohttp.activity.https.NoHttpsActivity;
 import com.sample.nohttp.activity.image.NoHttpImageActivity;
@@ -53,7 +52,6 @@ public class StartActivity extends Activity implements View.OnClickListener {
 		findViewById(R.id.btn_image_activity).setOnClickListener(this);
 		findViewById(R.id.btn_cookie_activity).setOnClickListener(this);
 		findViewById(R.id.btn_upload_activity).setOnClickListener(this);
-		findViewById(R.id.btn_define_activity).setOnClickListener(this);
 		findViewById(R.id.btn_cancel_activity).setOnClickListener(this);
 		findViewById(R.id.btn_sync_activity).setOnClickListener(this);
 		findViewById(R.id.btn_https_activity).setOnClickListener(this);
@@ -87,11 +85,6 @@ public class StartActivity extends Activity implements View.OnClickListener {
 
 		if (v.getId() == R.id.btn_upload_activity) {// 演示上传
 			Intent intent = new Intent(this, NoHttpUploadFileActivity.class);
-			startActivity(intent);
-		}
-
-		if (v.getId() == R.id.btn_define_activity) {// 演示自定义请求对象
-			Intent intent = new Intent(this, NoHttpDefineRequestActivity.class);
 			startActivity(intent);
 		}
 

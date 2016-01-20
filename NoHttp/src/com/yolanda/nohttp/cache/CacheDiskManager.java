@@ -26,7 +26,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * Cache database management
+ * Cache database manager
  * </br>
  * Created in Jan 10, 2016 12:42:29 AM
  * 
@@ -60,7 +60,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 		} catch (Throwable e) {
 			Logger.e(e);
 		}
-		finish(execute);
+		writeFinish(execute);
 		return id;
 	}
 
@@ -99,7 +99,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 		} catch (Throwable e) {
 			Logger.e(e);
 		}
-		finish(execute, cursor);
+		readFinish(execute, cursor);
 		return cacheEntities;
 	}
 

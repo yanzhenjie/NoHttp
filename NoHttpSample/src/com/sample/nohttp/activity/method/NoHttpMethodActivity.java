@@ -39,7 +39,7 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 	/**
 	 * 请求地址，你运行demo时，这里换成你的地址
 	 */
-	private String mTargetUrl = "http://192.168.1.136/HttpServer/RedirectRequest";
+	private String mTargetUrl = "http://192.168.1.136/HttpServer/UserHead";
 	/**
 	 * 请求对象
 	 */
@@ -104,10 +104,10 @@ public class NoHttpMethodActivity extends Activity implements View.OnClickListen
 		mRequest = NoHttp.createStringRequest(mTargetUrl, method);
 		// github是https的请求，这里直接允许，不做证书验证，具体Https的使用请看NoHttpsActivity
 
-		mRequest.add("userName", "yolanda");// String类型
-		mRequest.add("userPass", "yolanda.pass");
-		mRequest.add("userAge", 20);// int类型
-		mRequest.add("userSex", '1');// char类型，还支持其它类型
+//		mRequest.add("userName", "yolanda");// String类型
+//		mRequest.add("userPass", "yolanda.pass");
+//		mRequest.add("userAge", 20);// int类型
+//		mRequest.add("userSex", '1');// char类型，还支持其它类型
 
 		// 设置这个请求的tag，NoHttp的请求会为你保持这个tag，在成功或者失败时返回给你
 		// mRequest.setTag(object);

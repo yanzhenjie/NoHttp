@@ -20,35 +20,51 @@ package com.yolanda.nohttp.download;
  * 
  * @author YOLANDA
  */
-public interface StatusCode {
+public enum StatusCode {
 
 	/**
 	 * Network is not available
 	 */
-	public static final int ERROR_NETWORK_NOT_AVAILABLE = -1;
+	ERROR_NETWORK_NOT_AVAILABLE(-1),
+
 	/**
 	 * URL Adress error
 	 */
-	public static final int ERROR_URL_SYNTAX_ERROR = -2;
+	ERROR_URL_SYNTAX_ERROR(-2),
+
 	/**
 	 * Specified folder capacity
 	 */
-	public static final int ERROR_STORAGE_NOT_ENOUGH = -3;
+	ERROR_STORAGE_NOT_ENOUGH(-3),
+
 	/**
 	 * No server in URL is found in the current network.
 	 */
-	public static final int ERROR_SERVER_NOT_FOUND = -4;
+	ERROR_SERVER_NOT_FOUND(-4),
+
 	/**
 	 * Server exception
 	 */
-	public static final int ERROR_SERVER_EXCEPTION = -5;
+	ERROR_SERVER_EXCEPTION(-5),
+
 	/**
 	 * Download the timeout
 	 */
-	public static final int ERROR_DOWNLOAD_TIMEOUT = -6;
+	ERROR_DOWNLOAD_TIMEOUT(-6),
+
 	/**
 	 * Other errors
 	 */
-	public static final int ERROR_OTHER = -7;
+	ERROR_OTHER(-7);
 
+	private final int value;
+
+	private StatusCode(int value) {
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return Integer.toString(value);
+	}
 }

@@ -35,6 +35,11 @@ public class StringRequest extends RestRequestor<String> {
 	}
 
 	@Override
+	public String getAccept() {
+		return "application/*,text/*;*/*";
+	}
+
+	@Override
 	public String parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
 		return parseResponseString(url, responseHeaders, responseBody);
 	}

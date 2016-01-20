@@ -44,12 +44,6 @@
             android:text="文件上传demo" />
 
         <Button
-            android:id="@+id/btn_define_activity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="自定义请求对象Demo" />
-
-        <Button
             android:id="@+id/btn_cancel_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

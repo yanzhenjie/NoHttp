@@ -58,6 +58,16 @@ public class RestDownloadRequestor extends RestRequestor<Void>implements Downloa
 	}
 
 	@Override
+	public String getAccept() {
+		return "*/*";
+	}
+
+	@Override
+	public String getContentType() {
+		return "";
+	}
+
+	@Override
 	public String getFileDir() {
 		return this.mFileDir;
 	}

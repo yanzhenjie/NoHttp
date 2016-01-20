@@ -16,6 +16,7 @@
 package com.yolanda.nohttp.db;
 
 /**
+ * General field class
  * </br>
  * Created in Jan 11, 2016 12:46:38 PM
  * 
@@ -24,7 +25,7 @@ package com.yolanda.nohttp.db;
 public interface Field {
 
 	public static final String ID = "_id";
-	
+
 	public static final String ALL = "*";
 
 }

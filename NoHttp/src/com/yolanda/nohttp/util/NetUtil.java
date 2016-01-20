@@ -34,6 +34,8 @@ import android.os.Build;
 import android.provider.Settings;
 
 /**
+ * Check the network utility class
+ * </br>
  * Created in Jul 31, 2015 1:19:47 PM
  * 
  * @author YOLANDA
@@ -224,7 +226,7 @@ public class NetUtil {
 	// 未压缩过的IPv6地址检查
 	private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
 	// 压缩过的IPv6地址检查
-	private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                           // 0-6
+	private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                             // 0-6
 			"::" + "(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)$");// 0-6 hex fields
 
 	/**

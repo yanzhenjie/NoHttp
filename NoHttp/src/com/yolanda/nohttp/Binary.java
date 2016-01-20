@@ -30,12 +30,12 @@ import com.yolanda.nohttp.able.Cancelable;
 public interface Binary extends Cancelable {
 
 	/**
-	 * Length of measurement
+	 * Length of byteArray
 	 */
 	long getLength();
 
 	/**
-	 * Return the byteArray of file
+	 * Write your Binary data through flow out
 	 */
 	void onWriteBinary(OutputStream outputStream);
 
@@ -45,12 +45,12 @@ public interface Binary extends Cancelable {
 	String getFileName();
 
 	/**
-	 * Return mimeType of stream
+	 * Return mimeType of binary
 	 */
 	String getMimeType();
 
 	/**
-	 * Get file charset
+	 * Get binary charset
 	 */
 	String getCharset();
 }

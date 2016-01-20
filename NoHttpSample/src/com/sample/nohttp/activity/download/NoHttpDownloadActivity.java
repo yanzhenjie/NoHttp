@@ -23,6 +23,7 @@ import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadRequest;
+import com.yolanda.nohttp.download.StatusCode;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -125,7 +126,7 @@ public class NoHttpDownloadActivity extends Activity implements View.OnClickList
 	}
 	
 	@Override
-	public void onDownloadError(int what, int statusCode, CharSequence errorMessage) {
+	public void onDownloadError(int what, StatusCode statusCode, CharSequence errorMessage) {
 		isStarted = false;
 		mBtnStart.setText("出错了，继续下载");
 		Logger.e("下载出错");

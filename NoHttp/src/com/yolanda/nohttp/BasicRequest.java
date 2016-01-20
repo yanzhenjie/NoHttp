@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
 import java.net.URLEncoder;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -40,27 +41,41 @@ public abstract class BasicRequest<T> implements Request<T> {
 	private final String end_boundary = start_boundary + "--";
 
 	/**
-	 * User Agent
+	 * User-Agent
 	 */
 	private static String userAgent;
+
+	/**
+	 * Accept-Language
+	 */
+	private static String acceptLanguage;
 
 	/**
 	 * Target adress
 	 */
 	private String url;
+	/**
+	 * The real url
+	 */
 	private String buildUrl;
 	/**
 	 * Request method
 	 */
 	private RequestMethod mRequestMethod;
 	/**
+	 * Cache key
+	 */
+	private String mCacheKey;
+	/**
 	 * Proxy server
 	 */
 	private Proxy mProxy;
-
+	/**
+	 * SSLSockets.
+	 */
 	private SSLSocketFactory mSSLSocketFactory = null;
 	/**
-	 * Connect http timeout
+	 * Connect timeout of request
 	 */
 	private int mConnectTimeout = NoHttp.TIMEOUT_8S;
 	/**
@@ -99,13 +114,6 @@ public abstract class BasicRequest<T> implements Request<T> {
 	 * Tag of request
 	 */
 	private Object mTag;
-
-	/* ===== Cache ===== */
-
-	/**
-	 * Cache key
-	 */
-	private String mCacheKey;
 
 	/**
 	 * Create a request, RequestMethod is {@link RequestMethod#Get}
@@ -257,6 +265,13 @@ public abstract class BasicRequest<T> implements Request<T> {
 	}
 
 	@Override
+	public String getAcceptLanguage() {
+		if (TextUtils.isEmpty(acceptLanguage))
+			acceptLanguage = createAcceptLanguage();
+		return acceptLanguage;
+	}
+
+	@Override
 	public long getContentLength() {
 		CounterOutputStream outputStream = new CounterOutputStream();
 		onWriteRequestBody(new Writer(outputStream));
@@ -373,7 +388,8 @@ public abstract class BasicRequest<T> implements Request<T> {
 		String requestBody = buildCommonParams().toString();
 		print(writer.isPrint(), "RequestBody: " + requestBody);
 		try {
-			writer.write(requestBody.getBytes());
+			if (requestBody.length() > 0)
+				writer.write(requestBody.getBytes());
 		} catch (IOException e) {
 			Logger.e(e);
 		}
@@ -385,7 +401,8 @@ public abstract class BasicRequest<T> implements Request<T> {
 	protected void writeRequestBody(Writer writer) {
 		try {
 			print(writer.isPrint(), "RequestBody: " + mRequestBody);
-			writer.write(mRequestBody);
+			if (mRequestBody.length > 0)
+				writer.write(mRequestBody);
 		} catch (IOException e) {
 			Logger.e(e);
 		}
@@ -510,13 +527,19 @@ public abstract class BasicRequest<T> implements Request<T> {
 		return false;
 	}
 
-	protected String getBoundry() {
-		return boundary;
-	}
-
 	private void print(boolean isPrint, String msg) {
 		if (isPrint)
 			Logger.d(msg);
+	}
+
+	/**
+	 * Create acceptLauguage
+	 */
+	public static String createAcceptLanguage() {
+		Locale locale = NoHttp.getContext().getResources().getConfiguration().locale;
+		String language = locale.getLanguage();
+		String country = locale.getCountry();
+		return new StringBuilder(language).append('-').append(country).append(',').append(language).toString();
 	}
 
 	/**

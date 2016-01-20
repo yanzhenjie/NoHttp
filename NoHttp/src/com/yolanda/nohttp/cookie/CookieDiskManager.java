@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
+ * Cookie database manager
  * </br>
  * Created in Dec 18, 2015 7:01:31 PM
  * 
@@ -73,7 +74,7 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 		} catch (Throwable e) {
 			Logger.w(e);
 		}
-		finish(execute);
+		writeFinish(execute);
 		return id;
 	}
 
@@ -149,7 +150,7 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 		} catch (Throwable e) {
 			Logger.e(e);
 		}
-		finish(execute, cursor);
+		readFinish(execute, cursor);
 		return cookies;
 	}
 

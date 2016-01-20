@@ -62,7 +62,7 @@ public class ImageLocalLoader {
 					i += 1;
 				}
 			} catch (IOException e) {
-				Logger.e("This path does not exist" + imagePath, e);
+				Logger.e(e, imagePath);
 			}
 		}
 		return null;

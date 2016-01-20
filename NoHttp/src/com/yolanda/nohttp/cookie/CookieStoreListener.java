@@ -19,6 +19,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 
 /**
+ * The listener when save or delete the Cookie
  * </br>
  * Created in Dec 22, 2015 8:23:49 PM
  * 
@@ -26,8 +27,14 @@ import java.net.URI;
  */
 public interface CookieStoreListener {
 
+	/**
+	 * When saving a Cookie callback
+	 */
 	void onSaveCookie(URI uri, HttpCookie cookie);
 
+	/**
+	 * The callback when deleting cookies
+	 */
 	void onRemoveCookie(URI uri, HttpCookie cookie);
 
 }

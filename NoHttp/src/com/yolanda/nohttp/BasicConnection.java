@@ -32,12 +32,14 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.yolanda.nohttp.util.Writer;
+
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.text.TextUtils;
 
 /**
- * Package good Http implementation class, establish connection, read and write data</br>
+ * Package good Http implementation class, establish connection, read and write data
+ * </br>
  * Created in Aug 4, 2015 10:12:38 AM
  * 
  * @author YOLANDA
@@ -45,9 +47,7 @@ import android.text.TextUtils;
 public class BasicConnection {
 
 	/**
-	 * Create a Http connection object, but do not establish a connection, where the request header information is set
-	 * up, including Cookie
-	 * 
+	 * The connection is established, including the head and send the request body
 	 */
 	protected HttpURLConnection getHttpConnection(ImplServerRequest request) throws IOException, URISyntaxException {
 		// 1.Pre operation notice
@@ -91,14 +91,27 @@ public class BasicConnection {
 	}
 
 	/**
-	 * Set request headers
+	 * Set request headers, here will add cookies
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
-	private void setHeaders(URI uri, HttpURLConnection connection, ImplServerRequest request) throws IOException {
+	private void setHeaders(URI uri, HttpURLConnection connection, ImplServerRequest request) {
 		// 1.Build Headers
 		Headers headers = request.headers();
 
-		// 2.Set content Length
+		// 2.Base header
+		String accept = request.getAccept();
+		if (!TextUtils.isEmpty(accept))
+			headers.set(Headers.HEAD_KEY_ACCEPT, accept);
+		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
+		headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, request.getAcceptLanguage());
+		
+		// 2.1 Connection
+		// To fix bug: accidental EOFException before API 19
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
+			headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);
+		else
+			headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_CLOSE);
+		// 2.2 Content_length
 		if (request.doOutPut()) {
 			long contentLength = request.getContentLength();
 			if (contentLength < Integer.MAX_VALUE && contentLength > 0)
@@ -109,17 +122,14 @@ public class BasicConnection {
 				connection.setChunkedStreamingMode(256 * 1024);
 			headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
 		}
-
-		// 3.Base header
-		// to fix bug: accidental EOFException before API 19
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
-			headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);
-		else
-			headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_CLOSE);
-
-		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
-		headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
+		// 2.3 Content_type
 		headers.set(Headers.HEAD_KEY_CONTENT_TYPE, request.getContentType());
+		// 2.4 Cookie
+		try {
+			headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
+		} catch (IOException e) {
+			Logger.e(e, "Add cookie filed: " + uri.toString());
+		}
 		headers.set(Headers.HEAD_KEY_USER_AGENT, request.getUserAgent());
 
 		Map<String, String> requestHeaders = headers.toRequestHeaders();
@@ -133,9 +143,16 @@ public class BasicConnection {
 		}
 	}
 
-	protected Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> reponseHeaders) throws IOException, URISyntaxException {
+	/**
+	 * Parse server response headers, here will save cookies
+	 */
+	protected Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> reponseHeaders) {
 		// handle cookie
-		NoHttp.getDefaultCookieHandler().put(uri, reponseHeaders);
+		try {
+			NoHttp.getDefaultCookieHandler().put(uri, reponseHeaders);
+		} catch (IOException e) {
+			Logger.e(e, "Save cookie filed: " + uri.toString());
+		}
 
 		// handle headers
 		Headers headers = new HttpHeaders();
@@ -160,7 +177,7 @@ public class BasicConnection {
 	/* ====================Wirte request body==================== */
 
 	/**
-	 * Send the request data to the server
+	 * Send the request body to the server
 	 */
 	private void writeRequestBody(HttpURLConnection connection, ImplServerRequest request) throws IOException {
 		if (request.doOutPut()) {

@@ -37,9 +37,13 @@ public interface Headers extends MultiValueMap<String, String> {
 
 	static final String HEAD_KEY_RESPONSE_MESSAGE = "ResponseMessage";
 
+	public static final String HEAD_KEY_ACCEPT = "Accept";
+
 	public static final String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
 
-	public static final String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate, sdch";
+	public static final String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate";// no sdch
+
+	public static final String HEAD_KEY_ACCEPT_LANGUAGE = "Accept-Language";
 
 	public static final String HEAD_KEY_CONTENT_TYPE = "Content-Type";
 
@@ -71,6 +75,8 @@ public interface Headers extends MultiValueMap<String, String> {
 
 	public static final String HEAD_KEY_LAST_MODIFIED = "Last-Modified";
 
+	public static final String HEAD_KEY_LOCATION = "Location";
+
 	public static final String HEAD_KEY_USER_AGENT = "User-Agent";
 
 	public static final String HEAD_KEY_COOKIE = "Cookie";
@@ -81,10 +87,22 @@ public interface Headers extends MultiValueMap<String, String> {
 
 	public static final String HEAD_KEY_SET_COOKIE2 = "Set-Cookie2";
 
+	/**
+	 * Copy all head to Headers
+	 */
 	void addAll(Headers headers);
 
+	/**
+	 * Remove all of the head now, add a new head in
+	 */
 	void setAll(Headers headers);
 
+	/**
+	 * Conform to the URL of the Cookie is added to the head
+	 * @param uri
+	 * @param cookieHandler
+	 * @throws IOException
+	 */
 	void addCookie(URI uri, CookieHandler cookieHandler) throws IOException;
 
 	void setJSONString(String jsonString) throws JSONException;
@@ -112,6 +130,8 @@ public interface Headers extends MultiValueMap<String, String> {
 	long getExpiration();
 
 	long getLastModified();
+
+	String getLocation();
 
 	int getResponseCode();
 

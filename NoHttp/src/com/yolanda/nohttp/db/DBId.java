@@ -16,6 +16,8 @@
 package com.yolanda.nohttp.db;
 
 /**
+ * The entity class id of the interface
+ * </br>
  * Created in Jan 10, 2016 11:03:21 PM
  * 
  * @author YOLANDA

@@ -101,7 +101,7 @@ class DownloadDispatch extends Thread {
 				}
 
 				@Override
-				public void onDownloadError(int what, int statusCode, CharSequence errorMessage) {
+				public void onDownloadError(int what, StatusCode statusCode, CharSequence errorMessage) {
 					ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
 					threadPoster.onError(statusCode, errorMessage);
 					getPosterHandler().post(threadPoster);
@@ -166,7 +166,7 @@ class DownloadDispatch extends Thread {
 		private long fileCount;
 
 		// error
-		private int statusCode;
+		private StatusCode statusCode;
 		private CharSequence errorMessage;
 
 		// finish
@@ -191,7 +191,7 @@ class DownloadDispatch extends Thread {
 			this.fileCount = fileCount;
 		}
 
-		public void onError(int statusCode, CharSequence errorMessage) {
+		public void onError(StatusCode statusCode, CharSequence errorMessage) {
 			this.command = COMMAND_ERROR;
 			this.statusCode = statusCode;
 			this.errorMessage = errorMessage;

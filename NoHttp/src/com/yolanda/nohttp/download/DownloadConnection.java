@@ -39,7 +39,8 @@ import android.util.Log;
 import android.webkit.URLUtil;
 
 /**
- * Realized network tasks</br>
+ * The network layer to download missions
+ * </br>
  * Created in Jul 31, 2015 9:11:55 AM
  * 
  * @author YOLANDA
@@ -197,7 +198,10 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 			downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_NOT_FOUND, getExcetionMessage(e));
 		} catch (Exception e) {
 			Logger.e(e);
-			downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, getExcetionMessage(e));
+			if (NetUtil.isNetworkAvailable(NoHttp.getContext()))
+				downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, getExcetionMessage(e));
+			else
+				downloadListener.onDownloadError(what, StatusCode.ERROR_NETWORK_NOT_AVAILABLE, "Network is not available");
 		} finally {
 			Logger.i("----------Response End----------");
 			try {

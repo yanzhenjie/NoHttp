@@ -41,6 +41,7 @@ class CacheDisker extends SQLiteOpenHelper implements Field {
 	private static final String SQL_CREATE_TABLE = "CREATE TABLE cache_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, head TEXT, data BLOB)";
 	private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cache_unique_index ON cache_table(\"key\")";
 	private static final String SQL_DELETE_TABLE = "DROP TABLE cache_table";
+	private static final String SQL_DELETE_UNIQUE_INDEX = "DROP UNIQUE INDEX cache_unique_index";
 
 	public CacheDisker() {
 		super(NoHttp.getContext(), DB_CACHE_NAME, null, DB_CACHE_VERSION);
@@ -61,8 +62,16 @@ class CacheDisker extends SQLiteOpenHelper implements Field {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		if (newVersion != oldVersion) {
-			db.execSQL(SQL_DELETE_TABLE);
-			onCreate(db);
+			db.beginTransaction();
+			try {
+				db.execSQL(SQL_DELETE_TABLE);
+				db.execSQL(SQL_DELETE_UNIQUE_INDEX);
+				db.execSQL(SQL_CREATE_TABLE);
+				db.execSQL(SQL_CREATE_UNIQUE_INDEX);
+				db.setTransactionSuccessful();
+			} finally {
+				db.endTransaction();
+			}
 		}
 	}
 

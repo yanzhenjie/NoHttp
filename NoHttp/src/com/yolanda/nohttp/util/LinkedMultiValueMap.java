@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * </br>
  * Created in Jan 10, 2016 5:03:17 PM
  * 
  * @author YOLANDA
@@ -51,28 +52,21 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V> {
 
 	@Override
 	public void set(K key, V value) {
-		if (mSource.containsKey(key))
-			mSource.get(key).clear();
+		mSource.remove(key);
 		add(key, value);
 	}
 
 	@Override
 	public void set(K key, List<V> values) {
-		if (mSource.containsKey(key))
-			mSource.get(key).clear();
+		mSource.remove(key);
 		add(key, values);
 	}
 
 	@Override
 	public void set(Map<K, List<V>> map) {
 		mSource.clear();
-		if (map != null) {
-			for (Map.Entry<K, List<V>> entry : map.entrySet()) {
-				K key = entry.getKey();
-				List<V> values = entry.getValue();
-				if (key != null)
-					add(key, values);
-			}
+		for (Map.Entry<K, List<V>> entry : map.entrySet()) {
+			add(entry.getKey(), entry.getValue());
 		}
 	}
 

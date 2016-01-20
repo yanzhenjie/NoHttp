@@ -51,7 +51,7 @@ public enum DiskCookieStore implements CookieStore {
 	 */
 	private Lock mLock;
 	/**
-	 * DbManager
+	 * Database Manager
 	 */
 	private DBManager<CookieEntity> mManager;
 	/**

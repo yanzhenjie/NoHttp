@@ -23,6 +23,7 @@ import com.yolanda.nohttp.db.DBId;
 import com.yolanda.nohttp.util.HttpDateTime;
 
 /**
+ * Cookie entity
  * </br>
  * Created in Dec 17, 2015 7:21:16 PM
  * 

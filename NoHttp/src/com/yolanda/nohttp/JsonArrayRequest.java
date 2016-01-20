@@ -35,6 +35,11 @@ public class JsonArrayRequest extends RestRequestor<JSONArray> {
 	}
 
 	@Override
+	public String getAccept() {
+		return JsonObjectRequest.ACCEPT;
+	}
+
+	@Override
 	public JSONArray parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
 		String josnStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
 		try {

@@ -24,6 +24,8 @@ import com.yolanda.nohttp.db.Where;
 import com.yolanda.nohttp.db.Where.Options;
 
 /**
+ * HTTP cache interface implementation
+ * </br>
  * Created in Jan 10, 2016 12:45:34 AM
  * 
  * @author YOLANDA
@@ -32,8 +34,13 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
 
 	INSTANCE;
 
+	/**
+	 * Database sync lock
+	 */
 	private Lock mLock;
-
+	/**
+	 * Database manager
+	 */
 	private DBManager<CacheEntity> mManager;
 
 	private DiskCacheStore() {

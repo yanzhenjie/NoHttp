@@ -22,6 +22,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
+ * Cookie database operation class
  * </br>
  * Created in Dec 18, 2015 6:30:59 PM
  * 

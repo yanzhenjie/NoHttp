@@ -76,6 +76,10 @@ public interface ImplServerRequest {
 	 */
 	Headers headers();
 
+	String getAccept();
+
+	String getAcceptLanguage();
+
 	/**
 	 * Get content length
 	 */

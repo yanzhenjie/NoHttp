@@ -26,6 +26,8 @@ import com.yolanda.nohttp.db.DBId;
 import com.yolanda.nohttp.db.Field;
 
 /**
+ * Cache entity class
+ * </br>
  * Created in Jan 10, 2016 12:43:10 AM
  * 
  * @author YOLANDA
@@ -38,12 +40,12 @@ public class CacheEntity implements DBId, Field, Serializable {
 
 	private String key;
 	/**
-	 * Immutable response headers as received from server; must be non-null.
+	 * The server response headers
 	 */
 	private Headers responseHeaders = new HttpHeaders();
 
 	/**
-	 * The data returned from cache.
+	 * Cache data
 	 */
 	private byte[] data = {};
 
@@ -51,7 +53,9 @@ public class CacheEntity implements DBId, Field, Serializable {
 	 * The last modified date for the requested object.
 	 */
 	private long lastModified = 0;
-	
+	/**
+	 * Cached in the local expiration time
+	 */
 	private long localExpire;
 
 	public CacheEntity() {

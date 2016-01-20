@@ -113,7 +113,7 @@ public class HttpRestExecutor implements ImplRestExecutor {
 
 			long lastModified = headers.getLastModified();
 			if (lastModified > 0)
-				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatToGTM(lastModified));
+				request.setHeader(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatMillisToGMT(lastModified));
 		}
 	}
 }
