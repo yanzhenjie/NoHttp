@@ -18,7 +18,8 @@ package com.yolanda.nohttp;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Requet Queue</br>
+ * Requet Queue
+ * </br>
  * Created in Oct 19, 2015 8:36:22 AM
  * 
  * @author YOLANDA
@@ -33,7 +34,7 @@ public class RequestQueue {
 	/**
 	 * HTTP request actuator interface
 	 */
-	private final ImplRestExecutor mConnectionManager;
+	private final ImplRestParser mImplRestParser;
 
 	/**
 	 * Request queue polling thread array
@@ -43,11 +44,11 @@ public class RequestQueue {
 	/**
 	 * Create request queue manager
 	 * 
-	 * @param httpStack Download the network task execution interface, where you need to implement the download tasks that have been implemented.
+	 * @param implRestParser Download the network task execution interface, where you need to implement the download tasks that have been implemented.
 	 * @param threadPoolSize Number of thread pool
 	 */
-	public RequestQueue(ImplRestExecutor connectionManager, int threadPoolSize) {
-		mConnectionManager = connectionManager;
+	public RequestQueue(ImplRestParser implRestParser, int threadPoolSize) {
+		mImplRestParser = implRestParser;
 		mDispatchers = new RequestDispatcher[threadPoolSize];
 	}
 
@@ -58,7 +59,7 @@ public class RequestQueue {
 	public void start() {
 		stop();
 		for (int i = 0; i < mDispatchers.length; i++) {
-			RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mConnectionManager);
+			RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mImplRestParser);
 			mDispatchers[i] = networkDispatcher;
 			networkDispatcher.start();
 		}
@@ -80,8 +81,9 @@ public class RequestQueue {
 	 */
 	public void stop() {
 		for (int i = 0; i < mDispatchers.length; i++) {
-			if (mDispatchers[i] != null)
+			if (mDispatchers[i] != null) {
 				mDispatchers[i].quit();
+			}
 		}
 	}
 

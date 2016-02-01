@@ -24,9 +24,11 @@ import java.util.Map;
 
 import org.json.JSONException;
 
-import com.yolanda.nohttp.util.MultiValueMap;
+import com.yolanda.nohttp.tools.MultiValueMap;
 
 /**
+ * Http header
+ * </br>
  * Created in Jan 10, 2016 2:29:42 PM
  * 
  * @author YOLANDA
@@ -38,6 +40,8 @@ public interface Headers extends MultiValueMap<String, String> {
 	static final String HEAD_KEY_RESPONSE_MESSAGE = "ResponseMessage";
 
 	public static final String HEAD_KEY_ACCEPT = "Accept";
+
+	public static final String HEAD_KEY_ACCEPT_CHARSET = "Accept-Charset";
 
 	public static final String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
 
@@ -98,42 +102,94 @@ public interface Headers extends MultiValueMap<String, String> {
 	void setAll(Headers headers);
 
 	/**
-	 * Conform to the URL of the Cookie is added to the head
-	 * @param uri
-	 * @param cookieHandler
-	 * @throws IOException
+	 * Conform to the URI of the Cookie is added to the head
+	 * 
+	 * @param uri url
+	 * @param cookieHandler cookieHandler
+	 * @throws IOException When reading a Cookie from CookieHandler may be exception
 	 */
 	void addCookie(URI uri, CookieHandler cookieHandler) throws IOException;
 
+	/**
+	 * From the json format String parsing out the {@code Map<String, List<String>>} data
+	 * 
+	 * @param jsonString Json string
+	 * @throws JSONException Thrown it when format error
+	 */
 	void setJSONString(String jsonString) throws JSONException;
 
+	/**
+	 * Into a json format string
+	 */
 	String toJSONString();
 
+	/**
+	 * Into a single key-value map
+	 */
 	Map<String, String> toRequestHeaders();
 
+	/**
+	 * To multiple key - the value of the map
+	 */
 	Map<String, List<String>> toResponseHeaders();
 
+	/**
+	 * All the cookies in header information
+	 */
 	List<HttpCookie> getCookies();
 
+	/**
+	 * {@value #HEAD_KEY_CACHE_CONTROL}
+	 */
 	String getCacheControl();
 
+	/**
+	 * {@value #HEAD_KEY_CONTENT_ENCODING}
+	 */
 	String getContentEncoding();
 
+	/**
+	 * {@value #HEAD_KEY_CONTENT_LENGTH}
+	 */
 	int getContentLength();
 
+	/**
+	 * {@value #HEAD_KEY_CONTENT_TYPE}
+	 */
 	String getContentType();
 
+	/**
+	 * {@value #HEAD_KEY_DATE}
+	 */
 	long getDate();
 
+	/**
+	 * {@value #HEAD_KEY_ETAG}
+	 */
 	String getETag();
 
+	/**
+	 * {@value #HEAD_KEY_EXPIRES}
+	 */
 	long getExpiration();
 
+	/**
+	 * {@value #HEAD_KEY_LAST_MODIFIED}
+	 */
 	long getLastModified();
 
+	/**
+	 * {@value #HEAD_KEY_LOCATION}
+	 */
 	String getLocation();
 
+	/**
+	 * {@value #HEAD_KEY_RESPONSE_CODE}
+	 */
 	int getResponseCode();
 
+	/**
+	 * {@value #HEAD_KEY_RESPONSE_MESSAGE}
+	 */
 	String getResponseMessage();
 }

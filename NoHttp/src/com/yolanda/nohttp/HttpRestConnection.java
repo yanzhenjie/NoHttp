@@ -21,27 +21,33 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.zip.GZIPInputStream;
 
-import com.yolanda.nohttp.util.HeaderParser;
-import com.yolanda.nohttp.util.NetUtil;
+import com.yolanda.nohttp.tools.HeaderParser;
+import com.yolanda.nohttp.tools.NetUtil;
 
 import android.webkit.URLUtil;
 
 /**
- * RESTFUL request actuator</br>
+ * Network operating interface, The implementation of the network layer
+ * </br>
  * Created in Jul 28, 2015 7:33:22 PM
  * 
  * @author YOLANDA
  */
 public final class HttpRestConnection extends BasicConnection implements ImplRestConnection {
 
-	public HttpRestConnection() {
+	private static HttpRestConnection instance;
+
+	public static HttpRestConnection getInstance() {
+		if (instance == null)
+			instance = new HttpRestConnection();
+		return instance;
 	}
 
-	/**
-	 * Initiate the request, and parse the response results
-	 */
+	private HttpRestConnection() {
+	}
+
 	@Override
-	public HttpResponse request(ImplServerRequest request) {
+	public HttpResponse requestNetwork(ImplServerRequest request) {
 		if (request == null)
 			throw new IllegalArgumentException("reqeust == null");
 

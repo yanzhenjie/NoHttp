@@ -63,7 +63,7 @@ public class UserAgent {
 		if (language != null) {
 			buffer.append(language.toLowerCase(locale));
 			final String country = locale.getCountry();
-			if (country != null) {
+			if (!TextUtils.isEmpty(country)) {
 				buffer.append("-");
 				buffer.append(country.toLowerCase(locale));
 			}

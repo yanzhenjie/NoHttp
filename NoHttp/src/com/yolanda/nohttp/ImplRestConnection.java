@@ -16,7 +16,8 @@
 package com.yolanda.nohttp;
 
 /**
- * Interface for executing RESTFUL's request</br>
+ * Network operating interface, The implementation of the network layer
+ * </br>
  * Created in Oct 20, 2015 4:12:16 PM
  * 
  * @author YOLANDA
@@ -24,8 +25,8 @@ package com.yolanda.nohttp;
 public interface ImplRestConnection {
 
 	/**
-	 * Execute a sync request
+	 * Perform a sync request
 	 */
-	HttpResponse request(ImplServerRequest request);
+	HttpResponse requestNetwork(ImplServerRequest request);
 
 }

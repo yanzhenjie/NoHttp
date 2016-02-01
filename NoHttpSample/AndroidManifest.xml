@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="14"
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
-        android:name="com.sample.nohttp.SampleApplication"
+        android:name="com.sample.nohttp.Application"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -34,33 +34,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.sample.nohttp.activity.NoHttpOriginalActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.method.NoHttpMethodActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.download.NoHttpDownloadActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.image.NoHttpImageActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.cookie.NoHttpCookieActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.upload.NoHttpUploadFileActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.cancel.NoHttpCancelActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.sync.NoHttpSyncActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.sample.nohttp.activity.https.NoHttpsActivity"
-            android:label="@string/app_name" />
+        <activity android:name="com.sample.nohttp.activity.OriginalActivity" />
+        <activity android:name="com.sample.nohttp.activity.FastJsonActvity" />
+        <activity android:name="com.sample.nohttp.activity.MethodActivity" />
+        <activity android:name="com.sample.nohttp.activity.ImageActivity" />
+        <activity android:name="com.sample.nohttp.activity.JsonActivity" />
+        <activity android:name="com.sample.nohttp.activity.CacheActivity" />
+        <activity android:name="com.sample.nohttp.activity.RedirectActivity" />
+        <activity android:name="com.sample.nohttp.activity.UploadFileActivity" />
+        <activity android:name="com.sample.nohttp.activity.DownloadActivity" />
+        <activity android:name="com.sample.nohttp.activity.CancelActivity" />
+        <activity android:name="com.sample.nohttp.activity.SyncActivity" />
+        <activity android:name="com.sample.nohttp.activity.ProXYActivity" />
+        <activity android:name="com.sample.nohttp.activity.HttpsActivity" />
     </application>
 
 </manifest>

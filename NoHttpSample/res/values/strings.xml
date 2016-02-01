@@ -2,4 +2,16 @@
 <resources>
 
     <string name="app_name">NoHttpSample</string>
+    <string name="activity_start">NoHttp演示Demo</string>
+    <string name="reqeust_start">发起请求</string>
+    <string name="reqeust_proxy">通过代理访问Google</string>
+    <string name="reqeust_fastjson">自定义FastJson请求</string>
+    <string name="reqeust_json_object">JsonObject对象</string>
+    <string name="reqeust_json_array">JsonArray对象</string>
+    <string name="reqeust_sync">同步请求</string>
+    <string name="upload_start">开始上传</string>
+    <string name="download_start">开始下载</string>
+    <string name="request_https_ver">Https证书请求</string>
+    <string name="no_opration_des">请看本Activity的代码和注释</string>
+
 </resources>

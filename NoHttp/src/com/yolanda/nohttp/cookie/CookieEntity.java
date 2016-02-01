@@ -20,7 +20,9 @@ import java.net.HttpCookie;
 import java.net.URI;
 
 import com.yolanda.nohttp.db.DBId;
-import com.yolanda.nohttp.util.HttpDateTime;
+import com.yolanda.nohttp.tools.HttpDateTime;
+
+import android.text.TextUtils;
 
 /**
  * Cookie entity
@@ -62,12 +64,18 @@ class CookieEntity implements DBId, Serializable {
 		this.discard = cookie.getDiscard();
 		this.domain = cookie.getDomain();
 		long maxAge = cookie.getMaxAge();
-		if (maxAge != -1) { // session, temp cookie
-			this.expiry = (maxAge * 1000) + System.currentTimeMillis();
+		if (maxAge > 0L) { // session, temp cookie
+			this.expiry = (maxAge * 1000L) + System.currentTimeMillis();
+			// 溢出
 			if (this.expiry < 0)
 				this.expiry = HttpDateTime.getMaxExpiryMillis();
+		} else {
+			this.expiry = -1L;
 		}
 		this.path = cookie.getPath();
+		if (!TextUtils.isEmpty(path) && path.length() > 1 && path.endsWith("/")) {
+            this.path = path.substring(0, path.length() - 1);
+        }
 		this.portList = cookie.getPortlist();
 		this.secure = cookie.getSecure();
 		this.version = cookie.getVersion();

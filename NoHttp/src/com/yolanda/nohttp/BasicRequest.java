@@ -24,12 +24,14 @@ import java.util.Set;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import com.yolanda.nohttp.util.CounterOutputStream;
-import com.yolanda.nohttp.util.Writer;
+import com.yolanda.nohttp.tools.CounterOutputStream;
+import com.yolanda.nohttp.tools.Writer;
 
 import android.text.TextUtils;
 
 /**
+ * Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}
+ * </br>
  * Created in Nov 4, 2015 8:28:50 AM
  * 
  * @author YOLANDA
@@ -82,6 +84,10 @@ public abstract class BasicRequest<T> implements Request<T> {
 	 * Read data timeout
 	 */
 	private int mReadTimeout = NoHttp.TIMEOUT_8S;
+	/**
+	 * Redirect handler
+	 */
+	private RedirectHandler mRedirectHandler;
 	/**
 	 * Request heads
 	 */
@@ -240,28 +246,43 @@ public abstract class BasicRequest<T> implements Request<T> {
 	}
 
 	@Override
-	public void setHeader(String name, String value) {
-		mHeaders.set(name, value);
+	public void setRedirectHandler(RedirectHandler redirectHandler) {
+		this.mRedirectHandler = redirectHandler;
 	}
 
 	@Override
-	public void addHeader(String name, String value) {
-		mHeaders.add(name, value);
+	public RedirectHandler getRedirectHandler() {
+		return mRedirectHandler;
 	}
 
 	@Override
-	public void removeHeader(String name) {
-		mHeaders.remove(name);
+	public void setHeader(String key, String value) {
+		mHeaders.set(key, value);
 	}
 
 	@Override
-	public void removeAllHeaders() {
+	public void addHeader(String key, String value) {
+		mHeaders.add(key, value);
+	}
+
+	@Override
+	public void removeHeader(String key) {
+		mHeaders.remove(key);
+	}
+
+	@Override
+	public void removeAllHeader() {
 		mHeaders.clear();
 	}
 
 	@Override
 	public Headers headers() {
 		return this.mHeaders;
+	}
+
+	@Override
+	public String getAcceptCharset() {
+		return NoHttp.CHARSET_UTF8;
 	}
 
 	@Override
@@ -282,11 +303,10 @@ public abstract class BasicRequest<T> implements Request<T> {
 	@Override
 	public String getContentType() {
 		StringBuilder contentTypeBuild = new StringBuilder();
-		if (doOutPut() && hasBinary()) {
+		if (doOutPut() && hasBinary())
 			contentTypeBuild.append("multipart/form-data; boundary=").append(boundary);
-		} else {
+		else
 			contentTypeBuild.append("application/x-www-form-urlencoded; charset=").append(getParamsEncoding());
-		}
 		return contentTypeBuild.toString();
 	}
 
@@ -370,7 +390,11 @@ public abstract class BasicRequest<T> implements Request<T> {
 		print(writer.isPrint(), key + " is Binary");
 
 		StringBuilder binaryFieldBuilder = new StringBuilder(start_boundary).append("\r\n");
-		binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"").append(value.getFileName()).append("\"\r\n");
+		binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"");
+		String filename = value.getFileName();
+		if (!TextUtils.isEmpty(filename))
+			binaryFieldBuilder.append("; filename=\"").append(value.getFileName()).append("\"");
+		binaryFieldBuilder.append("\r\n");
 
 		binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
 		binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
@@ -535,11 +559,14 @@ public abstract class BasicRequest<T> implements Request<T> {
 	/**
 	 * Create acceptLauguage
 	 */
-	public static String createAcceptLanguage() {
+	public static final String createAcceptLanguage() {
 		Locale locale = NoHttp.getContext().getResources().getConfiguration().locale;
 		String language = locale.getLanguage();
 		String country = locale.getCountry();
-		return new StringBuilder(language).append('-').append(country).append(',').append(language).toString();
+		StringBuilder acceptLanguageBuilder = new StringBuilder(language);
+		if (!TextUtils.isEmpty(country))
+			acceptLanguageBuilder.append('-').append(country).append(',').append(language).append(";q=0.8");
+		return acceptLanguageBuilder.toString();
 	}
 
 	/**
@@ -547,8 +574,8 @@ public abstract class BasicRequest<T> implements Request<T> {
 	 * 
 	 * @return random code
 	 */
-	protected static final String createBoundry() {
-		StringBuffer sb = new StringBuffer("--------");
+	public static final String createBoundry() {
+		StringBuffer sb = new StringBuffer("------------------");
 		for (int t = 1; t < 12; t++) {
 			long time = System.currentTimeMillis() + t;
 			if (time % 3L == 0L) {

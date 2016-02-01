@@ -17,12 +17,13 @@ package com.yolanda.nohttp;
 
 import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
-import com.yolanda.nohttp.util.HeaderParser;
-import com.yolanda.nohttp.util.HttpDateTime;
+import com.yolanda.nohttp.tools.HeaderParser;
+import com.yolanda.nohttp.tools.HttpDateTime;
 
-import android.os.SystemClock;
+import android.text.TextUtils;
 
 /**
+ * The request executor, Interact with the network layer
  * </br>
  * Created in Jan 6, 2016 5:45:19 PM
  * 
@@ -32,27 +33,23 @@ public class HttpRestExecutor implements ImplRestExecutor {
 
 	private static HttpRestExecutor _INSTANCE;
 
+	private ImplRestConnection mConnection;
+
+	private Cache<CacheEntity> mCache;
+
+	private HttpRestExecutor(Cache<CacheEntity> cache, ImplRestConnection connection) {
+		this.mCache = cache;
+		this.mConnection = connection;
+	}
+
 	public static HttpRestExecutor getInstance(Cache<CacheEntity> cache, ImplRestConnection connection) {
 		if (_INSTANCE == null)
 			_INSTANCE = new HttpRestExecutor(cache, connection);
 		return _INSTANCE;
 	}
 
-	private ImplRestConnection mConnection;
-
-	private Cache<CacheEntity> mCache;
-
-	public HttpRestExecutor(Cache<CacheEntity> cache, ImplRestConnection connection) {
-		this.mCache = cache;
-		this.mConnection = connection;
-	}
-
 	@Override
-	public <T> Response<T> handleRequest(Request<T> request) {
-		long requestStart = SystemClock.elapsedRealtime();
-		T result = null;
-		String url = request.url();
-
+	public HttpResponse executRequest(Request<?> request) {
 		// handle cache header
 		CacheEntity cacheEntity = null;
 		if (request.needCache())
@@ -63,44 +60,74 @@ public class HttpRestExecutor implements ImplRestExecutor {
 		if (cacheEntity == null || cacheEntity.getLocalExpire() < System.currentTimeMillis()) {
 			if (cacheEntity != null)
 				handleCacheHeader(request, cacheEntity);
-			httpResponse = mConnection.request(request);
+			httpResponse = mConnection.requestNetwork(request);
 		} else
 			httpResponse = new HttpResponse(true, cacheEntity.getResponseHeaders(), cacheEntity.getData());
 
+		boolean isSucceed = httpResponse.isSucceed;
 		Headers responseHeaders = httpResponse.responseHeaders;
 		byte[] responseBody = httpResponse.responseBody;
 
-		Response<T> returnResponse = null;
+		int responseCode = responseHeaders.getResponseCode();
 
-		if (httpResponse.isSucceed) {
-			if (responseHeaders.getResponseCode() == 304) {
-				// maybe server error responseCode
-				if (cacheEntity == null)
-					returnResponse = new RestResponser<T>(url, true, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
+		if (isSucceed) {
+			if (responseCode == 304 && cacheEntity != null) {// cache
+				cacheEntity.getResponseHeaders().setAll(responseHeaders);
+				responseHeaders = cacheEntity.getResponseHeaders();
+				responseBody = cacheEntity.getData();
+			} else if (responseCode == 302 || responseCode == 303) {// redirect
+				// redirect request
+				Request<?> redirestRequest = null;
+				RedirectHandler redirectHandler = request.getRedirectHandler();
+				if (redirectHandler != null)
+					redirestRequest = redirectHandler.onRedirect(responseHeaders);
 				else {
-					cacheEntity.getResponseHeaders().setAll(responseHeaders);
-					Headers headers = cacheEntity.getResponseHeaders();
-					byte[] body = cacheEntity.getData();
-					result = request.parseResponse(url, headers, body);
-					returnResponse = new RestResponser<T>(url, true, headers, body, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
+					redirestRequest = NoHttp.createStringRequest(responseHeaders.getLocation(), request.getRequestMethod());
+					redirestRequest.setSSLSocketFactory(request.getSSLSocketFactory());
+					redirestRequest.setProxy(request.getProxy());
 				}
-			} else {
-				if (responseBody == null) /* such as responseCode is 204 */
-					responseBody = new byte[0];
 
-				result = request.parseResponse(url, responseHeaders, responseBody);
-				returnResponse = new RestResponser<T>(url, true, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - requestStart);
+				if (redirestRequest == null) {
+					// needn't redirect
+				} else {
+					HttpResponse redirectHttpResponse = executRequest(redirestRequest);
+
+					// response result
+					isSucceed = redirectHttpResponse.isSucceed;
+					Headers redirectHeaders = redirectHttpResponse.responseHeaders;
+					responseBody = redirectHttpResponse.responseBody;
+
+					// response ContentEncoding
+					String contentEncoding = redirectHeaders.getContentEncoding();
+					if (!TextUtils.isEmpty(contentEncoding))
+						responseHeaders.set(Headers.HEAD_KEY_CONTENT_ENCODING, contentEncoding);
+
+					// response ContentLength
+					responseHeaders.set(Headers.HEAD_KEY_CONTENT_LENGTH, Integer.toString(redirectHeaders.getContentLength()));
+
+					// response ContentType
+					String contentType = redirectHeaders.getContentType();
+					if (!TextUtils.isEmpty(contentType))
+						responseHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
+				}
 			}
-		} else
-			returnResponse = new RestResponser<T>(url, false, null, null, request.getTag(), null, SystemClock.elapsedRealtime() - requestStart);
-		if (request.needCache()) {
-			if (cacheEntity == null)
-				cacheEntity = HeaderParser.parseCacheHeaders(responseHeaders, responseBody);
-			mCache.replace(request.getCacheKey(), cacheEntity);
+			// needn't cache redirect data
+			if (request.needCache() && responseBody != null && responseCode != 302 && responseCode != 303) {
+				if (cacheEntity == null)
+					cacheEntity = HeaderParser.parseCacheHeaders(responseHeaders, responseBody);
+				if (cacheEntity != null)
+					mCache.replace(request.getCacheKey(), cacheEntity);
+			}
 		}
-		return returnResponse;
+		return new HttpResponse(isSucceed, responseHeaders, responseBody);
 	}
 
+	/**
+	 * Perform the request before, Handle the cache headers
+	 * 
+	 * @param request The request object
+	 * @param cacheEntity Cached entities
+	 */
 	private void handleCacheHeader(Request<?> request, CacheEntity cacheEntity) {
 		if (cacheEntity == null) {
 			request.removeHeader(Headers.HEAD_KEY_IF_NONE_MATCH);

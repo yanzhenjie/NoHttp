@@ -2,6 +2,4 @@
 
     <style name="AppBaseTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar"></style>
 
-    <style name="AppTheme" parent="AppBaseTheme"></style>
-
 </resources>

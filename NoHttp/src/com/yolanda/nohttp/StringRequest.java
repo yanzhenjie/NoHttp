@@ -17,7 +17,7 @@ package com.yolanda.nohttp;
 
 import java.io.UnsupportedEncodingException;
 
-import com.yolanda.nohttp.util.HeaderParser;
+import com.yolanda.nohttp.tools.HeaderParser;
 
 /**
  * Created in Jul 28, 2015 7:33:52 PM
@@ -36,7 +36,7 @@ public class StringRequest extends RestRequestor<String> {
 
 	@Override
 	public String getAccept() {
-		return "application/*,text/*;*/*";
+		return "text/html,application/xhtml+xml,application/xml;*/*;q=0.9";
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class StringRequest extends RestRequestor<String> {
 		String result = null;
 		if (responseBody != null && responseBody.length > 0) {
 			try {
-				String charset = HeaderParser.parseHeadValue(responseHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0), "charset", "");
+				String charset = HeaderParser.parseHeadValue(responseHeaders.getContentType(), "charset", "");
 				result = new String(responseBody, charset);
 			} catch (UnsupportedEncodingException e) {
 				Logger.w("Charset error in ContentType returned by the server：" + responseHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0));

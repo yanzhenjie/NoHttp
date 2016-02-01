@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LayoutStyle_WidthMatch"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_20" >
+
+    <TextView
+        style="@style/TextViewStyle_WidthMatch"
+        android:text="@string/no_opration_des" />
+
+</LinearLayout>

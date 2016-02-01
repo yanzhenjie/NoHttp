@@ -30,9 +30,9 @@ import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.HttpHeaders;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
-import com.yolanda.nohttp.util.FileUtil;
-import com.yolanda.nohttp.util.HeaderParser;
-import com.yolanda.nohttp.util.NetUtil;
+import com.yolanda.nohttp.tools.FileUtil;
+import com.yolanda.nohttp.tools.HeaderParser;
+import com.yolanda.nohttp.tools.NetUtil;
 
 import android.text.TextUtils;
 import android.util.Log;

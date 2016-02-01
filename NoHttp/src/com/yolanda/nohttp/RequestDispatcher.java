@@ -22,7 +22,8 @@ import android.os.Looper;
 import android.os.Process;
 
 /**
- * Request queue polling thread</br>
+ * Request queue polling thread
+ * </br>
  * Created in Oct 19, 2015 8:35:35 AM
  * 
  * @author YOLANDA
@@ -41,48 +42,57 @@ public class RequestDispatcher extends Thread {
 	 */
 	private final BlockingQueue<HttpRequest<?>> mRequestQueue;
 	/**
-	 * HTTP request actuator interface
+	 * HTTP request parse interface
 	 */
-	private final ImplRestExecutor mConnectionManager;
+	private final ImplRestParser mImplRestParser;
 	/**
 	 * Whether the current request queue polling thread is out of
 	 */
-	private volatile boolean mQuit = false;
+	private volatile boolean mRunning = true;
 
 	/**
 	 * Create a request queue polling thread
 	 * 
 	 * @param reqeustQueue Request queue
-	 * @param connectionRest Network request task actuator
+	 * @param implRestParser Network request task actuator
 	 */
-	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, ImplRestExecutor connectionManager) {
+	public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, ImplRestParser implRestParser) {
 		mRequestQueue = reqeustQueue;
-		mConnectionManager = connectionManager;
+		mImplRestParser = implRestParser;
 	}
 
 	/**
 	 * Exit polling thread
 	 */
 	public void quit() {
-		mQuit = true;
+		mRunning = false;
 		interrupt();
+	}
+
+	/**
+	 * Dispatcher is runing
+	 * 
+	 * @return the status
+	 */
+	public boolean isRunning() {
+		return mRunning;
 	}
 
 	@Override
 	public void run() {
 		Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-		while (true) {
+		while (mRunning) {
 			final HttpRequest<?> request;
 			try {
 				request = mRequestQueue.take();
 			} catch (InterruptedException e) {
-				if (mQuit) {
+				if (!mRunning)
 					return;
-				}
 				continue;
 			}
 
 			if (request.request.isCanceled()) {
+				Logger.d(request.request.url() + " is canceled");
 				continue;
 			}
 			request.request.start();
@@ -93,15 +103,20 @@ public class RequestDispatcher extends Thread {
 
 			// finish
 			final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
-			Response<?> response = mConnectionManager.handleRequest(request.request);
+			Response<?> response = mImplRestParser.parserRequest(request.request);
 			request.request.takeQueue(false);
-			if (request.request.isCanceled()) {
-				finishThread.onFinished();
-			} else {
-				finishThread.onResponse(response);
-			}
+			finishThread.onFinished();
 			getPosterHandler().post(finishThread);
 			request.request.finish();
+
+			// response
+			if (request.request.isCanceled())
+				Logger.d(request.request.url() + " finish, but it's canceled");
+			else {
+				final ThreadPoster responseThread = new ThreadPoster(request.what, request.responseListener);
+				responseThread.onResponse(response);
+				getPosterHandler().post(responseThread);
+			}
 		}
 	}
 
@@ -152,14 +167,11 @@ public class RequestDispatcher extends Thread {
 				} else if (command == COMMAND_FINISH) {
 					responseListener.onFinish(what);
 				} else if (command == COMMAND_RESPONSE) {
-					responseListener.onFinish(what);
 					if (response == null) {
 						responseListener.onFailed(what, null, null, null, 0, 0);
 					} else {
 						if (response.isSucceed()) {
 							responseListener.onSucceed(what, response);
-						} else if (response.getHeaders() == null) {
-							responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), -1, response.getNetworkMillis());
 						} else {
 							responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), response.getHeaders().getResponseCode(), response.getNetworkMillis());
 						}

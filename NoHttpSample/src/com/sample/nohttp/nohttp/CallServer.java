@@ -31,8 +31,14 @@ public class CallServer {
 
 	private static CallServer callServer;
 
+	/**
+	 * 请求队列
+	 */
 	private RequestQueue requestQueue;
 
+	/**
+	 * 下载队列
+	 */
 	private static DownloadQueue downloadQueue;
 
 	private CallServer() {
@@ -40,14 +46,17 @@ public class CallServer {
 	}
 
 	/**
-	 * 创建请求对象，管理请求队列
+	 * 请求队列
 	 */
-	public static CallServer getRequestInstance() {
+	public synchronized static CallServer getRequestInstance() {
 		if (callServer == null)
 			callServer = new CallServer();
 		return callServer;
 	}
 
+	/**
+	 * 下载队列
+	 */
 	public static DownloadQueue getDownloadInstance() {
 		if (downloadQueue == null)
 			downloadQueue = NoHttp.newDownloadQueue();
@@ -56,12 +65,16 @@ public class CallServer {
 
 	/**
 	 * 添加一个请求到请求队列
+	 * 
+	 * @param context context用来实例化dialog
+	 * @param what 用来标志请求, 当多个请求使用同一个{@link HttpListener}时, 在回调方法中会返回这个what
+	 * @param request 请求对象
+	 * @param callback 结果回调对象
+	 * @param canCancel 是否允许用户取消请求
+	 * @param isLoading 是否显示dialog
 	 */
-	public <T> void add(Context context, int what, Request<T> request, HttpCallback<T> callback) {
-		// what: 用来区分请求，当多个请求使用同一个OnResponseListener时，在回调方法中会返回这个what
-		// request: 请求对象，包涵Cookie、Head、请求参数、URL、请求方法
-		// responseListener 请求结果监听，回调时把what原样返回
-		requestQueue.add(what, request, new HttpResponseListener<T>(context, callback));
+	public <T> void add(Context context, int what, Request<T> request, HttpListener<T> callback, boolean canCancel, boolean isLoading) {
+		requestQueue.add(what, request, new HttpResponseListener<T>(context, request, callback, canCancel, isLoading));
 	}
 
 	/**

@@ -1,0 +1,19 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/dp_20" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_method_result"
+            style="@style/TextViewStyle_WidthMatch"
+            android:layout_marginBottom="@dimen/dp_10" />
+
+        <include layout="@layout/gv" />
+    </LinearLayout>
+
+</ScrollView>

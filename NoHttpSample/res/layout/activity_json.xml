@@ -1,0 +1,25 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ScrollViewStyle_Padding20" >
+
+    <LinearLayout
+        style="@style/LayoutStyle_WidthMatch"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_object_reqeust"
+            style="@style/ButtonStyle_WidthMatch"
+            android:text="@string/reqeust_json_object" />
+
+        <Button
+            android:id="@+id/btn_array_reqeust"
+            style="@style/ButtonStyle_WidthMatch"
+            android:layout_marginTop="@dimen/dp_10"
+            android:text="@string/reqeust_json_array" />
+
+        <TextView
+            android:id="@+id/tv_result"
+            style="@style/TextViewStyle_WidthMatch"
+            android:layout_marginTop="@dimen/dp_10" />
+    </LinearLayout>
+
+</ScrollView>

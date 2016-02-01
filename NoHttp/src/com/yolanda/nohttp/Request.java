@@ -18,6 +18,8 @@ package com.yolanda.nohttp;
 import java.util.Map;
 
 /**
+ * Achieve {@link ImplClientRequest} and {@link ImplServerRequest}, and can add parameters of the interface
+ * </br>
  * Created in Oct 16, 2015 8:22:06 PM
  * 
  * @author YOLANDA
@@ -25,7 +27,7 @@ import java.util.Map;
 public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 
 	/**
-	 * Add <code>CharSequence</code> param
+	 * Add {@code CharSequence} param
 	 *
 	 * @param key Param name
 	 * @param value Param value
@@ -33,7 +35,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, String value);
 
 	/**
-	 * Add <code>Integer</code> param
+	 * Add {@code Integer} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value
@@ -41,7 +43,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, int value);
 
 	/**
-	 * Add <code>Long</code> param
+	 * Add {@code Long} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value
@@ -49,7 +51,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, long value);
 
 	/**
-	 * Add <code>Boolean</code> param
+	 * Add {@code Boolean} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value
@@ -57,7 +59,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, boolean value);
 
 	/**
-	 * Add <code>char</code> param
+	 * Add {@code char} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value
@@ -65,7 +67,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, char value);
 
 	/**
-	 * Add <code>Double</code> param
+	 * Add {@code Double} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value
@@ -73,7 +75,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, double value);
 
 	/**
-	 * Add <code>Float</code> param
+	 * Add {@code Float} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value
@@ -81,7 +83,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, float value);
 
 	/**
-	 * Add <code>Short</code> param
+	 * Add {@code Short} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value
@@ -89,7 +91,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, short value);
 
 	/**
-	 * Add <code>Byte</code> param
+	 * Add {@code Byte} param
 	 * 
 	 * @param key Param name
 	 * @param value Param value 0 x01, for example, the result is 1
@@ -97,7 +99,7 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 	void add(String key, byte value);
 
 	/**
-	 * Add <code>File</code> param; NoHttp already has a default implementation: {@link FileBinary}
+	 * Add {@code File} param; NoHttp already has a default implementation: {@link FileBinary}
 	 * 
 	 * @param key Param name
 	 * @param binary Param value

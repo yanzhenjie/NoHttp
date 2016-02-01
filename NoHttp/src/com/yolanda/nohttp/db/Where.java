@@ -16,7 +16,6 @@
 package com.yolanda.nohttp.db;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * </br>
@@ -28,7 +27,7 @@ public class Where {
 
 	public enum Options {
 
-		IN("IN"), EQUAL("="), ThAN_LARGE(">"), THAN_SMALL("<");
+		IN("IN"), EQUAL("="), NO_EQUAL("!="), ThAN_LARGE(">"), THAN_SMALL("<");
 
 		private String value;
 
@@ -79,14 +78,12 @@ public class Where {
 	}
 
 	public final Where add(CharSequence columnName, Options op, Object value) {
-		if (Options.EQUAL.equals(op) || Options.ThAN_LARGE.equals(op) || Options.THAN_SMALL.equals(op)) {
+		if (Options.EQUAL.equals(op) || Options.ThAN_LARGE.equals(op) || Options.THAN_SMALL.equals(op) || Options.NO_EQUAL.equals(op)) {
 			addColumnName(columnName, op);
 			if (isNumber(value))
 				builder.append(value);
-			else if (value instanceof CharSequence)
-				builder.append("'").append(value).append("'");
 			else
-				throw new IllegalArgumentException("Value is not supported by the data type");
+				builder.append("'").append(value).append("'");
 		} else if (Options.IN.equals(op) && value instanceof List<?>)
 			addColumnName(columnName, op).append(value).in((List<?>) value);
 		else
@@ -165,7 +162,6 @@ public class Where {
 	}
 
 	public final static boolean isNumber(Object value) {
-		Pattern pattern = Pattern.compile("[0-9]*");
-		return pattern.matcher(String.valueOf(value)).matches();
+		return value != null && (value instanceof Character || value instanceof Integer || value instanceof Long || value instanceof Short || value instanceof Double || value instanceof Float);
 	}
 }

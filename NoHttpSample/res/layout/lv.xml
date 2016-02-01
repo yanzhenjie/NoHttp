@@ -1,0 +1,3 @@
+<com.sample.nohttp.view.ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lv"
+    style="@style/ListViewStyle" />

@@ -25,6 +25,7 @@ import com.yolanda.nohttp.able.SignCancelable;
 import com.yolanda.nohttp.able.Startable;
 
 /**
+ * Developers provide data interface
  * </br>
  * Created in Dec 21, 2015 4:17:25 PM
  * 
@@ -38,14 +39,16 @@ public interface ImplClientRequest extends Queueable, Startable, SignCancelable,
 	void setProxy(Proxy proxy);
 
 	/**
-	 * Set key of request result.
-	 * All the data will be saved in the same folder, so you should ensure that key is the only, otherwise the data will
-	 * be replaced
+	 * If the server and {@link ImplServerRequest#needCache()} allow cache, will use this key as the only key to the
+	 * cache request return data
 	 * 
 	 * @param key Unique key
 	 */
 	void setCacheKey(String key);
 
+	/**
+	 * Sets the SSL socket factory for this request
+	 */
 	void setSSLSocketFactory(SSLSocketFactory socketFactory);
 
 	/**
@@ -63,39 +66,45 @@ public interface ImplClientRequest extends Queueable, Startable, SignCancelable,
 	void setReadTimeout(int readTimeout);
 
 	/**
-	 * Sets the header named {@code name} to {@code value}. If this request
-	 * already has any headers with that name, they are all replaced.
+	 * Sets redirect interface
+	 * 
+	 * @param redirectHandler RedirectHandler
 	 */
-	void setHeader(String name, String value);
+	void setRedirectHandler(RedirectHandler redirectHandler);
 
 	/**
-	 * Adds a header with {@code name} and {@code value}. Prefer this method for multiply-valued headers like "Cookie".
+	 * If there is a key to delete, and then add a new key-value header
 	 */
-	void addHeader(String name, String value);
+	void setHeader(String key, String value);
 
 	/**
-	 * Removes a header with {@code name} and {@code value}. If there are multiple keys, will remove all, like "Cookie".
+	 * Add a new key-value header
 	 */
-	void removeHeader(String name);
+	void addHeader(String key, String value);
+
+	/**
+	 * Remove the key from the information
+	 */
+	void removeHeader(String key);
 
 	/**
 	 * Remove all header
 	 */
-	void removeAllHeaders();
+	void removeAllHeader();
 
 	/**
-	 * Settings you want to post data, if the post directly, then other data
+	 * Settings you want to post data, if the {@code requestBody} isn't null, then other data
 	 * will not be sent
 	 */
 	void setRequestBody(byte[] requestBody);
 
 	/**
-	 * Settings you want to post data, if the post directly, then other data will not be sent
+	 * @see #setRequestBody(byte[])
 	 */
 	void setRequestBody(String requestBody);
 
 	/**
-	 * Set tag of task, Will return to you at the time of the task response
+	 * Set tag of task, At the end of the task is returned to you
 	 */
 	void setTag(Object tag);
 

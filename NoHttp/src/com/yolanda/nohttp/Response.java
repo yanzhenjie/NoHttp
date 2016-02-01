@@ -19,7 +19,8 @@ import java.net.HttpCookie;
 import java.util.List;
 
 /**
- * Http response, Including header information and response packets</br>
+ * Http response, Including header information and response packets
+ * </br>
  * Created in Oct 15, 2015 8:55:37 PM
  * 
  * @author YOLANDA
@@ -27,9 +28,14 @@ import java.util.List;
 public interface Response<T> {
 
 	/**
-	 * url
+	 * Url
 	 */
 	String url();
+
+	/**
+	 * RequestMethod
+	 */
+	RequestMethod getRequestMethod();
 
 	/**
 	 * Ask for success

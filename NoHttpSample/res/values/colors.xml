@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#FF000000</color>
+    <color name="gray">#FF888888</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#FFFF0000</color>
+    <color name="green">#FF00FF00</color>
+    <color name="blue">#FF0000FF</color>
+    <color name="yellow">#FFFFFF00</color>
+    <color name="orange">#FFFFA500</color>
+    <color name="purple">#FFA020F0</color>
+    <color name="transparent">#00000000</color>
+    <color name="transparent_half_1">#10000000</color>
+    <color name="transparent_half_2">#20000000</color>
+
+    <drawable name="transparent">#00000000</drawable>
+
+    <!-- 统一 -->
+    <color name="page_ground">#FFEFEFF4</color>
+    <color name="font_color">#FF333333</color>
+    <color name="font_color_more_text">#BB000000</color>
+    <color name="line_color">#C4C4C4</color>
+
+    <!-- 标题 -->
+    <color name="title_ground_normal">#FF1B7AEA</color>
+    <color name="title_ground_pressed">#FF2C8BDB</color>
+
+    <!-- 白色 -->
+    <color name="white_normal">#FFFFFFFF</color>
+    <color name="white_pressed">#FFE0E0E0</color>
+
+    <!-- Button红色 -->
+    <color name="red_normal">#FFFF4500</color>
+    <color name="red_pressed">#FFB22222</color>
+
+    <!-- QQ 蓝 -->
+    <color name="blueqq_normal">#FF3BB5F4</color>
+    <color name="blueqq_pressed">#FF1993e2</color>
+
+    <!-- 微信绿 -->
+    <color name="greenwechat_normal">#FF45C01A</color>
+    <color name="greenwechat_pressed">#FF298409</color>
+
+    <!-- 微博黄 -->
+    <color name="yellowweibo_normal">#FFFCDA53</color>
+    <color name="yellowweibo_pressed">#FFDAB831</color>
+
+</resources>

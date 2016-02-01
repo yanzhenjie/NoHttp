@@ -49,7 +49,7 @@ public class ImageRequest extends RestRequestor<Bitmap> {
 
 	@Override
 	public String getAccept() {
-		return "image/*";
+		return "image/*,*/*;q=1";
 	}
 
 	@Override

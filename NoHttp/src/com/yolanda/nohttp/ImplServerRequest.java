@@ -19,9 +19,10 @@ import java.net.Proxy;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import com.yolanda.nohttp.util.Writer;
+import com.yolanda.nohttp.tools.Writer;
 
 /**
+ * Analytical {@link ImplClientRequest} NoHttp interface
  * </br>
  * Created in Dec 21, 2015 3:34:59 PM
  * 
@@ -40,12 +41,12 @@ public interface ImplServerRequest {
 	RequestMethod getRequestMethod();
 
 	/**
-	 * Do you need to cache
+	 * NoHttp need to cache
 	 */
 	boolean needCache();
 
 	/**
-	 * Get of cache data
+	 * Get key of cache data
 	 */
 	String getCacheKey();
 
@@ -54,6 +55,9 @@ public interface ImplServerRequest {
 	 */
 	Proxy getProxy();
 
+	/**
+	 * Get SSLSocketFactory
+	 */
 	SSLSocketFactory getSSLSocketFactory();
 
 	/**
@@ -72,35 +76,57 @@ public interface ImplServerRequest {
 	int getReadTimeout();
 
 	/**
+	 * Get thre redirect handler
+	 */
+	RedirectHandler getRedirectHandler();
+
+	/**
 	 * Get all Heads
 	 */
 	Headers headers();
 
+	/**
+	 * The client wants to accept data types
+	 */
 	String getAccept();
 
+	/**
+	 * The client wants to accept data encoding format
+	 */
+	String getAcceptCharset();
+
+	/**
+	 * The client wants to accept data language types
+	 */
 	String getAcceptLanguage();
 
 	/**
-	 * Get content length
+	 * The length of the request body
 	 */
 	long getContentLength();
 
+	/**
+	 * The type of the request body
+	 */
 	String getContentType();
 
+	/**
+	 * The {@code UseAgent} of the client
+	 */
 	String getUserAgent();
 
 	/**
-	 * When you start the request
+	 * Call before perform request, here you can rebuild the request object
 	 */
 	void onPreExecute();
 
 	/**
-	 * Send request data, give priority to RequestBody, and then send the form data
+	 * Send request body data
 	 */
 	void onWriteRequestBody(Writer writer);
 
 	/**
-	 * Get get of this request
+	 * should to return the tag of the object
 	 */
 	Object getTag();
 

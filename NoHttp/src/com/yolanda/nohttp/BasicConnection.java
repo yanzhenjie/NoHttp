@@ -31,7 +31,7 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.yolanda.nohttp.util.Writer;
+import com.yolanda.nohttp.tools.Writer;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -78,7 +78,7 @@ public class BasicConnection {
 		connection.setDoOutput(request.doOutPut());
 		connection.setConnectTimeout(request.getConnectTimeout());
 		connection.setReadTimeout(request.getReadTimeout());
-		connection.setInstanceFollowRedirects(true);
+		connection.setInstanceFollowRedirects(false);
 
 		// 4.Set request headers
 		setHeaders(url.toURI(), connection, request);
@@ -99,19 +99,27 @@ public class BasicConnection {
 		Headers headers = request.headers();
 
 		// 2.Base header
+		// 2.1 Accept-*
 		String accept = request.getAccept();
 		if (!TextUtils.isEmpty(accept))
 			headers.set(Headers.HEAD_KEY_ACCEPT, accept);
 		headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
-		headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, request.getAcceptLanguage());
+
+		String acceptCharset = request.getAcceptCharset();
+		if (!TextUtils.isEmpty(acceptCharset))
+			headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptCharset);
 		
-		// 2.1 Connection
+		String acceptLanguget = request.getAcceptLanguage();
+		if (!TextUtils.isEmpty(acceptLanguget))
+			headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguget);
+
+		// 2.2 Connection
 		// To fix bug: accidental EOFException before API 19
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
 			headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);
 		else
 			headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_CLOSE);
-		// 2.2 Content_length
+		// 2.3 Content-*
 		if (request.doOutPut()) {
 			long contentLength = request.getContentLength();
 			if (contentLength < Integer.MAX_VALUE && contentLength > 0)
@@ -122,14 +130,19 @@ public class BasicConnection {
 				connection.setChunkedStreamingMode(256 * 1024);
 			headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
 		}
-		// 2.3 Content_type
-		headers.set(Headers.HEAD_KEY_CONTENT_TYPE, request.getContentType());
+
+		String contentType = request.getContentType();
+		if (!TextUtils.isEmpty(contentType))
+			headers.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
+		
 		// 2.4 Cookie
 		try {
 			headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
 		} catch (IOException e) {
 			Logger.e(e, "Add cookie filed: " + uri.toString());
 		}
+		
+		// 3. UserAgent
 		headers.set(Headers.HEAD_KEY_USER_AGENT, request.getUserAgent());
 
 		Map<String, String> requestHeaders = headers.toRequestHeaders();
@@ -157,8 +170,8 @@ public class BasicConnection {
 		// handle headers
 		Headers headers = new HttpHeaders();
 		headers.set(reponseHeaders);
-		headers.set(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(responseCode));
 		headers.set(Headers.HEAD_KEY_RESPONSE_MESSAGE, responseMessage);
+		headers.set(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(responseCode));
 		// print
 		for (String headKey : headers.keySet()) {
 			List<String> headValues = headers.getValues(headKey);

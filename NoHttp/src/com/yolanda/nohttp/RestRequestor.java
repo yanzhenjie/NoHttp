@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
+ * The realization method of the parameters
+ * </br>
  * Created in Oct 20, 2015 4:24:27 PM
  * 
  * @author YOLANDA

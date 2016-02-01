@@ -40,7 +40,7 @@ public interface Binary extends Cancelable {
 	void onWriteBinary(OutputStream outputStream);
 
 	/**
-	 * Return the fileName
+	 * Return the fileName, Can be null
 	 */
 	String getFileName();
 
@@ -48,9 +48,4 @@ public interface Binary extends Cancelable {
 	 * Return mimeType of binary
 	 */
 	String getMimeType();
-
-	/**
-	 * Get binary charset
-	 */
-	String getCharset();
 }

@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 /**
+ * JsonArray is returned by the server data, using the request object
  * </br>
  * Created in Jan 19, 2016 3:32:28 PM
  * 
@@ -44,8 +45,11 @@ public class JsonArrayRequest extends RestRequestor<JSONArray> {
 		String josnStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
 		try {
 			return new JSONArray(josnStr);
-		} catch (JSONException e) {
-			Logger.e(e);
+		} catch (Exception e) {
+			try {
+				return new JSONArray("[]");
+			} catch (JSONException exception) {
+			}
 		}
 		return null;
 	}

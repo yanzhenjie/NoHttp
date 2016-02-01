@@ -15,93 +15,92 @@
  */
 package com.sample.nohttp.activity;
 
+import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
-import com.sample.nohttp.activity.cancel.NoHttpCancelActivity;
-import com.sample.nohttp.activity.cookie.NoHttpCookieActivity;
-import com.sample.nohttp.activity.download.NoHttpDownloadActivity;
-import com.sample.nohttp.activity.https.NoHttpsActivity;
-import com.sample.nohttp.activity.image.NoHttpImageActivity;
-import com.sample.nohttp.activity.method.NoHttpMethodActivity;
-import com.sample.nohttp.activity.sync.NoHttpSyncActivity;
-import com.sample.nohttp.activity.upload.NoHttpUploadFileActivity;
+import com.sample.nohttp.adapter.StringAbsListAdapter;
 import com.sample.nohttp.nohttp.CallServer;
+import com.sample.nohttp.util.OnItemClickListener;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
 
 /**
- * 开始界面</br>
+ * 开始界面
+ * </br>
  * Created in Oct 21, 2015 2:19:16 PM
  * 
  * @author YOLANDA
  */
-public class StartActivity extends Activity implements View.OnClickListener {
+public class StartActivity extends BaseActivity {
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setTitle("NoHttp演示Demo");
+	protected void onActivityCreate(Bundle savedInstanceState) {
+		setTitle(R.string.activity_start);
 		setContentView(R.layout.activity_start);
+		hideBackBar();// 隐藏返回键
 
-		// 注册按钮监听
-		findViewById(R.id.btn_method_original).setOnClickListener(this);
-		findViewById(R.id.btn_method_activity).setOnClickListener(this);
-		findViewById(R.id.btn_download_activity).setOnClickListener(this);
-		findViewById(R.id.btn_image_activity).setOnClickListener(this);
-		findViewById(R.id.btn_cookie_activity).setOnClickListener(this);
-		findViewById(R.id.btn_upload_activity).setOnClickListener(this);
-		findViewById(R.id.btn_cancel_activity).setOnClickListener(this);
-		findViewById(R.id.btn_sync_activity).setOnClickListener(this);
-		findViewById(R.id.btn_https_activity).setOnClickListener(this);
+		StringAbsListAdapter listAdapter = new StringAbsListAdapter(this, R.layout.item_abs_list_text, Application.getInstance().nohttpTitleList, mItemClickListener);
+		((AbsListView) findView(R.id.lv)).setAdapter(listAdapter);
 	}
 
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.btn_method_original) {// 最基本使用方法
-			Intent intent = new Intent(this, NoHttpOriginalActivity.class);
-			startActivity(intent);
+	/**
+	 * list item单击
+	 */
+	private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+		@Override
+		public void onItemClick(View v, int position) {
+			geOtherPager(position);
 		}
-		if (v.getId() == R.id.btn_method_activity) {// 请求方法GET, POST
-			Intent intent = new Intent(this, NoHttpMethodActivity.class);
-			startActivity(intent);
-		}
+	};
 
-		if (v.getId() == R.id.btn_download_activity) {// 文件下载Demo
-			Intent intent = new Intent(this, NoHttpDownloadActivity.class);
-			startActivity(intent);
+	private void geOtherPager(int position) {
+		Intent intent = null;
+		switch (position) {
+		case 0:// 最原始使用方法
+			intent = new Intent(this, OriginalActivity.class);
+			break;
+		case 1:// 自定义请求FastJson
+			intent = new Intent(this, FastJsonActvity.class);
+		case 2:// 各种请求方法演示(GET, POST, HEAD, PUT等等)
+			intent = new Intent(this, MethodActivity.class);
+			break;
+		case 3:// 请求图片
+			intent = new Intent(this, ImageActivity.class);
+			break;
+		case 4:// JsonObject, JsonArray
+			intent = new Intent(this, JsonActivity.class);
+			break;
+		case 5:// 响应码304缓存演示
+			intent = new Intent(this, CacheActivity.class);
+			break;
+		case 6:// 响应码302/303重定向演示
+			intent = new Intent(this, RedirectActivity.class);
+			break;
+		case 7:// 文件上传
+			intent = new Intent(this, UploadFileActivity.class);
+			break;
+		case 8: // 文件下载
+			intent = new Intent(this, DownloadActivity.class);
+			break;
+		case 9:// 如何取消请求
+			intent = new Intent(this, CancelActivity.class);
+			break;
+		case 10:// 同步请求
+			intent = new Intent(this, SyncActivity.class);
+			break;
+		case 11:// 通过代理服务器请求
+			intent = new Intent(this, ProXYActivity.class);
+			break;
+		case 12:// https请求
+			intent = new Intent(this, HttpsActivity.class);
+			break;
+		default:
+			break;
 		}
-
-		if (v.getId() == R.id.btn_image_activity) {// 演示请求图片
-			Intent intent = new Intent(this, NoHttpImageActivity.class);
+		if (intent != null)
 			startActivity(intent);
-		}
-
-		if (v.getId() == R.id.btn_cookie_activity) {// Cookie
-			Intent intent = new Intent(this, NoHttpCookieActivity.class);
-			startActivity(intent);
-		}
-
-		if (v.getId() == R.id.btn_upload_activity) {// 演示上传
-			Intent intent = new Intent(this, NoHttpUploadFileActivity.class);
-			startActivity(intent);
-		}
-
-		if (v.getId() == R.id.btn_cancel_activity) {// 演示取消请求，取消请求队列，取消所有请求
-			Intent intent = new Intent(this, NoHttpCancelActivity.class);
-			startActivity(intent);
-		}
-
-		if (v.getId() == R.id.btn_sync_activity) {// 演示同步请求
-			Intent intent = new Intent(this, NoHttpSyncActivity.class);
-			startActivity(intent);
-		}
-
-		if (v.getId() == R.id.btn_https_activity) {// Https自定义证书请求
-			Intent intent = new Intent(this, NoHttpsActivity.class);
-			startActivity(intent);
-		}
 	}
 
 	@Override

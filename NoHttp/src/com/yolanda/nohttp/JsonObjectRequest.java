@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * JsonObject is returned by the server data, using the request object
  * </br>
  * Created in Jan 19, 2016 3:27:35 PM
  * 
@@ -26,7 +27,7 @@ import org.json.JSONObject;
  */
 public class JsonObjectRequest extends RestRequestor<JSONObject> {
 
-	public static final String ACCEPT = "application/json";
+	public static final String ACCEPT = "application/json;q=1";
 
 	public JsonObjectRequest(String url) {
 		super(url);
@@ -46,8 +47,11 @@ public class JsonObjectRequest extends RestRequestor<JSONObject> {
 		String josnStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
 		try {
 			return new JSONObject(josnStr);
-		} catch (JSONException e) {
-			Logger.e(e);
+		} catch (Exception e) {
+			try {
+				return new JSONObject("{}");
+			} catch (JSONException exception) {
+			}
 		}
 		return null;
 	}

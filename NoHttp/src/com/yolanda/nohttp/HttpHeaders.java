@@ -32,12 +32,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.yolanda.nohttp.util.HttpDateTime;
-import com.yolanda.nohttp.util.LinkedMultiValueMap;
+import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.tools.LinkedMultiValueMap;
 
 import android.text.TextUtils;
 
 /**
+ * {@link Headers} The default implementation
+ * </br>
  * Created in Jan 10, 2016 2:37:06 PM
  * 
  * @author YOLANDA
@@ -120,8 +122,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String>implements H
 		List<HttpCookie> cookies = new ArrayList<HttpCookie>();
 		for (String key : keySet()) {
 			if (key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE) || key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE2)) {
-				String name = getValue(key, 0);
-				List<String> cookieValues = getValues(name);
+				List<String> cookieValues = getValues(key);
 				for (String cookieStr : cookieValues) {
 					for (HttpCookie cookie : HttpCookie.parse(cookieStr))
 						cookies.add(cookie);
@@ -152,7 +153,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String>implements H
 		String contenLength = getValue(HEAD_KEY_CONTENT_LENGTH, 0);
 		try {
 			return Integer.parseInt(contenLength);
-		} catch (NumberFormatException e) {
+		} catch (Exception e) {
 		}
 		return 0;
 	}
@@ -163,8 +164,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String>implements H
 		int code = 0;
 		try {
 			code = Integer.parseInt(responseCode);
-		} catch (NumberFormatException e) {
-			Logger.w(e);
+		} catch (Exception e) {
 		}
 		return code;
 	}
@@ -204,6 +204,13 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String>implements H
 		return getValue(HEAD_KEY_LOCATION, 0);
 	}
 
+	/**
+	 * Returns the date value in milliseconds since 1970.1.1, 00:00h corresponding to the header field field. The
+	 * defaultValue will be returned if no such field can be found in the response header.
+	 * 
+	 * @param key the header field name.
+	 * @return the header field represented in milliseconds since January 1, 1970 GMT.
+	 */
 	private long getDateField(String key) {
 		String value = getValue(key, 0);
 		if (value != null)

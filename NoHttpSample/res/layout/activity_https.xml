@@ -1,0 +1,19 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ScrollViewStyle_Padding20" >
+
+    <LinearLayout
+        style="@style/LayoutStyle_WidthMatch"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_https_reqeust"
+            style="@style/ButtonStyle_WidthMatch"
+            android:text="@string/request_https_ver" />
+
+        <TextView
+            android:id="@+id/tv_result"
+            style="@style/TextViewStyle_WidthMatch"
+            android:layout_marginTop="@dimen/dp_10" />
+    </LinearLayout>
+
+</ScrollView>

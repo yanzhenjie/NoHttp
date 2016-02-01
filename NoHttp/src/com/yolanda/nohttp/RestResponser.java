@@ -33,6 +33,11 @@ public class RestResponser<T> implements Response<T> {
 	private final String url;
 
 	/**
+	 * RequestMethod
+	 */
+	private final RequestMethod method;
+
+	/**
 	 * Ask for success
 	 */
 	private final boolean isSucceed;
@@ -61,8 +66,9 @@ public class RestResponser<T> implements Response<T> {
 	 */
 	private final long mNetworkMillis;
 
-	public RestResponser(String url, boolean isSucceed, Headers headers, byte[] byteArray, Object tag, T result, long millis) {
+	public RestResponser(String url, RequestMethod requestMethod, boolean isSucceed, Headers headers, byte[] byteArray, Object tag, T result, long millis) {
 		this.url = url;
+		this.method = requestMethod;
 		this.isSucceed = isSucceed;
 		this.headers = headers;
 		this.byteArray = byteArray;
@@ -74,6 +80,11 @@ public class RestResponser<T> implements Response<T> {
 	@Override
 	public String url() {
 		return url;
+	}
+
+	@Override
+	public RequestMethod getRequestMethod() {
+		return method;
 	}
 
 	@Override
