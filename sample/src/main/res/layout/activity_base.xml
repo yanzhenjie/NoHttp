@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/layout_activity_base_title_root"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/title_ground_normal">
+
+        <ImageView
+            android:id="@+id/iv_activity_base_backbar"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
+            android:adjustViewBounds="false"
+            android:background="@drawable/selector_transprent_button_gound"
+            android:contentDescription="@string/app_name"
+            android:scaleType="center"
+            android:src="@mipmap/ic_action_back" />
+
+        <TextView
+            android:id="@+id/tv_activity_base_title"
+            style="@style/TextViewStyle"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/iv_activity_base_backbar"
+            android:layout_toRightOf="@+id/iv_activity_base_backbar"
+            android:paddingEnd="0px"
+            android:paddingLeft="@dimen/dp_10"
+            android:paddingRight="@dimen/dp_10"
+            android:paddingStart="0px"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size_18" />
+
+        <LinearLayout
+            android:id="@+id/layout_activity_base_menu_root"
+            style="@style/LayoutStyle_HeightMatch"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/layout_activity_base_content_root"
+        style="@style/LayoutStyle_Match"></FrameLayout>
+
+</LinearLayout>

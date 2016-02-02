@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 首页功能入口, 功能Activity对应Title -->
+    <string-array name="activity_start_items">
+        <item>0. 最原始使用方法</item>
+        <item>1. 自定义请求对象(FastJson)</item>
+        <item>2. 请求方法演示(GET, POST…)</item>
+        <item>3. 请求图片(GET, POST…)</item>
+        <item>4. 请求Json(Jsonbject, JsonArray…)</item>
+        <item>5. 响应码304缓存演示</item>
+        <item>6. 响应码302/303重定向</item>
+        <item>7. 文件上传演示</item>
+        <item>8. 文件下载演示</item>
+        <item>9. 如何取消请求</item>
+        <item>10. 同步请求</item>
+        <item>11. 通过代理服务器请求</item>
+        <item>12. Https请求</item>
+    </string-array>
+
+    <!-- 支持的方法 -->
+    <string-array name="activity_method_item">
+        <item>0 GET</item>
+        <item>1 POST</item>
+        <item>2 PUT</item>
+        <item>3 HEAD</item>
+        <item>4 DELETE</item>
+        <item>5 OPTIONS</item>
+        <item>6 TRACE</item>
+        <item>7 PATCH</item>
+    </string-array>
+
+    <string-array name="activity_cache_item">
+        <item>0 请求String</item>
+        <item>1 请求Image</item>
+    </string-array>
+
+</resources>

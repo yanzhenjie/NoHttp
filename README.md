@@ -14,6 +14,13 @@
 
 * E. API使用简单, Request对象包涵参数, 文件, 请求头等; Response对象包涵响应内容, 响应头等信息.  
 
+##使用Gradle构建时添加依赖:
+```groovy
+compile 'com.yolanda.nohttp:nohttp:1.0.+'
+// or
+// compile 'com.yolanda.nohttp:nohttp:1.0.0'
+```
+
 ##一. 请求
 
 ###1. 请求String数据
