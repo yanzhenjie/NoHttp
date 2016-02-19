@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sample.nohttp"
-    android:versionCode="1"
-    android:versionName="1.0">
-
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="23" />
+    package="com.sample.nohttp">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -19,7 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
-        android:name="com.sample.nohttp.Application"
+        android:name=".Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,19 +28,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.sample.nohttp.activity.OriginalActivity" />
-        <activity android:name="com.sample.nohttp.activity.FastJsonActvity" />
-        <activity android:name="com.sample.nohttp.activity.MethodActivity" />
-        <activity android:name="com.sample.nohttp.activity.ImageActivity" />
-        <activity android:name="com.sample.nohttp.activity.JsonActivity" />
-        <activity android:name="com.sample.nohttp.activity.CacheActivity" />
-        <activity android:name="com.sample.nohttp.activity.RedirectActivity" />
-        <activity android:name="com.sample.nohttp.activity.UploadFileActivity" />
-        <activity android:name="com.sample.nohttp.activity.DownloadActivity" />
-        <activity android:name="com.sample.nohttp.activity.CancelActivity" />
-        <activity android:name="com.sample.nohttp.activity.SyncActivity" />
-        <activity android:name="com.sample.nohttp.activity.ProXYActivity" />
-        <activity android:name="com.sample.nohttp.activity.HttpsActivity" />
+        <activity android:name=".activity.OriginalActivity" />
+        <activity android:name=".activity.FastJsonActvity" />
+        <activity android:name=".activity.MethodActivity" />
+        <activity android:name=".activity.ImageActivity" />
+        <activity android:name=".activity.JsonActivity" />
+        <activity android:name=".activity.CacheActivity" />
+        <activity android:name=".activity.RedirectActivity" />
+        <activity android:name=".activity.UploadFileActivity" />
+        <activity android:name=".activity.DownloadActivity" />
+        <activity android:name=".activity.CancelActivity" />
+        <activity android:name=".activity.SyncActivity" />
+        <activity android:name=".activity.ProXYActivity" />
+        <activity android:name=".activity.HttpsActivity" />
     </application>
 
 </manifest>

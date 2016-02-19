@@ -9,8 +9,11 @@ android {
     resourcePrefix "nohttp_res_"
 
     defaultConfig {
+        //applicationId "com.yolanda.nohttp"
         minSdkVersion 9
         targetSdkVersion 23
+        versionCode 1
+        versionName '1.0.0'
     }
     buildTypes {
         release {
@@ -19,9 +22,11 @@ android {
         }
     }
 }
-
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
 def siteUrl = 'https://github.com/Y0LANDA/NoHttp' // 项目主页
-def gitUrl = 'https://github.com/Y0LANDA/NoHttp.git' // Git仓库的url
+def gitUrl = 'git@github.com:Y0LANDA/NoHttp.git' // Git仓库的url
 group = "com.yolanda.nohttp" // 唯一包名
 install {
     repositories.mavenInstaller {
@@ -31,6 +36,7 @@ install {
                 packaging 'aar'
                 // 项目描述
                 name 'NoHttp For Android'
+                description 'Synchronous and asynchronous network request framework for Android'
                 url siteUrl
                 // Software License
                 licenses {
@@ -77,6 +83,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
+
     configurations = ['archives']
     pkg {
         repo = "maven"  // 上传到maven库
@@ -85,5 +92,17 @@ bintray {
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
         publish = true
+        version {
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+                passphrase = properties.getProperty("bintray.gpg.password") //Optional. The passphrase for GPG signing'
+            }
+//            mavenCentralSync {
+//                sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
+//                user = properties.getProperty("bintray.oss.user") //OSS user token
+//                password = properties.getProperty("bintray.oss.password") //OSS user password
+//                close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
+//            }
+        }
     }
 }

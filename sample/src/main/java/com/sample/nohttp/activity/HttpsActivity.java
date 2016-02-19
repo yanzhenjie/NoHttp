@@ -61,8 +61,8 @@ public class HttpsActivity extends BaseActivity implements View.OnClickListener,
             if (sslContext != null) {
                 SSLSocketFactory socketFactory = sslContext.getSocketFactory();
                 httpsRequest.setSSLSocketFactory(socketFactory);
-                CallServer.getRequestInstance().add(this, 0, httpsRequest, this, false, true);
             }
+            CallServer.getRequestInstance().add(this, 0, httpsRequest, this, false, true);
         }
     }
 

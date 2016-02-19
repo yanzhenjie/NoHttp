@@ -172,15 +172,7 @@ public class ResourcesCompat {
         return stringSpan;
     }
 
-    public static SpannableString getColotText(String content, String colorText, int color) {
-        SpannableString stringSpan = new SpannableString(content);
-        int index = content.indexOf(colorText);
-        if (index != -1)
-            stringSpan.setSpan(new ForegroundColorSpan(color), 0, index, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return stringSpan;
-    }
-
-    public static SpannableString getColotText(String content, int start, int end, int color) {
+    public static SpannableString getColorText(String content, int start, int end, int color) {
         SpannableString stringSpan = new SpannableString(content);
         stringSpan.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringSpan;

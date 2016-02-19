@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -68,6 +69,9 @@ public class BasicConnection {
             SSLSocketFactory sslSocketFactory = request.getSSLSocketFactory();
             if (sslSocketFactory != null)
                 ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
+            HostnameVerifier hostnameVerifier = request.getHostnameVerifier();
+            if(hostnameVerifier != null)
+                ((HttpsURLConnection) connection).setHostnameVerifier(hostnameVerifier);
         }
 
         // 3. Base attribute

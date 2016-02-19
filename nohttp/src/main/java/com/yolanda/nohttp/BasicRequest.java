@@ -22,6 +22,7 @@ import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.yolanda.nohttp.tools.CounterOutputStream;
@@ -77,6 +78,10 @@ public abstract class BasicRequest<T> implements Request<T> {
      */
     private SSLSocketFactory mSSLSocketFactory = null;
     /**
+     * HostnameVerifier
+     */
+    private HostnameVerifier mHostnameVerifier = null;
+    /**
      * Connect timeout of request
      */
     private int mConnectTimeout = NoHttp.TIMEOUT_8S;
@@ -122,7 +127,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     private Object mTag;
 
     /**
-     * Create a request, RequestMethod is {@link RequestMethod#Get}
+     * Create a request, RequestMethod is {@link RequestMethod#GET}
      *
      * @param url request adress, like: http://www.google.com
      */
@@ -205,6 +210,16 @@ public abstract class BasicRequest<T> implements Request<T> {
     @Override
     public SSLSocketFactory getSSLSocketFactory() {
         return mSSLSocketFactory;
+    }
+
+    @Override
+    public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+        this.mHostnameVerifier = hostnameVerifier;
+    }
+
+    @Override
+    public HostnameVerifier getHostnameVerifier() {
+        return mHostnameVerifier;
     }
 
     @Override

@@ -24,10 +24,10 @@ import com.yolanda.nohttp.Response;
  *
  * @author YOLANDA
  */
-public abstract interface HttpListener<T> {
+public interface HttpListener<T> {
 
-    public abstract void onSucceed(int what, Response<T> response);
+    void onSucceed(int what, Response<T> response);
 
-    public abstract void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis);
+    void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis);
 
 }

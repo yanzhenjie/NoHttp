@@ -17,6 +17,7 @@ package com.yolanda.nohttp;
 
 import java.net.Proxy;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.yolanda.nohttp.able.Finishable;
@@ -47,9 +48,14 @@ public interface ImplClientRequest extends Queueable, Startable, SignCancelable,
     void setCacheKey(String key);
 
     /**
-     * Sets the SSL socket factory for this request
+     * Sets the SSLsocketfactory for this request
      */
     void setSSLSocketFactory(SSLSocketFactory socketFactory);
+
+    /**
+     * Set the HostnameVerifier
+     */
+    void setHostnameVerifier(HostnameVerifier hostnameVerifier);
 
     /**
      * Sets the connection timeout time

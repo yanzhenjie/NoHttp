@@ -100,7 +100,7 @@ public class RequestQueue {
     }
 
     /**
-     * Cancel all requests, if you are executing, will interrupt the task
+     * Cancel all requests, Already in the execution of the request can't use this method
      */
     public void cancelAll() {
         synchronized (mRequestQueue) {

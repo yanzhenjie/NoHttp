@@ -17,6 +17,7 @@ package com.yolanda.nohttp;
 
 import java.net.Proxy;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.yolanda.nohttp.tools.Writer;
@@ -59,6 +60,11 @@ public interface ImplServerRequest {
      * Get SSLSocketFactory
      */
     SSLSocketFactory getSSLSocketFactory();
+
+    /**
+     * Get the HostnameVerifier
+     */
+    HostnameVerifier getHostnameVerifier();
 
     /**
      * If the request is POST, PUT, PATCH, the true should be returned.

@@ -91,10 +91,20 @@ public class DownloadQueue {
      *
      * @param sign This sign will be the same as sign's DownloadRequest, and if it is the same, then cancel the task.
      */
-    public void cancelAll(Object sign) {
+    public void cancelBySign(Object sign) {
         synchronized (mDownloadQueue) {
             for (NetworkDownloadRequest networkDownloadRequest : mDownloadQueue)
                 networkDownloadRequest.downloadRequest.cancelBySign(sign);
+        }
+    }
+
+    /**
+     * Cancel all requests, Already in the execution of the request can't use this method
+     */
+    public void cancelAll() {
+        synchronized (mDownloadQueue) {
+            for (NetworkDownloadRequest request : mDownloadQueue)
+                request.downloadRequest.cancel();
         }
     }
 

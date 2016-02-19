@@ -17,6 +17,7 @@ package com.sample.nohttp.nohttp;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -53,7 +54,7 @@ public class FastJsonRequest extends RestRequestor<JSONObject> {
             jsonObject = JSON.parseObject(result);
         } else {
             // 这里默认的错误可以定义为你们自己的协议
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<String, Object>();
             map.put("error", -1);
             map.put("url", url());
             map.put("data", "");
