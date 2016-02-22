@@ -2,7 +2,7 @@
 技术交流1群：46523908
 技术交流2群：46505645
 官方E-mail：nohttp@foxmail.com  
-**NoHttp 源码及Demo**：https://github.com/Y0LANDA/NoHttp  
+**NoHttp 教程博客**：http://blog.csdn.net/yanzhenjie1003  
 
 NoHttp是专门做Android网络请求与下载的框架。
 
