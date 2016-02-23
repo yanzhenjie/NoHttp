@@ -171,10 +171,7 @@ public class ImageLocalLoader {
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     public void setDefaultImage(Context context, int resId) {
-        if (VERSION.SDK_INT >= 21)
-            mDefaultDrawable = context.getDrawable(resId);
-        else
-            mDefaultDrawable = context.getResources().getDrawable(resId);
+        mDefaultDrawable = ResourcesCompat.getDrawable(context, resId);
     }
 
     /**

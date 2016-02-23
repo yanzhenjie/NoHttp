@@ -23,6 +23,6 @@ package com.yolanda.nohttp;
  */
 public interface RedirectHandler {
 
-    Request<?> onRedirect(Headers responsHeaders);
+    Request<?> onRedirect(Headers responseHeaders);
 
 }

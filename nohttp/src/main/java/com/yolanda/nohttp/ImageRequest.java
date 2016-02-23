@@ -75,7 +75,7 @@ public class ImageRequest extends RestRequestor<Bitmap> {
      */
     private Bitmap doResponse(byte[] byteArray) throws OutOfMemoryError {
         BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         if (mMaxWidth == 0 && mMaxHeight == 0) {
             decodeOptions.inPreferredConfig = mDecodeConfig;
             bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, decodeOptions);

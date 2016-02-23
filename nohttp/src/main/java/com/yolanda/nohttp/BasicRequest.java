@@ -39,7 +39,7 @@ import android.text.TextUtils;
  */
 public abstract class BasicRequest<T> implements Request<T> {
 
-    private final String boundary = createBoundry();
+    private final String boundary = createBoundary();
     private final String start_boundary = "--" + boundary;
     private final String end_boundary = start_boundary + "--";
 
@@ -54,7 +54,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     private static String acceptLanguage;
 
     /**
-     * Target adress
+     * Target address
      */
     private String url;
     /**
@@ -112,7 +112,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     /**
      * Has been canceled
      */
-    private boolean isCaneled = false;
+    private boolean isCanceled = false;
     /**
      * Request is finished
      */
@@ -499,18 +499,18 @@ public abstract class BasicRequest<T> implements Request<T> {
 
     @Override
     public boolean isStarted() {
-        return isStart && !isCaneled;
+        return isStart && !isCanceled;
     }
 
     @Override
     public void cancel() {
-        this.isCaneled = true;
+        this.isCanceled = true;
         this.isStart = false;
     }
 
     @Override
-    public void reverseCancle() {
-        this.isCaneled = false;
+    public void reverseCancel() {
+        this.isCanceled = false;
     }
 
     @Override
@@ -526,7 +526,7 @@ public abstract class BasicRequest<T> implements Request<T> {
 
     @Override
     public boolean isCanceled() {
-        return isCaneled;
+        return isCanceled;
     }
 
     @Override
@@ -572,7 +572,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Create acceptLauguage
+     * Create acceptLanguage
      */
     public static final String createAcceptLanguage() {
         Locale locale = NoHttp.getContext().getResources().getConfiguration().locale;
@@ -589,7 +589,7 @@ public abstract class BasicRequest<T> implements Request<T> {
      *
      * @return random code
      */
-    public static final String createBoundry() {
+    public static final String createBoundary() {
         StringBuffer sb = new StringBuffer("------------------");
         for (int t = 1; t < 12; t++) {
             long time = System.currentTimeMillis() + t;

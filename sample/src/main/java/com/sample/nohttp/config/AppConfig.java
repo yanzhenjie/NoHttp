@@ -49,7 +49,7 @@ public class AppConfig {
         preferences = Application.getInstance().getSharedPreferences("nohttp_sample", Context.MODE_PRIVATE);
 
         APP_PATH_ROOT = FileUtil.getRootPath().getAbsolutePath() + File.separator + "NoHttpSample";
-        FileUtil.initDirctory(APP_PATH_ROOT);
+        FileUtil.initDirectory(APP_PATH_ROOT);
     }
 
     public static AppConfig getInstance() {

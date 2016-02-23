@@ -53,11 +53,11 @@ public class RequestDispatcher extends Thread {
     /**
      * Create a request queue polling thread
      *
-     * @param reqeustQueue   Request queue
+     * @param requestQueue   Request queue
      * @param implRestParser Network request task actuator
      */
-    public RequestDispatcher(BlockingQueue<HttpRequest<?>> reqeustQueue, ImplRestParser implRestParser) {
-        mRequestQueue = reqeustQueue;
+    public RequestDispatcher(BlockingQueue<HttpRequest<?>> requestQueue, ImplRestParser implRestParser) {
+        mRequestQueue = requestQueue;
         mImplRestParser = implRestParser;
     }
 
@@ -70,7 +70,7 @@ public class RequestDispatcher extends Thread {
     }
 
     /**
-     * Dispatcher is runing
+     * Dispatcher is running
      *
      * @return the status
      */

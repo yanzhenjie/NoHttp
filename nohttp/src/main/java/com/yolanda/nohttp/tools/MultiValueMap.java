@@ -91,7 +91,7 @@ public interface MultiValueMap<K, V> {
     /**
      * If the map has no value
      */
-    boolean isEmpt();
+    boolean isEmpty();
 
     /**
      * Whether the map with a key

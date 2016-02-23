@@ -150,9 +150,9 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
 
     @Override
     public int getContentLength() {
-        String contenLength = getValue(HEAD_KEY_CONTENT_LENGTH, 0);
+        String contentLength = getValue(HEAD_KEY_CONTENT_LENGTH, 0);
         try {
-            return Integer.parseInt(contenLength);
+            return Integer.parseInt(contentLength);
         } catch (Exception e) {
         }
         return 0;

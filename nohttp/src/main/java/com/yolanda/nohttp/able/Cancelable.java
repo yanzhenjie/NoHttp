@@ -30,13 +30,13 @@ public interface Cancelable {
     void cancel();
 
     /**
-     * Has it been cancelled ?
+     * Has it been canceled ?
      */
     boolean isCanceled();
 
     /**
      * Anti cancellation
      */
-    void reverseCancle();
+    void reverseCancel();
 
 }

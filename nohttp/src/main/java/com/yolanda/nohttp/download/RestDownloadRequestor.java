@@ -45,13 +45,13 @@ public class RestDownloadRequestor extends RestRequestor<Void> implements Downlo
      */
     private final boolean isDeleteOld;
 
-    public RestDownloadRequestor(String url, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
-        this(url, RequestMethod.GET, fileFloder, filename, isRange, isDeleteOld);
+    public RestDownloadRequestor(String url, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
+        this(url, RequestMethod.GET, fileFolder, filename, isRange, isDeleteOld);
     }
 
-    public RestDownloadRequestor(String url, RequestMethod requestMethod, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
+    public RestDownloadRequestor(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
         super(url, requestMethod);
-        this.mFileDir = fileFloder;
+        this.mFileDir = fileFolder;
         this.mFileName = filename;
         this.isRange = isRange;
         this.isDeleteOld = isDeleteOld;

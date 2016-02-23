@@ -63,6 +63,7 @@ public class StartActivity extends BaseActivity {
                 break;
             case 1:// 自定义请求FastJson
                 intent = new Intent(this, FastJsonActvity.class);
+                break;
             case 2:// 各种请求方法演示(GET, POST, HEAD, PUT等等)
                 intent = new Intent(this, MethodActivity.class);
                 break;

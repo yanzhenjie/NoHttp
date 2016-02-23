@@ -114,7 +114,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V> {
     }
 
     @Override
-    public boolean isEmpt() {
+    public boolean isEmpty() {
         return mSource.isEmpty();
     }
 

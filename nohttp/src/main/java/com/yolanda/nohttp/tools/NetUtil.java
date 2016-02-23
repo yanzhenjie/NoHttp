@@ -183,16 +183,16 @@ public class NetUtil {
      * @return Such as：192.168.1.1
      */
     public static String getLocalIPAddress() {
-        Enumeration<NetworkInterface> netfaces = null;
+        Enumeration<NetworkInterface> enumeration = null;
         try {
-            netfaces = NetworkInterface.getNetworkInterfaces();
+            enumeration = NetworkInterface.getNetworkInterfaces();
         } catch (SocketException e) {
             Logger.w(e);
         }
-        if (netfaces != null) {
+        if (enumeration != null) {
             // 遍历所用的网络接口
-            while (netfaces.hasMoreElements()) {
-                NetworkInterface nif = netfaces.nextElement();// 得到每一个网络接口绑定的地址
+            while (enumeration.hasMoreElements()) {
+                NetworkInterface nif = enumeration.nextElement();// 得到每一个网络接口绑定的地址
                 Enumeration<InetAddress> inetAddresses = nif.getInetAddresses();
                 // 遍历每一个接口绑定的所有ip
                 while (inetAddresses.hasMoreElements()) {

@@ -72,7 +72,6 @@ public class HeaderParser {
         long now = System.currentTimeMillis();
 
         long date = responseHeaders.getDate();
-        long lastModified = responseHeaders.getLastModified();
         long expires = responseHeaders.getExpiration();
 
         long maxAge = 0;
@@ -119,7 +118,6 @@ public class HeaderParser {
 
         cacheEntity.setData(responseBody);
         cacheEntity.setLocalExpire(localExpire);
-        cacheEntity.setLastModified(lastModified);
         cacheEntity.setResponseHeaders(responseHeaders);
 
         return cacheEntity;

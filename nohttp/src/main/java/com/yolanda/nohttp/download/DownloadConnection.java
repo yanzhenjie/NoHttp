@@ -84,7 +84,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                 } else {
                     downloadListener.onStart(what, true, lastFile.length(), new HttpHeaders(), lastFile.length());
                     downloadListener.onProgress(what, 100, lastFile.length());
-                    Logger.d("-------Donwload finish-------");
+                    Logger.d("-------Download finish-------");
                     downloadListener.onFinish(what, lastFile.getAbsolutePath());
                     return;
                 }
@@ -133,9 +133,9 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                     try {
                         totalLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
                     } catch (Exception e) {
-                        String erroeMessage = "Content-Range error in Server HTTP header information";
-                        Logger.e(erroeMessage);
-                        downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_EXCEPTION, erroeMessage);
+                        String errorMessage = "Content-Range error in Server HTTP header information";
+                        Logger.e(errorMessage);
+                        downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_EXCEPTION, errorMessage);
                         return;
                     }
                 }
@@ -187,19 +187,19 @@ public class DownloadConnection extends BasicConnection implements Downloader {
             randomAccessFile.close();
             if (!downloadRequest.isCanceled()) {
                 tempFile.renameTo(lastFile);
-                Logger.d("-------Donwload finish-------");
+                Logger.d("-------Download finish-------");
                 downloadListener.onFinish(what, lastFile.getAbsolutePath());
             }
         } catch (SocketTimeoutException e) {
             Logger.e(e);
-            downloadListener.onDownloadError(what, StatusCode.ERROR_DOWNLOAD_TIMEOUT, getExcetionMessage(e));
+            downloadListener.onDownloadError(what, StatusCode.ERROR_DOWNLOAD_TIMEOUT, getExceptionMessage(e));
         } catch (UnknownHostException e) {
             Logger.e(e);
-            downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_NOT_FOUND, getExcetionMessage(e));
+            downloadListener.onDownloadError(what, StatusCode.ERROR_SERVER_NOT_FOUND, getExceptionMessage(e));
         } catch (Exception e) {
             Logger.e(e);
             if (NetUtil.isNetworkAvailable(NoHttp.getContext()))
-                downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, getExcetionMessage(e));
+                downloadListener.onDownloadError(what, StatusCode.ERROR_OTHER, getExceptionMessage(e));
             else
                 downloadListener.onDownloadError(what, StatusCode.ERROR_NETWORK_NOT_AVAILABLE, "Network is not available");
         } finally {

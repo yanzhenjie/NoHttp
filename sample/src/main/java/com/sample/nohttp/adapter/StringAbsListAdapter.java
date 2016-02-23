@@ -65,7 +65,7 @@ public class StringAbsListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(itemLayoutId, parent, false);
             viewHolder = new ViewHolder(convertView);

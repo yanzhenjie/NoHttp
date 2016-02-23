@@ -34,7 +34,7 @@ public abstract class RestRequestor<T> extends BasicRequest<T> {
     protected Map<String, Object> mParamMap = null;
 
     /**
-     * Create a request, RequestMethod is {@link RequestMethod#Get}
+     * Create a request, RequestMethod is {@link RequestMethod#GET}
      *
      * @param url request adress, like: http://www.google.com
      */

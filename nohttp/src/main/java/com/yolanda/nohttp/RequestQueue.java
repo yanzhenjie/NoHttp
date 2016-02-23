@@ -71,7 +71,7 @@ public class RequestQueue {
     public <T> void add(int what, Request<T> request, OnResponseListener<T> responseListener) {
         if (!request.inQueue()) {
             request.takeQueue(true);
-            request.reverseCancle();
+            request.reverseCancel();
             mRequestQueue.add(new HttpRequest<T>(what, request, responseListener));
         }
     }

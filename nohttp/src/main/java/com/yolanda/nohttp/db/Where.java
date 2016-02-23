@@ -148,7 +148,7 @@ public class Where {
     }
 
     public final Where insert(int index, CharSequence s) {
-        builder.insert(0, s);
+        builder.insert(index, s);
         return this;
     }
 

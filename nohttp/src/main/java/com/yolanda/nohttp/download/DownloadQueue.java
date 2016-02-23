@@ -71,7 +71,7 @@ public class DownloadQueue {
     public void add(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
         if (!downloadRequest.inQueue()) {
             downloadRequest.takeQueue(true);
-            downloadRequest.reverseCancle();
+            downloadRequest.reverseCancel();
             mDownloadQueue.add(new NetworkDownloadRequest(what, downloadRequest, downloadListener));
         }
     }

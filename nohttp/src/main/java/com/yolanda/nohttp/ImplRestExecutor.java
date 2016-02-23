@@ -27,6 +27,6 @@ public interface ImplRestExecutor {
     /**
      * Execution request: request network, local cache, redirection, etc.
      */
-    HttpResponse executRequest(Request<?> request);
+    HttpResponse executeRequest(Request<?> request);
 
 }

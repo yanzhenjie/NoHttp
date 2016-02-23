@@ -44,9 +44,9 @@ public class JsonObjectRequest extends RestRequestor<JSONObject> {
 
     @Override
     public JSONObject parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        String josnStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
+        String jsonStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
         try {
-            return new JSONObject(josnStr);
+            return new JSONObject(jsonStr);
         } catch (Exception e) {
             try {
                 return new JSONObject("{}");

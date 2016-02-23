@@ -241,7 +241,7 @@ public class FileUtil {
     /**
      * 创建一个文件夹
      */
-    public static boolean initDirctory(String path) {
+    public static boolean initDirectory(String path) {
         boolean result = false;
         File file = new File(path);
         if (!file.exists()) {

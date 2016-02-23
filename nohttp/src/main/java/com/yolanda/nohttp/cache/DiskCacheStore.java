@@ -43,7 +43,7 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
 	 */
 	private DBManager<CacheEntity> mManager;
 
-	private DiskCacheStore() {
+	DiskCacheStore() {
 		mLock = new ReentrantLock();
 		mManager = CacheDiskManager.getInstance();
 	}

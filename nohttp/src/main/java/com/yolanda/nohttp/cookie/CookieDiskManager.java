@@ -59,12 +59,12 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 		values.put(CookieDisker.NAME, cookie.getName());
 		values.put(CookieDisker.VALUE, cookie.getValue());
 		values.put(CookieDisker.COMMENT, cookie.getComment());
-		values.put(CookieDisker.COMMENTURL, cookie.getCommentURL());
+		values.put(CookieDisker.COMMENT_URL, cookie.getCommentURL());
 		values.put(CookieDisker.DISCARD, String.valueOf(cookie.isDiscard()));
 		values.put(CookieDisker.DOMAIN, cookie.getDomain());
 		values.put(CookieDisker.EXPIRY, cookie.getExpiry());
 		values.put(CookieDisker.PATH, cookie.getPath());
-		values.put(CookieDisker.PORTLIST, cookie.getPortList());
+		values.put(CookieDisker.PORT_LIST, cookie.getPortList());
 		values.put(CookieDisker.SECURE, String.valueOf(cookie.isSecure()));
 		values.put(CookieDisker.VERSION, cookie.getVersion());
 		long id = -1;
@@ -109,7 +109,7 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 					if (commentIndex >= 0)
 						cookie.setComment(cursor.getString(commentIndex));
 
-					int commentUriIndex = cursor.getColumnIndex(CookieDisker.COMMENTURL);
+					int commentUriIndex = cursor.getColumnIndex(CookieDisker.COMMENT_URL);
 					if (commentUriIndex >= 0)
 						cookie.setCommentURL(cursor.getString(commentUriIndex));
 
@@ -129,9 +129,9 @@ class CookieDiskManager extends DBManager<CookieEntity> {
 					if (pathIndex >= 0)
 						cookie.setPath(cursor.getString(pathIndex));
 
-					int portlistIndex = cursor.getColumnIndex(CookieDisker.PORTLIST);
-					if (portlistIndex >= 0)
-						cookie.setPortList(cursor.getString(portlistIndex));
+					int portListIndex = cursor.getColumnIndex(CookieDisker.PORT_LIST);
+					if (portListIndex >= 0)
+						cookie.setPortList(cursor.getString(portListIndex));
 
 					int secureIndex = cursor.getColumnIndex(CookieDisker.SECURE);
 					if (secureIndex >= 0)

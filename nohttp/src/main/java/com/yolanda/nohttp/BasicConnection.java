@@ -56,9 +56,9 @@ public class BasicConnection {
 
         // 2.Build URL
         String urlStr = request.url();
-        Logger.i("Reuqest adress: " + urlStr);
+        Logger.i("Request address: " + urlStr);
         URL url = new URL(urlStr);
-        HttpURLConnection connection = null;
+        HttpURLConnection connection;
         Proxy proxy = request.getProxy();
         if (proxy == null)
             connection = (HttpURLConnection) url.openConnection();
@@ -111,7 +111,7 @@ public class BasicConnection {
 
         String acceptCharset = request.getAcceptCharset();
         if (!TextUtils.isEmpty(acceptCharset))
-            headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptCharset);
+            headers.set(Headers.HEAD_KEY_ACCEPT_CHARSET, acceptCharset);
 
         String acceptLanguget = request.getAcceptLanguage();
         if (!TextUtils.isEmpty(acceptLanguget))
@@ -151,7 +151,7 @@ public class BasicConnection {
 
         Map<String, String> requestHeaders = headers.toRequestHeaders();
 
-        // 4.Adds all request header to httoConnection
+        // 4.Adds all request header to httpConnection
         for (Map.Entry<String, String> headerEntry : requestHeaders.entrySet()) {
             String headKey = headerEntry.getKey();
             String headValue = headerEntry.getValue();
@@ -239,7 +239,7 @@ public class BasicConnection {
         return !(100 <= responseCode && responseCode < 200) && responseCode != 204 && responseCode != 205 && responseCode != 304;
     }
 
-    protected String getExcetionMessage(Throwable e) {
+    protected String getExceptionMessage(Throwable e) {
         StringBuilder exceptionInfo = new StringBuilder();
         if (e != null) {
             exceptionInfo.append(e.getClass().getName());

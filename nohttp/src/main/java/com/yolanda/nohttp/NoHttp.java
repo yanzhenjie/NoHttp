@@ -49,9 +49,9 @@ public class NoHttp {
      */
     public static final String CHARSET_UTF8 = "utf-8";
     /**
-     * Default mimetype of upload file, value is {@value}
+     * Default mimeType of upload file, value is {@value}
      */
-    public static final String MIMETYE_FILE = "application/octet-stream";
+    public static final String MIME_TYPE_FILE = "application/octet-stream";
     /**
      * Default timeout, value is {@value} ms
      */
@@ -94,8 +94,8 @@ public class NoHttp {
     /**
      * Create a new request queue
      *
-     * @param implRestExecutor The response parser, The result of parsing the network layer
-     * @param threadPoolSize   Request the number of concurrent
+     * @param implRestParser The response parser, The result of parsing the network layer
+     * @param threadPoolSize Request the number of concurrent
      * @return Returns the request queue, the queue is used to control the entry of the request
      */
     public static RequestQueue newRequestQueue(ImplRestParser implRestParser, int threadPoolSize) {
@@ -154,7 +154,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a String type request, custom request method, method from {@link #RequestMethod}
+     * Create a String type request, custom request method, method from {@link RequestMethod}
      */
     public static Request<String> createStringRequest(String url, RequestMethod requestMethod) {
         return new StringRequest(url, requestMethod);
@@ -168,7 +168,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a JSONObject type request, custom request method, method from {@link #RequestMethod}
+     * Create a JSONObject type request, custom request method, method from {@linkplain RequestMethod}
      */
     public static Request<JSONObject> createJsonObjectRequest(String url, RequestMethod requestMethod) {
         return new JsonObjectRequest(url, requestMethod);
@@ -182,7 +182,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a JSONArray type request, custom request method, method from {@link #RequestMethod}
+     * Create a JSONArray type request, custom request method, method from {@link RequestMethod}
      */
     public static Request<JSONArray> createJsonArrayRequest(String url, RequestMethod requestMethod) {
         return new JsonArrayRequest(url, requestMethod);
@@ -215,7 +215,7 @@ public class NoHttp {
      * @param cache              Cache interface, which is used to cache the request results
      * @param implRestConnection Network operating interface, The implementation of the network layer
      * @param request            Request object
-     * @return Reponse result
+     * @return Response result
      */
     public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, ImplRestConnection implRestConnection, Request<T> request) {
         Response<T> response = null;
@@ -229,7 +229,7 @@ public class NoHttp {
      *
      * @param cache   Cache interface, which is used to cache the request results
      * @param request Request object
-     * @return Reponse result
+     * @return Response result
      */
     public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, Request<T> request) {
         return startRequestSync(cache, HttpRestConnection.getInstance(), request);
@@ -238,9 +238,8 @@ public class NoHttp {
     /**
      * Initiate a synchronization request
      *
-     * @param cache   Cache interface, which is used to cache the request results
      * @param request Request object
-     * @return Reponse result
+     * @return Response result
      */
     public static <T> Response<T> startRequestSync(ImplRestConnection implRestConnection, Request<T> request) {
         return startRequestSync(DiskCacheStore.INSTANCE, implRestConnection, request);
@@ -249,9 +248,8 @@ public class NoHttp {
     /**
      * Initiate a synchronization request
      *
-     * @param cache   Cache interface, which is used to cache the request results
      * @param request Request object
-     * @return Reponse result
+     * @return Response result
      */
     public static <T> Response<T> startRequestSync(Request<T> request) {
         return startRequestSync(DiskCacheStore.INSTANCE, HttpRestConnection.getInstance(), request);
@@ -279,14 +277,14 @@ public class NoHttp {
      * Create a download object
      *
      * @param url         Download address
-     * @param fileFloder  Folder to save file
+     * @param fileFolder  Folder to save file
      * @param filename    Filename
      * @param isRange     Whether the breakpoint continuingly
      * @param isDeleteOld Find the same when the file is deleted after download, or on behalf of the download is complete, not to request the network
      * @return {@link DownloadRequest}
      */
-    public static DownloadRequest createDownloadRequest(String url, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
-        return createDownloadRequest(url, RequestMethod.GET, fileFloder, filename, isRange, isDeleteOld);
+    public static DownloadRequest createDownloadRequest(String url, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
+        return createDownloadRequest(url, RequestMethod.GET, fileFolder, filename, isRange, isDeleteOld);
     }
 
     /**
@@ -294,14 +292,14 @@ public class NoHttp {
      *
      * @param url           Download address
      * @param requestMethod {@link RequestMethod}
-     * @param fileFloder    Folder to save file
+     * @param fileFolder    Folder to save file
      * @param filename      Filename
      * @param isRange       Whether the breakpoint continuingly
      * @param isDeleteOld   Find the same when the file is deleted after download, or on behalf of the download is complete, not to request the network
      * @return {@link DownloadRequest}
      */
-    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFloder, String filename, boolean isRange, boolean isDeleteOld) {
-        return new RestDownloadRequestor(url, requestMethod, fileFloder, filename, isRange, isDeleteOld);
+    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
+        return new RestDownloadRequestor(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
     }
 
     /**

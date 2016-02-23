@@ -43,7 +43,7 @@ public class HttpRestParser implements ImplRestParser {
     @Override
     public <T> Response<T> parserRequest(Request<T> request) {
         long startTime = SystemClock.elapsedRealtime();
-        HttpResponse httpResponse = mImplRestExecutor.executRequest(request);
+        HttpResponse httpResponse = mImplRestExecutor.executeRequest(request);
         String url = request.url();
         Headers responseHeaders = httpResponse.responseHeaders;
         byte[] responseBody = httpResponse.responseBody;

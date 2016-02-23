@@ -50,10 +50,6 @@ public class CacheEntity implements DBId, Field, Serializable {
     private byte[] data = {};
 
     /**
-     * The last modified date for the requested object.
-     */
-    private long lastModified = 0;
-    /**
      * Cached in the local expiration time
      */
     private long localExpire;
@@ -62,12 +58,12 @@ public class CacheEntity implements DBId, Field, Serializable {
         super();
     }
 
-    public CacheEntity(long id, String key, Headers responseHeaders, byte[] data) {
-        super();
+    public CacheEntity(long id, String key, Headers responseHeaders, byte[] data, long localExpire) {
         this.id = id;
         this.key = key;
         this.responseHeaders = responseHeaders;
         this.data = data;
+        this.localExpire = localExpire;
     }
 
     /**
@@ -137,20 +133,6 @@ public class CacheEntity implements DBId, Field, Serializable {
      */
     public void setData(byte[] data) {
         this.data = data;
-    }
-
-    /**
-     * @return the lastModified
-     */
-    public long getLastModified() {
-        return lastModified;
-    }
-
-    /**
-     * @param lastModified the lastModified to set
-     */
-    public void setLastModified(long lastModified) {
-        this.lastModified = lastModified;
     }
 
     /**

@@ -63,7 +63,7 @@ public enum DiskCookieStore implements CookieStore {
      */
     private CookieStoreListener mCookieStoreListener;
 
-    private DiskCookieStore() {
+    DiskCookieStore() {
         mLock = new ReentrantLock();
         mManager = CookieDiskManager.getInstance();
     }

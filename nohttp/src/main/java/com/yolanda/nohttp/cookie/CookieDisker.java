@@ -38,12 +38,12 @@ class CookieDisker extends SQLiteOpenHelper implements Field {
     public static final String NAME = "name";
     public static final String VALUE = "value";
     public static final String COMMENT = "comment";
-    public static final String COMMENTURL = "comment_url";
+    public static final String COMMENT_URL = "comment_url";
     public static final String DISCARD = "discard";
     public static final String DOMAIN = "domain";
     public static final String EXPIRY = "expiry";
     public static final String PATH = "path";
-    public static final String PORTLIST = "portlist";
+    public static final String PORT_LIST = "portlist";
     public static final String SECURE = "secure";
     public static final String VERSION = "version";
 

@@ -28,15 +28,15 @@ public interface DownloadRequest extends Request<Void> {
     /**
      * Also didn't download to start download again
      */
-    public static final int STATUS_RESTART = 0;
+    int STATUS_RESTART = 0;
     /**
      * Part has been downloaded, continue to download last time
      */
-    public static final int STATUS_RESUME = 1;
+    int STATUS_RESUME = 1;
     /**
      * Has the download is complete, not to download operation
      */
-    public static final int STATUS_FINISH = 2;
+    int STATUS_FINISH = 2;
 
     /**
      * Return the mFileDir

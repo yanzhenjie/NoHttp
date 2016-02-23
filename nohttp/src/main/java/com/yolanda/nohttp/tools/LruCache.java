@@ -51,7 +51,7 @@ public class LruCache<K, V> {
      *
      * @param maxSize The new maximum size.
      */
-    public void resize(int maxSize) {
+    public void reSize(int maxSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSize <= 0");
         }

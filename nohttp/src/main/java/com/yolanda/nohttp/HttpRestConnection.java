@@ -73,7 +73,7 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
 
                 // handle body
                 if (hasResponseBody(request.getRequestMethod(), responseCode)) {
-                    InputStream inputStream = null;
+                    InputStream inputStream;
                     try {
                         inputStream = httpConnection.getInputStream();
                     } catch (IOException e) {
@@ -87,7 +87,7 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
 
                 isSucceed = true;// Deal successfully with all
             } catch (Exception e) {
-                String exceptionInfo = getExcetionMessage(e);
+                String exceptionInfo = getExceptionMessage(e);
                 responseBody = exceptionInfo.getBytes();
                 Logger.e(e);
             } finally {

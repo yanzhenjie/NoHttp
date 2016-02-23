@@ -57,7 +57,7 @@ public class FileBinary implements Binary {
     }
 
     public FileBinary(File file, String fileName) {
-        this(file, file.getName(), null);
+        this(file, fileName, null);
     }
 
     public FileBinary(File file, String fileName, String mimeType) {
@@ -88,7 +88,7 @@ public class FileBinary implements Binary {
             long totalLength = getLength();
             long count = 0;
             RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
-            int len = -1;
+            int len;
             byte[] buffer = new byte[1024];
             while (isRun && (len = accessFile.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, len);
@@ -118,7 +118,7 @@ public class FileBinary implements Binary {
         if (TextUtils.isEmpty(mimeType)) {
             mimeType = FileUtil.getMimeTypeByUrl(file.getAbsolutePath());
             if (TextUtils.isEmpty(mimeType))
-                mimeType = NoHttp.MIMETYE_FILE;
+                mimeType = NoHttp.MIME_TYPE_FILE;
         }
         return mimeType;
     }
@@ -134,7 +134,7 @@ public class FileBinary implements Binary {
     }
 
     @Override
-    public void reverseCancle() {
+    public void reverseCancel() {
         this.isRun = true;
     }
 

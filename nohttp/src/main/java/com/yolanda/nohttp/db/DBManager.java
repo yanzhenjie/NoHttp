@@ -28,7 +28,7 @@ import android.util.Log;
 
 /**
  * Database management generic class, has realized the basic functions, inheritance of the subclass only need to implement {@link #replace(DBId)}, {@link #get(String)} and
- * {@link #getTableName(String)}
+ * {@link #getTableName()}
  * </br>
  * Created in Jan 10, 2016 8:18:28 PM
  *

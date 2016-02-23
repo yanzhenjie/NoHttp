@@ -49,14 +49,14 @@ public class HttpRestExecutor implements ImplRestExecutor {
     }
 
     @Override
-    public HttpResponse executRequest(Request<?> request) {
+    public HttpResponse executeRequest(Request<?> request) {
         // handle cache header
         CacheEntity cacheEntity = null;
         if (request.needCache())
             cacheEntity = mCache.get(request.getCacheKey());
 
         // handle response
-        HttpResponse httpResponse = null;
+        HttpResponse httpResponse;
         if (cacheEntity == null || cacheEntity.getLocalExpire() < System.currentTimeMillis()) {
             if (cacheEntity != null)
                 handleCacheHeader(request, cacheEntity);
@@ -77,20 +77,20 @@ public class HttpRestExecutor implements ImplRestExecutor {
                 responseBody = cacheEntity.getData();
             } else if (responseCode == 302 || responseCode == 303) {// redirect
                 // redirect request
-                Request<?> redirestRequest = null;
+                Request<?> redirectRequest;
                 RedirectHandler redirectHandler = request.getRedirectHandler();
                 if (redirectHandler != null)
-                    redirestRequest = redirectHandler.onRedirect(responseHeaders);
+                    redirectRequest = redirectHandler.onRedirect(responseHeaders);
                 else {
-                    redirestRequest = NoHttp.createStringRequest(responseHeaders.getLocation(), request.getRequestMethod());
-                    redirestRequest.setSSLSocketFactory(request.getSSLSocketFactory());
-                    redirestRequest.setProxy(request.getProxy());
+                    redirectRequest = NoHttp.createStringRequest(responseHeaders.getLocation(), request.getRequestMethod());
+                    redirectRequest.setSSLSocketFactory(request.getSSLSocketFactory());
+                    redirectRequest.setProxy(request.getProxy());
                 }
 
-                if (redirestRequest == null) {
+                if (redirectRequest == null) {
                     // needn't redirect
                 } else {
-                    HttpResponse redirectHttpResponse = executRequest(redirestRequest);
+                    HttpResponse redirectHttpResponse = executeRequest(redirectRequest);
 
                     // response result
                     isSucceed = redirectHttpResponse.isSucceed;
