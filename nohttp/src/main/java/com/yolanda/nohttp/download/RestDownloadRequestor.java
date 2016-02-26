@@ -37,7 +37,7 @@ public class RestDownloadRequestor extends RestRequestor<Void> implements Downlo
      */
     private final String mFileName;
     /**
-     * If is to download a file, whether the breakpoint continuingly
+     * If is to download a file, whether the breakpoint continuing
      */
     private final boolean isRange;
     /**

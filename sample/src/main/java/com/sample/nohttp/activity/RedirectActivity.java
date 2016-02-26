@@ -15,6 +15,10 @@
  */
 package com.sample.nohttp.activity;
 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
 import com.sample.nohttp.nohttp.CallServer;
@@ -23,10 +27,6 @@ import com.sample.nohttp.util.Constants;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
-
-import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 
 /**
  * </br>
@@ -62,7 +62,7 @@ public class RedirectActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
         mTvResult.setText("请求失败");
     }
 

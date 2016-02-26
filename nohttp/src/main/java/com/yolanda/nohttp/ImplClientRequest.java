@@ -20,10 +20,10 @@ import java.net.Proxy;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.yolanda.nohttp.able.Finishable;
-import com.yolanda.nohttp.able.Queueable;
-import com.yolanda.nohttp.able.SignCancelable;
-import com.yolanda.nohttp.able.Startable;
+import com.yolanda.nohttp.able.FinishAble;
+import com.yolanda.nohttp.able.QueueAble;
+import com.yolanda.nohttp.able.SignCancelAble;
+import com.yolanda.nohttp.able.StartAble;
 
 /**
  * Developers provide data interface
@@ -32,7 +32,7 @@ import com.yolanda.nohttp.able.Startable;
  *
  * @author YOLANDA;
  */
-public interface ImplClientRequest extends Queueable, Startable, SignCancelable, Finishable {
+public interface ImplClientRequest extends QueueAble, StartAble, SignCancelAble, FinishAble {
 
     /**
      * Set proxy server

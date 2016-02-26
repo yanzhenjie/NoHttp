@@ -55,7 +55,7 @@ public class SyncActivity extends BaseActivity implements View.OnClickListener {
         if (response.isSucceed()) {
             mTvResult.setText("请求成功: " + response.get());
         } else {
-            mTvResult.setText("请求失败: " + response.getErrorMessage());
+            mTvResult.setText("请求失败: " + response.getException());
         }
     }
 

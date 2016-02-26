@@ -95,19 +95,19 @@ public class RequestDispatcher extends Thread {
                 Logger.d(request.request.url() + " is canceled");
                 continue;
             }
-            request.request.start();
+            request.request.start(true);
             // start
             final ThreadPoster startThread = new ThreadPoster(request.what, request.responseListener);
             startThread.onStart();
             getPosterHandler().post(startThread);
 
             // finish
+            request.request.finish(true);
+            request.request.queue(false);
             final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
             Response<?> response = mImplRestParser.parserRequest(request.request);
-            request.request.takeQueue(false);
             finishThread.onFinished();
             getPosterHandler().post(finishThread);
-            request.request.finish();
 
             // response
             if (request.request.isCanceled())
@@ -173,7 +173,7 @@ public class RequestDispatcher extends Thread {
                         if (response.isSucceed()) {
                             responseListener.onSucceed(what, response);
                         } else {
-                            responseListener.onFailed(what, response.url(), response.getTag(), response.getErrorMessage(), response.getHeaders().getResponseCode(), response.getNetworkMillis());
+                            responseListener.onFailed(what, response.url(), response.getTag(), response.getException(), response.getHeaders().getResponseCode(), response.getNetworkMillis());
                         }
                     }
                 }

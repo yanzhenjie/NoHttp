@@ -38,7 +38,7 @@ import android.widget.TextView;
 public abstract class BaseActivity extends Activity {
 
     private RelativeLayout mTitleLayoutRoot;
-    private ImageView mIvBackbar;
+    private ImageView mIvBackBar;
     private TextView mTvTitle;
     private LinearLayout mMenuLayoutRoot;
     private FrameLayout mContentLayoutRoot;
@@ -49,8 +49,8 @@ public abstract class BaseActivity extends Activity {
         Window window = getWindow();
         window.setContentView(R.layout.activity_base);
         mTitleLayoutRoot = (RelativeLayout) window.findViewById(R.id.layout_activity_base_title_root);
-        mIvBackbar = (ImageView) mTitleLayoutRoot.findViewById(R.id.iv_activity_base_backbar);
-        mIvBackbar.setOnClickListener(mBackClickListener);
+        mIvBackBar = (ImageView) mTitleLayoutRoot.findViewById(R.id.iv_activity_base_backbar);
+        mIvBackBar.setOnClickListener(mBackClickListener);
         mTvTitle = (TextView) mTitleLayoutRoot.findViewById(R.id.tv_activity_base_title);
         mMenuLayoutRoot = (LinearLayout) mTitleLayoutRoot.findViewById(R.id.layout_activity_base_menu_root);
         mContentLayoutRoot = (FrameLayout) window.findViewById(R.id.layout_activity_base_content_root);
@@ -60,11 +60,11 @@ public abstract class BaseActivity extends Activity {
     protected abstract void onActivityCreate(Bundle savedInstanceState);
 
     protected void hideBackBar() {
-        mIvBackbar.setVisibility(View.GONE);
+        mIvBackBar.setVisibility(View.GONE);
     }
 
     protected void showBackBar() {
-        mIvBackbar.setVisibility(View.VISIBLE);
+        mIvBackBar.setVisibility(View.VISIBLE);
     }
 
     private View.OnClickListener mBackClickListener = new View.OnClickListener() {

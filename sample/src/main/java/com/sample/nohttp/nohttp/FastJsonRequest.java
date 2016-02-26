@@ -15,9 +15,7 @@
  */
 package com.sample.nohttp.nohttp;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -27,7 +25,8 @@ import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.RestRequestor;
 import com.yolanda.nohttp.StringRequest;
 
-import android.text.TextUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 自定义请求对象

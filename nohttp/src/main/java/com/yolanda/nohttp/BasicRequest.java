@@ -104,19 +104,19 @@ public abstract class BasicRequest<T> implements Request<T> {
     /**
      * Queue tag
      */
-    private boolean inQueue = false;
+    private boolean queue = false;
     /**
      * The record has started.
      */
     private boolean isStart = false;
     /**
+     * The request is completed
+     */
+    private boolean isFinished = false;
+    /**
      * Has been canceled
      */
     private boolean isCanceled = false;
-    /**
-     * Request is finished
-     */
-    private boolean isFinished = false;
     /**
      * Cancel sign
      */
@@ -483,25 +483,57 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public void takeQueue(boolean queue) {
-        this.inQueue = queue;
+    public void queue(boolean queue) {
+        this.queue = queue;
     }
 
     @Override
-    public boolean inQueue() {
-        return inQueue;
+    public boolean isQueue() {
+        return queue;
     }
 
     @Override
-    public void start() {
-        this.isStart = true;
+    public void toggleQueue() {
+        this.queue = !queue;
+    }
+
+    @Override
+    public void start(boolean start) {
+        this.isStart = start;
+        if (start)
+            this.isFinished = false;
     }
 
     @Override
     public boolean isStarted() {
-        return isStart && !isCanceled;
+        return isStart;
     }
 
+    @Override
+    public void toggleStart() {
+        this.isStart = !isStart;
+    }
+
+    @Override
+    public void finish(boolean finish) {
+        this.isFinished = finish;
+        if (finish)
+            this.isStart = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    @Override
+    public void toggleFinish() {
+        this.isFinished = !isFinished;
+    }
+
+    /**
+     * @deprecated @deprecated Please use {@link #cancel(boolean)} instead
+     */
     @Override
     public void cancel() {
         this.isCanceled = true;
@@ -509,9 +541,22 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public void reverseCancel() {
+    public void cancel(boolean cancel) {
+        this.isCanceled = cancel;
+        if (cancel)
+            this.isStart = false;
+    }
+
+    @Override
+    public void toggleCancel() {
         this.isCanceled = false;
     }
+
+    @Override
+    public boolean isCanceled() {
+        return isCanceled;
+    }
+
 
     @Override
     public void setCancelSign(Object sign) {
@@ -521,22 +566,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     @Override
     public void cancelBySign(Object sign) {
         if (cancelSign == sign)
-            cancel();
-    }
-
-    @Override
-    public boolean isCanceled() {
-        return isCanceled;
-    }
-
-    @Override
-    public void finish() {
-        isFinished = true;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return isFinished;
+            cancel(true);
     }
 
     public String getParamsEncoding() {

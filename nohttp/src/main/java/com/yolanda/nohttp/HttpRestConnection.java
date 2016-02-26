@@ -15,16 +15,23 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.zip.GZIPInputStream;
-
+import com.yolanda.nohttp.error.ClientError;
+import com.yolanda.nohttp.error.NetworkError;
+import com.yolanda.nohttp.error.ServerError;
+import com.yolanda.nohttp.error.TimeoutError;
+import com.yolanda.nohttp.error.URLError;
+import com.yolanda.nohttp.error.UnKnownHostError;
 import com.yolanda.nohttp.tools.HeaderParser;
 import com.yolanda.nohttp.tools.NetUtil;
 
-import android.webkit.URLUtil;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Network operating interface, The implementation of the network layer
@@ -49,54 +56,61 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
     @Override
     public HttpResponse requestNetwork(ImplServerRequest request) {
         if (request == null)
-            throw new IllegalArgumentException("reqeust == null");
+            throw new IllegalArgumentException("request == null");
 
-        Logger.d("--------------Reuqest start--------------");
+        Logger.d("--------------Request start--------------");
 
-        int responseCode = 0;
-        boolean isSucceed = false;
         Headers responseHeaders = new HttpHeaders();
         byte[] responseBody = null;
+        Exception exception = null;
 
-        String url = request.url();
-        if (!URLUtil.isValidUrl(url))
-            responseBody = new StringBuffer("URL error: ").append(url).toString().getBytes();
-        else if (!NetUtil.isNetworkAvailable(NoHttp.getContext()))
-            responseBody = "Network error".getBytes();
-        else {
-            HttpURLConnection httpConnection = null;
-            try {
-                httpConnection = getHttpConnection(request);
-                Logger.d("-------Response start-------");
-                responseCode = httpConnection.getResponseCode();
-                responseHeaders = parseResponseHeaders(new URI(url), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
+        HttpURLConnection httpConnection = null;
+        try {
+            if (!NetUtil.isNetworkAvailable(NoHttp.getContext()))
+                throw new NetworkError("Network error");
 
-                // handle body
-                if (hasResponseBody(request.getRequestMethod(), responseCode)) {
-                    InputStream inputStream;
-                    try {
-                        inputStream = httpConnection.getInputStream();
-                    } catch (IOException e) {
-                        inputStream = httpConnection.getErrorStream();
-                    }
+            //MalformedURLException, IOException, ProtocolException, UnknownHostException, SocketTimeoutException
+            httpConnection = getHttpConnection(request);
+            Logger.d("-------Response start-------");
+            int responseCode = httpConnection.getResponseCode();
+            responseHeaders = parseResponseHeaders(new URI(request.url()), responseCode, httpConnection.getResponseMessage(), httpConnection.getHeaderFields());
+
+            // handle body
+            if (hasResponseBody(request.getRequestMethod(), responseCode)) {
+                InputStream inputStream = null;
+                try {
+                    inputStream = httpConnection.getInputStream();
                     if (HeaderParser.isGzipContent(responseHeaders.getContentEncoding()))
                         inputStream = new GZIPInputStream(inputStream);
                     responseBody = readResponseBody(inputStream);
-                    inputStream.close();
+                } catch (IOException e) {
+                    if (responseCode >= 500)
+                        throw new ServerError("Internal Server Error: " + e.getMessage());
+                    else if (responseCode >= 400)
+                        throw new ClientError("Internal Client Error: " + e.getMessage());
+                } finally {
+                    if (inputStream != null)
+                        inputStream.close();
                 }
-
-                isSucceed = true;// Deal successfully with all
-            } catch (Exception e) {
-                String exceptionInfo = getExceptionMessage(e);
-                responseBody = exceptionInfo.getBytes();
-                Logger.e(e);
-            } finally {
-                if (httpConnection != null)
-                    httpConnection.disconnect();
-                Logger.d("-------Response end-------");
             }
+        } catch (MalformedURLException e) {
+            Logger.e(e);
+            exception = new URLError(e.getMessage());
+        } catch (UnknownHostException e) {
+            Logger.e(e);
+            exception = new UnKnownHostError(e.getMessage());
+        } catch (SocketTimeoutException e) {
+            Logger.e(e);
+            exception = new TimeoutError(e.getMessage());
+        } catch (Exception e) {
+            Logger.e(e);
+            exception = e;
+        } finally {
+            if (httpConnection != null)
+                httpConnection.disconnect();
+            Logger.d("-------Response end-------");
         }
-        Logger.d("--------------Reqeust finish--------------");
-        return new HttpResponse(isSucceed, responseHeaders, responseBody);
+        Logger.d("--------------Request finish--------------");
+        return new HttpResponse(responseHeaders, responseBody, exception);
     }
 }

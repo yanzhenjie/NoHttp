@@ -46,12 +46,13 @@ public class HttpRestParser implements ImplRestParser {
         HttpResponse httpResponse = mImplRestExecutor.executeRequest(request);
         String url = request.url();
         Headers responseHeaders = httpResponse.responseHeaders;
+        Exception exception = httpResponse.exception;
         byte[] responseBody = httpResponse.responseBody;
-        if (httpResponse.isSucceed) {
+        if (exception == null) {
             T result = request.parseResponse(url, responseHeaders, responseBody);
-            return new RestResponser<T>(url, request.getRequestMethod(), true, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - startTime);
+            return new RestResponser<T>(url, request.getRequestMethod(), responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - startTime, exception);
         }
-        return new RestResponser<T>(url, request.getRequestMethod(), false, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - startTime);
+        return new RestResponser<T>(url, request.getRequestMethod(), responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - startTime, exception);
     }
 
 }

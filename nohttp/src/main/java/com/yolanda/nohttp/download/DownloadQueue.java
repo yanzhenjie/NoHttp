@@ -15,6 +15,8 @@
  */
 package com.yolanda.nohttp.download;
 
+import com.yolanda.nohttp.Logger;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -69,9 +71,13 @@ public class DownloadQueue {
      * @param downloadListener Download results monitor
      */
     public void add(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-        if (!downloadRequest.inQueue()) {
-            downloadRequest.takeQueue(true);
-            downloadRequest.reverseCancel();
+        if (downloadRequest.isQueue())
+            Logger.w("This request has been in the queue");
+        else {
+            downloadRequest.queue(true);
+            downloadRequest.start(false);
+            downloadRequest.cancel(false);
+            downloadRequest.finish(false);
             mDownloadQueue.add(new NetworkDownloadRequest(what, downloadRequest, downloadListener));
         }
     }
@@ -104,7 +110,7 @@ public class DownloadQueue {
     public void cancelAll() {
         synchronized (mDownloadQueue) {
             for (NetworkDownloadRequest request : mDownloadQueue)
-                request.downloadRequest.cancel();
+                request.downloadRequest.cancel(true);
         }
     }
 

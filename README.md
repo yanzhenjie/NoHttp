@@ -1,8 +1,8 @@
 #NoHttp
-技术交流1群：46523908
-技术交流2群：46505645
-E-mail：nohttp@foxmail.com  
-NoHttp 教程博客：[http://blog.csdn.net/yanzhenjie1003][1]  
+技术交流1群：46523908  
+技术交流2群：46505645  
+E-mail：nohttp@foxmail.com    
+NoHttp 教程博客：[http://blog.csdn.net/yanzhenjie1003][1]    
 
 NoHttp是专门做Android网络请求与下载的框架。
 

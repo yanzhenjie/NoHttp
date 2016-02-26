@@ -15,6 +15,13 @@
  */
 package com.sample.nohttp.activity;
 
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
 import com.sample.nohttp.adapter.StringAbsListAdapter;
@@ -26,13 +33,6 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
-
-import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * 请求图片
@@ -116,8 +116,8 @@ public class ImageActivity extends BaseActivity implements HttpListener<Bitmap> 
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-        mTvResult.setText("失败：" + message);
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        mTvResult.setText("失败：" + exception.getMessage());
         mImageView.setImageBitmap(null);
     }
 

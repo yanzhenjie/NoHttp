@@ -29,7 +29,7 @@ import com.yolanda.nohttp.Response;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AbsListView;
+import android.widget.GridView;
 import android.widget.TextView;
 
 /**
@@ -57,7 +57,7 @@ public class MethodActivity extends BaseActivity implements HttpListener<String>
         mTvResult = findView(R.id.tv_method_result);
         String[] contentStrings = getResources().getStringArray(R.array.activity_method_item);
         StringAbsListAdapter listAdapter = new StringAbsListAdapter(this, R.layout.item_abs_grid_text, contentStrings, mItemClickListener);
-        ((AbsListView) findView(R.id.gv)).setAdapter(listAdapter);
+        ((GridView) findView(R.id.gv)).setAdapter(listAdapter);
     }
 
     private OnItemClickListener mItemClickListener = new OnItemClickListener() {
@@ -113,8 +113,8 @@ public class MethodActivity extends BaseActivity implements HttpListener<String>
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-        mTvResult.setText("请求失败：\n" + message);
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        mTvResult.setText("请求失败：\n" + exception.getMessage());
     }
 
     @Override
@@ -122,7 +122,7 @@ public class MethodActivity extends BaseActivity implements HttpListener<String>
         super.onDestroy();
         // 退出时可以取消这个请求
         if (mRequest != null)
-            mRequest.cancel();
+            mRequest.cancel(true);
     }
 
 }

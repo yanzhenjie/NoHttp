@@ -97,7 +97,7 @@ public class CacheActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
+        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
             mTvResult.setText("");
             mIvResult.setImageBitmap(null);
             Toast.show("请求失败");
@@ -120,7 +120,7 @@ public class CacheActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
+        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
             mTvResult.setText("");
             mIvResult.setImageBitmap(null);
             Toast.show("请求失败");

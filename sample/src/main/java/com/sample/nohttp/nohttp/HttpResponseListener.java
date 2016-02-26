@@ -16,12 +16,23 @@
 package com.sample.nohttp.nohttp;
 
 import com.sample.nohttp.dialog.WaitDialog;
+import com.sample.nohttp.util.Toast;
+import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.OnResponseListener;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
+import com.yolanda.nohttp.error.ClientError;
+import com.yolanda.nohttp.error.NetworkError;
+import com.yolanda.nohttp.error.ServerError;
+import com.yolanda.nohttp.error.TimeoutError;
+import com.yolanda.nohttp.error.URLError;
+import com.yolanda.nohttp.error.UnKnownHostError;
 
 import android.content.Context;
 import android.content.DialogInterface;
+
+import java.net.URL;
+import java.net.UnknownHostException;
 
 /**
  * Created in Nov 4, 2015 12:02:55 PM
@@ -62,7 +73,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
             mWaitDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    mRequest.cancel();
+                    mRequest.cancel(true);
                 }
             });
         }
@@ -101,9 +112,24 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
      * 失败回调
      */
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        if (exception instanceof ClientError) {// 客户端错误
+            Toast.show("客户端发生错误");
+        } else if (exception instanceof ServerError) {// 服务器错误
+            Toast.show("服务器发生错误");
+        } else if (exception instanceof NetworkError) {// 网络不好
+            Toast.show("请检查网络");
+        } else if (exception instanceof TimeoutError) {// 请求超时
+            Toast.show("请求超时，网络不好或者服务器不稳定");
+        } else if (exception instanceof UnKnownHostError) {// 找不到服务器
+            Toast.show("未发现指定服务器");
+        } else if (exception instanceof URLError) {// URL是错的
+            Toast.show("URL错误");
+        } else {
+            Toast.show("未知错误");
+        }
         if (callback != null)
-            callback.onFailed(what, url, tag, message, responseCode, networkMillis);
+            callback.onFailed(what, url, tag, exception, responseCode, networkMillis);
     }
 
 }

@@ -15,6 +15,10 @@
  */
 package com.sample.nohttp.util;
 
+import android.annotation.SuppressLint;
+
+import com.sample.nohttp.Application;
+
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -22,9 +26,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
@@ -33,11 +34,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-
-import com.sample.nohttp.Application;
-
-import android.annotation.SuppressLint;
-import android.view.View;
 
 /**
  * </br>

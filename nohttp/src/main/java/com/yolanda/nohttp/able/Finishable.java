@@ -22,7 +22,12 @@ package com.yolanda.nohttp.able;
  *
  * @author YOLANDA
  */
-public interface Finishable {
+public interface FinishAble {
+
+    /**
+     * Change finish state
+     */
+    void finish(boolean finish);
 
     /**
      * Has it been finished ?
@@ -30,8 +35,7 @@ public interface Finishable {
     boolean isFinished();
 
     /**
-     * Finish operation
+     * Change the current completion status as contrary to the current status
      */
-    void finish();
-
+    void toggleFinish();
 }

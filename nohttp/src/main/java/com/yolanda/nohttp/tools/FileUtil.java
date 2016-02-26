@@ -18,7 +18,11 @@ package com.yolanda.nohttp.tools;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.StatFs;
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created in Jul 31, 2015 1:44:06 PM
@@ -43,6 +47,82 @@ public class FileUtil {
             availableBlocks = stat.getAvailableBlocks();
         }
         return availableBlocks * blockSize;
+    }
+
+    /**
+     * If the folder can be written
+     */
+    public static boolean canWrite(String path) {
+        File file = new File(path);
+        return file.exists() && file.canWrite();
+    }
+
+    /**
+     * Create a folder, If the folder exists is not created
+     */
+    public static boolean createFolder(String folderPath) {
+        if (!TextUtils.isEmpty(folderPath)) {
+            File folder = new File(folderPath);
+            return createFolder(folder);
+        }
+        return false;
+    }
+
+    /**
+     * Create a folder, If the folder exists is not created
+     */
+    public static boolean createFolder(File targetFolder) {
+        if (targetFolder.exists())
+            return true;
+        return targetFolder.mkdirs();
+    }
+
+    /**
+     * Create a file, If the file exists is not created
+     */
+    public static boolean createFile(String filePath) {
+        if (!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            return createFile(file);
+        }
+        return false;
+    }
+
+    /**
+     * Create a file, If the file exists is not created
+     */
+    public static boolean createFile(File targetFile) {
+        if (targetFile.exists())
+            return true;
+        try {
+            return targetFile.createNewFile();
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Create a new file, if the file exists, delete and create again
+     */
+    public static boolean createNewFile(String filePath) {
+        if (!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            return createNewFile(file);
+        }
+        return false;
+    }
+
+    /**
+     * Create a new file, if the file exists, delete and create again
+     */
+    public static boolean createNewFile(File targetFile) {
+        if (targetFile.exists())
+            targetFile.delete();
+        try {
+            return targetFile.createNewFile();
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     /**

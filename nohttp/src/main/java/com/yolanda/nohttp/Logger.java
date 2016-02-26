@@ -15,8 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import java.util.Locale;
-
 import android.util.Log;
 
 /**
@@ -49,19 +47,14 @@ public class Logger {
             Log.i(STag, msg);
     }
 
-    public static void i(String format, Object... obj) {
-        if (SDebug)
-            Log.i(STag, buildMessage(format, obj));
-    }
-
     public static void i(Throwable e) {
         if (SDebug)
             Log.i(STag, "", e);
     }
 
-    public static void i(Throwable e, String format, Object... obj) {
+    public static void i(Throwable e, String msg) {
         if (SDebug)
-            Log.i(STag, buildMessage(format, obj), e);
+            Log.i(STag, msg, e);
     }
 
     public static void v(String msg) {
@@ -69,19 +62,14 @@ public class Logger {
             Log.v(STag, msg);
     }
 
-    public static void v(String format, Object... obj) {
-        if (SDebug)
-            Log.v(STag, buildMessage(format, obj));
-    }
-
     public static void v(Throwable e) {
         if (SDebug)
             Log.v(STag, "", e);
     }
 
-    public static void v(Throwable e, String format, Object... obj) {
+    public static void v(Throwable e, String msg) {
         if (SDebug)
-            Log.v(STag, buildMessage(format, obj), e);
+            Log.v(STag, msg, e);
     }
 
     public static void d(String msg) {
@@ -89,19 +77,14 @@ public class Logger {
             Log.d(STag, msg);
     }
 
-    public static void d(String format, Object... obj) {
-        if (SDebug)
-            Log.d(STag, buildMessage(format, obj));
-    }
-
     public static void d(Throwable e) {
         if (SDebug)
             Log.d(STag, "", e);
     }
 
-    public static void d(Throwable e, String format, Object... obj) {
+    public static void d(Throwable e, String msg) {
         if (SDebug)
-            Log.d(STag, buildMessage(format, obj), e);
+            Log.d(STag, msg, e);
     }
 
     public static void e(String msg) {
@@ -109,19 +92,14 @@ public class Logger {
             Log.e(STag, msg);
     }
 
-    public static void e(String format, Object... obj) {
-        if (SDebug)
-            Log.e(STag, buildMessage(format, obj));
-    }
-
     public static void e(Throwable e) {
         if (SDebug)
             Log.e(STag, "", e);
     }
 
-    public static void e(Throwable e, String format, Object... obj) {
+    public static void e(Throwable e, String msg) {
         if (SDebug)
-            Log.e(STag, buildMessage(format, obj), e);
+            Log.e(STag, msg, e);
     }
 
     public static void w(String msg) {
@@ -129,29 +107,19 @@ public class Logger {
             Log.w(STag, msg);
     }
 
-    public static void w(String format, Object... obj) {
-        if (SDebug)
-            Log.w(STag, buildMessage(format, obj));
-    }
-
     public static void w(Throwable e) {
         if (SDebug)
             Log.w(STag, "", e);
     }
 
-    public static void w(Throwable e, String format, Object... obj) {
+    public static void w(Throwable e, String msg) {
         if (SDebug)
-            Log.w(STag, buildMessage(format, obj), e);
+            Log.w(STag, msg, e);
     }
 
     public static void wtf(String msg) {
         if (SDebug)
             Log.wtf(STag, msg);
-    }
-
-    public static void wtf(String format, Object... obj) {
-        if (SDebug)
-            Log.wtf(STag, buildMessage(format, obj));
     }
 
     public static void wtf(Throwable e) {
@@ -162,24 +130,6 @@ public class Logger {
     public static void wtf(Throwable e, String msg) {
         if (SDebug)
             Log.wtf(STag, msg, e);
-    }
-
-    protected static String buildMessage(String format, Object... args) {
-        String msg = (args == null) ? format : String.format(Locale.US, format, args);
-        StackTraceElement[] trace = new Throwable().fillInStackTrace().getStackTrace();
-
-        String caller = "<unknown>";
-        for (int i = 2; i < trace.length; i++) {
-            Class<?> clazz = trace[i].getClass();
-            if (!clazz.equals(Logger.class)) {
-                String callingClass = trace[i].getClassName();
-                callingClass = callingClass.substring(callingClass.lastIndexOf('.') + 1);
-                callingClass = callingClass.substring(callingClass.lastIndexOf('$') + 1);
-                caller = callingClass + "." + trace[i].getMethodName();
-                break;
-            }
-        }
-        return String.format(Locale.US, "[%d] %s: %s", Thread.currentThread().getId(), caller, msg);
     }
 
 }

@@ -38,11 +38,6 @@ public class RestResponser<T> implements Response<T> {
     private final RequestMethod method;
 
     /**
-     * Ask for success
-     */
-    private final boolean isSucceed;
-
-    /**
      * Http response Headers
      */
     private final Headers headers;
@@ -65,16 +60,20 @@ public class RestResponser<T> implements Response<T> {
      * Millesecond of request
      */
     private final long mNetworkMillis;
+    /**
+     * The error message
+     */
+    private Exception mException;
 
-    public RestResponser(String url, RequestMethod requestMethod, boolean isSucceed, Headers headers, byte[] byteArray, Object tag, T result, long millis) {
+    public RestResponser(String url, RequestMethod requestMethod, Headers headers, byte[] byteArray, Object tag, T result, long millis, Exception exception) {
         this.url = url;
         this.method = requestMethod;
-        this.isSucceed = isSucceed;
         this.headers = headers;
         this.byteArray = byteArray;
         this.tag = tag;
         this.result = result;
         this.mNetworkMillis = millis;
+        this.mException = exception;
     }
 
     @Override
@@ -89,7 +88,7 @@ public class RestResponser<T> implements Response<T> {
 
     @Override
     public boolean isSucceed() {
-        return this.isSucceed;
+        return this.mException == null;
     }
 
     @Override
@@ -118,12 +117,8 @@ public class RestResponser<T> implements Response<T> {
     }
 
     @Override
-    public String getErrorMessage() {
-        StringBuilder resultBuilder = new StringBuilder();
-        if (!isSucceed && byteArray != null && byteArray.length > 0) {
-            resultBuilder.append(new String(byteArray));
-        }
-        return resultBuilder.toString();
+    public Exception getException() {
+        return mException;
     }
 
     @Override

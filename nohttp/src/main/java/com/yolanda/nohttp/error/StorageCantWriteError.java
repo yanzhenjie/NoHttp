@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © ${user}. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.able;
+package com.yolanda.nohttp.error;
 
 /**
- * Cancel interface
+ * Specify the location of the save file cannot be written to
  * </br>
- * Created in Dec 17, 2015 11:42:10 AM
+ * Created in 2016/2/25 11:50
  *
  * @author YOLANDA;
  */
-public interface CancelAble {
+public class StorageCantWriteError extends Exception {
 
-    /**
-     * Cancel operation
-     *
-     * @deprecated Please use {@link #cancel(boolean)} instead
-     */
-    void cancel();
+	private static final long serialVersionUID = 11348949L;
 
-    /**
-     * Change cancel state
-     */
-    void cancel(boolean cancel);
+	public StorageCantWriteError() {
+	}
 
-    /**
-     * Has it been canceled ?
-     */
-    boolean isCanceled();
-
-    /**
-     * Change the current cancel status as contrary to the current status
-     */
-    void toggleCancel();
-
+	public StorageCantWriteError(String detailMessage) {
+		super(detailMessage);
+	}
 }

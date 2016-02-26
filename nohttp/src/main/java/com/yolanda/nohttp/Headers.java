@@ -108,7 +108,7 @@ public interface Headers extends MultiValueMap<String, String> {
      * @param cookieHandler cookieHandler
      * @throws IOException When reading a Cookie from CookieHandler may be exception
      */
-    void addCookie(URI uri, CookieHandler cookieHandler) throws IOException;
+    void addCookie(URI uri, CookieHandler cookieHandler);
 
     /**
      * From the json format String parsing out the {@code Map<String, List<String>>} data

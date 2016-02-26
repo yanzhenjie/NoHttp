@@ -72,13 +72,13 @@ public class NetUtil {
                 Network[] networks = connectivity.getAllNetworks();
                 for (Network network : networks) {
                     NetworkInfo networkInfo = connectivity.getNetworkInfo(network);
-                    if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
+                    if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
                         return true;
                 }
             } else {
                 NetworkInfo[] networkInfos = connectivity.getAllNetworkInfo();
                 for (NetworkInfo networkInfo : networkInfos)
-                    if (networkInfo.getState() == NetworkInfo.State.CONNECTED)
+                    if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
                         return true;
             }
         }
@@ -99,14 +99,13 @@ public class NetUtil {
                 Network[] networks = mConnectivityManager.getAllNetworks();
                 for (Network network : networks) {
                     NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
-                    if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
+                    if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
                         return networkInfo.isAvailable() && networkInfo.isConnected();
                 }
             } else {
                 @SuppressWarnings("deprecation")
                 NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                if (mWiFiNetworkInfo != null)
-                    return mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
+                return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
             }
         }
         return false;
@@ -125,14 +124,13 @@ public class NetUtil {
             Network[] networks = mConnectivityManager.getAllNetworks();
             for (Network network : networks) {
                 NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
-                if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+                if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
                     return networkInfo.isAvailable() && networkInfo.isConnected();
             }
         } else {
             @SuppressWarnings("deprecation")
             NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (mWiFiNetworkInfo != null)
-                return mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
+            return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
         }
         return false;
     }

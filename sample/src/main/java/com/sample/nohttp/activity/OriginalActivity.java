@@ -18,6 +18,7 @@ package com.sample.nohttp.activity;
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
 import com.sample.nohttp.dialog.WaitDialog;
+import com.sample.nohttp.nohttp.HttpResponseListener;
 import com.sample.nohttp.util.Constants;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.NoHttp;
@@ -134,9 +135,10 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
+        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+            new HttpResponseListener<String>(null, null, null, false, false).onFailed(0, null, null, exception, 0, 0);
             // 请求失败
-            ((TextView) findView(R.id.tv_status)).setText("请求失败: " + message);
+            ((TextView) findView(R.id.tv_status)).setText("请求失败: " + exception.getMessage());
         }
     };
 

@@ -22,7 +22,7 @@ package com.yolanda.nohttp.able;
  *
  * @author YOLANDA;
  */
-public interface SignCancelable extends Cancelable {
+public interface SignCancelAble extends CancelAble {
 
     /**
      * Cancel operation by contrast the sign

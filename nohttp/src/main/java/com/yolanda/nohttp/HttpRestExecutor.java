@@ -15,12 +15,12 @@
  */
 package com.yolanda.nohttp;
 
+import android.text.TextUtils;
+
 import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
 import com.yolanda.nohttp.tools.HeaderParser;
 import com.yolanda.nohttp.tools.HttpDateTime;
-
-import android.text.TextUtils;
 
 /**
  * The request executor, Interact with the network layer
@@ -62,15 +62,15 @@ public class HttpRestExecutor implements ImplRestExecutor {
                 handleCacheHeader(request, cacheEntity);
             httpResponse = mConnection.requestNetwork(request);
         } else
-            httpResponse = new HttpResponse(true, cacheEntity.getResponseHeaders(), cacheEntity.getData());
+            httpResponse = new HttpResponse(cacheEntity.getResponseHeaders(), cacheEntity.getData(), null);
 
-        boolean isSucceed = httpResponse.isSucceed;
         Headers responseHeaders = httpResponse.responseHeaders;
         byte[] responseBody = httpResponse.responseBody;
+        Exception exception = httpResponse.exception;
 
         int responseCode = responseHeaders.getResponseCode();
 
-        if (isSucceed) {
+        if (exception == null) {
             if (responseCode == 304 && cacheEntity != null) {// cache
                 cacheEntity.getResponseHeaders().setAll(responseHeaders);
                 responseHeaders = cacheEntity.getResponseHeaders();
@@ -93,9 +93,9 @@ public class HttpRestExecutor implements ImplRestExecutor {
                     HttpResponse redirectHttpResponse = executeRequest(redirectRequest);
 
                     // response result
-                    isSucceed = redirectHttpResponse.isSucceed;
                     Headers redirectHeaders = redirectHttpResponse.responseHeaders;
                     responseBody = redirectHttpResponse.responseBody;
+                    exception = redirectHttpResponse.exception;
 
                     // response ContentEncoding
                     String contentEncoding = redirectHeaders.getContentEncoding();
@@ -119,7 +119,7 @@ public class HttpRestExecutor implements ImplRestExecutor {
                     mCache.replace(request.getCacheKey(), cacheEntity);
             }
         }
-        return new HttpResponse(isSucceed, responseHeaders, responseBody);
+        return new HttpResponse(responseHeaders, responseBody, exception);
     }
 
     /**

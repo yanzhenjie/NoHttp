@@ -15,6 +15,8 @@
  */
 package com.sample.nohttp.activity;
 
+import android.os.Bundle;
+
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
 import com.sample.nohttp.nohttp.CallServer;
@@ -25,8 +27,6 @@ import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
 import com.yolanda.nohttp.StringRequest;
-
-import android.os.Bundle;
 
 /**
  * 演示怎么取消一个请求
@@ -45,10 +45,6 @@ public class CancelActivity extends BaseActivity implements HttpListener<String>
      * 请求对象
      */
     private Request<String> mRequest;
-    /**
-     * 请求对象的取消标志
-     */
-    private Object cancelSign;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
@@ -56,7 +52,8 @@ public class CancelActivity extends BaseActivity implements HttpListener<String>
         setContentView(R.layout.activity_cacel);
 
         // 实例化取消标志
-        cancelSign = new Object();
+        // 请求对象的取消标志
+        Object cancelSign = new Object();
 
         // 请求1
         mRequest = new StringRequest(Constants.URL_NOHTTP_TEST, RequestMethod.GET);
@@ -82,7 +79,7 @@ public class CancelActivity extends BaseActivity implements HttpListener<String>
         // 以下三种方式选择合适自己的使用, 这里只是例举
 
         // 取消一个请求
-        mRequest.cancel();
+        mRequest.cancel(true);
 
         // 取消用sign标志的请求，这样就能取消上面三个用cancelSign标志的请求了
         CallServer.getRequestInstance().cancelBySign(cancelSign);
@@ -100,8 +97,8 @@ public class CancelActivity extends BaseActivity implements HttpListener<String>
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-        Logger.i("请求失败: " + message);
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        Logger.i("请求失败: " + exception.getMessage());
     }
 
     @Override
@@ -109,6 +106,6 @@ public class CancelActivity extends BaseActivity implements HttpListener<String>
         super.onDestroy();
         // 退出时取消请求
         if (mRequest != null)
-            mRequest.cancel();
+            mRequest.cancel(true);
     }
 }

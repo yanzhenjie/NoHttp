@@ -70,14 +70,18 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
     }
 
     @Override
-    public void addCookie(URI uri, CookieHandler cookieHandler) throws IOException {
-        Map<String, List<String>> diskCookies = cookieHandler.get(uri, new HashMap<String, List<String>>());
-        for (Map.Entry<String, List<String>> entry : diskCookies.entrySet()) {
-            String key = entry.getKey();
-            List<String> value = entry.getValue();
-            if ((Headers.HEAD_KEY_COOKIE.equalsIgnoreCase(key) || Headers.HEAD_KEY_COOKIE2.equalsIgnoreCase(key))) {
-                add(key, TextUtils.join("; ", value));
+    public void addCookie(URI uri, CookieHandler cookieHandler) {
+        try {
+            Map<String, List<String>> diskCookies = cookieHandler.get(uri, new HashMap<String, List<String>>());
+            for (Map.Entry<String, List<String>> entry : diskCookies.entrySet()) {
+                String key = entry.getKey();
+                List<String> value = entry.getValue();
+                if ((Headers.HEAD_KEY_COOKIE.equalsIgnoreCase(key) || Headers.HEAD_KEY_COOKIE2.equalsIgnoreCase(key))) {
+                    add(key, TextUtils.join("; ", value));
+                }
             }
+        } catch (IOException e) {
+            Logger.e(e);
         }
     }
 

@@ -77,8 +77,8 @@ public class JsonActivity extends BaseActivity implements View.OnClickListener {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-            mTvResult.setText("请求失败" + message);
+        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+            mTvResult.setText("请求失败" + exception.getMessage());
         }
     };
 
@@ -98,7 +98,7 @@ public class JsonActivity extends BaseActivity implements View.OnClickListener {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
+        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
         }
     };
 

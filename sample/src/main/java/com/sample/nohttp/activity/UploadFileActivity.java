@@ -15,8 +15,11 @@
  */
 package com.sample.nohttp.activity;
 
-import java.io.File;
-import java.io.InputStream;
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.TextView;
 
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
@@ -33,11 +36,8 @@ import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
 
-import android.annotation.SuppressLint;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.TextView;
+import java.io.File;
+import java.io.InputStream;
 
 /**
  * 上传文件demo </br>
@@ -107,8 +107,8 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-        mTvResult.setText("上传错误：" + message);
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        mTvResult.setText("上传错误：" + exception.getClass().getName() + "; " + exception.getMessage());
     }
 
 	/* ====================先保存文件到SD卡==================== */

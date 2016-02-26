@@ -22,18 +22,21 @@ package com.yolanda.nohttp.able;
  *
  * @author YOLANDA;
  */
-public interface Queueable {
+public interface QueueAble {
 
     /**
      * Are already in the queue ?
      */
-    boolean inQueue();
+    boolean isQueue();
 
     /**
-     * Added to the queue, or removed from the queue
-     *
-     * @param queue True: re added to the queue, false: removed from the queue
+     * Change queue state
      */
-    void takeQueue(boolean queue);
+    void queue(boolean queue);
+
+    /**
+     * Change the current queue status as contrary to the current status
+     */
+    void toggleQueue();
 
 }

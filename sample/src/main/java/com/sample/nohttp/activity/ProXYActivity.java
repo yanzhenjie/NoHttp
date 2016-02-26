@@ -15,8 +15,9 @@
  */
 package com.sample.nohttp.activity;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
@@ -26,9 +27,8 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 /**
  * 代理服务器
@@ -64,8 +64,8 @@ public class ProXYActivity extends BaseActivity implements View.OnClickListener,
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-        mTvResult.setText("请求失败\n" + message);
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        mTvResult.setText("请求失败\n" + exception.getMessage());
     }
 
 }

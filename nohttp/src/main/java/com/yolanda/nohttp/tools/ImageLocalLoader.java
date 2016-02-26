@@ -137,7 +137,7 @@ public class ImageLocalLoader {
                     i += 1;
                 }
             } catch (IOException e) {
-                Logger.e("This path does not exist" + imagePath, e);
+                Logger.e(e, "This path does not exist" + imagePath);
             }
         }
         return null;
@@ -168,7 +168,6 @@ public class ImageLocalLoader {
     /**
      * Set the default image, resId from drawable. Is displayed when loading or loading failure
      */
-    @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     public void setDefaultImage(Context context, int resId) {
         mDefaultDrawable = ResourcesCompat.getDrawable(context, resId);

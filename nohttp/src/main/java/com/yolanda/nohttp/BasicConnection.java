@@ -50,7 +50,7 @@ public class BasicConnection {
     /**
      * The connection is established, including the head and send the request body
      */
-    protected HttpURLConnection getHttpConnection(ImplServerRequest request) throws IOException, URISyntaxException {
+    protected HttpURLConnection getHttpConnection(ImplServerRequest request) throws IOException {
         // 1.Pre operation notice
         request.onPreExecute();
 
@@ -70,7 +70,7 @@ public class BasicConnection {
             if (sslSocketFactory != null)
                 ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
             HostnameVerifier hostnameVerifier = request.getHostnameVerifier();
-            if(hostnameVerifier != null)
+            if (hostnameVerifier != null)
                 ((HttpsURLConnection) connection).setHostnameVerifier(hostnameVerifier);
         }
 
@@ -85,7 +85,12 @@ public class BasicConnection {
         connection.setInstanceFollowRedirects(false);
 
         // 4.Set request headers
-        setHeaders(url.toURI(), connection, request);
+        URI uri = null;
+        try {
+            uri = url.toURI();
+        } catch (URISyntaxException e) {
+        }
+        setHeaders(uri, connection, request);
 
         // 5. Write request body
         connection.connect();
@@ -140,11 +145,8 @@ public class BasicConnection {
             headers.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
 
         // 2.4 Cookie
-        try {
+        if (uri != null)
             headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
-        } catch (IOException e) {
-            Logger.e(e, "Add cookie filed: " + uri.toString());
-        }
 
         // 3. UserAgent
         headers.set(Headers.HEAD_KEY_USER_AGENT, request.getUserAgent());
@@ -163,17 +165,17 @@ public class BasicConnection {
     /**
      * Parse server response headers, here will save cookies
      */
-    protected Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> reponseHeaders) {
+    protected Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> responseHeaders) {
         // handle cookie
         try {
-            NoHttp.getDefaultCookieHandler().put(uri, reponseHeaders);
+            NoHttp.getDefaultCookieHandler().put(uri, responseHeaders);
         } catch (IOException e) {
             Logger.e(e, "Save cookie filed: " + uri.toString());
         }
 
         // handle headers
         Headers headers = new HttpHeaders();
-        headers.set(reponseHeaders);
+        headers.set(responseHeaders);
         headers.set(Headers.HEAD_KEY_RESPONSE_MESSAGE, responseMessage);
         headers.set(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(responseCode));
         // print
@@ -237,16 +239,6 @@ public class BasicConnection {
      */
     public static boolean hasResponseBody(int responseCode) {
         return !(100 <= responseCode && responseCode < 200) && responseCode != 204 && responseCode != 205 && responseCode != 304;
-    }
-
-    protected String getExceptionMessage(Throwable e) {
-        StringBuilder exceptionInfo = new StringBuilder();
-        if (e != null) {
-            exceptionInfo.append(e.getClass().getName());
-            exceptionInfo.append(": ");
-            exceptionInfo.append(e.getMessage());
-        }
-        return exceptionInfo.toString();
     }
 
 }

@@ -17,7 +17,7 @@ package com.yolanda.nohttp;
 
 import java.io.OutputStream;
 
-import com.yolanda.nohttp.able.Cancelable;
+import com.yolanda.nohttp.able.CancelAble;
 
 /**
  * File interface</br>
@@ -27,7 +27,7 @@ import com.yolanda.nohttp.able.Cancelable;
  *
  * @author YOLANDA
  */
-public interface Binary extends Cancelable {
+public interface Binary extends CancelAble {
 
     /**
      * Length of byteArray

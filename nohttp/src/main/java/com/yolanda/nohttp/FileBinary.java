@@ -123,9 +123,17 @@ public class FileBinary implements Binary {
         return mimeType;
     }
 
+    /**
+     * @deprecated @deprecated Please use {@link #cancel(boolean)} instead
+     */
     @Override
     public void cancel() {
         this.isRun = false;
+    }
+
+    @Override
+    public void cancel(boolean cancel) {
+        this.isRun = cancel;
     }
 
     @Override
@@ -134,7 +142,7 @@ public class FileBinary implements Binary {
     }
 
     @Override
-    public void reverseCancel() {
+    public void toggleCancel() {
         this.isRun = true;
     }
 

@@ -68,8 +68,8 @@ public class FastJsonActvity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-        mTvResult.setText("请求失败\n" + message);
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        mTvResult.setText("请求失败\n" + exception.getMessage());
     }
 
 }

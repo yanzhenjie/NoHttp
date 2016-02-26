@@ -22,16 +22,21 @@ package com.yolanda.nohttp.able;
  *
  * @author YOLANDA;
  */
-public interface Startable {
+public interface StartAble {
 
     /**
-     * Start operation
+     * Change start state
      */
-    void start();
+    void start(boolean start);
 
     /**
      * Has it been started ?
      */
     boolean isStarted();
+
+    /**
+     * Change the current start status as contrary to the current status
+     */
+    void toggleStart();
 
 }

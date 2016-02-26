@@ -72,7 +72,7 @@ public class HttpsActivity extends BaseActivity implements View.OnClickListener,
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, CharSequence message, int responseCode, long networkMillis) {
-        mTvResult.setText("失败：\n" + message);
+    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        mTvResult.setText("失败：\n" + exception.getMessage());
     }
 }

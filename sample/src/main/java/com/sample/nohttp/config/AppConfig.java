@@ -38,7 +38,7 @@ public class AppConfig {
     /**
      * 是否是测试环境
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     /**
      * App根目录

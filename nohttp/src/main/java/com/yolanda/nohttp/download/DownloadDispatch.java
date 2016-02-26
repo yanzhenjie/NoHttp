@@ -89,7 +89,7 @@ class DownloadDispatch extends Thread {
             if (request.downloadRequest.isCanceled())
                 continue;
 
-            request.downloadRequest.start();
+            request.downloadRequest.start(true);
 
             mDownloader.download(request.what, request.downloadRequest, new DownloadListener() {
 
@@ -101,9 +101,9 @@ class DownloadDispatch extends Thread {
                 }
 
                 @Override
-                public void onDownloadError(int what, StatusCode statusCode, CharSequence errorMessage) {
+                public void onDownloadError(int what, Exception exception) {
                     ThreadPoster threadPoster = new ThreadPoster(request.what, request.downloadListener);
-                    threadPoster.onError(statusCode, errorMessage);
+                    threadPoster.onError(exception);
                     getPosterHandler().post(threadPoster);
                 }
 
@@ -128,8 +128,8 @@ class DownloadDispatch extends Thread {
                     getPosterHandler().post(threadPoster);
                 }
             });
-            request.downloadRequest.takeQueue(false);
-            request.downloadRequest.finish();
+            request.downloadRequest.finish(true);
+            request.downloadRequest.queue(false);
         }
     }
 
@@ -166,8 +166,7 @@ class DownloadDispatch extends Thread {
         private long fileCount;
 
         // error
-        private StatusCode statusCode;
-        private CharSequence errorMessage;
+        private Exception exception;
 
         // finish
         private String filePath;
@@ -191,10 +190,9 @@ class DownloadDispatch extends Thread {
             this.fileCount = fileCount;
         }
 
-        public void onError(StatusCode statusCode, CharSequence errorMessage) {
+        public void onError(Exception exception) {
             this.command = COMMAND_ERROR;
-            this.statusCode = statusCode;
-            this.errorMessage = errorMessage;
+            this.exception = exception;
         }
 
         public void onCancel() {
@@ -216,7 +214,7 @@ class DownloadDispatch extends Thread {
                     downloadListener.onProgress(what, progress, fileCount);
                     break;
                 case COMMAND_ERROR:
-                    downloadListener.onDownloadError(what, statusCode, errorMessage);
+                    downloadListener.onDownloadError(what, exception);
                     break;
                 case COMMAND_FINISH:
                     downloadListener.onFinish(what, filePath);

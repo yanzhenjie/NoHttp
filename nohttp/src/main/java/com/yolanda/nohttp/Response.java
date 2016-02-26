@@ -67,7 +67,7 @@ public interface Response<T> {
      *
      * @return
      */
-    String getErrorMessage();
+    Exception getException();
 
     /**
      * Gets the tag of request
