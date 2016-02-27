@@ -25,7 +25,6 @@ import com.sample.nohttp.R;
 import com.sample.nohttp.config.AppConfig;
 import com.sample.nohttp.nohttp.CallServer;
 import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadRequest;
@@ -64,8 +63,7 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
     /***
      * 下载地址
      */
-//    private String url = "http://m.apk.67mo.com/apk/999129_21769077_1443483983292.apk";
-    private String url = "http://113.105.125.2:8083/fUpload/FastDownloadServlet?fileId=group1/M00/03/9E/AAGGoVbOz1KEeR7tAAAAAIpqEeM711.mp4";
+    private String url = "http://m.apk.67mo.com/apk/999129_21769077_1443483983292.apk";
     /**
      * 下载请求
      */
@@ -82,11 +80,11 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
         mBtnStart.setOnClickListener(this);
 
         // url 下载地址
-        // fileFloader 保存的文件夹
+        // fileFolder 保存的文件夹
         // fileName 文件名
         // isRange 是否断点续传下载
         // isDeleteOld 如果发现文件已经存在是否删除后重新下载
-        downloadRequest = NoHttp.createDownloadRequest(url, AppConfig.getInstance().APP_PATH_ROOT, "nohttp1.mp4", true, false);
+        downloadRequest = NoHttp.createDownloadRequest(url, AppConfig.getInstance().APP_PATH_ROOT, "nohttp.apk", true, false);
 
         // 检查之前的下载状态
         int beforeStatus = downloadRequest.checkBeforeStatus();

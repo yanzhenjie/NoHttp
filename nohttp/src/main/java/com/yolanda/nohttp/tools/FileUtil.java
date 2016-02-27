@@ -53,8 +53,14 @@ public class FileUtil {
      * If the folder can be written
      */
     public static boolean canWrite(String path) {
-        File file = new File(path);
-        return file.exists() && file.canWrite();
+        return new File(path).canWrite();
+    }
+
+    /**
+     * If the folder can be read
+     */
+    public static boolean canRead(String path) {
+        return new File(path).canRead();
     }
 
     /**

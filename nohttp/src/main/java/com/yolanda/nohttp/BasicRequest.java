@@ -536,8 +536,7 @@ public abstract class BasicRequest<T> implements Request<T> {
      */
     @Override
     public void cancel() {
-        this.isCanceled = true;
-        this.isStart = false;
+        cancel(true);
     }
 
     @Override
