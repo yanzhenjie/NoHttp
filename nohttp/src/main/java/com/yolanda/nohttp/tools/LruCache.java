@@ -13,7 +13,6 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * <br/>
  * Created in Jan 27, 2016 2:54:13 PM
  *
  * @author YOLANDA; QQ: 757699476
@@ -67,6 +66,9 @@ public class LruCache<K, V> {
      * created by {@code #create}. If a value was returned, it is moved to the
      * head of the queue. This returns null if a value is not cached and cannot
      * be created.
+     *
+     * @param key Key
+     * @return Value
      */
     public final V get(K key) {
         if (key == null) {
@@ -120,6 +122,8 @@ public class LruCache<K, V> {
      * Caches {@code value} for {@code key}. The value is moved to the head of
      * the queue.
      *
+     * @param key   Key
+     * @param value Value
      * @return the previous value mapped by {@code key}.
      */
     public final V put(K key, V value) {
@@ -180,6 +184,7 @@ public class LruCache<K, V> {
     /**
      * Removes the entry for {@code key} if it exists.
      *
+     * @param key Key
      * @return the previous value mapped by {@code key}.
      */
     public final V remove(K key) {
@@ -214,6 +219,7 @@ public class LruCache<K, V> {
      *
      * @param evicted  true if the entry is being removed to make space, false
      *                 if the removal was caused by a {@link #put} or {@link #remove}.
+     * @param oldValue Old Value
      * @param newValue the new value for {@code key}, if it exists. If non-null,
      *                 this removal was caused by a {@link #put}. Otherwise it was caused by
      *                 an eviction or a {@link #remove}.
@@ -237,6 +243,9 @@ public class LruCache<K, V> {
      * at the same time (causing multiple values to be created), or when one
      * thread calls {@link #put} while another is creating a value for the same
      * key.
+     *
+     * @param key Key
+     * @return Value
      */
     protected V create(K key) {
         return null;
@@ -257,6 +266,10 @@ public class LruCache<K, V> {
      * <p/>
      * <p/>
      * An entry's size must not change while it is in the cache.
+     *
+     * @param key   Key
+     * @param value Value
+     * @return size
      */
     protected int sizeOf(K key, V value) {
         return 1;
@@ -273,6 +286,8 @@ public class LruCache<K, V> {
      * For caches that do not override {@link #sizeOf}, this returns the number
      * of entries in the cache. For all other caches, this returns the sum of
      * the sizes of the entries in this cache.
+     *
+     * @return size
      */
     public synchronized final int size() {
         return size;
@@ -282,6 +297,8 @@ public class LruCache<K, V> {
      * For caches that do not override {@link #sizeOf}, this returns the maximum
      * number of entries in the cache. For all other caches, this returns the
      * maximum sum of the sizes of the entries in this cache.
+     *
+     * @return Max size
      */
     public synchronized final int maxSize() {
         return maxSize;
@@ -290,6 +307,8 @@ public class LruCache<K, V> {
     /**
      * Returns the number of times {@link #get} returned a value that was
      * already present in the cache.
+     *
+     * @return count
      */
     public synchronized final int hitCount() {
         return hitCount;
@@ -298,6 +317,8 @@ public class LruCache<K, V> {
     /**
      * Returns the number of times {@link #get} returned null or required a new
      * value to be created.
+     *
+     * @return count
      */
     public synchronized final int missCount() {
         return missCount;
@@ -305,6 +326,8 @@ public class LruCache<K, V> {
 
     /**
      * Returns the number of times {@link #create(Object)} returned a value.
+     *
+     * @return count
      */
     public synchronized final int createCount() {
         return createCount;
@@ -312,6 +335,8 @@ public class LruCache<K, V> {
 
     /**
      * Returns the number of times {@link #put} was called.
+     *
+     * @return count
      */
     public synchronized final int putCount() {
         return putCount;
@@ -319,6 +344,8 @@ public class LruCache<K, V> {
 
     /**
      * Returns the number of values that have been evicted.
+     *
+     * @return count
      */
     public synchronized final int evictionCount() {
         return evictionCount;
@@ -327,6 +354,8 @@ public class LruCache<K, V> {
     /**
      * Returns a copy of the current contents of the cache, ordered from least
      * recently accessed to most recently accessed.
+     *
+     * @return Map
      */
     public synchronized final Map<K, V> snapshot() {
         return new LinkedHashMap<K, V>(map);

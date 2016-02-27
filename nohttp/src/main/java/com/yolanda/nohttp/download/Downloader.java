@@ -16,7 +16,7 @@
 package com.yolanda.nohttp.download;
 
 /**
- * Download Network Interface</br>
+ * <p>Download Network Interface</p>
  * Created in Oct 20, 2015 4:13:04 PM
  *
  * @author YOLANDA

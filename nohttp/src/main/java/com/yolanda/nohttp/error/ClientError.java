@@ -16,20 +16,19 @@
 package com.yolanda.nohttp.error;
 
 /**
- * When a network request the client error
- * </br>
+ * <p> When a network request the client error</p>
  * Created in 2016/2/25 17:14
  *
  * @author YOLANDA;
  */
 public class ClientError extends Exception {
 
-	private static final long serialVersionUID = 11561L;
+    private static final long serialVersionUID = 11561L;
 
-	public ClientError() {
-	}
+    public ClientError() {
+    }
 
-	public ClientError(String detailMessage) {
-		super(detailMessage);
-	}
+    public ClientError(String detailMessage) {
+        super(detailMessage);
+    }
 }

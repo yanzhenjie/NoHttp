@@ -15,6 +15,9 @@
  */
 package com.sample.nohttp.nohttp;
 
+import android.content.Context;
+import android.content.DialogInterface;
+
 import com.sample.nohttp.dialog.WaitDialog;
 import com.sample.nohttp.util.Toast;
 import com.yolanda.nohttp.Logger;
@@ -27,12 +30,6 @@ import com.yolanda.nohttp.error.ServerError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
-
-import android.content.Context;
-import android.content.DialogInterface;
-
-import java.net.URL;
-import java.net.UnknownHostException;
 
 /**
  * Created in Nov 4, 2015 12:02:55 PM
@@ -128,6 +125,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
         } else {
             Toast.show("未知错误");
         }
+        Logger.e("错误：" + exception.getMessage());
         if (callback != null)
             callback.onFailed(what, url, tag, exception, responseCode, networkMillis);
     }

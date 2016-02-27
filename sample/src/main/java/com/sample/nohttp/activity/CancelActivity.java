@@ -29,8 +29,7 @@ import com.yolanda.nohttp.Response;
 import com.yolanda.nohttp.StringRequest;
 
 /**
- * 演示怎么取消一个请求
- * </br>
+ * <p>演示怎么取消一个请求</p>
  * Created in Oct 23, 2015 1:13:06 PM
  *
  * @author YOLANDA

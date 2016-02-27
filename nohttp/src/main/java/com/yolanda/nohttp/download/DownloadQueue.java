@@ -20,7 +20,7 @@ import com.yolanda.nohttp.Logger;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Download queue</br>
+ * <p>Download queue</p>
  * Created in Oct 21, 2015 2:44:19 PM
  *
  * @author YOLANDA
@@ -37,7 +37,7 @@ public class DownloadQueue {
     /**
      * Download queue polling thread array
      */
-    private DownloadDispatch[] mDispatchers;
+    private DownloadDispatcher[] mDispatchers;
 
     /**
      * Create download queue manager
@@ -47,7 +47,7 @@ public class DownloadQueue {
      */
     public DownloadQueue(Downloader downloader, int threadPoolSize) {
         mDownloader = downloader;
-        mDispatchers = new DownloadDispatch[threadPoolSize];
+        mDispatchers = new DownloadDispatcher[threadPoolSize];
     }
 
     /**
@@ -57,7 +57,7 @@ public class DownloadQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            DownloadDispatch networkDispatcher = new DownloadDispatch(mDownloadQueue, mDownloader);
+            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mDownloadQueue, mDownloader);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }
@@ -86,9 +86,9 @@ public class DownloadQueue {
      * Polling the queue will not be executed, and this will not be canceled.
      */
     public void stop() {
-        for (int i = 0; i < mDispatchers.length; i++) {
-            if (mDispatchers[i] != null)
-                mDispatchers[i].quit();
+        for (DownloadDispatcher mDispatcher : mDispatchers) {
+            if (mDispatcher != null)
+                mDispatcher.quit();
         }
     }
 

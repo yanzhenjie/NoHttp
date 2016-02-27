@@ -19,8 +19,7 @@ import java.net.HttpCookie;
 import java.util.List;
 
 /**
- * Http response, Including header information and response packets
- * </br>
+ * <p>Http response, Including header information and response packets</p>
  * Created in Oct 15, 2015 8:55:37 PM
  *
  * @author YOLANDA
@@ -41,6 +40,11 @@ public interface Response<T> {
      * Ask for success
      */
     boolean isSucceed();
+
+    /**
+     * Whether from the cache
+     */
+    boolean isFromCache();
 
     /**
      * Get http response headers
@@ -64,8 +68,6 @@ public interface Response<T> {
 
     /**
      * Get Error Message
-     *
-     * @return
      */
     Exception getException();
 

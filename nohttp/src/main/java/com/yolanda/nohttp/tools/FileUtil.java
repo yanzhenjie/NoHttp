@@ -33,6 +33,9 @@ public class FileUtil {
 
     /**
      * Access to a directory available size
+     *
+     * @param path path
+     * @return long size
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressWarnings("deprecation")
@@ -51,6 +54,9 @@ public class FileUtil {
 
     /**
      * If the folder can be written
+     *
+     * @param path path
+     * @return True: success, or false: failure
      */
     public static boolean canWrite(String path) {
         return new File(path).canWrite();
@@ -58,6 +64,9 @@ public class FileUtil {
 
     /**
      * If the folder can be read
+     *
+     * @param path path
+     * @return True: success, or false: failure
      */
     public static boolean canRead(String path) {
         return new File(path).canRead();
@@ -65,6 +74,9 @@ public class FileUtil {
 
     /**
      * Create a folder, If the folder exists is not created
+     *
+     * @param folderPath folder path
+     * @return True: success, or false: failure
      */
     public static boolean createFolder(String folderPath) {
         if (!TextUtils.isEmpty(folderPath)) {
@@ -76,6 +88,9 @@ public class FileUtil {
 
     /**
      * Create a folder, If the folder exists is not created
+     *
+     * @param targetFolder folder path
+     * @return True: success, or false: failure
      */
     public static boolean createFolder(File targetFolder) {
         if (targetFolder.exists())
@@ -85,6 +100,9 @@ public class FileUtil {
 
     /**
      * Create a file, If the file exists is not created
+     *
+     * @param filePath file path
+     * @return True: success, or false: failure
      */
     public static boolean createFile(String filePath) {
         if (!TextUtils.isEmpty(filePath)) {
@@ -96,6 +114,9 @@ public class FileUtil {
 
     /**
      * Create a file, If the file exists is not created
+     *
+     * @param targetFile file
+     * @return True: success, or false: failure
      */
     public static boolean createFile(File targetFile) {
         if (targetFile.exists())
@@ -109,6 +130,9 @@ public class FileUtil {
 
     /**
      * Create a new file, if the file exists, delete and create again
+     *
+     * @param filePath file path
+     * @return True: success, or false: failure
      */
     public static boolean createNewFile(String filePath) {
         if (!TextUtils.isEmpty(filePath)) {
@@ -120,6 +144,9 @@ public class FileUtil {
 
     /**
      * Create a new file, if the file exists, delete and create again
+     *
+     * @param targetFile file
+     * @return True: success, or false: failure
      */
     public static boolean createNewFile(File targetFile) {
         if (targetFile.exists())

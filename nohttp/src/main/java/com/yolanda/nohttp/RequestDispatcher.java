@@ -22,8 +22,7 @@ import android.os.Looper;
 import android.os.Process;
 
 /**
- * Request queue polling thread
- * </br>
+ * <p>Request queue polling thread</p>
  * Created in Oct 19, 2015 8:35:35 AM
  *
  * @author YOLANDA
@@ -173,7 +172,8 @@ public class RequestDispatcher extends Thread {
                         if (response.isSucceed()) {
                             responseListener.onSucceed(what, response);
                         } else {
-                            responseListener.onFailed(what, response.url(), response.getTag(), response.getException(), response.getHeaders().getResponseCode(), response.getNetworkMillis());
+                            Headers headers = response.getHeaders();
+                            responseListener.onFailed(what, response.url(), response.getTag(), response.getException(), headers == null ? -1 : headers.getResponseCode(), response.getNetworkMillis());
                         }
                     }
                 }

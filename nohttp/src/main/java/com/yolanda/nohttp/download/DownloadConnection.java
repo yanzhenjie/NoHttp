@@ -26,9 +26,8 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.error.ArgumentError;
 import com.yolanda.nohttp.error.ClientError;
 import com.yolanda.nohttp.error.NetworkError;
-import com.yolanda.nohttp.error.ReadWriteError;
+import com.yolanda.nohttp.error.StorageReadWriteError;
 import com.yolanda.nohttp.error.ServerError;
-import com.yolanda.nohttp.error.StorageCantWriteError;
 import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
@@ -50,8 +49,7 @@ import java.net.UnknownHostException;
 import java.util.zip.GZIPInputStream;
 
 /**
- * The network layer to download missions
- * </br>
+ * <p>The network layer to download missions</p>
  * Created in Jul 31, 2015 9:11:55 AM
  *
  * @author YOLANDA
@@ -80,7 +78,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                 throw new NetworkError("Network is not available");
 
             if (!FileUtil.createFolder(savePathDir))
-                throw new ReadWriteError("Failed to create the folder " + savePathDir + ", please check storage devices");
+                throw new StorageReadWriteError("Failed to create the folder " + savePathDir + ", please check storage devices");
 
             File tempFile = new File(savePathDir, downloadRequest.getFileName() + ".nohttp");
             // 根据临时文件处理断点头
@@ -132,7 +130,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
             // 生成临时文件
             if (responseCode == 200 && !FileUtil.createNewFile(tempFile))
-                throw new ReadWriteError("Failed to create the file, please check storage devices");
+                throw new StorageReadWriteError("Failed to create the file, please check storage devices");
 
             if (FileUtil.getDirSize(savePathDir) < contentLength)
                 throw new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir);
@@ -210,7 +208,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
             }
         } catch (IOException e) {
             if (!FileUtil.canWrite(savePathDir))
-                downloadListener.onDownloadError(what, new StorageCantWriteError("This folder cannot be written to the file: " + savePathDir));
+                downloadListener.onDownloadError(what, new StorageReadWriteError("This folder cannot be written to the file: " + savePathDir));
             else if (FileUtil.getDirSize(savePathDir) < 1024)
                 downloadListener.onDownloadError(what, new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir));
             else

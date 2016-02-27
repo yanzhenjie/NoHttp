@@ -18,8 +18,7 @@ package com.sample.nohttp.nohttp;
 import com.yolanda.nohttp.Response;
 
 /**
- * 接受回调结果
- * </br>
+ * <p>接受回调结果</p>
  * Created in Nov 4, 2015 12:54:50 PM
  *
  * @author YOLANDA

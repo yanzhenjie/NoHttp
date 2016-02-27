@@ -26,8 +26,7 @@ import com.yolanda.nohttp.able.SignCancelAble;
 import com.yolanda.nohttp.able.StartAble;
 
 /**
- * Developers provide data interface
- * </br>
+ * <p>Developers provide data interface</p>
  * Created in Dec 21, 2015 4:17:25 PM
  *
  * @author YOLANDA;
@@ -46,6 +45,16 @@ public interface ImplClientRequest extends QueueAble, StartAble, SignCancelAble,
      * @param key Unique key
      */
     void setCacheKey(String key);
+
+    /**
+     * Just read the cache, Is not enabled by default
+     */
+    void setOnlyReadCache(boolean onlyReadCache);
+
+    /**
+     * Read from the cache enabled are failing, Is not enabled by default
+     */
+    void setRequestFailedReadCache(boolean isEnable);
 
     /**
      * Sets the SSLsocketfactory for this request

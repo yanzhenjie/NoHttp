@@ -18,7 +18,6 @@ package com.sample.nohttp.util;
 import com.sample.nohttp.Application;
 
 /**
- * </br>
  * Created in Jan 31, 2016 4:15:36 PM
  *
  * @author YOLANDA

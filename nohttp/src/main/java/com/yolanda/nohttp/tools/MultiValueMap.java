@@ -20,8 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Can save multiple the value of the map
- * </br>
+ * <p>Can save multiple the value of the map</p>
  * Created in Jan 10, 2016 5:00:07 PM
  *
  * @author YOLANDA
@@ -30,31 +29,47 @@ public interface MultiValueMap<K, V> {
 
     /**
      * Add a value for a key
+     *
+     * @param key   Key
+     * @param value Value
      */
     void add(K key, V value);
 
     /**
      * Add more value to a key
+     *
+     * @param key    Key
+     * @param values Values
      */
     void add(K key, List<V> values);
 
     /**
      * Set the value for a key, if the key has the value, delete all of the old value, then the new value added
+     *
+     * @param key   Key
+     * @param value Values
      */
     void set(K key, V value);
 
     /**
+     * @param values Value
+     * @param key    Key
+     * @param values Values
      * @see #set(Object, Object)
      */
     void set(K key, List<V> values);
 
     /**
      * The removal of all key/value pair, add new keys to enter
+     *
+     * @param values Values
      */
     void set(Map<K, List<V>> values);
 
     /**
      * Delete a key-value
+     *
+     * @param key Key
      */
     void remove(K key);
 
@@ -65,36 +80,51 @@ public interface MultiValueMap<K, V> {
 
     /**
      * Get the key set
+     *
+     * @return Set
      */
     Set<K> keySet();
 
     /**
      * To get all key of all values
+     *
+     * @return List
      */
     List<V> values();
 
     /**
      * To get the key of the at index value
+     *
+     * @param key   Key
+     * @param index index value
      */
     V getValue(K key, int index);
 
     /**
      * To get key of all values
+     *
+     * @param key Key
      */
     List<V> getValues(K key);
 
     /**
      * The size of the map
+     *
+     * @return size
      */
     int size();
 
     /**
      * If the map has no value
+     *
+     * @return True: empty, false: not empty
      */
     boolean isEmpty();
 
     /**
      * Whether the map with a key
+     *
+     * @param key Key
      */
     boolean containsKey(K key);
 

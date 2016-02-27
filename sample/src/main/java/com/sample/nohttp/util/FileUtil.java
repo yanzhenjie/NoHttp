@@ -25,7 +25,6 @@ import android.os.Environment;
 import android.os.StatFs;
 
 /**
- * </br>
  * Created in Sep 10, 2015 4:22:18 PM
  *
  * @author YOLANDA

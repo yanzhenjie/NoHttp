@@ -26,8 +26,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * Cache database manager
- * </br>
+ * <p>Cache database manager</p>
  * Created in Jan 10, 2016 12:42:29 AM
  *
  * @author YOLANDA
@@ -37,7 +36,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
     private static DBManager<CacheEntity> _Instance;
 
     private CacheDiskManager() {
-        super(new CacheDisker());
+        super(new CacheDisk());
     }
 
     public synchronized static DBManager<CacheEntity> getInstance() {
@@ -51,9 +50,9 @@ class CacheDiskManager extends DBManager<CacheEntity> {
     public long replace(CacheEntity cacheEntity) {
         SQLiteDatabase execute = openWriter();
         ContentValues values = new ContentValues();
-        values.put(CacheDisker.KEY, cacheEntity.getKey());
-        values.put(CacheDisker.HEAD, cacheEntity.getResponseHeadersJson());
-        values.put(CacheDisker.DATA, cacheEntity.getData());
+        values.put(CacheDisk.KEY, cacheEntity.getKey());
+        values.put(CacheDisk.HEAD, cacheEntity.getResponseHeadersJson());
+        values.put(CacheDisk.DATA, cacheEntity.getData());
         long id = -1;
         try {
             id = execute.replace(getTableName(), null, values);
@@ -79,15 +78,15 @@ class CacheDiskManager extends DBManager<CacheEntity> {
                     if (idIndex >= 0)
                         cacheEntity.setId(cursor.getInt(idIndex));
 
-                    int keyIndex = cursor.getColumnIndex(CacheDisker.KEY);
+                    int keyIndex = cursor.getColumnIndex(CacheDisk.KEY);
                     if (keyIndex >= 0)
                         cacheEntity.setKey(cursor.getString(keyIndex));
 
-                    int headIndex = cursor.getColumnIndex(CacheDisker.HEAD);
+                    int headIndex = cursor.getColumnIndex(CacheDisk.HEAD);
                     if (headIndex >= 0)
                         cacheEntity.setResponseHeadersJson(cursor.getString(headIndex));
 
-                    int dataIndex = cursor.getColumnIndex(CacheDisker.DATA);
+                    int dataIndex = cursor.getColumnIndex(CacheDisk.DATA);
                     if (dataIndex >= 0)
                         cacheEntity.setData(cursor.getBlob(dataIndex));
 
@@ -105,7 +104,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 
     @Override
     protected String getTableName() {
-        return CacheDisker.TABLE_NAME;
+        return CacheDisk.TABLE_NAME;
     }
 
 }

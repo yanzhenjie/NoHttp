@@ -35,8 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Http相应头304缓存演示
- * </br>
+ * <p>Http相应头304缓存演示</p>
  * Created in Jan 31, 2016 12:11:03 PM
  *
  * @author YOLANDA
@@ -92,7 +91,7 @@ public class CacheActivity extends BaseActivity {
     private HttpListener<String> stringHttpListener = new HttpListener<String>() {
         @Override
         public void onSucceed(int what, Response<String> response) {
-            mTvResult.setText("响应码: " + response.getHeaders().getResponseCode() + "\n" + response.get());
+            mTvResult.setText("是否来自缓存：" + response.isFromCache() + "\n响应码: " + response.getHeaders().getResponseCode() + "\n" + response.get());
             mIvResult.setImageBitmap(null);
         }
 
@@ -115,7 +114,7 @@ public class CacheActivity extends BaseActivity {
     private HttpListener<Bitmap> imageHttpListener = new HttpListener<Bitmap>() {
         @Override
         public void onSucceed(int what, Response<Bitmap> response) {
-            mTvResult.setText("响应码: " + response.getHeaders().getResponseCode());
+            mTvResult.setText("是否来自缓存：" + response.isFromCache() + "\n响应码: " + response.getHeaders().getResponseCode());
             mIvResult.setImageBitmap(response.get());
         }
 

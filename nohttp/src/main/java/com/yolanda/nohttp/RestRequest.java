@@ -20,13 +20,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The realization method of the parameters
- * </br>
+ * <p>The realization method of the parameters</p>
  * Created in Oct 20, 2015 4:24:27 PM
  *
  * @author YOLANDA
  */
-public abstract class RestRequestor<T> extends BasicRequest<T> {
+public abstract class RestRequest<T> extends BasicRequest<T> {
 
     /**
      * Param collection
@@ -38,7 +37,7 @@ public abstract class RestRequestor<T> extends BasicRequest<T> {
      *
      * @param url request adress, like: http://www.google.com
      */
-    public RestRequestor(String url) {
+    public RestRequest(String url) {
         this(url, RequestMethod.GET);
     }
 
@@ -48,7 +47,7 @@ public abstract class RestRequestor<T> extends BasicRequest<T> {
      * @param url           request adress, like: http://www.google.com
      * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
      */
-    public RestRequestor(String url, RequestMethod requestMethod) {
+    public RestRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
         this.mParamMap = new LinkedHashMap<String, Object>();
     }

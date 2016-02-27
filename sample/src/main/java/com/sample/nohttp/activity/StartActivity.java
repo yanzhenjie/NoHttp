@@ -27,8 +27,7 @@ import android.view.View;
 import android.widget.AbsListView;
 
 /**
- * 开始界面
- * </br>
+ * <p>开始界面</p>
  * Created in Oct 21, 2015 2:19:16 PM
  *
  * @author YOLANDA

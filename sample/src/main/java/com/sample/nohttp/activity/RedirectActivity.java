@@ -29,7 +29,6 @@ import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
 
 /**
- * </br>
  * Created in Jan 31, 2016 4:30:31 PM
  *
  * @author YOLANDA

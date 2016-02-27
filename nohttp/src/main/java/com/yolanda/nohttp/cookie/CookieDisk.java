@@ -22,13 +22,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Cookie database operation class
- * </br>
+ * <p>Cookie database operation class</p>
  * Created in Dec 18, 2015 6:30:59 PM
  *
  * @author YOLANDA;
  */
-class CookieDisker extends SQLiteOpenHelper implements Field {
+class CookieDisk extends SQLiteOpenHelper implements Field {
 
     public static final String DB_COOKIE_NAME = "_nohttp_cookies_db.db";
     public static final int DB_COOKIE_VERSION = 1;
@@ -52,7 +51,7 @@ class CookieDisker extends SQLiteOpenHelper implements Field {
     private static final String SQL_DELETE_TABLE = "DROP TABLE cookies_table";
     private static final String SQL_DELETE_UNIQUE_INDEX = "DROP UNIQUE INDEX cookie_unique_index";
 
-    public CookieDisker() {
+    public CookieDisk() {
         super(NoHttp.getContext(), DB_COOKIE_NAME, null, DB_COOKIE_VERSION);
     }
 

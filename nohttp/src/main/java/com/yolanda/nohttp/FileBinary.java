@@ -27,9 +27,8 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 /**
- * A default implementation of Binary</br>
- * All the methods are called in Son thread.</br>
- * </br>
+ * <p>A default implementation of Binary.
+ * All the methods are called in Son thread.</p>
  * Created in Oct 17, 2015 12:40:54 PM
  *
  * @author YOLANDA
@@ -121,14 +120,6 @@ public class FileBinary implements Binary {
                 mimeType = NoHttp.MIME_TYPE_FILE;
         }
         return mimeType;
-    }
-
-    /**
-     * @deprecated @deprecated Please use {@link #cancel(boolean)} instead
-     */
-    @Override
-    public void cancel() {
-        this.isRun = false;
     }
 
     @Override

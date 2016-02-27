@@ -20,40 +20,39 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Measure the length of the flow
- * </br>
+ * <p> Measure the length of the flow</p>
  * Created in Dec 17, 2015 2:57:46 PM
  *
  * @author YOLANDA;
  */
 public class CounterOutputStream extends OutputStream {
 
-    private final AtomicLong lenght = new AtomicLong(0L);
+    private final AtomicLong length = new AtomicLong(0L);
 
     public CounterOutputStream() {
     }
 
     public void write(long count) {
         if (count > 0)
-            lenght.addAndGet(count);
+            length.addAndGet(count);
     }
 
     public long get() {
-        return lenght.get();
+        return length.get();
     }
 
     @Override
     public void write(int oneByte) throws IOException {
-        lenght.addAndGet(oneByte);
+        length.addAndGet(oneByte);
     }
 
     @Override
     public void write(byte[] buffer) throws IOException {
-        lenght.addAndGet(buffer.length);
+        length.addAndGet(buffer.length);
     }
 
     @Override
     public void write(byte[] buffer, int offset, int count) throws IOException {
-        lenght.addAndGet(count);
+        length.addAndGet(count);
     }
 }

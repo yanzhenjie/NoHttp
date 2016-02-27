@@ -31,8 +31,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 
 /**
- * 代理服务器
- * </br>
+ * <p>代理服务器</p>
  * Created in Jan 31, 2016 9:11:29 PM
  *
  * @author YOLANDA

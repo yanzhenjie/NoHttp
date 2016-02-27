@@ -27,8 +27,7 @@ import org.json.JSONException;
 import com.yolanda.nohttp.tools.MultiValueMap;
 
 /**
- * Http header
- * </br>
+ * <p>Http header</p>
  * Created in Jan 10, 2016 2:29:42 PM
  *
  * @author YOLANDA
@@ -69,7 +68,7 @@ public interface Headers extends MultiValueMap<String, String> {
 
     String HEAD_KEY_EXPIRES = "Expires";
 
-    String HEAD_KEY_ETAG = "ETag";
+    String HEAD_KEY_E_TAG = "ETag";
 
     String HEAD_KEY_PRAGMA = "Pragma";
 
@@ -93,18 +92,22 @@ public interface Headers extends MultiValueMap<String, String> {
 
     /**
      * Copy all head to Headers
+     *
+     * @param headers Headers
      */
     void addAll(Headers headers);
 
     /**
      * Remove all of the head now, add a new head in
+     *
+     * @param headers headers
      */
     void setAll(Headers headers);
 
     /**
      * Conform to the URI of the Cookie is added to the head
      *
-     * @param uri url
+     * @param uri           url
      * @param cookieHandler cookieHandler
      * @throws IOException When reading a Cookie from CookieHandler may be exception
      */
@@ -120,76 +123,106 @@ public interface Headers extends MultiValueMap<String, String> {
 
     /**
      * Into a json format string
+     *
+     * @return Json format data
      */
     String toJSONString();
 
     /**
      * Into a single key-value map
+     *
+     * @return Map
      */
     Map<String, String> toRequestHeaders();
 
     /**
      * To multiple key - the value of the map
+     *
+     * @return Map format data
      */
     Map<String, List<String>> toResponseHeaders();
 
     /**
      * All the cookies in header information
+     *
+     * @return {@code List<Cookie>}
      */
     List<HttpCookie> getCookies();
 
     /**
      * {@value #HEAD_KEY_CACHE_CONTROL}
+     *
+     * @return CacheControl
      */
     String getCacheControl();
 
     /**
      * {@value #HEAD_KEY_CONTENT_ENCODING}
+     *
+     * @return ContentEncoding
      */
     String getContentEncoding();
 
     /**
      * {@value #HEAD_KEY_CONTENT_LENGTH}
+     *
+     * @return ContentLength
      */
     int getContentLength();
 
     /**
      * {@value #HEAD_KEY_CONTENT_TYPE}
+     *
+     * @return ContentType
      */
     String getContentType();
 
     /**
      * {@value #HEAD_KEY_DATE}
+     *
+     * @return Date
      */
     long getDate();
 
     /**
-     * {@value #HEAD_KEY_ETAG}
+     * {@value #HEAD_KEY_E_TAG}
+     *
+     * @return ETag
      */
     String getETag();
 
     /**
      * {@value #HEAD_KEY_EXPIRES}
+     *
+     * @return Expiration
      */
     long getExpiration();
 
     /**
      * {@value #HEAD_KEY_LAST_MODIFIED}
+     *
+     * @return LastModified
      */
     long getLastModified();
 
     /**
      * {@value #HEAD_KEY_LOCATION}
+     *
+     * @return Location
      */
     String getLocation();
 
     /**
      * {@value #HEAD_KEY_RESPONSE_CODE}
+     *
+     * @return ResponseCode
      */
     int getResponseCode();
 
     /**
      * {@value #HEAD_KEY_RESPONSE_MESSAGE}
+     *
+     * @throws ResponseMessage
      */
     String getResponseMessage();
 }

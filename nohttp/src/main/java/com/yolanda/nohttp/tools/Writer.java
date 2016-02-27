@@ -21,8 +21,7 @@ import java.io.OutputStream;
 import com.yolanda.nohttp.Binary;
 
 /**
- * NoHttp sends data to the network as a Writer
- * </br>
+ * <p>NoHttp sends data to the network as a Writer</p>
  * Created in Jan 16, 2016 12:00:57 PM
  *
  * @author YOLANDA

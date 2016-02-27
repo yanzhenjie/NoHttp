@@ -16,8 +16,7 @@
 package com.yolanda.nohttp.able;
 
 /**
- * Cancel interface
- * </br>
+ * <p>Cancel interface</p>
  * Created in Dec 17, 2015 11:42:10 AM
  *
  * @author YOLANDA;
@@ -25,19 +24,16 @@ package com.yolanda.nohttp.able;
 public interface CancelAble {
 
     /**
-     * Cancel operation
-     *
-     * @deprecated Please use {@link #cancel(boolean)} instead
-     */
-    void cancel();
-
-    /**
      * Change cancel state
+     *
+     * @param cancel true or yes
      */
     void cancel(boolean cancel);
 
     /**
      * Has it been canceled ?
+     *
+     * @return True: canceled, false: no cancellation
      */
     boolean isCanceled();
 

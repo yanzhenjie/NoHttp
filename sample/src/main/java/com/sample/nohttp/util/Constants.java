@@ -18,7 +18,6 @@ package com.sample.nohttp.util;
 import com.sample.nohttp.config.AppConfig;
 
 /**
- * </br>
  * Created in Jan 29, 2016 9:25:18 AM
  *
  * @author YOLANDA;
@@ -35,7 +34,7 @@ public class Constants {
      */
     static {
         if (AppConfig.DEBUG) {
-            SERVER = "http://192.168.1.136/HttpServer/";
+            SERVER = "http://192.168.1.111/HttpServer/";
         } else {
             SERVER = "http://1.nohttp.applinzi.com/";
         }

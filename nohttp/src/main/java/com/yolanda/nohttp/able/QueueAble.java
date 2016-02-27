@@ -16,8 +16,7 @@
 package com.yolanda.nohttp.able;
 
 /**
- * Queue interface
- * </br>
+ * <p>Queue interface</p>
  * Created in Nov 12, 2015 5:59:29 PM
  *
  * @author YOLANDA;
@@ -26,11 +25,15 @@ public interface QueueAble {
 
     /**
      * Are already in the queue ?
+     *
+     * @return True: In the queue, false: not in the queue
      */
     boolean isQueue();
 
     /**
      * Change queue state
+     *
+     * @param queue True: In the queue, false: not in the queue
      */
     void queue(boolean queue);
 

@@ -16,21 +16,20 @@
 package com.yolanda.nohttp.error;
 
 /**
- * The target host not found
- * </br>
+ * <p>The target host not found</p>
  * Created in 2016/2/25 10:49
  *
  * @author YOLANDA;
  */
 public class UnKnownHostError extends Exception {
 
-	private static final long serialVersionUID = 1149646L;
+    private static final long serialVersionUID = 1149646L;
 
-	public UnKnownHostError() {
-	}
+    public UnKnownHostError() {
+    }
 
-	public UnKnownHostError(String detailMessage) {
-		super(detailMessage);
-	}
+    public UnKnownHostError(String detailMessage) {
+        super(detailMessage);
+    }
 
 }

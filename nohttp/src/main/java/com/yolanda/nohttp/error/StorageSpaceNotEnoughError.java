@@ -16,21 +16,20 @@
 package com.yolanda.nohttp.error;
 
 /**
- * Specify the location of the file space is not enough
- * </br>
+ * <p>Specify the location of the file space is not enough</p>
  * Created in 2016/2/25 11:50
  *
  * @author YOLANDA;
  */
 public class StorageSpaceNotEnoughError extends Exception {
 
-	private static final long serialVersionUID = 11786348L;
+    private static final long serialVersionUID = 11786348L;
 
-	public StorageSpaceNotEnoughError() {
-	}
+    public StorageSpaceNotEnoughError() {
+    }
 
-	public StorageSpaceNotEnoughError(String detailMessage) {
-		super(detailMessage);
-	}
+    public StorageSpaceNotEnoughError(String detailMessage) {
+        super(detailMessage);
+    }
 
 }

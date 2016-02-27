@@ -23,8 +23,7 @@ import javax.net.ssl.SSLSocketFactory;
 import com.yolanda.nohttp.tools.Writer;
 
 /**
- * Analytical {@link ImplClientRequest} NoHttp interface
- * </br>
+ * <p>Analytical {@link ImplClientRequest} NoHttp interface</p>
  * Created in Dec 21, 2015 3:34:59 PM
  *
  * @author YOLANDA;
@@ -50,6 +49,16 @@ public interface ImplServerRequest {
      * Get key of cache data
      */
     String getCacheKey();
+
+    /**
+     * If just read from cache
+     */
+    boolean onlyReadCache();
+
+    /**
+     * Whether you need to read the cache request failure
+     */
+    boolean isRequestFailedReadCache();
 
     /**
      * Get proxy server

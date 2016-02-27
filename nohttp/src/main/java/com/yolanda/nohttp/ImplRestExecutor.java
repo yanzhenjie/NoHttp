@@ -16,8 +16,7 @@
 package com.yolanda.nohttp;
 
 /**
- * The request executor, Interact with the network layer
- * </br>
+ * <p>The request executor, Interact with the network layer</p>
  * Created in Jan 6, 2016 5:45:51 PM
  *
  * @author YOLANDA;
@@ -26,6 +25,9 @@ public interface ImplRestExecutor {
 
     /**
      * Execution request: request network, local cache, redirection, etc.
+     *
+     * @param request Request
+     * @return {@link HttpResponse}
      */
     HttpResponse executeRequest(Request<?> request);
 

@@ -26,7 +26,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 /**
- * </br>
  * Created in Jan 28, 2016 5:04:03 PM
  *
  * @author YOLANDA;

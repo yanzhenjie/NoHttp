@@ -16,8 +16,7 @@
 package com.yolanda.nohttp.db;
 
 /**
- * General field class
- * </br>
+ * <p>General field class</p>
  * Created in Jan 11, 2016 12:46:38 PM
  *
  * @author YOLANDA;

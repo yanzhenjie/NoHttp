@@ -18,7 +18,7 @@ package com.yolanda.nohttp.download;
 import com.yolanda.nohttp.Request;
 
 /**
- * Download task request interface</br>
+ * <p>Download task request interface</p>
  * Created in Oct 21, 2015 11:09:04 AM
  *
  * @author YOLANDA
@@ -40,21 +40,29 @@ public interface DownloadRequest extends Request<Void> {
 
     /**
      * Return the mFileDir
+     *
+     * @return String, not empty
      */
     String getFileDir();
 
     /**
      * Return the mFileName
+     *
+     * @return String, not empty
      */
     String getFileName();
 
     /**
      * Return the isRange
+     *
+     * @return True: breakpoint continuing, false: don't need a breakpoint continuing
      */
     boolean isRange();
 
     /**
      * If there is a old files, whether to delete the old files
+     *
+     * @return True: deleted, false: don't delete
      */
     boolean isDeleteOld();
 
@@ -63,7 +71,7 @@ public interface DownloadRequest extends Request<Void> {
      * STATUS_RESTART representative no download do to download again; Download STATUS_RESUME represents a part of, to
      * continue to download; STATUS_FINISH representatives have finished downloading.
      *
-     * @return
+     * @return Int value, compared with the {@value #STATUS_RESTART}, {@value #STATUS_RESUME}, {@value #STATUS_FINISH}
      * @see #STATUS_RESTART
      * @see #STATUS_RESUME
      * @see #STATUS_FINISH

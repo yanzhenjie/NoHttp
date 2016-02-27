@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * In response to the class, use generic compatibility with all I to type, and put the parsing operation in Request</br>
+ * <p>In response to the class, use generic compatibility with all I to type, and put the parsing operation in Request</p>
  * Created in Oct 12, 2015 1:00:46 PM
  *
  * @author YOLANDA
  */
-public class RestResponser<T> implements Response<T> {
+public class RestResponse<T> implements Response<T> {
 
     /**
      * Corresponding request URL
@@ -36,6 +36,11 @@ public class RestResponser<T> implements Response<T> {
      * RequestMethod
      */
     private final RequestMethod method;
+
+    /**
+     * Whether from the cache
+     */
+    private final boolean isFromCache;
 
     /**
      * Http response Headers
@@ -65,9 +70,10 @@ public class RestResponser<T> implements Response<T> {
      */
     private Exception mException;
 
-    public RestResponser(String url, RequestMethod requestMethod, Headers headers, byte[] byteArray, Object tag, T result, long millis, Exception exception) {
+    public RestResponse(String url, RequestMethod requestMethod, boolean isFromCache, Headers headers, byte[] byteArray, Object tag, T result, long millis, Exception exception) {
         this.url = url;
         this.method = requestMethod;
+        this.isFromCache = isFromCache;
         this.headers = headers;
         this.byteArray = byteArray;
         this.tag = tag;
@@ -89,6 +95,11 @@ public class RestResponser<T> implements Response<T> {
     @Override
     public boolean isSucceed() {
         return this.mException == null;
+    }
+
+    @Override
+    public boolean isFromCache() {
+        return isFromCache;
     }
 
     @Override

@@ -24,12 +24,12 @@ import android.os.Looper;
 import android.os.Process;
 
 /**
- * Download queue polling thread</br>
+ * <p>Download queue polling thread</p>
  * Created in Oct 21, 2015 2:46:23 PM
  *
  * @author YOLANDA
  */
-class DownloadDispatch extends Thread {
+class DownloadDispatcher extends Thread {
 
     /**
      * Get handler lock
@@ -59,7 +59,7 @@ class DownloadDispatch extends Thread {
      * @param downloadQueue Download queue to be polled
      * @param downloader    Perform network request interface
      */
-    public DownloadDispatch(BlockingQueue<NetworkDownloadRequest> downloadQueue, Downloader downloader) {
+    public DownloadDispatcher(BlockingQueue<NetworkDownloadRequest> downloadQueue, Downloader downloader) {
         mDownloadQueue = downloadQueue;
         mDownloader = downloader;
     }

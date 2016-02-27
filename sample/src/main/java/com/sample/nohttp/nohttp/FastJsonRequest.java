@@ -22,20 +22,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.JsonObjectRequest;
 import com.yolanda.nohttp.RequestMethod;
-import com.yolanda.nohttp.RestRequestor;
+import com.yolanda.nohttp.RestRequest;
 import com.yolanda.nohttp.StringRequest;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 自定义请求对象
- * </br>
+ * <p>自定义请求对象</p>
  * Created in Feb 1, 2016 8:53:17 AM
  *
  * @author YOLANDA;
  */
-public class FastJsonRequest extends RestRequestor<JSONObject> {
+public class FastJsonRequest extends RestRequest<JSONObject> {
 
     public FastJsonRequest(String url) {
         super(url);

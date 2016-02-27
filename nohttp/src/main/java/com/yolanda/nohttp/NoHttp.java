@@ -29,7 +29,7 @@ import com.yolanda.nohttp.cookie.DiskCookieStore;
 import com.yolanda.nohttp.download.DownloadConnection;
 import com.yolanda.nohttp.download.DownloadQueue;
 import com.yolanda.nohttp.download.DownloadRequest;
-import com.yolanda.nohttp.download.RestDownloadRequestor;
+import com.yolanda.nohttp.download.RestDownloadRequest;
 import com.yolanda.nohttp.tools.PRNGFixes;
 
 import android.app.Application;
@@ -37,8 +37,7 @@ import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 /**
- * NoHttp
- * </br>
+ * <p>NoHttp</p>
  * Created in Jul 28, 2015 7:32:22 PM
  *
  * @author YOLANDA
@@ -73,6 +72,8 @@ public class NoHttp {
 
     /**
      * Initialization NoHttp, Should invoke on {@link Application#onCreate()}
+     *
+     * @param application Application
      */
     public static void init(Application application) {
         if (sApplication == null) {
@@ -84,6 +85,8 @@ public class NoHttp {
 
     /**
      * Get application of app
+     *
+     * @return Application
      */
     public static Application getContext() {
         if (sApplication == null)
@@ -148,6 +151,9 @@ public class NoHttp {
 
     /**
      * Create a String type request, The request method is {@code GET}
+     *
+     * @param url Such as: {@code http://www.google.com}
+     * @return {@code Request<String>}
      */
     public static Request<String> createStringRequest(String url) {
         return new StringRequest(url);
@@ -155,6 +161,10 @@ public class NoHttp {
 
     /**
      * Create a String type request, custom request method, method from {@link RequestMethod}
+     *
+     * @param url           Such as: {@code http://www.google.com}
+     * @param requestMethod {@link RequestMethod}
+     * @return {@code Request<String>}
      */
     public static Request<String> createStringRequest(String url, RequestMethod requestMethod) {
         return new StringRequest(url, requestMethod);
@@ -162,6 +172,9 @@ public class NoHttp {
 
     /**
      * Create a JSONObject type request, The request method is {@code GET}
+     *
+     * @param url Such as: {@code http://www.google.com}
+     * @return {@code Request<JSONObject>}
      */
     public static Request<JSONObject> createJsonObjectRequest(String url) {
         return new JsonObjectRequest(url);
@@ -169,6 +182,10 @@ public class NoHttp {
 
     /**
      * Create a JSONObject type request, custom request method, method from {@linkplain RequestMethod}
+     *
+     * @param url           Such as: {@code http://www.google.com}
+     * @param requestMethod {@link RequestMethod}
+     * @return {@code Request<JSONObject>}
      */
     public static Request<JSONObject> createJsonObjectRequest(String url, RequestMethod requestMethod) {
         return new JsonObjectRequest(url, requestMethod);
@@ -176,6 +193,9 @@ public class NoHttp {
 
     /**
      * Create a JSONArray type request, The request method is {@code GET}
+     *
+     * @param url Such as: {@code http://www.google.com}
+     * @return {@code Request<JSONArray>}
      */
     public static Request<JSONArray> createJsonArrayRequest(String url) {
         return new JsonArrayRequest(url);
@@ -183,6 +203,10 @@ public class NoHttp {
 
     /**
      * Create a JSONArray type request, custom request method, method from {@link RequestMethod}
+     *
+     * @param url           Such as: {@code http://www.google.com}
+     * @param requestMethod {@link RequestMethod}
+     * @return {@code Request<JSONArray>}
      */
     public static Request<JSONArray> createJsonArrayRequest(String url, RequestMethod requestMethod) {
         return new JsonArrayRequest(url, requestMethod);
@@ -190,6 +214,9 @@ public class NoHttp {
 
     /**
      * Create a Image type request
+     *
+     * @param url Such as: {@code http://www.google.com}
+     * @return {@code Request<Bitmap>}
      */
     public static Request<Bitmap> createImageRequest(String url) {
         return createImageRequest(url, RequestMethod.GET);
@@ -197,6 +224,10 @@ public class NoHttp {
 
     /**
      * Create a Image type request
+     *
+     * @param url           Such as: {@code http://www.google.com}
+     * @param requestMethod {@link RequestMethod}
+     * @return {@code Request<BItmap>}
      */
     public static Request<Bitmap> createImageRequest(String url, RequestMethod requestMethod) {
         return createImageRequest(url, requestMethod, 1000, 1000, Bitmap.Config.ARGB_8888, ImageView.ScaleType.CENTER_INSIDE);
@@ -204,6 +235,14 @@ public class NoHttp {
 
     /**
      * Create a Image type request
+     *
+     * @param url           Such as: {@code http://www.google.com}
+     * @param requestMethod {@link RequestMethod}
+     * @param maxWidth      Width
+     * @param maxHeight     Height
+     * @param config        Config
+     * @param scaleType     ScaleType
+     * @return {@code Request<Bitmap>}
      */
     public static Request<Bitmap> createImageRequest(String url, RequestMethod requestMethod, int maxWidth, int maxHeight, Bitmap.Config config, ImageView.ScaleType scaleType) {
         return new ImageRequest(url, requestMethod, maxWidth, maxHeight, config, scaleType);
@@ -215,7 +254,7 @@ public class NoHttp {
      * @param cache              Cache interface, which is used to cache the request results
      * @param implRestConnection Network operating interface, The implementation of the network layer
      * @param request            Request object
-     * @return Response result
+     * @return {@link Response}
      */
     public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, ImplRestConnection implRestConnection, Request<T> request) {
         Response<T> response = null;
@@ -229,7 +268,7 @@ public class NoHttp {
      *
      * @param cache   Cache interface, which is used to cache the request results
      * @param request Request object
-     * @return Response result
+     * @return {@link Response}
      */
     public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, Request<T> request) {
         return startRequestSync(cache, HttpRestConnection.getInstance(), request);
@@ -239,7 +278,7 @@ public class NoHttp {
      * Initiate a synchronization request
      *
      * @param request Request object
-     * @return Response result
+     * @return {@link Response}
      */
     public static <T> Response<T> startRequestSync(ImplRestConnection implRestConnection, Request<T> request) {
         return startRequestSync(DiskCacheStore.INSTANCE, implRestConnection, request);
@@ -249,7 +288,7 @@ public class NoHttp {
      * Initiate a synchronization request
      *
      * @param request Request object
-     * @return Response result
+     * @return {@link Response}
      */
     public static <T> Response<T> startRequestSync(Request<T> request) {
         return startRequestSync(DiskCacheStore.INSTANCE, HttpRestConnection.getInstance(), request);
@@ -257,6 +296,8 @@ public class NoHttp {
 
     /**
      * Create a new download queue, the default thread pool number is {@value NoHttp#DEFAULT_THREAD_SIZE}
+     *
+     * @return {@link DownloadQueue}
      */
     public static DownloadQueue newDownloadQueue() {
         return newDownloadQueue(DEFAULT_THREAD_SIZE);
@@ -266,6 +307,7 @@ public class NoHttp {
      * Create a new download queue
      *
      * @param threadPoolSize Thread pool number, here is the number of concurrent tasks
+     * @return {@link DownloadQueue}
      */
     public static DownloadQueue newDownloadQueue(int threadPoolSize) {
         DownloadQueue downloadQueue = new DownloadQueue(new DownloadConnection(), threadPoolSize);
@@ -299,11 +341,13 @@ public class NoHttp {
      * @return {@link DownloadRequest}
      */
     public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
-        return new RestDownloadRequestor(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
+        return new RestDownloadRequest(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
     }
 
     /**
      * Get NoHttp Cookie manager by default
+     *
+     * @return {@link CookieHandler}
      */
     public static CookieHandler getDefaultCookieHandler() {
         return sCookieHandler;
@@ -311,6 +355,8 @@ public class NoHttp {
 
     /**
      * Sets the system-wide cookie handler
+     *
+     * @param cookieHandler {@link CookieHandler}
      */
     public static void setDefaultCookieHandler(CookieHandler cookieHandler) {
         if (cookieHandler == null)

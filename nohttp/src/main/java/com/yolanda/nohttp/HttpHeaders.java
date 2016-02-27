@@ -38,8 +38,7 @@ import com.yolanda.nohttp.tools.LinkedMultiValueMap;
 import android.text.TextUtils;
 
 /**
- * {@link Headers} The default implementation
- * </br>
+ * <p>{@link Headers} The default implementation</p>
  * Created in Jan 10, 2016 2:37:06 PM
  *
  * @author YOLANDA
@@ -190,7 +189,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
 
     @Override
     public String getETag() {
-        return getValue(HEAD_KEY_ETAG, 0);
+        return getValue(HEAD_KEY_E_TAG, 0);
     }
 
     @Override

@@ -36,7 +36,6 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * </br>
  * Created in Jan 31, 2016 8:03:59 PM
  *
  * @author YOLANDA

@@ -16,8 +16,7 @@
 package com.yolanda.nohttp.error;
 
 /**
- * When a network request the server error
- * </br>
+ * <p>When a network request the server error</p>
  * Created in 2016/2/25 11:35
  *
  * @author YOLANDA;

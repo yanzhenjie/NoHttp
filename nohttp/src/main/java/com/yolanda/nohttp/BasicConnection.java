@@ -39,8 +39,7 @@ import android.os.Build;
 import android.text.TextUtils;
 
 /**
- * Package good Http implementation class, establish connection, read and write data
- * </br>
+ * <p>Package good Http implementation class, establish connection, read and write data</p>
  * Created in Aug 4, 2015 10:12:38 AM
  *
  * @author YOLANDA
@@ -118,9 +117,9 @@ public class BasicConnection {
         if (!TextUtils.isEmpty(acceptCharset))
             headers.set(Headers.HEAD_KEY_ACCEPT_CHARSET, acceptCharset);
 
-        String acceptLanguget = request.getAcceptLanguage();
-        if (!TextUtils.isEmpty(acceptLanguget))
-            headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguget);
+        String acceptLanguage = request.getAcceptLanguage();
+        if (!TextUtils.isEmpty(acceptLanguage))
+            headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
 
         // 2.2 Connection
         // To fix bug: accidental EOFException before API 19
@@ -200,7 +199,7 @@ public class BasicConnection {
      */
     private void writeRequestBody(HttpURLConnection connection, ImplServerRequest request) throws IOException {
         if (request.doOutPut()) {
-            Logger.i("-------Send reqeust data start-------");
+            Logger.i("-------Send request data start-------");
             BufferedOutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
             Writer writer = new Writer(outputStream, true);
             request.onWriteRequestBody(writer);

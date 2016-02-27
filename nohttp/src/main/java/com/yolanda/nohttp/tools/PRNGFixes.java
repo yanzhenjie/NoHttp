@@ -35,11 +35,10 @@ import android.os.Process;
 import android.util.Log;
 
 /**
- * Fixes for the output of the default PRNG having low entropy.
- * <p/>
- * The fixes need to be applied via {@link #apply()} before any use of Java
- * Cryptography Architecture primitives. A good place to invoke them is in the
- * application's {@code onCreate}.
+ * <p>Repair the PRNG SecureRandom</p>
+ * Created in Jan 16, 2016 12:00:57 PM
+ *
+ * @author YOLANDA
  */
 public final class PRNGFixes {
 

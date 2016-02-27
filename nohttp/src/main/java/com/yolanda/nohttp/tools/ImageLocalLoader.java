@@ -94,8 +94,6 @@ public class ImageLocalLoader {
                     return value.getByteCount();
                 return value.getRowBytes() * value.getHeight();
             }
-
-            ;
         };
     }
 
@@ -113,7 +111,7 @@ public class ImageLocalLoader {
      * @param imagePath Pictures in the path of the memory card
      * @param maxWidth  The highest limit value target width
      * @param maxHeight The highest limit value target height
-     * @return
+     * @return Bitmap
      */
     public Bitmap readImage(String imagePath, int maxWidth, int maxHeight) {
         File imageFile = new File(imagePath);
@@ -145,6 +143,9 @@ public class ImageLocalLoader {
 
     /**
      * According to the ImageView obtains appropriate width and height of compression
+     *
+     * @param imageView ImageView
+     * @param viewSizes ViewSize
      */
     public void measureSize(ImageView imageView, int[] viewSizes) {
         final DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
@@ -167,6 +168,9 @@ public class ImageLocalLoader {
 
     /**
      * Set the default image, resId from drawable. Is displayed when loading or loading failure
+     *
+     * @param context context
+     * @param resId   Res id
      */
     @SuppressLint("NewApi")
     public void setDefaultImage(Context context, int resId) {
@@ -175,6 +179,8 @@ public class ImageLocalLoader {
 
     /**
      * Set the default image, resId from drawable. Is displayed when loading or loading failure
+     *
+     * @param color color
      */
     public void setDefaultImageColor(int color) {
         mDefaultDrawable = new ColorDrawable(color);
@@ -182,6 +188,9 @@ public class ImageLocalLoader {
 
     /**
      * Load image from local SDCard
+     *
+     * @param imageView ImageView
+     * @param imagePath Path
      */
     public void loadImage(ImageView imageView, String imagePath) {
         loadImage(imageView, imagePath, 0, 0, null);
@@ -189,6 +198,10 @@ public class ImageLocalLoader {
 
     /**
      * Load image from local SDCard
+     *
+     * @param imageView         ImageView
+     * @param imagePath         Path
+     * @param imageLoadListener Listener
      */
     public void loadImage(ImageView imageView, String imagePath, ImageLoadListener imageLoadListener) {
         loadImage(imageView, imagePath, 0, 0, imageLoadListener);
@@ -196,6 +209,11 @@ public class ImageLocalLoader {
 
     /**
      * Load image from local SDCard
+     *
+     * @param imageView ImageView
+     * @param imagePath Path
+     * @param width     Width
+     * @param height    Height
      */
     public void loadImage(ImageView imageView, String imagePath, int width, int height) {
         loadImage(imageView, imagePath, width, height, null);
@@ -226,16 +244,10 @@ public class ImageLocalLoader {
         }
     }
 
-    /**
-     * Read the images from the cache
-     */
     private Bitmap getImageFromCache(String key) {
         return mLruCache.get(key);
     }
 
-    /**
-     * Add images to the cache
-     */
     private void addImageToCache(String key, Bitmap bitmap) {
         if (getImageFromCache(key) == null && bitmap != null)
             mLruCache.put(key, bitmap);
@@ -294,7 +306,7 @@ public class ImageLocalLoader {
                 if (bitmap != null)
                     imageLoadListener.onLoadSucceed(imageView, bitmap, imagePath);
                 else
-                    imageLoadListener.onLoadFalied(imageView, imagePath);
+                    imageLoadListener.onLoadFailed(imageView, imagePath);
             }
         }
     }
@@ -302,6 +314,6 @@ public class ImageLocalLoader {
     public interface ImageLoadListener {
         void onLoadSucceed(ImageView imageView, Bitmap bitmap, String imagePath);
 
-        void onLoadFalied(ImageView imageView, String imagePath);
+        void onLoadFailed(ImageView imageView, String imagePath);
     }
 }

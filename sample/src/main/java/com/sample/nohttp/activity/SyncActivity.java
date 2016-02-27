@@ -29,8 +29,7 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * 同步请求
- * </br>
+ * <p>同步请求</p>
  * Created in Oct 23, 2015 1:13:06 PM
  *
  * @author YOLANDA

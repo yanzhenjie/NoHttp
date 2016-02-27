@@ -16,8 +16,7 @@
 package com.yolanda.nohttp.cache;
 
 /**
- * Cache interface
- * </br>
+ * <p>Cache interface</p>
  * Created in Dec 14, 2015 5:52:41 PM
  *
  * @author YOLANDA;

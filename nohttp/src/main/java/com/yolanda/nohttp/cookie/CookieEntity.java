@@ -25,8 +25,7 @@ import com.yolanda.nohttp.tools.HttpDateTime;
 import android.text.TextUtils;
 
 /**
- * Cookie entity
- * </br>
+ * <p>Cookie entity</p>
  * Created in Dec 17, 2015 7:21:16 PM
  *
  * @author YOLANDA;
@@ -55,6 +54,10 @@ class CookieEntity implements DBId, Serializable {
     public CookieEntity() {
     }
 
+    /**
+     * @param uri    Cookie corresponding uri
+     * @param cookie cookie
+     */
     public CookieEntity(URI uri, HttpCookie cookie) {
         this.uri = uri == null ? null : uri.toString();
         this.name = cookie.getName();

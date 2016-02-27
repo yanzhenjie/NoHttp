@@ -19,15 +19,15 @@ import java.io.File;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
-import com.yolanda.nohttp.RestRequestor;
+import com.yolanda.nohttp.RestRequest;
 
 /**
- * Download the implementation class of the parameter request, and convert it to the object of the network download</br>
+ * <p>Download the implementation class of the parameter request, and convert it to the object of the network download</p>
  * Created in Jul 31, 2015 10:38:10 AM
  *
  * @author YOLANDA
  */
-public class RestDownloadRequestor extends RestRequestor<Void> implements DownloadRequest {
+public class RestDownloadRequest extends RestRequest<Void> implements DownloadRequest {
     /**
      * File the target folder
      */
@@ -45,11 +45,11 @@ public class RestDownloadRequestor extends RestRequestor<Void> implements Downlo
      */
     private final boolean isDeleteOld;
 
-    public RestDownloadRequestor(String url, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
+    public RestDownloadRequest(String url, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
         this(url, RequestMethod.GET, fileFolder, filename, isRange, isDeleteOld);
     }
 
-    public RestDownloadRequestor(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
+    public RestDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
         super(url, requestMethod);
         this.mFileDir = fileFolder;
         this.mFileName = filename;

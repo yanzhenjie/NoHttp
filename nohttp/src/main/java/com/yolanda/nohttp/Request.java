@@ -18,8 +18,7 @@ package com.yolanda.nohttp;
 import java.util.Map;
 
 /**
- * Achieve {@link ImplClientRequest} and {@link ImplServerRequest}, and can add parameters of the interface
- * </br>
+ * <p>Achieve {@link ImplClientRequest} and {@link ImplServerRequest}, and can add parameters of the interface</p>
  * Created in Oct 16, 2015 8:22:06 PM
  *
  * @author YOLANDA

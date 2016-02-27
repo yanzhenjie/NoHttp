@@ -18,7 +18,7 @@ package com.yolanda.nohttp.download;
 import com.yolanda.nohttp.Headers;
 
 /**
- * The download process monitor</br>
+ * <p>The download process monitor</p>
  * Created in Jul 31, 2015 9:12:55 AM
  *
  * @author YOLANDA
@@ -39,7 +39,7 @@ public interface DownloadListener {
      * @param what            Which is used to mark the download tasks
      * @param isResume        Whether to continue to download, if it is true that has download before, and have already
      *                        download the file size is not zero
-     * @param rangeSize     HTTP starting point size, the size of the data already exists
+     * @param rangeSize       HTTP starting point size, the size of the data already exists
      * @param responseHeaders Server response headers
      * @param allCount        Total file size
      */

@@ -16,8 +16,7 @@
 package com.yolanda.nohttp;
 
 /**
- * HTTP request method
- * </br>
+ * <p>HTTP request method</p>
  * Created in Oct 10, 2015 8:00:48 PM
  *
  * @author YOLANDA

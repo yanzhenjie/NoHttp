@@ -1,12 +1,12 @@
 /**
  * Copyright © YOLANDA. All Rights Reserved
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,75 +24,74 @@ import com.yolanda.nohttp.db.Where;
 import com.yolanda.nohttp.db.Where.Options;
 
 /**
- * HTTP cache interface implementation
- * </br>
+ * <p>HTTP cache interface implementation</p>
  * Created in Jan 10, 2016 12:45:34 AM
- * 
+ *
  * @author YOLANDA
  */
 public enum DiskCacheStore implements Cache<CacheEntity> {
 
-	INSTANCE;
+    INSTANCE;
 
-	/**
-	 * Database sync lock
-	 */
-	private Lock mLock;
-	/**
-	 * Database manager
-	 */
-	private DBManager<CacheEntity> mManager;
+    /**
+     * Database sync lock
+     */
+    private Lock mLock;
+    /**
+     * Database manager
+     */
+    private DBManager<CacheEntity> mManager;
 
-	DiskCacheStore() {
-		mLock = new ReentrantLock();
-		mManager = CacheDiskManager.getInstance();
-	}
+    DiskCacheStore() {
+        mLock = new ReentrantLock();
+        mManager = CacheDiskManager.getInstance();
+    }
 
-	@Override
-	public CacheEntity get(String key) {
-		mLock.lock();
-		try {
-			Where where = new Where(CacheDisker.KEY, Options.EQUAL, key);
-			List<CacheEntity> cacheEntities = mManager.get(CacheDisker.ALL, where.get(), null, null, null);
-			return cacheEntities.size() > 0 ? cacheEntities.get(0) : null;
-		} finally {
-			mLock.unlock();
-		}
-	}
+    @Override
+    public CacheEntity get(String key) {
+        mLock.lock();
+        try {
+            Where where = new Where(CacheDisk.KEY, Options.EQUAL, key);
+            List<CacheEntity> cacheEntities = mManager.get(CacheDisk.ALL, where.get(), null, null, null);
+            return cacheEntities.size() > 0 ? cacheEntities.get(0) : null;
+        } finally {
+            mLock.unlock();
+        }
+    }
 
-	@Override
-	public CacheEntity replace(String key, CacheEntity entrance) {
-		mLock.lock();
-		try {
-			entrance.setKey(key);
-			mManager.replace(entrance);
-			return entrance;
-		} finally {
-			mLock.unlock();
-		}
-	}
+    @Override
+    public CacheEntity replace(String key, CacheEntity entrance) {
+        mLock.lock();
+        try {
+            entrance.setKey(key);
+            mManager.replace(entrance);
+            return entrance;
+        } finally {
+            mLock.unlock();
+        }
+    }
 
-	@Override
-	public boolean remove(String key) {
-		if (key == null)
-			return true;
-		mLock.lock();
-		try {
-			Where where = new Where(CacheDisker.KEY, Options.EQUAL, key);
-			return mManager.delete(where.toString());
-		} finally {
-			mLock.unlock();
-		}
-	}
+    @Override
+    public boolean remove(String key) {
+        if (key == null)
+            return true;
+        mLock.lock();
+        try {
+            Where where = new Where(CacheDisk.KEY, Options.EQUAL, key);
+            return mManager.delete(where.toString());
+        } finally {
+            mLock.unlock();
+        }
+    }
 
-	@Override
-	public boolean clear() {
-		mLock.lock();
-		try {
-			return mManager.deleteAll();
-		} finally {
-			mLock.unlock();
-		}
-	}
+    @Override
+    public boolean clear() {
+        mLock.lock();
+        try {
+            return mManager.deleteAll();
+        } finally {
+            mLock.unlock();
+        }
+    }
 
 }

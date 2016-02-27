@@ -31,16 +31,15 @@ import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.error.ArgumentError;
 import com.yolanda.nohttp.error.ClientError;
 import com.yolanda.nohttp.error.NetworkError;
-import com.yolanda.nohttp.error.ReadWriteError;
+import com.yolanda.nohttp.error.StorageReadWriteError;
 import com.yolanda.nohttp.error.ServerError;
-import com.yolanda.nohttp.error.StorageCantWriteError;
 import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
 
 /**
- * 下载件demo</br>
+ * <p>下载件demo</p>
  * Created in Oct 10, 2015 12:58:25 PM
  *
  * @author YOLANDA
@@ -142,8 +141,8 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
             message += "服务器发生内部错误";
         } else if (exception instanceof NetworkError) {
             message += "网络不可用，请检查网络";
-        } else if (exception instanceof StorageCantWriteError) {
-            message += "存储位置不可写入";
+        } else if (exception instanceof StorageReadWriteError) {
+            message += "存储卡错误，请检查存储卡";
         } else if (exception instanceof StorageSpaceNotEnoughError) {
             message += "存储位置空间不足";
         } else if (exception instanceof TimeoutError) {
@@ -154,8 +153,6 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
             message += "url地址错误";
         } else if (exception instanceof ArgumentError) {
             message += "下载参数错误";
-        } else if(exception instanceof ReadWriteError) {
-            message += "SD卡错误";
         } else {
             message += "未知错误";
         }

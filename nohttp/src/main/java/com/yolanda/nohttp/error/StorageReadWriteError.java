@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,20 +16,20 @@
 package com.yolanda.nohttp.error;
 
 /**
- * Specify the location of the save file cannot be written to
- * </br>
- * Created in 2016/2/25 11:50
+ * Created in 2016/2/26 19:14
  *
  * @author YOLANDA;
  */
-public class StorageCantWriteError extends Exception {
+public class StorageReadWriteError extends Exception {
 
-	private static final long serialVersionUID = 11348949L;
+    public StorageReadWriteError() {
+    }
 
-	public StorageCantWriteError() {
-	}
+    public StorageReadWriteError(String detailMessage) {
+        super(detailMessage);
+    }
 
-	public StorageCantWriteError(String detailMessage) {
-		super(detailMessage);
-	}
+    public StorageReadWriteError(Throwable throwable) {
+        super(throwable);
+    }
 }

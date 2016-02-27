@@ -18,7 +18,6 @@ package com.yolanda.nohttp.db;
 import java.util.List;
 
 /**
- * </br>
  * Created in Dec 19, 2015 4:16:24 PM
  *
  * @author YOLANDA;
@@ -72,7 +71,7 @@ public class Where {
         return this;
     }
 
-    private final Where addColumnName(CharSequence columnName, Options op) {
+    private Where addColumnName(CharSequence columnName, Options op) {
         builder.append("\"").append(columnName).append("\" ").append(op.toString()).append(' ');
         return this;
     }
@@ -91,7 +90,7 @@ public class Where {
         return this;
     }
 
-    private final <T> Where in(List<T> values) {
+    private <T> Where in(List<T> values) {
         builder.append(Options.IN).append(" (");
         String sep = ", ";
         for (T value : values) {
@@ -107,7 +106,7 @@ public class Where {
         return this;
     }
 
-    private final Where and() {
+    private Where and() {
         if (builder.length() > 0)
             builder.append(" AND ");
         return this;
@@ -125,7 +124,7 @@ public class Where {
         return and().append(where);
     }
 
-    private final Where or() {
+    private Where or() {
         if (builder.length() > 0)
             builder.append(" OR ");
         return this;
@@ -161,7 +160,7 @@ public class Where {
         return builder.toString();
     }
 
-    public final static boolean isNumber(Object value) {
+    public static boolean isNumber(Object value) {
         return value != null && (value instanceof Character || value instanceof Integer || value instanceof Long || value instanceof Short || value instanceof Double || value instanceof Float);
     }
 }

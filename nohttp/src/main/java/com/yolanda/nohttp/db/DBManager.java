@@ -27,9 +27,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
- * Database management generic class, has realized the basic functions, inheritance of the subclass only need to implement {@link #replace(DBId)}, {@link #get(String)} and
- * {@link #getTableName()}
- * </br>
+ * <p>Database management generic class, has realized the basic functions, inheritance of the subclass only need to implement {@link #replace(DBId)}, {@link #get(String)} and
+ * {@link #getTableName()}</p>
  * Created in Jan 10, 2016 8:18:28 PM
  *
  * @author YOLANDA
@@ -40,28 +39,35 @@ public abstract class DBManager<T extends DBId> {
     /**
      * A helper class to manage database creation and version management.
      */
-    private SQLiteOpenHelper disker;
+    private SQLiteOpenHelper disk;
 
-    public DBManager(SQLiteOpenHelper disker) {
-        this.disker = disker;
+    public DBManager(SQLiteOpenHelper disk) {
+        this.disk = disk;
     }
 
     /**
      * Open the database when the read data
+     *
+     * @return SQLiteDatabase
      */
     protected final SQLiteDatabase openReader() {
-        return disker.getReadableDatabase();
+        return disk.getReadableDatabase();
     }
 
     /**
      * Open the database when the write data
+     *
+     * @return SQLiteDatabase
      */
     protected final SQLiteDatabase openWriter() {
-        return disker.getWritableDatabase();
+        return disk.getWritableDatabase();
     }
 
     /**
      * Close the database when reading data
+     *
+     * @param execute SQLiteDatabase
+     * @param cursor  Cursor
      */
     protected final void readFinish(SQLiteDatabase execute, Cursor cursor) {
         if (cursor != null && !cursor.isClosed())
@@ -71,6 +77,8 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * Close the database when writing data
+     *
+     * @param execute SQLiteDatabase
      */
     protected final void writeFinish(SQLiteDatabase execute) {
         if (execute != null && execute.isOpen()) {
@@ -80,6 +88,8 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * The query id number
+     *
+     * @return int format
      */
     public final int count() {
         return countColumn(Field.ID);
@@ -95,6 +105,8 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * According to the "column" query number
+     *
+     * @param sql sql
      */
     public final int count(String sql) {
         SQLiteDatabase execute = openReader();
@@ -110,13 +122,18 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * Delete all data
+     *
+     * @return A Boolean value, whether deleted successfully
      */
     public final boolean deleteAll() {
         return delete("1=1");
     }
 
     /**
-     * Delete the data list
+     * Must have the id
+     *
+     * @param ts Delete the queue list
+     * @return A Boolean value, whether deleted successfully
      */
     public final boolean delete(List<T> ts) {
         StringBuilder where = new StringBuilder(Field.ID).append(" IN(");
@@ -135,6 +152,9 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * According to the where to delete data
+     *
+     * @param where Performs conditional
+     * @return A Boolean value, whether deleted successfully
      */
     public final boolean delete(String where) {
         if (TextUtils.isEmpty(where))
@@ -156,6 +176,8 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * Query all data
+     *
+     * @return List data
      */
     public final List<T> getAll() {
         return getAll(Field.ALL);
@@ -165,6 +187,7 @@ public abstract class DBManager<T extends DBId> {
      * All the data query a column
      *
      * @param columnName ColumnName
+     * @return List data
      */
     public final List<T> getAll(String columnName) {
         return get(columnName, null, null, null, null);
@@ -174,11 +197,11 @@ public abstract class DBManager<T extends DBId> {
      * All the data query a column
      *
      * @param columnName Such as: *
-     * @param where      Such as: age > 20
+     * @param where      Such as: {@code age > 20}
      * @param orderBy    Such as: age
      * @param limit      Such as
-     * @param offset
-     * @return
+     * @param offset     offset
+     * @return List data
      */
     public final List<T> get(String columnName, String where, String orderBy, String limit, String offset) {
         return get(getSelectSql(columnName, where, orderBy, limit, offset));
@@ -186,8 +209,15 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * Create query sql
+     *
+     * @param columnName columnName
+     * @param where      where
+     * @param orderBy    orderBy
+     * @param limit      limit
+     * @param offset     offset
+     * @return String
      */
-    private final String getSelectSql(String columnName, String where, String orderBy, String limit, String offset) {
+    private String getSelectSql(String columnName, String where, String orderBy, String limit, String offset) {
         StringBuilder sqlBuild = new StringBuilder("SELECT ").append(columnName).append(" FROM ").append(getTableName());
         if (!TextUtils.isEmpty(where)) {
             sqlBuild.append(" WHERE ");
@@ -212,21 +242,31 @@ public abstract class DBManager<T extends DBId> {
 
     /**
      * According to the SQL query data list
+     *
+     * @param querySql sql
+     * @return List data
      */
     public abstract List<T> get(String querySql);
 
     /**
      * According to the unique index adds or updates a row data
+     *
+     * @param t Object
+     * @return long
      */
     public abstract long replace(T t);
 
     /**
      * Table name should be
+     *
+     * @return table name
      */
     protected abstract String getTableName();
 
     /**
      * Print the test data
+     *
+     * @param print String
      */
     protected void print(String print) {
         if (DEBUG)

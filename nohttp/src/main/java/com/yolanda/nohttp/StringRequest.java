@@ -24,7 +24,7 @@ import com.yolanda.nohttp.tools.HeaderParser;
  *
  * @author YOLANDA
  */
-public class StringRequest extends RestRequestor<String> {
+public class StringRequest extends RestRequest<String> {
 
     public StringRequest(String url) {
         this(url, RequestMethod.GET);

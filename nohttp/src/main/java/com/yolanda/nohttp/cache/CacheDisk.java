@@ -22,13 +22,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Cache database operation class
- * </br>
+ * <p>Cache database operation class</p>
  * Created in Jan 10, 2016 12:39:15 AM
  *
  * @author YOLANDA
  */
-class CacheDisker extends SQLiteOpenHelper implements Field {
+class CacheDisk extends SQLiteOpenHelper implements Field {
 
     public static final String DB_CACHE_NAME = "_nohttp_cache_db.db";
     public static final int DB_CACHE_VERSION = 1;
@@ -43,7 +42,7 @@ class CacheDisker extends SQLiteOpenHelper implements Field {
     private static final String SQL_DELETE_TABLE = "DROP TABLE cache_table";
     private static final String SQL_DELETE_UNIQUE_INDEX = "DROP UNIQUE INDEX cache_unique_index";
 
-    public CacheDisker() {
+    public CacheDisk() {
         super(NoHttp.getContext(), DB_CACHE_NAME, null, DB_CACHE_VERSION);
     }
 

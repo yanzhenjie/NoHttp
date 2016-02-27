@@ -16,14 +16,18 @@
 package com.yolanda.nohttp.db;
 
 /**
- * The entity class id of the interface
- * </br>
+ * <p>The entity class id of the interface</p>
  * Created in Jan 10, 2016 11:03:21 PM
  *
  * @author YOLANDA
  */
 public interface DBId {
 
+    /**
+     * Get the object id
+     *
+     * @return int format
+     */
     long getId();
 
 }

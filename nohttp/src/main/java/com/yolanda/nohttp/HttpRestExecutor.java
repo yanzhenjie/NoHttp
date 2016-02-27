@@ -19,12 +19,12 @@ import android.text.TextUtils;
 
 import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
+import com.yolanda.nohttp.error.ServerError;
 import com.yolanda.nohttp.tools.HeaderParser;
 import com.yolanda.nohttp.tools.HttpDateTime;
 
 /**
- * The request executor, Interact with the network layer
- * </br>
+ * <p>The request executor, Interact with the network layer</p>
  * Created in Jan 6, 2016 5:45:19 PM
  *
  * @author YOLANDA;
@@ -55,15 +55,23 @@ public class HttpRestExecutor implements ImplRestExecutor {
         if (request.needCache())
             cacheEntity = mCache.get(request.getCacheKey());
 
-        // handle response
+        if (request.onlyReadCache()) {// Only read cache data
+            if (cacheEntity == null)
+                return new HttpResponse(false, null, null, new Exception("Could not find the cache"));
+            else
+                return new HttpResponse(true, cacheEntity.getResponseHeaders(), cacheEntity.getData(), null);
+        }
+
+        // According to the standard HTTP protocol operation response
         HttpResponse httpResponse;
         if (cacheEntity == null || cacheEntity.getLocalExpire() < System.currentTimeMillis()) {
             if (cacheEntity != null)
                 handleCacheHeader(request, cacheEntity);
             httpResponse = mConnection.requestNetwork(request);
         } else
-            httpResponse = new HttpResponse(cacheEntity.getResponseHeaders(), cacheEntity.getData(), null);
+            httpResponse = new HttpResponse(true, cacheEntity.getResponseHeaders(), cacheEntity.getData(), null);
 
+        boolean isFromCache = httpResponse.isFromCache;
         Headers responseHeaders = httpResponse.responseHeaders;
         byte[] responseBody = httpResponse.responseBody;
         Exception exception = httpResponse.exception;
@@ -71,10 +79,15 @@ public class HttpRestExecutor implements ImplRestExecutor {
         int responseCode = responseHeaders.getResponseCode();
 
         if (exception == null) {
-            if (responseCode == 304 && cacheEntity != null) {// cache
-                cacheEntity.getResponseHeaders().setAll(responseHeaders);
-                responseHeaders = cacheEntity.getResponseHeaders();
-                responseBody = cacheEntity.getData();
+            if (responseCode == 304) {
+                if (cacheEntity == null)
+                    exception = new ServerError("The server responseCode of 304, but not the client cache");
+                else {
+                    isFromCache = true;
+                    cacheEntity.getResponseHeaders().setAll(responseHeaders);
+                    responseHeaders = cacheEntity.getResponseHeaders();
+                    responseBody = cacheEntity.getData();
+                }
             } else if (responseCode == 302 || responseCode == 303) {// redirect
                 // redirect request
                 Request<?> redirectRequest;
@@ -118,8 +131,13 @@ public class HttpRestExecutor implements ImplRestExecutor {
                 if (cacheEntity != null)
                     mCache.replace(request.getCacheKey(), cacheEntity);
             }
+        } else if (cacheEntity != null && request.isRequestFailedReadCache()) {
+            exception = null;
+            isFromCache = true;
+            responseHeaders = cacheEntity.getResponseHeaders();
+            responseBody = cacheEntity.getData();
         }
-        return new HttpResponse(responseHeaders, responseBody, exception);
+        return new HttpResponse(isFromCache, responseHeaders, responseBody, exception);
     }
 
     /**

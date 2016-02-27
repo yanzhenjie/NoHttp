@@ -18,8 +18,7 @@ package com.yolanda.nohttp;
 import android.os.SystemClock;
 
 /**
- * The response parser, The result of parsing the network layer
- * </br>
+ * <p>The response parser, The result of parsing the network layer</p>
  * Created in Jan 25, 2016 4:17:40 PM
  *
  * @author YOLANDA;
@@ -45,14 +44,15 @@ public class HttpRestParser implements ImplRestParser {
         long startTime = SystemClock.elapsedRealtime();
         HttpResponse httpResponse = mImplRestExecutor.executeRequest(request);
         String url = request.url();
+        boolean isFromCache = httpResponse.isFromCache;
         Headers responseHeaders = httpResponse.responseHeaders;
         Exception exception = httpResponse.exception;
         byte[] responseBody = httpResponse.responseBody;
         if (exception == null) {
             T result = request.parseResponse(url, responseHeaders, responseBody);
-            return new RestResponser<T>(url, request.getRequestMethod(), responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - startTime, exception);
+            return new RestResponse<T>(url, request.getRequestMethod(), isFromCache, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - startTime, exception);
         }
-        return new RestResponser<T>(url, request.getRequestMethod(), responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - startTime, exception);
+        return new RestResponse<T>(url, request.getRequestMethod(), isFromCache, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - startTime, exception);
     }
 
 }

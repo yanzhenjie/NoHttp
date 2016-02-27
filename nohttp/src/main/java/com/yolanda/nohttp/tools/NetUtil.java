@@ -34,8 +34,7 @@ import android.os.Build;
 import android.provider.Settings;
 
 /**
- * Check the network utility class
- * </br>
+ * <p>Check the network utility class</p>
  * Created in Jul 31, 2015 1:19:47 PM
  *
  * @author YOLANDA
@@ -45,7 +44,7 @@ public class NetUtil {
     /**
      * Open network settings page
      *
-     * @param context context
+     * @param context Context
      */
     public static void openSetting(Context context) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
@@ -76,8 +75,8 @@ public class NetUtil {
                         return true;
                 }
             } else {
-                NetworkInfo[] networkInfos = connectivity.getAllNetworkInfo();
-                for (NetworkInfo networkInfo : networkInfos)
+                NetworkInfo[] networkInfoArray = connectivity.getAllNetworkInfo();
+                for (NetworkInfo networkInfo : networkInfoArray)
                     if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
                         return true;
             }
@@ -213,7 +212,7 @@ public class NetUtil {
      * Check if valid IPV4 address
      *
      * @param input the address string to check for validity
-     * @return true if the input parameter is a valid IPv4 address
+     * @return True if the input parameter is a valid IPv4 address
      */
     public static boolean isIPv4Address(String input) {
         return IPV4_PATTERN.matcher(input).matches();
@@ -231,6 +230,7 @@ public class NetUtil {
      * Check whether the parameter is effective standard (uncompressed) IPv6 address
      *
      * @param input IPV6 adress
+     * @return True or false
      * @see #isIPv6HexCompressedAddress(String)
      */
     public static boolean isIPv6StdAddress(final String input) {
@@ -241,6 +241,7 @@ public class NetUtil {
      * Check whether the parameter is effective compression IPv6 address
      *
      * @param input IPV6 adress
+     * @return True or false
      * @see #isIPv6StdAddress(String)
      */
     public static boolean isIPv6HexCompressedAddress(final String input) {
@@ -257,6 +258,7 @@ public class NetUtil {
      * Check whether the IPV6 address of compressed or uncompressed
      *
      * @param input IPV6 adress
+     * @return True or false
      * @see #isIPv6HexCompressedAddress(String)
      * @see #isIPv6StdAddress(String)
      */

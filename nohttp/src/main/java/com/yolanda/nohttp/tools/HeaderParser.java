@@ -25,7 +25,7 @@ import com.yolanda.nohttp.cache.CacheEntity;
 import android.text.TextUtils;
 
 /**
- * Http header information analysis class</br>
+ * <p>Http header information analysis class</p>
  * Created in Oct 10, 2015 4:58:30 PM
  *
  * @author YOLANDA
@@ -60,6 +60,9 @@ public class HeaderParser {
 
     /**
      * Whether the content has been compressed
+     *
+     * @param contentEncoding Read the data from the server's head
+     * @return True: yes, false: no inclusion
      */
     public static boolean isGzipContent(String contentEncoding) {
         return contentEncoding != null && contentEncoding.toLowerCase(Locale.getDefault()).contains("gzip");
@@ -67,6 +70,10 @@ public class HeaderParser {
 
     /**
      * Extracts a {@link CacheEntity} from a {@link HttpResponse}.
+     *
+     * @param responseHeaders Response headers
+     * @param responseBody    Response data
+     * @return Cache entity
      */
     public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
         long now = System.currentTimeMillis();

@@ -16,20 +16,19 @@
 package com.yolanda.nohttp.error;
 
 /**
- * Network error when requested
- * </br>
+ * <p>Network error when requested</p>
  * Created in 2016/2/25 9:48
  *
  * @author YOLANDA;
  */
 public class NetworkError extends Exception {
 
-	private static final long serialVersionUID = 11548468L;
+    private static final long serialVersionUID = 11548468L;
 
-	public NetworkError() {
-	}
+    public NetworkError() {
+    }
 
-	public NetworkError(String detailMessage) {
-		super(detailMessage);
-	}
+    public NetworkError(String detailMessage) {
+        super(detailMessage);
+    }
 }

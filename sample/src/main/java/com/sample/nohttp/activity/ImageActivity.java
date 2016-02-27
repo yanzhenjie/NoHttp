@@ -35,8 +35,7 @@ import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
 
 /**
- * 请求图片
- * </br>
+ * <p>请求图片</p>
  * Created in Oct 23, 2015 7:46:17 PM
  *
  * @author YOLANDA

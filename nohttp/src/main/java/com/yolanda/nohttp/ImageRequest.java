@@ -24,12 +24,12 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 /**
- * Image request parameter</br>
+ * <p>Image request parameter</p>
  * Created in Oct 17, 2015 12:17:57 PM
  *
  * @author YOLANDA
  */
-public class ImageRequest extends RestRequestor<Bitmap> {
+public class ImageRequest extends RestRequest<Bitmap> {
 
     private final int mMaxWidth;
     private final int mMaxHeight;

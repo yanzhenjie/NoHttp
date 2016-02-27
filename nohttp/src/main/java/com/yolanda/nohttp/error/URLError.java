@@ -16,21 +16,20 @@
 package com.yolanda.nohttp.error;
 
 /**
- * The URL specified is incorrect
- * </br>
+ * <p>The URL specified is incorrect</p>
  * Created in 2016/2/25 9:49
  *
  * @author YOLANDA;
  */
 public class URLError extends Exception {
 
-	private static final long serialVersionUID = 114946L;
+    private static final long serialVersionUID = 114946L;
 
-	public URLError() {
-	}
+    public URLError() {
+    }
 
-	public URLError(String detailMessage) {
-		super(detailMessage);
-	}
+    public URLError(String detailMessage) {
+        super(detailMessage);
+    }
 
 }

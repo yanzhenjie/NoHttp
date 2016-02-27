@@ -34,8 +34,7 @@ import java.net.UnknownHostException;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Network operating interface, The implementation of the network layer
- * </br>
+ * <p>Network operating interface, The implementation of the network layer</p>
  * Created in Jul 28, 2015 7:33:22 PM
  *
  * @author YOLANDA
@@ -111,6 +110,6 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
             Logger.d("-------Response end-------");
         }
         Logger.d("--------------Request finish--------------");
-        return new HttpResponse(responseHeaders, responseBody, exception);
+        return new HttpResponse(false, responseHeaders, responseBody, exception);
     }
 }

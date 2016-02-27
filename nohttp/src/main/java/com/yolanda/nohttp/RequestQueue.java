@@ -18,8 +18,7 @@ package com.yolanda.nohttp;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Requet Queue
- * </br>
+ * <p>Request Queue</p>
  * Created in Oct 19, 2015 8:36:22 AM
  *
  * @author YOLANDA
@@ -27,7 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class RequestQueue {
 
     /**
-     * Save reuest task
+     * Save request task
      */
     private final LinkedBlockingQueue<HttpRequest<?>> mRequestQueue = new LinkedBlockingQueue<HttpRequest<?>>();
 

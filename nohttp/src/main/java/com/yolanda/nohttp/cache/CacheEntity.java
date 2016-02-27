@@ -26,8 +26,7 @@ import com.yolanda.nohttp.db.DBId;
 import com.yolanda.nohttp.db.Field;
 
 /**
- * Cache entity class
- * </br>
+ * <p>Cache entity class</p>
  * Created in Jan 10, 2016 12:43:10 AM
  *
  * @author YOLANDA
@@ -58,6 +57,13 @@ public class CacheEntity implements DBId, Field, Serializable {
         super();
     }
 
+    /**
+     * @param id              id
+     * @param key             key
+     * @param responseHeaders Http response headers
+     * @param data            Http response data
+     * @param localExpire     local expire time
+     */
     public CacheEntity(long id, String key, Headers responseHeaders, byte[] data, long localExpire) {
         this.id = id;
         this.key = key;
@@ -117,6 +123,11 @@ public class CacheEntity implements DBId, Field, Serializable {
         }
     }
 
+    /**
+     * To get the json data format of the head
+     *
+     * @return Json
+     */
     public String getResponseHeadersJson() {
         return this.responseHeaders.toJSONString();
     }

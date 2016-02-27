@@ -22,8 +22,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Helper for parsing an HTTP date.
- * </br>
+ * <p>Helper for parsing an HTTP date.</p>
  * Created in Jan 5, 2016 2:09:49 PM
  *
  * @author YOLANDA;
@@ -63,6 +62,8 @@ public final class HttpDateTime {
 
     /**
      * Returned the local number of milliseconds after 100
+     *
+     * @return long format time
      */
     public static long getMaxExpiryMillis() {
         return System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 365L * 100L;

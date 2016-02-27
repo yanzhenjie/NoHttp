@@ -33,8 +33,7 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * 最原始的使用方法
- * </br>
+ * <p>最原始的使用方法</p>
  * Created in Nov 4, 2015 1:38:02 PM
  *
  * @author YOLANDA

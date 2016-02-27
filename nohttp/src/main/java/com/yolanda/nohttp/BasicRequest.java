@@ -15,6 +15,11 @@
  */
 package com.yolanda.nohttp;
 
+import android.text.TextUtils;
+
+import com.yolanda.nohttp.tools.CounterOutputStream;
+import com.yolanda.nohttp.tools.Writer;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
@@ -25,14 +30,8 @@ import java.util.Set;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.yolanda.nohttp.tools.CounterOutputStream;
-import com.yolanda.nohttp.tools.Writer;
-
-import android.text.TextUtils;
-
 /**
- * Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}
- * </br>
+ * <p>Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}</p>
  * Created in Nov 4, 2015 8:28:50 AM
  *
  * @author YOLANDA
@@ -69,6 +68,14 @@ public abstract class BasicRequest<T> implements Request<T> {
      * Cache key
      */
     private String mCacheKey;
+    /**
+     * If just read from cache
+     */
+    private boolean isOnlyReadCache;
+    /**
+     * If the request fails the data read from the cache
+     */
+    private boolean isRequestFailedReadCache = false;
     /**
      * Proxy server
      */
@@ -190,6 +197,26 @@ public abstract class BasicRequest<T> implements Request<T> {
     @Override
     public String getCacheKey() {
         return TextUtils.isEmpty(mCacheKey) ? buildUrl() : mCacheKey;
+    }
+
+    @Override
+    public void setOnlyReadCache(boolean onlyReadCache) {
+        this.isOnlyReadCache = onlyReadCache;
+    }
+
+    @Override
+    public boolean onlyReadCache() {
+        return isOnlyReadCache;
+    }
+
+    @Override
+    public void setRequestFailedReadCache(boolean isEnable) {
+        this.isRequestFailedReadCache = isEnable;
+    }
+
+    @Override
+    public boolean isRequestFailedReadCache() {
+        return isRequestFailedReadCache;
     }
 
     @Override
@@ -529,14 +556,6 @@ public abstract class BasicRequest<T> implements Request<T> {
     @Override
     public void toggleFinish() {
         this.isFinished = !isFinished;
-    }
-
-    /**
-     * @deprecated @deprecated Please use {@link #cancel(boolean)} instead
-     */
-    @Override
-    public void cancel() {
-        cancel(true);
     }
 
     @Override

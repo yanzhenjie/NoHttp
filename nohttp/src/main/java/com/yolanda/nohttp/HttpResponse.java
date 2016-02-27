@@ -16,18 +16,19 @@
 package com.yolanda.nohttp;
 
 /**
- * </br>
  * Created in Jan 6, 2016 5:19:13 PM
  *
  * @author YOLANDA;
  */
 public class HttpResponse {
 
+    public final boolean isFromCache;
     public final byte[] responseBody;
     public final Headers responseHeaders;
     public final Exception exception;
 
-    public HttpResponse(Headers responseHeaders, byte[] responseBody, Exception exception) {
+    public HttpResponse(boolean isFromCache, Headers responseHeaders, byte[] responseBody, Exception exception) {
+        this.isFromCache = isFromCache;
         this.responseHeaders = responseHeaders;
         this.responseBody = responseBody;
         this.exception = exception;

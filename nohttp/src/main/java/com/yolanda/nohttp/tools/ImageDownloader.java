@@ -38,9 +38,9 @@ import android.text.TextUtils;
  *
  * @author YOLANDA;
  */
-public class ImageNetDowner {
+public class ImageDownloader {
 
-    private static ImageNetDowner instance;
+    private static ImageDownloader instance;
     private Poster mPoster;
     private ExecutorService mExecutorService;
     /**
@@ -48,7 +48,7 @@ public class ImageNetDowner {
      */
     private String mCachePath;
 
-    private ImageNetDowner(Context context) {
+    private ImageDownloader(Context context) {
         setCachePath(context.getCacheDir().getAbsolutePath());
         mPoster = new Poster();
         mExecutorService = Executors.newFixedThreadPool(2);
@@ -56,16 +56,21 @@ public class ImageNetDowner {
 
     /**
      * Singleton mode to create download object
+     *
+     * @param context context
+     * @return instance object
      */
-    public static ImageNetDowner getInstance(Context context) {
+    public static ImageDownloader getInstance(Context context) {
         if (instance == null) {
-            instance = new ImageNetDowner(context);
+            instance = new ImageDownloader(context);
         }
         return instance;
     }
 
     /**
      * Set cache path
+     *
+     * @param cachePath path
      */
     public void setCachePath(String cachePath) {
         if (TextUtils.isEmpty(cachePath))
@@ -80,6 +85,11 @@ public class ImageNetDowner {
 
     /**
      * download image
+     *
+     * @param imageUrl     Url
+     * @param downListener Listener
+     * @param deleteOld    Whether to delete the old files
+     * @param tag          Tag
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, boolean deleteOld, Object tag) {
         downloadImage(imageUrl, downListener, deleteOld, tag, 3 * 1000);
@@ -87,6 +97,12 @@ public class ImageNetDowner {
 
     /**
      * download image
+     *
+     * @param imageUrl     Url
+     * @param downListener Listener
+     * @param deleteOld    Whether to delete the old files
+     * @param tag          Tag
+     * @param timeOut      times
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, boolean deleteOld, Object tag, int timeOut) {
         StringBuffer buffer = new StringBuffer(mCachePath);
@@ -98,6 +114,12 @@ public class ImageNetDowner {
 
     /**
      * Download the image to the specified path
+     *
+     * @param imageUrl     Url
+     * @param downListener Listener
+     * @param path         Path
+     * @param deleteOld    Whether to delete the old files
+     * @param tag          Tag
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, String path, boolean deleteOld, Object tag) {
         downloadImage(imageUrl, downListener, path, deleteOld, tag, 3 * 1000);
@@ -105,6 +127,13 @@ public class ImageNetDowner {
 
     /**
      * Download the image to the specified path
+     *
+     * @param imageUrl     Url
+     * @param downListener Listener
+     * @param path         Path
+     * @param deleteOld    Whether to delete the old files
+     * @param tag          Tag
+     * @param timeOut      times
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, String path, Boolean deleteOld, Object tag, int timeOut) {
         Logger.d("ImageDownload url: " + imageUrl);
