@@ -15,30 +15,30 @@
  */
 package com.yolanda.nohttp.cache;
 
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.yolanda.nohttp.db.DBManager;
 import com.yolanda.nohttp.db.Where;
 import com.yolanda.nohttp.db.Where.Options;
 
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
- * <p>HTTP cache interface implementation</p>
- * Created in Jan 10, 2016 12:45:34 AM
+ * <p>HTTP cache interface implementation.</p>
+ * Created in Jan 10, 2016 12:45:34 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public enum DiskCacheStore implements Cache<CacheEntity> {
 
     INSTANCE;
 
     /**
-     * Database sync lock
+     * Database sync lock.
      */
     private Lock mLock;
     /**
-     * Database manager
+     * Database manager.
      */
     private DBManager<CacheEntity> mManager;
 

@@ -16,42 +16,43 @@
 package com.yolanda.nohttp;
 
 /**
- * Created in Jul 28, 2015 7:32:53 PM
+ * Created in Jul 28, 2015 7:32:53 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface OnResponseListener<T> {
 
     /**
-     * When the request starts
+     * When the request starts.
      *
-     * @param what The credit of the incoming request is used to distinguish between multiple requests
+     * @param what the credit of the incoming request is used to distinguish between multiple requests.
      */
     void onStart(int what);
 
     /**
-     * Server correct response to callback when an HTTP request
+     * Server correct response to callback when an HTTP request.
      *
-     * @param what     The credit of the incoming request is used to distinguish between multiple requests
-     * @param response In response to the results
+     * @param what     the credit of the incoming request is used to distinguish between multiple requests.
+     * @param response in response to the results.
      */
     void onSucceed(int what, Response<T> response);
 
     /**
-     * When there was an error correction
+     * When there was an error correction.
      *
-     * @param what          The credit of the incoming request is used to distinguish between multiple requests
-     * @param tag           Tag of request callback
-     * @param exception     error message for request
-     * @param responseCode  Server response code
-     * @param networkMillis Request process consumption time
+     * @param what          the credit of the incoming request is used to distinguish between multiple requests.
+     * @param url           url.
+     * @param tag           tag of request callback.
+     * @param exception     error message for request.
+     * @param responseCode  server response code.
+     * @param networkMillis request process consumption time.
      */
     void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis);
 
     /**
-     * When the request finish
+     * When the request finish.
      *
-     * @param what The credit of the incoming request is used to distinguish between multiple requests
+     * @param what the credit of the incoming request is used to distinguish between multiple requests.
      */
     void onFinish(int what);
 

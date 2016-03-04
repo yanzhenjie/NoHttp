@@ -18,9 +18,9 @@ package com.sample.nohttp.util;
 import com.sample.nohttp.Application;
 
 /**
- * Created in Jan 31, 2016 4:15:36 PM
+ * Created in Jan 31, 2016 4:15:36 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class Toast {
 

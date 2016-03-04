@@ -19,8 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * <p>JsonObject is returned by the server data, using the request object</p>
- * Created in Jan 19, 2016 3:27:35 PM
+ * <p>JsonObject is returned by the server data, using the request object.</p>
+ * Created in Jan 19, 2016 3:27:35 PM.
  *
  * @author YOLANDA;
  */

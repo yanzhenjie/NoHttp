@@ -18,19 +18,19 @@ package com.yolanda.nohttp;
 import android.util.Log;
 
 /**
- * Created in Jul 28, 2015 7:32:05 PM
+ * Created in Jul 28, 2015 7:32:05 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class Logger {
 
     /**
-     * library debug tag
+     * Library debug tag.
      */
     private static String STag = "NoHttp";
 
     /**
-     * library debug sign
+     * Library debug sign.
      */
     private static boolean SDebug = false;
 

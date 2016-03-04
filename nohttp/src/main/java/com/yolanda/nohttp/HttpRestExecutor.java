@@ -19,13 +19,14 @@ import android.text.TextUtils;
 
 import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
+import com.yolanda.nohttp.error.NotFoundCacheError;
 import com.yolanda.nohttp.error.ServerError;
 import com.yolanda.nohttp.tools.HeaderParser;
 import com.yolanda.nohttp.tools.HttpDateTime;
 
 /**
- * <p>The request executor, Interact with the network layer</p>
- * Created in Jan 6, 2016 5:45:19 PM
+ * <p>The request executor, Interact with the network layer.</p>
+ * Created in Jan 6, 2016 5:45:19 PM.
  *
  * @author YOLANDA;
  */
@@ -57,7 +58,7 @@ public class HttpRestExecutor implements ImplRestExecutor {
 
         if (request.onlyReadCache()) {// Only read cache data
             if (cacheEntity == null)
-                return new HttpResponse(false, null, null, new Exception("Could not find the cache"));
+                return new HttpResponse(false, null, null, new NotFoundCacheError("Could not find the cache"));
             else
                 return new HttpResponse(true, cacheEntity.getResponseHeaders(), cacheEntity.getData(), null);
         }
@@ -100,9 +101,7 @@ public class HttpRestExecutor implements ImplRestExecutor {
                     redirectRequest.setProxy(request.getProxy());
                 }
 
-                if (redirectRequest == null) {
-                    // needn't redirect
-                } else {
+                if (redirectRequest != null) {
                     HttpResponse redirectHttpResponse = executeRequest(redirectRequest);
 
                     // response result
@@ -141,10 +140,10 @@ public class HttpRestExecutor implements ImplRestExecutor {
     }
 
     /**
-     * Perform the request before, Handle the cache headers
+     * Perform the request before, Handle the cache headers.
      *
-     * @param request     The request object
-     * @param cacheEntity Cached entities
+     * @param request     the request object.
+     * @param cacheEntity cached entities.
      */
     private void handleCacheHeader(Request<?> request, CacheEntity cacheEntity) {
         if (cacheEntity == null) {

@@ -15,6 +15,14 @@
  */
 package com.yolanda.nohttp.tools;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.text.TextUtils;
+
+import com.yolanda.nohttp.Logger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -25,16 +33,8 @@ import java.security.MessageDigest;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.yolanda.nohttp.Logger;
-
-import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.text.TextUtils;
-
 /**
- * Created in Nov 4, 2015 3:10:58 PM
+ * Created in Nov 4, 2015 3:10:58 PM.
  *
  * @author YOLANDA;
  */
@@ -44,7 +44,7 @@ public class ImageDownloader {
     private Poster mPoster;
     private ExecutorService mExecutorService;
     /**
-     * Cache path
+     * Cache path.
      */
     private String mCachePath;
 
@@ -55,10 +55,10 @@ public class ImageDownloader {
     }
 
     /**
-     * Singleton mode to create download object
+     * Singleton mode to create download object.
      *
-     * @param context context
-     * @return instance object
+     * @param context context.
+     * @return Instance object.
      */
     public static ImageDownloader getInstance(Context context) {
         if (instance == null) {
@@ -68,9 +68,9 @@ public class ImageDownloader {
     }
 
     /**
-     * Set cache path
+     * Set cache path.
      *
-     * @param cachePath path
+     * @param cachePath path.
      */
     public void setCachePath(String cachePath) {
         if (TextUtils.isEmpty(cachePath))
@@ -84,25 +84,25 @@ public class ImageDownloader {
     }
 
     /**
-     * download image
+     * download image.
      *
-     * @param imageUrl     Url
-     * @param downListener Listener
-     * @param deleteOld    Whether to delete the old files
-     * @param tag          Tag
+     * @param imageUrl     url.
+     * @param downListener listener.
+     * @param deleteOld    whether to delete the old files.
+     * @param tag          tag.
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, boolean deleteOld, Object tag) {
         downloadImage(imageUrl, downListener, deleteOld, tag, 3 * 1000);
     }
 
     /**
-     * download image
+     * download image.
      *
-     * @param imageUrl     Url
-     * @param downListener Listener
-     * @param deleteOld    Whether to delete the old files
-     * @param tag          Tag
-     * @param timeOut      times
+     * @param imageUrl     url.
+     * @param downListener listener.
+     * @param deleteOld    whether to delete the old files.
+     * @param tag          tag.
+     * @param timeOut      times.
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, boolean deleteOld, Object tag, int timeOut) {
         StringBuffer buffer = new StringBuffer(mCachePath);
@@ -113,27 +113,27 @@ public class ImageDownloader {
     }
 
     /**
-     * Download the image to the specified path
+     * Download the image to the specified path.
      *
-     * @param imageUrl     Url
-     * @param downListener Listener
-     * @param path         Path
-     * @param deleteOld    Whether to delete the old files
-     * @param tag          Tag
+     * @param imageUrl     url.
+     * @param downListener listener.
+     * @param path         path.
+     * @param deleteOld    whether to delete the old files.
+     * @param tag          tag.
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, String path, boolean deleteOld, Object tag) {
         downloadImage(imageUrl, downListener, path, deleteOld, tag, 3 * 1000);
     }
 
     /**
-     * Download the image to the specified path
+     * Download the image to the specified path.
      *
-     * @param imageUrl     Url
-     * @param downListener Listener
-     * @param path         Path
-     * @param deleteOld    Whether to delete the old files
-     * @param tag          Tag
-     * @param timeOut      times
+     * @param imageUrl     url.
+     * @param downListener listener.
+     * @param path         path.
+     * @param deleteOld    whether to delete the old files.
+     * @param tag          tag.
+     * @param timeOut      times.
      */
     public void downloadImage(String imageUrl, OnImageDownListener downListener, String path, Boolean deleteOld, Object tag, int timeOut) {
         Logger.d("ImageDownload url: " + imageUrl);
@@ -260,10 +260,10 @@ public class ImageDownloader {
 
     public interface OnImageDownListener {
         /**
-         * @param imageUrl  Picture address
-         * @param path      Picture save address
-         * @param isSucceed success ask for download
-         * @param tag       Tag that are passed to download
+         * @param imageUrl  picture address.
+         * @param path      picture save address.
+         * @param isSucceed success ask for download.
+         * @param tag       tag that are passed to download.
          */
         void onDownFinish(String imageUrl, String path, boolean isSucceed, Object tag);
     }

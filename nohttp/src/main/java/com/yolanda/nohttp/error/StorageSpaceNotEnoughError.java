@@ -16,8 +16,8 @@
 package com.yolanda.nohttp.error;
 
 /**
- * <p>Specify the location of the file space is not enough</p>
- * Created in 2016/2/25 11:50
+ * <p>Specify the location of the file space is not enough.</p>
+ * Created in 2016/2/25 11:50.
  *
  * @author YOLANDA;
  */
@@ -30,6 +30,14 @@ public class StorageSpaceNotEnoughError extends Exception {
 
     public StorageSpaceNotEnoughError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public StorageSpaceNotEnoughError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
+
+    public StorageSpaceNotEnoughError(Throwable throwable) {
+        super(throwable);
     }
 
 }

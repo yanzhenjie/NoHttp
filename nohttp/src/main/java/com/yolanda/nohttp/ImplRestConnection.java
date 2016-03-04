@@ -16,18 +16,18 @@
 package com.yolanda.nohttp;
 
 /**
- * <p>Network operating interface, The implementation of the network layer</p>
- * Created in Oct 20, 2015 4:12:16 PM
+ * <p>Network operating interface, The implementation of the network layer.</p>
+ * Created in Oct 20, 2015 4:12:16 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface ImplRestConnection {
 
     /**
-     * Perform a sync request
+     * Perform a sync request.
      *
-     * @param request Request
-     * @return {@link HttpResponse}
+     * @param request request.
+     * @return {@link HttpResponse}.
      */
     HttpResponse requestNetwork(ImplServerRequest request);
 

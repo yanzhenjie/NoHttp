@@ -16,8 +16,8 @@
 package com.yolanda.nohttp.error;
 
 /**
- * <p>Request connection timeout</p>
- * Created in 2016/2/25 10:17
+ * <p>Request connection timeout.</p>
+ * Created in 2016/2/25 10:17.
  *
  * @author YOLANDA;
  */
@@ -30,6 +30,14 @@ public class TimeoutError extends Exception {
 
     public TimeoutError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public TimeoutError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
+
+    public TimeoutError(Throwable throwable) {
+        super(throwable);
     }
 
 }

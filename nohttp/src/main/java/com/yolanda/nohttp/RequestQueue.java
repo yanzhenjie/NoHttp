@@ -18,33 +18,33 @@ package com.yolanda.nohttp;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * <p>Request Queue</p>
- * Created in Oct 19, 2015 8:36:22 AM
+ * <p>Request Queue.</p>
+ * Created in Oct 19, 2015 8:36:22 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class RequestQueue {
 
     /**
-     * Save request task
+     * Save request task.
      */
     private final LinkedBlockingQueue<HttpRequest<?>> mRequestQueue = new LinkedBlockingQueue<HttpRequest<?>>();
 
     /**
-     * HTTP request actuator interface
+     * HTTP request actuator interface.
      */
     private final ImplRestParser mImplRestParser;
 
     /**
-     * Request queue polling thread array
+     * Request queue polling thread array.
      */
     private RequestDispatcher[] mDispatchers;
 
     /**
-     * Create request queue manager
+     * Create request queue manager.
      *
-     * @param implRestParser Download the network task execution interface, where you need to implement the download tasks that have been implemented.
-     * @param threadPoolSize Number of thread pool
+     * @param implRestParser download the network task execution interface, where you need to implement the download tasks that have been implemented.
+     * @param threadPoolSize number of thread pool.
      */
     public RequestQueue(ImplRestParser implRestParser, int threadPoolSize) {
         mImplRestParser = implRestParser;
@@ -53,7 +53,7 @@ public class RequestQueue {
 
     /**
      * Start polling the request queue, a one of the implementation of the download task, if you have started to poll the download queue, then it will stop all the threads, to re create thread
-     * execution
+     * execution.
      */
     public void start() {
         stop();
@@ -65,7 +65,12 @@ public class RequestQueue {
     }
 
     /**
-     * Add a request task to download queue, waiting for execution, if there is no task in the queue or the number of tasks is less than the number of thread pool, will be executed immediately
+     * Add a request task to download queue, waiting for execution, if there is no task in the queue or the number of tasks is less than the number of thread pool, will be executed immediately.
+     *
+     * @param what             the "what" will be the response is returned to you, so you can introduce multiple {@link Request} results in an A with what, please distinguish which is the result of the {@link Request}.
+     * @param request          {@link Request}
+     * @param responseListener {@link OnResponseListener}
+     * @param <T>              {@link T}
      */
     public <T> void add(int what, Request<T> request, OnResponseListener<T> responseListener) {
         if (request.isQueue())
@@ -93,7 +98,7 @@ public class RequestQueue {
     /**
      * All requests for the sign specified in the queue, if you are executing, will interrupt the task
      *
-     * @param sign This sign will be the same as sign's Request, and if it is the same, then cancel the task.
+     * @param sign this sign will be the same as sign's Request, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
         synchronized (mRequestQueue) {

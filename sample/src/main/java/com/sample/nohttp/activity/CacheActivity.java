@@ -35,10 +35,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * <p>Http相应头304缓存演示</p>
- * Created in Jan 31, 2016 12:11:03 PM
+ * <p>Http相应头304缓存演示.</p>
+ * Created in Jan 31, 2016 12:11:03 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class CacheActivity extends BaseActivity {
 
@@ -81,7 +81,7 @@ public class CacheActivity extends BaseActivity {
     };
 
     /**
-     * 请求String
+     * 请求String.
      */
     private void requestString() {
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_CACHE_STRING);
@@ -104,7 +104,7 @@ public class CacheActivity extends BaseActivity {
     };
 
     /**
-     * 请求Image
+     * 请求Image.
      */
     private void requestImage() {
         Request<Bitmap> request = NoHttp.createImageRequest(Constants.URL_NOHTTP_CACHE_IMAGE);

@@ -15,15 +15,6 @@
  */
 package com.yolanda.nohttp.tools;
 
-import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.regex.Pattern;
-
-import com.yolanda.nohttp.Logger;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -33,18 +24,27 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
 
+import com.yolanda.nohttp.Logger;
+
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.regex.Pattern;
+
 /**
- * <p>Check the network utility class</p>
- * Created in Jul 31, 2015 1:19:47 PM
+ * <p>Check the network utility class.</p>
+ * Created in Jul 31, 2015 1:19:47 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class NetUtil {
 
     /**
-     * Open network settings page
+     * Open network settings page.
      *
-     * @param context Context
+     * @param context {@link Context}.
      */
     public static void openSetting(Context context) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
@@ -55,10 +55,10 @@ public class NetUtil {
     }
 
     /**
-     * Check the netwoek is enable
+     * Check the network is enable.
      *
-     * @param context Access to {@code ConnectivityManager} services
-     * @return Available returns true, unavailable returns false
+     * @param context access to {@code ConnectivityManager} services.
+     * @return Available returns true, unavailable returns false.
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressWarnings("deprecation")
@@ -85,10 +85,10 @@ public class NetUtil {
     }
 
     /**
-     * To determine whether a WiFi network is available
+     * To determine whether a WiFi network is available.
      *
-     * @param context Access to {@code ConnectivityManager} services
-     * @return Open return true, close returns false
+     * @param context access to {@code ConnectivityManager} services.
+     * @return Open return true, close returns false.
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public boolean isWifiConnected(Context context) {
@@ -111,10 +111,10 @@ public class NetUtil {
     }
 
     /**
-     * To determine whether a mobile phone network is available
+     * To determine whether a mobile phone network is available.
      *
-     * @param context Access to {@code ConnectivityManager} services
-     * @return Open return true, close returns false
+     * @param context access to {@code ConnectivityManager} services.
+     * @return Open return true, close returns false.
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public boolean isMobileConnected(Context context) {
@@ -135,10 +135,10 @@ public class NetUtil {
     }
 
     /**
-     * Check the GPRS whether available
+     * Check the GPRS whether available.
      *
-     * @param context Access to {@code ConnectivityManager} services
-     * @return Open return true, close returns false
+     * @param context access to {@code ConnectivityManager} services.
+     * @return Open return true, close returns false.
      */
     public static boolean isGPRSOpen(Context context) {
         boolean isOpen = false;
@@ -156,10 +156,10 @@ public class NetUtil {
     }
 
     /**
-     * Open or close the GPRS
+     * Open or close the GPRS.
      *
-     * @param context  Access to {@code ConnectivityManager} services
-     * @param isEnable Open to true, close to false
+     * @param context  access to {@code ConnectivityManager} services.
+     * @param isEnable Open to true, close to false.
      */
     public static void setGPRSEnable(Context context, boolean isEnable) {
         try {
@@ -175,7 +175,7 @@ public class NetUtil {
     }
 
     /**
-     * Tet local ip adress
+     * Tet local ip address.
      *
      * @return Such as：192.168.1.1
      */
@@ -204,15 +204,15 @@ public class NetUtil {
     }
 
     /**
-     * Ipv4 address check
+     * Ipv4 address check.
      */
     private static final Pattern IPV4_PATTERN = Pattern.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 
     /**
-     * Check if valid IPV4 address
+     * Check if valid IPV4 address.
      *
-     * @param input the address string to check for validity
-     * @return True if the input parameter is a valid IPv4 address
+     * @param input the address string to check for validity.
+     * @return True if the input parameter is a valid IPv4 address.
      */
     public static boolean isIPv4Address(String input) {
         return IPV4_PATTERN.matcher(input).matches();
@@ -227,10 +227,10 @@ public class NetUtil {
             "::" + "(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)$");// 0-6 hex fields
 
     /**
-     * Check whether the parameter is effective standard (uncompressed) IPv6 address
+     * Check whether the parameter is effective standard (uncompressed) IPv6 address.
      *
-     * @param input IPV6 adress
-     * @return True or false
+     * @param input IPV6 address.
+     * @return True or false.
      * @see #isIPv6HexCompressedAddress(String)
      */
     public static boolean isIPv6StdAddress(final String input) {
@@ -238,10 +238,10 @@ public class NetUtil {
     }
 
     /**
-     * Check whether the parameter is effective compression IPv6 address
+     * Check whether the parameter is effective compression IPv6 address.
      *
-     * @param input IPV6 adress
-     * @return True or false
+     * @param input IPV6 address.
+     * @return True or false.
      * @see #isIPv6StdAddress(String)
      */
     public static boolean isIPv6HexCompressedAddress(final String input) {
@@ -255,10 +255,10 @@ public class NetUtil {
     }
 
     /**
-     * Check whether the IPV6 address of compressed or uncompressed
+     * Check whether the IPV6 address of compressed or uncompressed.
      *
-     * @param input IPV6 adress
-     * @return True or false
+     * @param input IPV6 address.
+     * @return True or false.
      * @see #isIPv6HexCompressedAddress(String)
      * @see #isIPv6StdAddress(String)
      */

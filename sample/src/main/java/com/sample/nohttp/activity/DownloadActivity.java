@@ -39,32 +39,32 @@ import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
 
 /**
- * <p>下载件demo</p>
- * Created in Oct 10, 2015 12:58:25 PM
+ * <p>下载件demo.</p>
+ * Created in Oct 10, 2015 12:58:25 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class DownloadActivity extends BaseActivity implements View.OnClickListener, DownloadListener {
 
     private final static String PROGRESS_KEY = "download_progress";
     /**
-     * 下载按钮、暂停、开始等
+     * 下载按钮、暂停、开始等.
      */
     private TextView mBtnStart;
     /**
-     * 下载状态
+     * 下载状态.
      */
     private TextView mTvStatus;
     /**
-     * 下载进度条
+     * 下载进度条.
      */
     private ProgressBar mProgressBar;
     /***
-     * 下载地址
+     * 下载地址.
      */
     private String url = "http://m.apk.67mo.com/apk/999129_21769077_1443483983292.apk";
     /**
-     * 下载请求
+     * 下载请求.
      */
     private DownloadRequest downloadRequest;
 

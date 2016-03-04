@@ -19,65 +19,87 @@ import java.net.HttpCookie;
 import java.util.List;
 
 /**
- * <p>Http response, Including header information and response packets</p>
- * Created in Oct 15, 2015 8:55:37 PM
+ * <p>Http response, Including header information and response packets.</p>
+ * Created in Oct 15, 2015 8:55:37 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface Response<T> {
 
     /**
-     * Url
+     * Get the requested url.
+     *
+     * @return URL.
      */
     String url();
 
     /**
-     * RequestMethod
+     * RequestMethod.
+     *
+     * @return {@link RequestMethod}.
      */
     RequestMethod getRequestMethod();
 
     /**
-     * Ask for success
+     * Ask for success.
+     *
+     * @return True: Succeed, false: failed.
      */
     boolean isSucceed();
 
     /**
-     * Whether from the cache
+     * Whether from the cache.
+     *
+     * @return True: the data from cache, false: the data from server.
      */
     boolean isFromCache();
 
     /**
-     * Get http response headers
+     * Get http response headers.
+     *
+     * @return {@link Headers}.
      */
     Headers getHeaders();
 
     /**
-     * Get http response Cookie
+     * Get http response Cookie.
+     *
+     * @return {@code List<HttpCookie>}.
      */
     List<HttpCookie> getCookies();
 
     /**
-     * Get raw data
+     * Get raw data.
+     *
+     * @return {@code byte[]}.
      */
     byte[] getByteArray();
 
     /**
-     * Get request results
+     * Get request results.
+     *
+     * @return {@link T}.
      */
     T get();
 
     /**
-     * Get Error Message
+     * Get Error Message.
+     *
+     * @return The exception.
      */
     Exception getException();
 
     /**
-     * Gets the tag of request
+     * Gets the tag of request.
+     *
+     * @return {@link Object}.
      */
     Object getTag();
 
     /**
-     * Gets the millisecond of request
+     * Gets the millisecond of request.
+     *
+     * @return {@link Long}.
      */
     long getNetworkMillis();
 }

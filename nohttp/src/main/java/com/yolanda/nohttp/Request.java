@@ -18,119 +18,127 @@ package com.yolanda.nohttp;
 import java.util.Map;
 
 /**
- * <p>Achieve {@link ImplClientRequest} and {@link ImplServerRequest}, and can add parameters of the interface</p>
- * Created in Oct 16, 2015 8:22:06 PM
+ * <p>Achieve {@link ImplClientRequest} and {@link ImplServerRequest}, and can add parameters of the interface.</p>
+ * Created in Oct 16, 2015 8:22:06 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface Request<T> extends ImplClientRequest, ImplServerRequest {
 
     /**
-     * Add {@code CharSequence} param
+     * Add {@link CharSequence} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, String value);
 
     /**
-     * Add {@code Integer} param
+     * Add {@link Integer} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, int value);
 
     /**
-     * Add {@code Long} param
+     * Add {@link Long} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, long value);
 
     /**
-     * Add {@code Boolean} param
+     * Add {@link Boolean} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, boolean value);
 
     /**
-     * Add {@code char} param
+     * Add {@link char} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, char value);
 
     /**
-     * Add {@code Double} param
+     * Add {@link Double} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, double value);
 
     /**
-     * Add {@code Float} param
+     * Add {@link Float} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, float value);
 
     /**
-     * Add {@code Short} param
+     * Add {@link Short} param.
      *
-     * @param key   Param name
-     * @param value Param value
+     * @param key   param name.
+     * @param value param value.
      */
     void add(String key, short value);
 
     /**
-     * Add {@code Byte} param
+     * Add {@link Byte} param.
      *
-     * @param key   Param name
-     * @param value Param value 0 x01, for example, the result is 1
+     * @param key   param name.
+     * @param value param value 0 x01, for example, the result is 1.
      */
     void add(String key, byte value);
 
     /**
-     * Add {@code File} param; NoHttp already has a default implementation: {@link FileBinary}
+     * Add {@link java.io.File} param; NoHttp already has a default implementation: {@link FileBinary}.
      *
-     * @param key    Param name
-     * @param binary Param value
+     * @param key    param name.
+     * @param binary param value.
      */
     void add(String key, Binary binary);
 
     /**
-     * add all param
+     * add all param.
      *
-     * @param params params map
+     * @param params params map.
      */
     void add(Map<String, String> params);
 
     /**
-     * set all param
+     * set all param.
      *
-     * @param params
+     * @param params params map.
      */
     void set(Map<String, String> params);
 
     /**
-     * Remove a request param by key
+     * Remove a request param by key.
+     *
+     * @param key key
+     * @return The object is removed, if there are no returns null.
      */
     Object remove(String key);
 
     /**
-     * Remove all request param
+     * Remove all request param.
      */
     void removeAll();
 
     /**
-     * Parse response
+     * Parse response.
+     *
+     * @param url             url.
+     * @param responseHeaders response {@link Headers} of server.
+     * @param responseBody    response data of server.
+     * @return {@link T}: your response result.
      */
     T parseResponse(String url, Headers responseHeaders, byte[] responseBody);
 }

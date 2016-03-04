@@ -25,17 +25,17 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created in Jul 31, 2015 1:44:06 PM
+ * Created in Jul 31, 2015 1:44:06 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class FileUtil {
 
     /**
-     * Access to a directory available size
+     * Access to a directory available size.
      *
-     * @param path path
-     * @return long size
+     * @param path path.
+     * @return Long size.
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressWarnings("deprecation")
@@ -53,30 +53,30 @@ public class FileUtil {
     }
 
     /**
-     * If the folder can be written
+     * If the folder can be written.
      *
-     * @param path path
-     * @return True: success, or false: failure
+     * @param path path.
+     * @return True: success, or false: failure.
      */
     public static boolean canWrite(String path) {
         return new File(path).canWrite();
     }
 
     /**
-     * If the folder can be read
+     * If the folder can be read.
      *
-     * @param path path
-     * @return True: success, or false: failure
+     * @param path path.
+     * @return True: success, or false: failure.
      */
     public static boolean canRead(String path) {
         return new File(path).canRead();
     }
 
     /**
-     * Create a folder, If the folder exists is not created
+     * Create a folder, If the folder exists is not created.
      *
-     * @param folderPath folder path
-     * @return True: success, or false: failure
+     * @param folderPath folder path.
+     * @return True: success, or false: failure.
      */
     public static boolean createFolder(String folderPath) {
         if (!TextUtils.isEmpty(folderPath)) {
@@ -87,10 +87,10 @@ public class FileUtil {
     }
 
     /**
-     * Create a folder, If the folder exists is not created
+     * Create a folder, If the folder exists is not created.
      *
-     * @param targetFolder folder path
-     * @return True: success, or false: failure
+     * @param targetFolder folder path.
+     * @return True: success, or false: failure.
      */
     public static boolean createFolder(File targetFolder) {
         if (targetFolder.exists())
@@ -99,10 +99,10 @@ public class FileUtil {
     }
 
     /**
-     * Create a file, If the file exists is not created
+     * Create a file, If the file exists is not created.
      *
-     * @param filePath file path
-     * @return True: success, or false: failure
+     * @param filePath file path.
+     * @return True: success, or false: failure.
      */
     public static boolean createFile(String filePath) {
         if (!TextUtils.isEmpty(filePath)) {
@@ -113,10 +113,10 @@ public class FileUtil {
     }
 
     /**
-     * Create a file, If the file exists is not created
+     * Create a file, If the file exists is not created.
      *
-     * @param targetFile file
-     * @return True: success, or false: failure
+     * @param targetFile file.
+     * @return True: success, or false: failure.
      */
     public static boolean createFile(File targetFile) {
         if (targetFile.exists())
@@ -129,10 +129,10 @@ public class FileUtil {
     }
 
     /**
-     * Create a new file, if the file exists, delete and create again
+     * Create a new file, if the file exists, delete and create again.
      *
-     * @param filePath file path
-     * @return True: success, or false: failure
+     * @param filePath file path.
+     * @return True: success, or false: failure.
      */
     public static boolean createNewFile(String filePath) {
         if (!TextUtils.isEmpty(filePath)) {
@@ -143,10 +143,10 @@ public class FileUtil {
     }
 
     /**
-     * Create a new file, if the file exists, delete and create again
+     * Create a new file, if the file exists, delete and create again.
      *
-     * @param targetFile file
-     * @return True: success, or false: failure
+     * @param targetFile file.
+     * @return True: success, or false: failure.
      */
     public static boolean createNewFile(File targetFile) {
         if (targetFile.exists())
@@ -159,9 +159,9 @@ public class FileUtil {
     }
 
     /**
-     * Return the MIME type for the given url
+     * Return the MIME type for the given url.
      *
-     * @param url The url, path…
+     * @param url the url, path…
      * @return The MIME type for the given extension or null iff there is none.
      */
     public static String getMimeTypeByUrl(String url) {

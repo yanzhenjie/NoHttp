@@ -16,29 +16,29 @@
 package com.yolanda.nohttp.able;
 
 /**
- * <p>Finish interface</p>
- * Created in Jan 13, 2016 10:34:48 PM
+ * <p>Finish interface.</p>
+ * Created in Jan 13, 2016 10:34:48 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface FinishAble {
 
     /**
-     * Change finish state
+     * Change finish state.
      *
-     * @param finish True or false
+     * @param finish true or false.
      */
     void finish(boolean finish);
 
     /**
      * Has it been finished ?
      *
-     * @return True: finished, false: unfinished
+     * @return true: finished, false: unfinished.
      */
     boolean isFinished();
 
     /**
-     * Change the current completion status as contrary to the current status
+     * Change the current completion status as contrary to the current status.
      */
     void toggleFinish();
 }

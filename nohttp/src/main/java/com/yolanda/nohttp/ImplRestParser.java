@@ -16,8 +16,8 @@
 package com.yolanda.nohttp;
 
 /**
- * <p>The response parser, The result of parsing the network layer</p>
- * Created in Jan 25, 2016 3:57:45 PM
+ * <p>The response parser, The result of parsing the network layer.</p>
+ * Created in Jan 25, 2016 3:57:45 PM.
  *
  * @author YOLANDA;
  */
@@ -26,9 +26,9 @@ public interface ImplRestParser {
     /**
      * Based on HTTP header analysis results, etc.
      *
-     * @param request Request
-     * @param <T>     T
-     * @return {@link Response}
+     * @param request request.
+     * @param <T>     T.
+     * @return {@link Response}.
      */
     <T> Response<T> parserRequest(Request<T> request);
 

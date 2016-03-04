@@ -15,25 +15,25 @@
  */
 package com.yolanda.nohttp.cookie;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.yolanda.nohttp.Logger;
-import com.yolanda.nohttp.db.DBManager;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.db.DBManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * <p>Cookie database manager</p>
- * Created in Dec 18, 2015 7:01:31 PM
+ * <p>Cookie database manager.</p>
+ * Created in Dec 18, 2015 7:01:31 PM.
  *
  * @author YOLANDA;
  */
 class CookieDiskManager extends DBManager<CookieEntity> {
     /**
-     * Instance
+     * Instance.
      */
     private static DBManager<CookieEntity> _Instance;
 
@@ -48,9 +48,9 @@ class CookieDiskManager extends DBManager<CookieEntity> {
     }
 
     /**
-     * Add or update by index(name, domain, path)
+     * Add or update by index(name, domain, path).
      *
-     * @param cookie cookie entity
+     * @param cookie cookie entity.
      */
     @Override
     public long replace(CookieEntity cookie) {

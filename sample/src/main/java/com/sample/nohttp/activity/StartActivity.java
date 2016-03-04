@@ -27,10 +27,10 @@ import android.view.View;
 import android.widget.AbsListView;
 
 /**
- * <p>开始界面</p>
- * Created in Oct 21, 2015 2:19:16 PM
+ * <p>开始界面.</p>
+ * Created in Oct 21, 2015 2:19:16 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class StartActivity extends BaseActivity {
 
@@ -45,7 +45,7 @@ public class StartActivity extends BaseActivity {
     }
 
     /**
-     * list item单击
+     * list item单击.
      */
     private OnItemClickListener mItemClickListener = new OnItemClickListener() {
         @Override

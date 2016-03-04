@@ -29,10 +29,10 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * <p>同步请求</p>
- * Created in Oct 23, 2015 1:13:06 PM
+ * <p>同步请求.</p>
+ * Created in Oct 23, 2015 1:13:06 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class SyncActivity extends BaseActivity implements View.OnClickListener {
 
@@ -48,7 +48,7 @@ public class SyncActivity extends BaseActivity implements View.OnClickListener {
     }
 
     /**
-     * 解析响应
+     * 解析响应.
      */
     private void response(Response<String> response) {
         if (response.isSucceed()) {
@@ -59,7 +59,7 @@ public class SyncActivity extends BaseActivity implements View.OnClickListener {
     }
 
     /**
-     * handler接受子线程结果
+     * handler接受子线程结果.
      */
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {

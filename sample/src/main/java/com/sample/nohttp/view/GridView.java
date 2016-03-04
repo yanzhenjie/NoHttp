@@ -21,7 +21,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 
 /**
- * Created in Jan 29, 2016 5:45:34 PM
+ * Created in Jan 29, 2016 5:45:34 PM.
  *
  * @author YOLANDA;
  */

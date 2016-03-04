@@ -30,7 +30,7 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * Created in Feb 1, 2016 9:14:37 AM
+ * Created in Feb 1, 2016 9:14:37 AM.
  *
  * @author YOLANDA;
  */

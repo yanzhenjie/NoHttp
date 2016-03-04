@@ -19,26 +19,26 @@ import java.net.HttpCookie;
 import java.net.URI;
 
 /**
- * <p>The listener when save or delete the Cookie</p>
- * Created in Dec 22, 2015 8:23:49 PM
+ * <p>The listener when save or delete the Cookie.</p>
+ * Created in Dec 22, 2015 8:23:49 PM.
  *
  * @author YOLANDA;
  */
 public interface CookieStoreListener {
 
     /**
-     * When saving a Cookie callback
+     * When saving a Cookie callback.
      *
-     * @param uri    Cookie corresponding uri
-     * @param cookie cookie
+     * @param uri    cookie corresponding uri.
+     * @param cookie cookie.
      */
     void onSaveCookie(URI uri, HttpCookie cookie);
 
     /**
-     * The callback when deleting cookies
+     * The callback when deleting cookies.
      *
-     * @param uri    Cookie corresponding uri
-     * @param cookie cookie
+     * @param uri    cookie corresponding uri.
+     * @param cookie cookie.
      */
     void onRemoveCookie(URI uri, HttpCookie cookie);
 

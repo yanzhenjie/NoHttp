@@ -29,10 +29,10 @@ import com.yolanda.nohttp.Response;
 import com.yolanda.nohttp.StringRequest;
 
 /**
- * <p>演示怎么取消一个请求</p>
- * Created in Oct 23, 2015 1:13:06 PM
+ * <p>演示怎么取消一个请求.</p>
+ * Created in Oct 23, 2015 1:13:06 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class CancelActivity extends BaseActivity implements HttpListener<String> {
 
@@ -41,7 +41,7 @@ public class CancelActivity extends BaseActivity implements HttpListener<String>
     private static final int REQUEST_3 = 2;
 
     /**
-     * 请求对象
+     * 请求对象.
      */
     private Request<String> mRequest;
 

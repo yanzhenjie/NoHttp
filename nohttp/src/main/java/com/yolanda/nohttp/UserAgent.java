@@ -23,14 +23,17 @@ import android.os.Build;
 import android.text.TextUtils;
 
 /**
- * Created in Oct 15, 2015 12:39:06 PM
+ * Created in Oct 15, 2015 12:39:06 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class UserAgent {
 
     /**
-     * Get User-Agent of System
+     * Get User-Agent of System.
+     *
+     * @param context {@link Context}.
+     * @return UA.
      */
     public static String getUserAgent(Context context) {
         String webUserAgent = null;
@@ -45,7 +48,7 @@ public class UserAgent {
             }
         }
         if (TextUtils.isEmpty(webUserAgent)) {
-            webUserAgent = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 %sSafari/533.1";
+            webUserAgent = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 %sSafari/533.1";
         }
 
         Locale locale = Locale.getDefault();

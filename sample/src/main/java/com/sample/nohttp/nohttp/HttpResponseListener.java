@@ -26,41 +26,42 @@ import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
 import com.yolanda.nohttp.error.ClientError;
 import com.yolanda.nohttp.error.NetworkError;
+import com.yolanda.nohttp.error.NotFoundCacheError;
 import com.yolanda.nohttp.error.ServerError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
 
 /**
- * Created in Nov 4, 2015 12:02:55 PM
+ * Created in Nov 4, 2015 12:02:55 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class HttpResponseListener<T> implements OnResponseListener<T> {
 
     /**
-     * Dialog
+     * Dialog.
      */
     private WaitDialog mWaitDialog;
 
     private Request<?> mRequest;
 
     /**
-     * 结果回调
+     * 结果回调.
      */
     private HttpListener<T> callback;
 
     /**
-     * 是否显示dialog
+     * 是否显示dialog.
      */
     private boolean isLoading;
 
     /**
-     * @param context      context用来实例化dialog
-     * @param request      请求对象
-     * @param httpCallback 回调对象
-     * @param canCancel    是否允许用户取消请求
-     * @param isLoading    是否显示dialog
+     * @param context      context用来实例化dialog.
+     * @param request      请求对象.
+     * @param httpCallback 回调对象.
+     * @param canCancel    是否允许用户取消请求.
+     * @param isLoading    是否显示dialog.
      */
     public HttpResponseListener(Context context, Request<?> request, HttpListener<T> httpCallback, boolean canCancel, boolean isLoading) {
         this.mRequest = request;
@@ -79,7 +80,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
     }
 
     /**
-     * 开始请求, 这里显示一个dialog
+     * 开始请求, 这里显示一个dialog.
      */
     @Override
     public void onStart(int what) {
@@ -88,7 +89,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
     }
 
     /**
-     * 结束请求, 这里关闭dialog
+     * 结束请求, 这里关闭dialog.
      */
     @Override
     public void onFinish(int what) {
@@ -97,7 +98,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
     }
 
     /**
-     * 成功回调
+     * 成功回调.
      */
     @Override
     public void onSucceed(int what, Response<T> response) {
@@ -106,7 +107,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
     }
 
     /**
-     * 失败回调
+     * 失败回调.
      */
     @Override
     public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
@@ -122,6 +123,9 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
             Toast.show("未发现指定服务器");
         } else if (exception instanceof URLError) {// URL是错的
             Toast.show("URL错误");
+        } else if (exception instanceof NotFoundCacheError) {
+            // 这个异常只会在仅仅查找缓存时没有找到缓存时返回
+            Toast.show("没有发现缓存");
         } else {
             Toast.show("未知错误");
         }

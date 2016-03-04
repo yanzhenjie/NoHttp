@@ -15,21 +15,21 @@
  */
 package com.yolanda.nohttp.cache;
 
-import java.io.Serializable;
-
-import org.json.JSONException;
-
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.HttpHeaders;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.db.DBId;
 import com.yolanda.nohttp.db.Field;
 
+import org.json.JSONException;
+
+import java.io.Serializable;
+
 /**
- * <p>Cache entity class</p>
- * Created in Jan 10, 2016 12:43:10 AM
+ * <p>Cache entity class.</p>
+ * Created in Jan 10, 2016 12:43:10 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class CacheEntity implements DBId, Field, Serializable {
 
@@ -39,17 +39,17 @@ public class CacheEntity implements DBId, Field, Serializable {
 
     private String key;
     /**
-     * The server response headers
+     * The server response headers.
      */
     private Headers responseHeaders = new HttpHeaders();
 
     /**
-     * Cache data
+     * Cache data.
      */
     private byte[] data = {};
 
     /**
-     * Cached in the local expiration time
+     * Cached in the local expiration time.
      */
     private long localExpire;
 
@@ -58,11 +58,11 @@ public class CacheEntity implements DBId, Field, Serializable {
     }
 
     /**
-     * @param id              id
-     * @param key             key
-     * @param responseHeaders Http response headers
-     * @param data            Http response data
-     * @param localExpire     local expire time
+     * @param id              id.
+     * @param key             key.
+     * @param responseHeaders http response headers.
+     * @param data            http response data.
+     * @param localExpire     local expire time.
      */
     public CacheEntity(long id, String key, Headers responseHeaders, byte[] data, long localExpire) {
         this.id = id;
@@ -73,7 +73,7 @@ public class CacheEntity implements DBId, Field, Serializable {
     }
 
     /**
-     * @return the id
+     * @return the id.
      */
     @Override
     public long getId() {
@@ -81,35 +81,35 @@ public class CacheEntity implements DBId, Field, Serializable {
     }
 
     /**
-     * @param id the id to set
+     * @param id the id to set.
      */
     public void setId(long id) {
         this.id = id;
     }
 
     /**
-     * @return the key
+     * @return the key.
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * @param key the key to set
+     * @param key the key to set.
      */
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     * @return the responseHeaders
+     * @return the responseHeaders.
      */
     public Headers getResponseHeaders() {
         return responseHeaders;
     }
 
     /**
-     * @param responseHeaders the responseHeaders to set
+     * @param responseHeaders the responseHeaders to set.
      */
     public void setResponseHeaders(Headers responseHeaders) {
         this.responseHeaders = responseHeaders;
@@ -124,37 +124,37 @@ public class CacheEntity implements DBId, Field, Serializable {
     }
 
     /**
-     * To get the json data format of the head
+     * To get the json data format of the head.
      *
-     * @return Json
+     * @return Json.
      */
     public String getResponseHeadersJson() {
         return this.responseHeaders.toJSONString();
     }
 
     /**
-     * @return the data
+     * @return the data.
      */
     public byte[] getData() {
         return data;
     }
 
     /**
-     * @param data the data to set
+     * @param data the data to set.
      */
     public void setData(byte[] data) {
         this.data = data;
     }
 
     /**
-     * @return the localExpire
+     * @return the localExpire.
      */
     public long getLocalExpire() {
         return localExpire;
     }
 
     /**
-     * @param localExpire the localExpire to set
+     * @param localExpire the localExpire to set.
      */
     public void setLocalExpire(long localExpire) {
         this.localExpire = localExpire;

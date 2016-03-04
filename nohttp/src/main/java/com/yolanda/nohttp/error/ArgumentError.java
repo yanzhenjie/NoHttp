@@ -16,17 +16,23 @@
 package com.yolanda.nohttp.error;
 
 /**
- * Created in 2016/2/26 19:03
+ * Created in 2016/2/26 19:03.
  *
  * @author YOLANDA;
  */
 public class ArgumentError extends Exception {
+
+    private static final long serialVersionUID = 1516L;
 
     public ArgumentError() {
     }
 
     public ArgumentError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public ArgumentError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
     }
 
     public ArgumentError(Throwable throwable) {

@@ -20,9 +20,9 @@ import android.content.Context;
 import android.view.Window;
 
 /**
- * Created in Oct 23, 2015 1:19:04 PM
+ * Created in Oct 23, 2015 1:19:04 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class WaitDialog extends ProgressDialog {
 

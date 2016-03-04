@@ -16,9 +16,9 @@
 package com.yolanda.nohttp.download;
 
 /**
- * Created in Nov 4, 2015 8:46:52 AM
+ * Created in Nov 4, 2015 8:46:52 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 class NetworkDownloadRequest {
 

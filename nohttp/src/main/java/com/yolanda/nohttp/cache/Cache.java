@@ -16,42 +16,42 @@
 package com.yolanda.nohttp.cache;
 
 /**
- * <p>Cache interface</p>
- * Created in Dec 14, 2015 5:52:41 PM
+ * <p>Cache interface.</p>
+ * Created in Dec 14, 2015 5:52:41 PM.
  *
  * @author YOLANDA;
  */
 public interface Cache<T> {
 
     /**
-     * According to the key to get the cache data
+     * According to the key to get the cache data.
      *
-     * @param key Unique key
-     * @return Cache data
+     * @param key unique key.
+     * @return Cache data.
      */
     T get(String key);
 
     /**
-     * According to the key to replace or save the data
+     * According to the key to replace or save the data.
      *
-     * @param key  Unique key
-     * @param data Cache data
-     * @return Cache data
+     * @param key  unique key.
+     * @param data cache data.
+     * @return Cache data.
      */
     T replace(String key, T data);
 
     /**
-     * According to the key to remove the data
+     * According to the key to remove the data.
      *
-     * @param key Unique key
-     * @return Cache data
+     * @param key unique.
+     * @return cache data.
      */
     boolean remove(String key);
 
     /**
-     * Clear all data
+     * Clear all data.
      *
-     * @return Return to true to clear the failure when the false is cleared.
+     * @return return to true to clear the failure when the false is cleared.
      */
     boolean clear();
 }

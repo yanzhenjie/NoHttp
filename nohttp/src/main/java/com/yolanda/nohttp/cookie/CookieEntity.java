@@ -15,18 +15,18 @@
  */
 package com.yolanda.nohttp.cookie;
 
-import java.io.Serializable;
-import java.net.HttpCookie;
-import java.net.URI;
+import android.text.TextUtils;
 
 import com.yolanda.nohttp.db.DBId;
 import com.yolanda.nohttp.tools.HttpDateTime;
 
-import android.text.TextUtils;
+import java.io.Serializable;
+import java.net.HttpCookie;
+import java.net.URI;
 
 /**
- * <p>Cookie entity</p>
- * Created in Dec 17, 2015 7:21:16 PM
+ * <p>Cookie entity.</p>
+ * Created in Dec 17, 2015 7:21:16 PM.
  *
  * @author YOLANDA;
  */
@@ -35,7 +35,7 @@ class CookieEntity implements DBId, Serializable {
     private static final long serialVersionUID = 6374381323722046732L;
 
     /**
-     * max expiry: 100 years
+     * Max expiry: 100 years.
      */
     private long id = -1;
     private String uri; // cookie add by this uri.
@@ -55,8 +55,8 @@ class CookieEntity implements DBId, Serializable {
     }
 
     /**
-     * @param uri    Cookie corresponding uri
-     * @param cookie cookie
+     * @param uri    cookie corresponding uri.
+     * @param cookie cookie.
      */
     public CookieEntity(URI uri, HttpCookie cookie) {
         this.uri = uri == null ? null : uri.toString();
@@ -99,7 +99,7 @@ class CookieEntity implements DBId, Serializable {
     }
 
     /**
-     * @return the id
+     * @return the id.
      */
     @Override
     public long getId() {
@@ -107,175 +107,175 @@ class CookieEntity implements DBId, Serializable {
     }
 
     /**
-     * @param id the id to set
+     * @param id the id to set.
      */
     public void setId(long id) {
         this.id = id;
     }
 
     /**
-     * @return the uri
+     * @return the uri.
      */
     public String getUri() {
         return uri;
     }
 
     /**
-     * @param uri the uri to set
+     * @param uri the uri to set.
      */
     public void setUri(String uri) {
         this.uri = uri;
     }
 
     /**
-     * @return the name
+     * @return the name.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name the name to set
+     * @param name the name to set.
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * @return the value
+     * @return the value.
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * @param value the value to set
+     * @param value the value to set.
      */
     public void setValue(String value) {
         this.value = value;
     }
 
     /**
-     * @return the comment
+     * @return the comment.
      */
     public String getComment() {
         return comment;
     }
 
     /**
-     * @param comment the comment to set
+     * @param comment the comment to set.
      */
     public void setComment(String comment) {
         this.comment = comment;
     }
 
     /**
-     * @return the commentURL
+     * @return the commentURL.
      */
     public String getCommentURL() {
         return commentURL;
     }
 
     /**
-     * @param commentURL the commentURL to set
+     * @param commentURL the commentURL to set.
      */
     public void setCommentURL(String commentURL) {
         this.commentURL = commentURL;
     }
 
     /**
-     * @return the discard
+     * @return the discard.
      */
     public boolean isDiscard() {
         return discard;
     }
 
     /**
-     * @param discard the discard to set
+     * @param discard the discard to set.
      */
     public void setDiscard(boolean discard) {
         this.discard = discard;
     }
 
     /**
-     * @return the domain
+     * @return the domain.
      */
     public String getDomain() {
         return domain;
     }
 
     /**
-     * @param domain the domain to set
+     * @param domain the domain to set.
      */
     public void setDomain(String domain) {
         this.domain = domain;
     }
 
     /**
-     * @return the expiry
+     * @return the expiry.
      */
     public long getExpiry() {
         return expiry;
     }
 
     /**
-     * @param expiry the expiry to set
+     * @param expiry the expiry to set.
      */
     public void setExpiry(long expiry) {
         this.expiry = expiry;
     }
 
     /**
-     * @return the path
+     * @return the path.
      */
     public String getPath() {
         return path;
     }
 
     /**
-     * @param path the path to set
+     * @param path the path to set.
      */
     public void setPath(String path) {
         this.path = path;
     }
 
     /**
-     * @return the portList
+     * @return the portList.
      */
     public String getPortList() {
         return portList;
     }
 
     /**
-     * @param portList the portList to set
+     * @param portList the portList to set.
      */
     public void setPortList(String portList) {
         this.portList = portList;
     }
 
     /**
-     * @return the secure
+     * @return the secure.
      */
     public boolean isSecure() {
         return secure;
     }
 
     /**
-     * @param secure the secure to set
+     * @param secure the secure to set.
      */
     public void setSecure(boolean secure) {
         this.secure = secure;
     }
 
     /**
-     * @return the version
+     * @return the version.
      */
     public int getVersion() {
         return version;
     }
 
     /**
-     * @param version the version to set
+     * @param version the version to set.
      */
     public void setVersion(int version) {
         this.version = version;

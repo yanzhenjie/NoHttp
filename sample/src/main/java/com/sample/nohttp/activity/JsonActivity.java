@@ -32,9 +32,9 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * Created in Jan 31, 2016 10:16:26 PM
+ * Created in Jan 31, 2016 10:16:26 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class JsonActivity extends BaseActivity implements View.OnClickListener {
 

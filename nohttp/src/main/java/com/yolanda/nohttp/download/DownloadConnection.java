@@ -26,8 +26,8 @@ import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.error.ArgumentError;
 import com.yolanda.nohttp.error.ClientError;
 import com.yolanda.nohttp.error.NetworkError;
-import com.yolanda.nohttp.error.StorageReadWriteError;
 import com.yolanda.nohttp.error.ServerError;
+import com.yolanda.nohttp.error.StorageReadWriteError;
 import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
@@ -49,10 +49,10 @@ import java.net.UnknownHostException;
 import java.util.zip.GZIPInputStream;
 
 /**
- * <p>The network layer to download missions</p>
- * Created in Jul 31, 2015 9:11:55 AM
+ * <p>The network layer to download missions.</p>
+ * Created in Jul 31, 2015 9:11:55 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class DownloadConnection extends BasicConnection implements Downloader {
 

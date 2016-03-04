@@ -34,10 +34,10 @@ import java.net.UnknownHostException;
 import java.util.zip.GZIPInputStream;
 
 /**
- * <p>Network operating interface, The implementation of the network layer</p>
- * Created in Jul 28, 2015 7:33:22 PM
+ * <p>Network operating interface, The implementation of the network layer.</p>
+ * Created in Jul 28, 2015 7:33:22 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public final class HttpRestConnection extends BasicConnection implements ImplRestConnection {
 

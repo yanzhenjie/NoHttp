@@ -16,9 +16,9 @@
 package com.yolanda.nohttp;
 
 /**
- * Created in Oct 19, 2015 8:53:13 AM
+ * Created in Oct 19, 2015 8:53:13 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 class HttpRequest<E> {
 

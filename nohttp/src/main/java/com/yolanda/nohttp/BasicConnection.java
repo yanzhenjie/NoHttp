@@ -15,6 +15,12 @@
  */
 package com.yolanda.nohttp;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.text.TextUtils;
+
+import com.yolanda.nohttp.tools.Writer;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,22 +38,20 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.yolanda.nohttp.tools.Writer;
-
-import android.annotation.TargetApi;
-import android.os.Build;
-import android.text.TextUtils;
-
 /**
- * <p>Package good Http implementation class, establish connection, read and write data</p>
- * Created in Aug 4, 2015 10:12:38 AM
+ * <p>Package good Http implementation class, establish connection, read and write data.</p>
+ * Created in Aug 4, 2015 10:12:38 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class BasicConnection {
 
     /**
-     * The connection is established, including the head and send the request body
+     * The connection is established, including the head and send the request body.
+     *
+     * @param request {@link ImplServerRequest}.
+     * @return {@link HttpURLConnection} Have been established and the server connection, and send the complete data, you can directly determine the response code and read the data.
+     * @throws IOException Can happen when the connection is established and send data.
      */
     protected HttpURLConnection getHttpConnection(ImplServerRequest request) throws IOException {
         // 1.Pre operation notice
@@ -99,7 +103,7 @@ public class BasicConnection {
     }
 
     /**
-     * Set request headers, here will add cookies
+     * Set request headers, here will add cookies.
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private void setHeaders(URI uri, HttpURLConnection connection, ImplServerRequest request) {
@@ -162,7 +166,13 @@ public class BasicConnection {
     }
 
     /**
-     * Parse server response headers, here will save cookies
+     * Parse server response headers, here will save cookies.
+     *
+     * @param uri             according to the requested URL generated uris.
+     * @param responseCode    responseCode.
+     * @param responseMessage responseMessage.
+     * @param responseHeaders responseHeaders of server.
+     * @return ResponseHeaders of server.
      */
     protected Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> responseHeaders) {
         // handle cookie
@@ -195,7 +205,11 @@ public class BasicConnection {
 	/* ====================Wirte request body==================== */
 
     /**
-     * Send the request body to the server
+     * Send the request body to the server.
+     *
+     * @param connection {@link HttpURLConnection}.
+     * @param request    {@link ImplServerRequest}.
+     * @throws IOException To send data when possible.
      */
     private void writeRequestBody(HttpURLConnection connection, ImplServerRequest request) throws IOException {
         if (request.doOutPut()) {
@@ -212,7 +226,11 @@ public class BasicConnection {
 	/* ====================Read response body=================== */
 
     /**
-     * To read information from the server's response
+     * To read information from the server's response.
+     *
+     * @param inputStream outputStream from the service, for us is the inputStream, the data read from the inputStream.
+     * @return Data from server.
+     * @throws IOException To read data when possible.
      */
     protected byte[] readResponseBody(InputStream inputStream) throws IOException {
         int readBytes;
@@ -227,14 +245,21 @@ public class BasicConnection {
     }
 
     /**
-     * this requestMethod and responseCode has ResponseBody ?
+     * This requestMethod and responseCode has ResponseBody ?
+     *
+     * @param requestMethod it's come from {@link RequestMethod}.
+     * @param responseCode  responseCode from server.
+     * @return True: there is data, false: no data.
      */
     public static boolean hasResponseBody(RequestMethod requestMethod, int responseCode) {
         return requestMethod != RequestMethod.HEAD && hasResponseBody(responseCode);
     }
 
     /**
-     * ser has response
+     * According to the response code to judge whether there is data.
+     *
+     * @param responseCode responseCode.
+     * @return True: there is data, false: no data.
      */
     public static boolean hasResponseBody(int responseCode) {
         return !(100 <= responseCode && responseCode < 200) && responseCode != 204 && responseCode != 205 && responseCode != 304;

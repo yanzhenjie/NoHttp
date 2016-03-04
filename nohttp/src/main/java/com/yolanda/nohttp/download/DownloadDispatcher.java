@@ -15,49 +15,49 @@
  */
 package com.yolanda.nohttp.download;
 
-import java.util.concurrent.BlockingQueue;
-
-import com.yolanda.nohttp.Headers;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 
+import com.yolanda.nohttp.Headers;
+
+import java.util.concurrent.BlockingQueue;
+
 /**
- * <p>Download queue polling thread</p>
- * Created in Oct 21, 2015 2:46:23 PM
+ * <p>Download queue polling thread.</p>
+ * Created in Oct 21, 2015 2:46:23 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 class DownloadDispatcher extends Thread {
 
     /**
-     * Get handler lock
+     * Get handler lock.
      */
     private static final Object HANDLER_LOCK = new Object();
 
     /**
-     * Send download status
+     * Send download status.
      */
     private static Handler sDownloadHandler;
     /**
-     * Download task queue
+     * Download task queue.
      */
     private final BlockingQueue<NetworkDownloadRequest> mDownloadQueue;
     /**
-     * Perform network request interface
+     * Perform network request interface.
      */
     private final Downloader mDownloader;
     /**
-     * Are you out of this thread
+     * Are you out of this thread.
      */
     private volatile boolean mQuit = false;
 
     /**
-     * Create a thread that executes the download queue
+     * Create a thread that executes the download queue.
      *
-     * @param downloadQueue Download queue to be polled
-     * @param downloader    Perform network request interface
+     * @param downloadQueue download queue to be polled.
+     * @param downloader    perform network request interface.
      */
     public DownloadDispatcher(BlockingQueue<NetworkDownloadRequest> downloadQueue, Downloader downloader) {
         mDownloadQueue = downloadQueue;
@@ -65,7 +65,7 @@ class DownloadDispatcher extends Thread {
     }
 
     /**
-     * Quit this thread
+     * Quit this thread.
      */
     public void quit() {
         mQuit = true;
@@ -141,7 +141,7 @@ class DownloadDispatcher extends Thread {
         return sDownloadHandler;
     }
 
-    public class ThreadPoster implements Runnable {
+    private class ThreadPoster implements Runnable {
 
         public static final int COMMAND_START = 0;
         public static final int COMMAND_PROGRESS = 1;

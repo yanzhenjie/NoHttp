@@ -20,9 +20,9 @@ import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 
 /**
- * Created in Oct 23, 2015 12:59:13 PM
+ * Created in Oct 23, 2015 12:59:13 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class Application extends android.app.Application {
 

@@ -20,9 +20,9 @@ import java.io.UnsupportedEncodingException;
 import com.yolanda.nohttp.tools.HeaderParser;
 
 /**
- * Created in Jul 28, 2015 7:33:52 PM
+ * Created in Jul 28, 2015 7:33:52 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class StringRequest extends RestRequest<String> {
 

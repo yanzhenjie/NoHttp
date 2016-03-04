@@ -15,44 +15,45 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.OutputStream;
-
 import com.yolanda.nohttp.able.CancelAble;
+import com.yolanda.nohttp.able.FinishAble;
+
+import java.io.OutputStream;
 
 /**
  * <p>File interface.
  * All the methods are called in Son thread.</p>
- * Created in Oct 12, 2015 4:44:07 PM
+ * Created in Oct 12, 2015 4:44:07 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
-public interface Binary extends CancelAble {
+public interface Binary extends CancelAble, FinishAble {
 
     /**
-     * Length of byteArray
+     * Length of byteArray.
      *
-     * @return Long length
+     * @return Long length.
      */
     long getLength();
 
     /**
-     * Write your Binary data through flow out
+     * Write your Binary data through flow out.
      *
-     * @param outputStream OutputStream
+     * @param outputStream {@link OutputStream}.
      */
     void onWriteBinary(OutputStream outputStream);
 
     /**
-     * Return the fileName, Can be null
+     * Return the fileName, Can be null.
      *
-     * @return File name
+     * @return File name.
      */
     String getFileName();
 
     /**
-     * Return mimeType of binary
+     * Return mimeType of binary.
      *
-     * @return MimeType
+     * @return MimeType.
      */
     String getMimeType();
 }

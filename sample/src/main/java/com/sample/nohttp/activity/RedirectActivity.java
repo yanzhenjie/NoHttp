@@ -29,9 +29,9 @@ import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
 
 /**
- * Created in Jan 31, 2016 4:30:31 PM
+ * Created in Jan 31, 2016 4:30:31 PM;
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class RedirectActivity extends BaseActivity implements View.OnClickListener, HttpListener<String> {
 

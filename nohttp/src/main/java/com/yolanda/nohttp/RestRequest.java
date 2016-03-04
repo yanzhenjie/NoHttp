@@ -20,22 +20,22 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>The realization method of the parameters</p>
- * Created in Oct 20, 2015 4:24:27 PM
+ * <p>The realization method of the parameters.</p>
+ * Created in Oct 20, 2015 4:24:27 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public abstract class RestRequest<T> extends BasicRequest<T> {
 
     /**
-     * Param collection
+     * Param collection.
      */
     protected Map<String, Object> mParamMap = null;
 
     /**
-     * Create a request, RequestMethod is {@link RequestMethod#GET}
+     * Create a request, RequestMethod is {@link RequestMethod#GET}.
      *
-     * @param url request adress, like: http://www.google.com
+     * @param url request adress, like: http://www.google.com.
      */
     public RestRequest(String url) {
         this(url, RequestMethod.GET);
@@ -44,8 +44,8 @@ public abstract class RestRequest<T> extends BasicRequest<T> {
     /**
      * Create a request
      *
-     * @param url           request adress, like: http://www.google.com
-     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
+     * @param url           request adress, like: http://www.google.com.
+     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public RestRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);

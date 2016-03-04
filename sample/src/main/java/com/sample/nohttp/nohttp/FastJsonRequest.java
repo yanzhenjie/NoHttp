@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>自定义请求对象</p>
- * Created in Feb 1, 2016 8:53:17 AM
+ * <p>自定义请求对象.</p>
+ * Created in Feb 1, 2016 8:53:17 AM.
  *
  * @author YOLANDA;
  */

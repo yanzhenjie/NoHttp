@@ -15,10 +15,6 @@
  */
 package com.yolanda.nohttp.db;
 
-import java.util.List;
-
-import com.yolanda.nohttp.Logger;
-
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,12 +22,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.yolanda.nohttp.Logger;
+
+import java.util.List;
+
 /**
  * <p>Database management generic class, has realized the basic functions, inheritance of the subclass only need to implement {@link #replace(DBId)}, {@link #get(String)} and
- * {@link #getTableName()}</p>
- * Created in Jan 10, 2016 8:18:28 PM
+ * {@link #getTableName()}.</p>
+ * Created in Jan 10, 2016 8:18:28 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public abstract class DBManager<T extends DBId> {
 
@@ -46,28 +46,28 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * Open the database when the read data
+     * Open the database when the read data.
      *
-     * @return SQLiteDatabase
+     * @return SQLiteDatabase.
      */
     protected final SQLiteDatabase openReader() {
         return disk.getReadableDatabase();
     }
 
     /**
-     * Open the database when the write data
+     * Open the database when the write data.
      *
-     * @return SQLiteDatabase
+     * @return SQLiteDatabase.
      */
     protected final SQLiteDatabase openWriter() {
         return disk.getWritableDatabase();
     }
 
     /**
-     * Close the database when reading data
+     * Close the database when reading data.
      *
-     * @param execute SQLiteDatabase
-     * @param cursor  Cursor
+     * @param execute {@link SQLiteDatabase}.
+     * @param cursor  {@link Cursor}.
      */
     protected final void readFinish(SQLiteDatabase execute, Cursor cursor) {
         if (cursor != null && !cursor.isClosed())
@@ -76,9 +76,9 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * Close the database when writing data
+     * Close the database when writing data.
      *
-     * @param execute SQLiteDatabase
+     * @param execute {@link SQLiteDatabase}.
      */
     protected final void writeFinish(SQLiteDatabase execute) {
         if (execute != null && execute.isOpen()) {
@@ -87,16 +87,19 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * The query id number
+     * The query id number.
      *
-     * @return int format
+     * @return int format.
      */
     public final int count() {
         return countColumn(Field.ID);
     }
 
     /**
-     * According to the "column" query "column" number
+     * According to the "column" query "column" number.
+     *
+     * @param columnName ColumnName.
+     * @return Column count.
      */
     public final int countColumn(String columnName) {
         StringBuilder sqlBuild = new StringBuilder("SELECT COUNT(").append(columnName).append(") FROM ").append(getTableName());
@@ -104,9 +107,10 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * According to the "column" query number
+     * According to the "column" query number.
      *
-     * @param sql sql
+     * @param sql sql.
+     * @return count
      */
     public final int count(String sql) {
         SQLiteDatabase execute = openReader();
@@ -121,19 +125,19 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * Delete all data
+     * Delete all data.
      *
-     * @return A Boolean value, whether deleted successfully
+     * @return A Boolean value, whether deleted successfully.
      */
     public final boolean deleteAll() {
         return delete("1=1");
     }
 
     /**
-     * Must have the id
+     * Must have the id.
      *
-     * @param ts Delete the queue list
-     * @return A Boolean value, whether deleted successfully
+     * @param ts delete the queue list.
+     * @return A Boolean value, whether deleted successfully.
      */
     public final boolean delete(List<T> ts) {
         StringBuilder where = new StringBuilder(Field.ID).append(" IN(");
@@ -151,10 +155,10 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * According to the where to delete data
+     * According to the where to delete data.
      *
-     * @param where Performs conditional
-     * @return A Boolean value, whether deleted successfully
+     * @param where performs conditional.
+     * @return A Boolean value, whether deleted successfully.
      */
     public final boolean delete(String where) {
         if (TextUtils.isEmpty(where))
@@ -175,33 +179,33 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * Query all data
+     * Query all data.
      *
-     * @return List data
+     * @return List data.
      */
     public final List<T> getAll() {
         return getAll(Field.ALL);
     }
 
     /**
-     * All the data query a column
+     * All the data query a column.
      *
-     * @param columnName ColumnName
-     * @return List data
+     * @param columnName columnName.
+     * @return List data.
      */
     public final List<T> getAll(String columnName) {
         return get(columnName, null, null, null, null);
     }
 
     /**
-     * All the data query a column
+     * All the data query a column.
      *
-     * @param columnName Such as: *
-     * @param where      Such as: {@code age > 20}
-     * @param orderBy    Such as: age
-     * @param limit      Such as
-     * @param offset     offset
-     * @return List data
+     * @param columnName such as: {@code "*"}.
+     * @param where      such as: {@code age > 20}.
+     * @param orderBy    such as: {@code "age"}.
+     * @param limit      such as. {@code '20'}.
+     * @param offset     offset.
+     * @return List data.
      */
     public final List<T> get(String columnName, String where, String orderBy, String limit, String offset) {
         return get(getSelectSql(columnName, where, orderBy, limit, offset));
@@ -210,12 +214,12 @@ public abstract class DBManager<T extends DBId> {
     /**
      * Create query sql
      *
-     * @param columnName columnName
-     * @param where      where
-     * @param orderBy    orderBy
-     * @param limit      limit
-     * @param offset     offset
-     * @return String
+     * @param columnName columnName.
+     * @param where      where.
+     * @param orderBy    orderBy.
+     * @param limit      limit.
+     * @param offset     offset.
+     * @return String.
      */
     private String getSelectSql(String columnName, String where, String orderBy, String limit, String offset) {
         StringBuilder sqlBuild = new StringBuilder("SELECT ").append(columnName).append(" FROM ").append(getTableName());
@@ -241,32 +245,32 @@ public abstract class DBManager<T extends DBId> {
     }
 
     /**
-     * According to the SQL query data list
+     * According to the SQL query data list.
      *
-     * @param querySql sql
-     * @return List data
+     * @param querySql sql.
+     * @return List data.
      */
     public abstract List<T> get(String querySql);
 
     /**
-     * According to the unique index adds or updates a row data
+     * According to the unique index adds or updates a row data.
      *
-     * @param t Object
-     * @return long
+     * @param t {@link T}.
+     * @return long.
      */
     public abstract long replace(T t);
 
     /**
-     * Table name should be
+     * Table name should be.
      *
-     * @return table name
+     * @return table name.
      */
     protected abstract String getTableName();
 
     /**
-     * Print the test data
+     * Print the test data.
      *
-     * @param print String
+     * @param print string.
      */
     protected void print(String print) {
         if (DEBUG)

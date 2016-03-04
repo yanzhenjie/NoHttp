@@ -20,30 +20,30 @@ import com.yolanda.nohttp.Logger;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * <p>Download queue</p>
- * Created in Oct 21, 2015 2:44:19 PM
+ * <p>Download queue.</p>
+ * Created in Oct 21, 2015 2:44:19 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class DownloadQueue {
     /**
-     * Save download task
+     * Save download task.
      */
     private final LinkedBlockingQueue<NetworkDownloadRequest> mDownloadQueue = new LinkedBlockingQueue<NetworkDownloadRequest>();
     /**
-     * Download Network task execution interface
+     * Download Network task execution interface.
      */
     private final Downloader mDownloader;
     /**
-     * Download queue polling thread array
+     * Download queue polling thread array.
      */
     private DownloadDispatcher[] mDispatchers;
 
     /**
-     * Create download queue manager
+     * Create download queue manager.
      *
-     * @param downloader     Download the network task execution interface, where you need to implement the download tasks that have been implemented.
-     * @param threadPoolSize Number of thread pool
+     * @param downloader     download the network task execution interface, where you need to implement the download tasks that have been implemented.
+     * @param threadPoolSize number of thread pool.
      */
     public DownloadQueue(Downloader downloader, int threadPoolSize) {
         mDownloader = downloader;
@@ -52,7 +52,7 @@ public class DownloadQueue {
 
     /**
      * Start polling the download queue, a one of the implementation of the download task, if you have started to poll the download queue, then it will stop all the threads, to re create thread
-     * execution
+     * execution.
      */
     public void start() {
         stop();
@@ -64,11 +64,11 @@ public class DownloadQueue {
     }
 
     /**
-     * Add a download task to download queue, waiting for execution, if there is no task in the queue or the number of tasks is less than the number of thread pool, will be executed immediately
+     * Add a download task to download queue, waiting for execution, if there is no task in the queue or the number of tasks is less than the number of thread pool, will be executed immediately.
      *
-     * @param what             Used to distinguish Download
-     * @param downloadRequest  Download request object
-     * @param downloadListener Download results monitor
+     * @param what             used to distinguish Download.
+     * @param downloadRequest  download request object.
+     * @param downloadListener download results monitor.
      */
     public void add(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
         if (downloadRequest.isQueue())
@@ -93,9 +93,9 @@ public class DownloadQueue {
     }
 
     /**
-     * All requests for the sign specified in the queue, if you are executing, will interrupt the download task
+     * All requests for the sign specified in the queue, if you are executing, will interrupt the download task.
      *
-     * @param sign This sign will be the same as sign's DownloadRequest, and if it is the same, then cancel the task.
+     * @param sign this sign will be the same as sign's DownloadRequest, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
         synchronized (mDownloadQueue) {
@@ -105,7 +105,7 @@ public class DownloadQueue {
     }
 
     /**
-     * Cancel all requests, Already in the execution of the request can't use this method
+     * Cancel all requests, Already in the execution of the request can't use this method.
      */
     public void cancelAll() {
         synchronized (mDownloadQueue) {

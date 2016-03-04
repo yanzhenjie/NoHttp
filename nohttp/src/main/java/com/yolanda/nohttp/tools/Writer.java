@@ -15,16 +15,16 @@
  */
 package com.yolanda.nohttp.tools;
 
+import com.yolanda.nohttp.Binary;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.yolanda.nohttp.Binary;
-
 /**
- * <p>NoHttp sends data to the network as a Writer</p>
- * Created in Jan 16, 2016 12:00:57 PM
+ * <p>NoHttp sends data to the network as a Writer.</p>
+ * Created in Jan 16, 2016 12:00:57 P
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class Writer {
 
@@ -58,6 +58,7 @@ public class Writer {
             ((CounterOutputStream) mOutputStream).write(binary.getLength());
         } else {
             binary.onWriteBinary(mOutputStream);
+            binary.finish(true);
         }
     }
 

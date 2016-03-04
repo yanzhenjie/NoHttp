@@ -16,17 +16,23 @@
 package com.yolanda.nohttp.error;
 
 /**
- * Created in 2016/2/26 19:14
+ * Created in 2016/2/26 19:14.
  *
- * @author YOLANDA;
+ * @author YOLANDA.;
  */
 public class StorageReadWriteError extends Exception {
+
+    private static final long serialVersionUID = 178946465L;
 
     public StorageReadWriteError() {
     }
 
     public StorageReadWriteError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public StorageReadWriteError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
     }
 
     public StorageReadWriteError(Throwable throwable) {

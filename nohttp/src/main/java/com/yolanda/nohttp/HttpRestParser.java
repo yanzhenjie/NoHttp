@@ -18,8 +18,8 @@ package com.yolanda.nohttp;
 import android.os.SystemClock;
 
 /**
- * <p>The response parser, The result of parsing the network layer</p>
- * Created in Jan 25, 2016 4:17:40 PM
+ * <p>The response parser, The result of parsing the network layer.</p>
+ * Created in Jan 25, 2016 4:17:40 PM.
  *
  * @author YOLANDA;
  */

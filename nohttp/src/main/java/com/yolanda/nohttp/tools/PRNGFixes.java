@@ -15,6 +15,10 @@
  */
 package com.yolanda.nohttp.tools;
 
+import android.os.Build;
+import android.os.Process;
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -30,15 +34,11 @@ import java.security.SecureRandom;
 import java.security.SecureRandomSpi;
 import java.security.Security;
 
-import android.os.Build;
-import android.os.Process;
-import android.util.Log;
-
 /**
- * <p>Repair the PRNG SecureRandom</p>
- * Created in Jan 16, 2016 12:00:57 PM
+ * <p>Repair the PRNG SecureRandom.</p>
+ * Created in Jan 16, 2016 12:00:57 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public final class PRNGFixes {
 

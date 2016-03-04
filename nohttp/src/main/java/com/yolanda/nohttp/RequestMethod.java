@@ -16,10 +16,10 @@
 package com.yolanda.nohttp;
 
 /**
- * <p>HTTP request method</p>
- * Created in Oct 10, 2015 8:00:48 PM
+ * <p>HTTP request method.</p>
+ * Created in Oct 10, 2015 8:00:48 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public enum RequestMethod {
 

@@ -16,19 +16,19 @@
 package com.yolanda.nohttp.download;
 
 /**
- * <p>Download Network Interface</p>
- * Created in Oct 20, 2015 4:13:04 PM
+ * <p>Download Network Interface.</p>
+ * Created in Oct 20, 2015 4:13:04 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface Downloader {
 
     /**
-     * Execute a download task
+     * Execute a download task.
      *
-     * @param what             what of task
-     * @param downloadRequest  Download request parameter
-     * @param downloadListener The download process monitor
+     * @param what             what of task.
+     * @param downloadRequest  download request parameter.
+     * @param downloadListener the download process monitor.
      */
     void download(int what, DownloadRequest downloadRequest, DownloadListener downloadListener);
 

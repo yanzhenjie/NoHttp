@@ -31,10 +31,10 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 
 /**
- * <p>代理服务器</p>
- * Created in Jan 31, 2016 9:11:29 PM
+ * <p>代理服务器.</p>
+ * Created in Jan 31, 2016 9:11:29 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class ProXYActivity extends BaseActivity implements View.OnClickListener, HttpListener<String> {
 

@@ -16,8 +16,8 @@
 package com.yolanda.nohttp.error;
 
 /**
- * <p>Network error when requested</p>
- * Created in 2016/2/25 9:48
+ * <p>Network error when requested.</p>
+ * Created in 2016/2/25 9:48.
  *
  * @author YOLANDA;
  */
@@ -30,5 +30,13 @@ public class NetworkError extends Exception {
 
     public NetworkError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public NetworkError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
+
+    public NetworkError(Throwable throwable) {
+        super(throwable);
     }
 }

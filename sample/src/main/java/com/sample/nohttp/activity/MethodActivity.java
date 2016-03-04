@@ -33,19 +33,19 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 /**
- * <p>演示各种请求方法Demo<p>
- * Created in Oct 23, 2015 1:13:06 PM
+ * <p>演示各种请求方法Demo.<p>
+ * Created in Oct 23, 2015 1:13:06 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class MethodActivity extends BaseActivity implements HttpListener<String> {
 
     /**
-     * 请求对象
+     * 请求对象.
      */
     private Request<String> mRequest;
     /**
-     * 显示请求结果
+     * 显示请求结果.
      */
     private TextView mTvResult;
 

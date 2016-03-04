@@ -15,21 +15,21 @@
  */
 package com.yolanda.nohttp.cache;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.yolanda.nohttp.Logger;
-import com.yolanda.nohttp.db.DBManager;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.db.DBManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * <p>Cache database manager</p>
- * Created in Jan 10, 2016 12:42:29 AM
+ * <p>Cache database manager.</p>
+ * Created in Jan 10, 2016 12:42:29 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 class CacheDiskManager extends DBManager<CacheEntity> {
 

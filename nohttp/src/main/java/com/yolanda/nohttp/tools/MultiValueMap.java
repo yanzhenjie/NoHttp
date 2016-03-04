@@ -20,111 +20,113 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>Can save multiple the value of the map</p>
- * Created in Jan 10, 2016 5:00:07 PM
+ * <p>Can save multiple the value of the map.</p>
+ * Created in Jan 10, 2016 5:00:07 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface MultiValueMap<K, V> {
 
     /**
-     * Add a value for a key
+     * Add a value for a key.
      *
-     * @param key   Key
-     * @param value Value
+     * @param key   key.
+     * @param value value.
      */
     void add(K key, V value);
 
     /**
-     * Add more value to a key
+     * Add more value to a key.
      *
-     * @param key    Key
-     * @param values Values
+     * @param key    key.
+     * @param values values.
      */
     void add(K key, List<V> values);
 
     /**
-     * Set the value for a key, if the key has the value, delete all of the old value, then the new value added
+     * Set the value for a key, if the key has the value, delete all of the old value, then the new value added.
      *
-     * @param key   Key
-     * @param value Values
+     * @param key   key.
+     * @param value values.
      */
     void set(K key, V value);
 
     /**
-     * @param values Value
-     * @param key    Key
-     * @param values Values
+     * @param key    key.
+     * @param values values.
      * @see #set(Object, Object)
      */
     void set(K key, List<V> values);
 
     /**
-     * The removal of all key/value pair, add new keys to enter
+     * The removal of all key/value pair, add new keys to enter.
      *
-     * @param values Values
+     * @param values values.
      */
     void set(Map<K, List<V>> values);
 
     /**
-     * Delete a key-value
+     * Delete a key-value.
      *
-     * @param key Key
+     * @param key key.
      */
     void remove(K key);
 
     /**
-     * Remove all key-value
+     * Remove all key-value.
      */
     void clear();
 
     /**
-     * Get the key set
+     * Get the key set.
      *
-     * @return Set
+     * @return Set.
      */
     Set<K> keySet();
 
     /**
-     * To get all key of all values
+     * To get all key of all values.
      *
-     * @return List
+     * @return List.
      */
     List<V> values();
 
     /**
-     * To get the key of the at index value
+     * To get the key of the at index value.
      *
-     * @param key   Key
-     * @param index index value
+     * @param key   key.
+     * @param index index value.
+     * @return The value.
      */
     V getValue(K key, int index);
 
     /**
-     * To get key of all values
+     * To get key of all values.
      *
-     * @param key Key
+     * @param key key.
+     * @return values.
      */
     List<V> getValues(K key);
 
     /**
-     * The size of the map
+     * The size of the map.
      *
-     * @return size
+     * @return size.
      */
     int size();
 
     /**
-     * If the map has no value
+     * If the map has no value.
      *
-     * @return True: empty, false: not empty
+     * @return True: empty, false: not empty.
      */
     boolean isEmpty();
 
     /**
-     * Whether the map with a key
+     * Whether the map with a key.
      *
-     * @param key Key
+     * @param key key.
+     * @return True: contain, false: none.
      */
     boolean containsKey(K key);
 

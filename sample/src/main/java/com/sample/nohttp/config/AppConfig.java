@@ -25,9 +25,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Created in Nov 8, 2015 7:48:11 PM
+ * Created in Nov 8, 2015 7:48:11 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class AppConfig {
 
@@ -36,12 +36,12 @@ public class AppConfig {
     private SharedPreferences preferences;
 
     /**
-     * 是否是测试环境
+     * 是否是测试环境.
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     /**
-     * App根目录
+     * App根目录.
      */
     public String APP_PATH_ROOT;
 

@@ -19,8 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 /**
- * <p>JsonArray is returned by the server data, using the request object</p>
- * Created in Jan 19, 2016 3:32:28 PM
+ * <p>JsonArray is returned by the server data, using the request object.</p>
+ * Created in Jan 19, 2016 3:32:28 PM.
  *
  * @author YOLANDA;
  */

@@ -15,33 +15,33 @@
  */
 package com.yolanda.nohttp.download;
 
-import java.io.File;
-
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.RestRequest;
 
+import java.io.File;
+
 /**
- * <p>Download the implementation class of the parameter request, and convert it to the object of the network download</p>
- * Created in Jul 31, 2015 10:38:10 AM
+ * <p>Download the implementation class of the parameter request, and convert it to the object of the network download.</p>
+ * Created in Jul 31, 2015 10:38:10 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA.
  */
 public class RestDownloadRequest extends RestRequest<Void> implements DownloadRequest {
     /**
-     * File the target folder
+     * File the target folder.
      */
     private final String mFileDir;
     /**
-     * The file target name
+     * The file target name.
      */
     private final String mFileName;
     /**
-     * If is to download a file, whether the breakpoint continuing
+     * If is to download a file, whether the breakpoint continuing.
      */
     private final boolean isRange;
     /**
-     * If there is a old files, whether to delete the old files
+     * If there is a old files, whether to delete the old files.
      */
     private final boolean isDeleteOld;
 
@@ -60,11 +60,6 @@ public class RestDownloadRequest extends RestRequest<Void> implements DownloadRe
     @Override
     public String getAccept() {
         return "*/*";
-    }
-
-    @Override
-    public String getContentType() {
-        return "";
     }
 
     @Override

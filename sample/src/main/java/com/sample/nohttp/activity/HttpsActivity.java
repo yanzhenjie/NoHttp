@@ -33,14 +33,14 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * Created in Nov 3, 2015 1:48:34 PM
+ * Created in Nov 3, 2015 1:48:34 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class HttpsActivity extends BaseActivity implements View.OnClickListener, HttpListener<String> {
 
     /**
-     * 显示请求结果
+     * 显示请求结果.
      */
     private TextView mTvResult;
 

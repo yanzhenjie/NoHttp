@@ -16,8 +16,8 @@
 package com.yolanda.nohttp.error;
 
 /**
- * <p> When a network request the client error</p>
- * Created in 2016/2/25 17:14
+ * <p> When a network request the client error.</p>
+ * Created in 2016/2/25 17:14.
  *
  * @author YOLANDA;
  */
@@ -30,5 +30,13 @@ public class ClientError extends Exception {
 
     public ClientError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public ClientError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
+
+    public ClientError(Throwable throwable) {
+        super(throwable);
     }
 }

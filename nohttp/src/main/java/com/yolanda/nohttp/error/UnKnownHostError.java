@@ -16,8 +16,8 @@
 package com.yolanda.nohttp.error;
 
 /**
- * <p>The target host not found</p>
- * Created in 2016/2/25 10:49
+ * <p>The target host not found.</p>
+ * Created in 2016/2/25 10:49.
  *
  * @author YOLANDA;
  */
@@ -30,6 +30,14 @@ public class UnKnownHostError extends Exception {
 
     public UnKnownHostError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public UnKnownHostError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
+
+    public UnKnownHostError(Throwable throwable) {
+        super(throwable);
     }
 
 }

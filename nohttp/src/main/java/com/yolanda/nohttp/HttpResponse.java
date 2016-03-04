@@ -16,7 +16,7 @@
 package com.yolanda.nohttp;
 
 /**
- * Created in Jan 6, 2016 5:19:13 PM
+ * Created in Jan 6, 2016 5:19:13 PM.
  *
  * @author YOLANDA;
  */

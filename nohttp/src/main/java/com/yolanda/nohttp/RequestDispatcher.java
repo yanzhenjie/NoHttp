@@ -22,38 +22,38 @@ import android.os.Looper;
 import android.os.Process;
 
 /**
- * <p>Request queue polling thread</p>
- * Created in Oct 19, 2015 8:35:35 AM
+ * <p>Request queue polling thread.</p>
+ * Created in Oct 19, 2015 8:35:35 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class RequestDispatcher extends Thread {
     /**
-     * Gets the lock for Handler to prevent the request result from confusing
+     * Gets the lock for Handler to prevent the request result from confusing.
      */
     private static final Object HANDLER_LOCK = new Object();
     /**
-     * Poster of send request result
+     * Poster of send request result.
      */
     private static Handler sRequestHandler;
     /**
-     * Request queue
+     * Request queue.
      */
     private final BlockingQueue<HttpRequest<?>> mRequestQueue;
     /**
-     * HTTP request parse interface
+     * HTTP request parse interface.
      */
     private final ImplRestParser mImplRestParser;
     /**
-     * Whether the current request queue polling thread is out of
+     * Whether the current request queue polling thread is out of.
      */
     private volatile boolean mRunning = true;
 
     /**
-     * Create a request queue polling thread
+     * Create a request queue polling thread.
      *
-     * @param requestQueue   Request queue
-     * @param implRestParser Network request task actuator
+     * @param requestQueue   request queue.
+     * @param implRestParser network request task actuator.
      */
     public RequestDispatcher(BlockingQueue<HttpRequest<?>> requestQueue, ImplRestParser implRestParser) {
         mRequestQueue = requestQueue;
@@ -61,7 +61,7 @@ public class RequestDispatcher extends Thread {
     }
 
     /**
-     * Exit polling thread
+     * Exit polling thread.
      */
     public void quit() {
         mRunning = false;
@@ -69,9 +69,9 @@ public class RequestDispatcher extends Thread {
     }
 
     /**
-     * Dispatcher is running
+     * Dispatcher is running.
      *
-     * @return the status
+     * @return the status.
      */
     public boolean isRunning() {
         return mRunning;
@@ -100,13 +100,15 @@ public class RequestDispatcher extends Thread {
             startThread.onStart();
             getPosterHandler().post(startThread);
 
-            // finish
-            request.request.finish(true);
-            request.request.queue(false);
-            final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
+            // request
             Response<?> response = mImplRestParser.parserRequest(request.request);
+
+            // finish
+            final ThreadPoster finishThread = new ThreadPoster(request.what, request.responseListener);
             finishThread.onFinished();
             getPosterHandler().post(finishThread);
+            request.request.finish(true);
+            request.request.queue(false);
 
             // response
             if (request.request.isCanceled())
@@ -128,11 +130,11 @@ public class RequestDispatcher extends Thread {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public class ThreadPoster implements Runnable {
+    private class ThreadPoster implements Runnable {
 
-        public final static int COMMAND_START = 0;
-        public final static int COMMAND_RESPONSE = 1;
-        public final static int COMMAND_FINISH = 2;
+        public static final int COMMAND_START = 0;
+        public static final int COMMAND_RESPONSE = 1;
+        public static final int COMMAND_FINISH = 2;
 
         private final int what;
         private final OnResponseListener responseListener;
@@ -161,11 +163,11 @@ public class RequestDispatcher extends Thread {
         @Override
         public void run() {
             if (responseListener != null) {
-                if (command == COMMAND_START) {
+                if (command == COMMAND_START)
                     responseListener.onStart(what);
-                } else if (command == COMMAND_FINISH) {
+                else if (command == COMMAND_FINISH)
                     responseListener.onFinish(what);
-                } else if (command == COMMAND_RESPONSE) {
+                else if (command == COMMAND_RESPONSE) {
                     if (response == null) {
                         responseListener.onFailed(what, null, null, null, 0, 0);
                     } else {

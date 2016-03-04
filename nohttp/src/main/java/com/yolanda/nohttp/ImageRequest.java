@@ -15,19 +15,19 @@
  */
 package com.yolanda.nohttp;
 
-import java.util.Locale;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
+import java.util.Locale;
+
 /**
- * <p>Image request parameter</p>
- * Created in Oct 17, 2015 12:17:57 PM
+ * <p>Image request parameter.</p>
+ * Created in Oct 17, 2015 12:17:57 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class ImageRequest extends RestRequest<Bitmap> {
 
@@ -37,7 +37,7 @@ public class ImageRequest extends RestRequest<Bitmap> {
     private ScaleType mScaleType;
 
     /**
-     * Decoding lock so that we don't decode more than one image at a time (to avoid OOM's)
+     * Decoding lock so that we don't decode more than one image at a time (to avoid OOM's).
      */
     private static final Object DECODE_LOCK = new Object();
 

@@ -16,29 +16,29 @@
 package com.yolanda.nohttp.able;
 
 /**
- * <p>Cancel interface</p>
- * Created in Dec 17, 2015 11:42:10 AM
+ * <p>Cancel interface.</p>
+ * Created in Dec 17, 2015 11:42:10 AM.
  *
  * @author YOLANDA;
  */
 public interface CancelAble {
 
     /**
-     * Change cancel state
+     * Change cancel state.
      *
-     * @param cancel true or yes
+     * @param cancel true or yes.
      */
     void cancel(boolean cancel);
 
     /**
      * Has it been canceled ?
      *
-     * @return True: canceled, false: no cancellation
+     * @return true: canceled, false: no cancellation.
      */
     boolean isCanceled();
 
     /**
-     * Change the current cancel status as contrary to the current status
+     * Change the current cancel status as contrary to the current status.
      */
     void toggleCancel();
 

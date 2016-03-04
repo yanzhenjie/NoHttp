@@ -16,24 +16,24 @@
 package com.yolanda.nohttp.able;
 
 /**
- * <p>According to the sign cancel interface</p>
- * Created in Nov 12, 2015 5:11:56 PM
+ * <p>According to the sign cancel interface.</p>
+ * Created in Nov 12, 2015 5:11:56 PM.
  *
  * @author YOLANDA;
  */
 public interface SignCancelAble extends CancelAble {
 
     /**
-     * Cancel operation by contrast the sign
+     * Cancel operation by contrast the sign.
      *
-     * @param sign An object that can be null
+     * @param sign an object that can be null.
      */
     void cancelBySign(Object sign);
 
     /**
-     * Set cancel sign
+     * Set cancel sign.
      *
-     * @param object save a object
+     * @param object save a object.
      */
     void setCancelSign(Object object);
 

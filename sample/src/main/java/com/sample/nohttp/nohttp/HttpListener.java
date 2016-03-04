@@ -18,10 +18,10 @@ package com.sample.nohttp.nohttp;
 import com.yolanda.nohttp.Response;
 
 /**
- * <p>接受回调结果</p>
- * Created in Nov 4, 2015 12:54:50 PM
+ * <p>接受回调结果.</p>
+ * Created in Nov 4, 2015 12:54:50 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface HttpListener<T> {
 

@@ -15,15 +15,6 @@
  */
 package com.yolanda.nohttp.tools;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import com.yolanda.nohttp.Logger;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -38,39 +29,50 @@ import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
+import com.yolanda.nohttp.Logger;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
- * Created in Nov 4, 2015 3:07:29 PM
+ * Created in Nov 4, 2015 3:07:29 PM.
  *
  * @author YOLANDA;
  */
 public class ImageLocalLoader {
     /**
-     * Single lock
+     * Single lock.
      */
     private static final Object SINGLE_OBJECT = new Object();
     /**
-     * Single module
+     * Single module.
      */
     private static ImageLocalLoader mInstance;
     /**
-     * Default gray image
+     * Default gray image.
      */
     private Drawable mDefaultDrawable;
     /**
-     * Image cache
+     * Image cache.
      */
     private LruCache<String, Bitmap> mLruCache;
     /**
-     * Thread pool
+     * Thread pool.
      */
     private ExecutorService mExecutorService;
     /**
-     * Update poster
+     * Update poster.
      */
     private Handler mPosterHandler;
 
     /**
-     * Get single object
+     * Get single object.
+     *
+     * @return {@link ImageLocalLoader}.
      */
     public static ImageLocalLoader getInstance() {
         synchronized (SINGLE_OBJECT) {
@@ -106,11 +108,11 @@ public class ImageLocalLoader {
     }
 
     /**
-     * Deposit in the province read images, width is high, the greater the picture clearer, but also the memory
+     * Deposit in the province read images, width is high, the greater the picture clearer, but also the memory.
      *
-     * @param imagePath Pictures in the path of the memory card
-     * @param maxWidth  The highest limit value target width
-     * @param maxHeight The highest limit value target height
+     * @param imagePath pictures in the path of the memory card.
+     * @param maxWidth  the highest limit value target width.
+     * @param maxHeight the highest limit value target height.
      * @return Bitmap
      */
     public Bitmap readImage(String imagePath, int maxWidth, int maxHeight) {
@@ -142,10 +144,10 @@ public class ImageLocalLoader {
     }
 
     /**
-     * According to the ImageView obtains appropriate width and height of compression
+     * According to the ImageView obtains appropriate width and height of compression.
      *
-     * @param imageView ImageView
-     * @param viewSizes ViewSize
+     * @param imageView {@link ImageView}.
+     * @param viewSizes ViewSize.
      */
     public void measureSize(ImageView imageView, int[] viewSizes) {
         final DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
@@ -167,10 +169,10 @@ public class ImageLocalLoader {
     }
 
     /**
-     * Set the default image, resId from drawable. Is displayed when loading or loading failure
+     * Set the default image, resId from drawable. Is displayed when loading or loading failure.
      *
-     * @param context context
-     * @param resId   Res id
+     * @param context context.
+     * @param resId   res id.
      */
     @SuppressLint("NewApi")
     public void setDefaultImage(Context context, int resId) {
@@ -178,54 +180,55 @@ public class ImageLocalLoader {
     }
 
     /**
-     * Set the default image, resId from drawable. Is displayed when loading or loading failure
+     * Set the default image, resId from drawable. Is displayed when loading or loading failure.
      *
-     * @param color color
+     * @param color color.
      */
     public void setDefaultImageColor(int color) {
         mDefaultDrawable = new ColorDrawable(color);
     }
 
     /**
-     * Load image from local SDCard
+     * Load image from local SDCard.
      *
-     * @param imageView ImageView
-     * @param imagePath Path
+     * @param imageView {@link ImageView}.
+     * @param imagePath path.
      */
     public void loadImage(ImageView imageView, String imagePath) {
         loadImage(imageView, imagePath, 0, 0, null);
     }
 
     /**
-     * Load image from local SDCard
+     * Load image from local SDCard.
      *
-     * @param imageView         ImageView
-     * @param imagePath         Path
-     * @param imageLoadListener Listener
+     * @param imageView         {@link ImageView}.
+     * @param imagePath         path.
+     * @param imageLoadListener {@link ImageLoadListener}.
      */
     public void loadImage(ImageView imageView, String imagePath, ImageLoadListener imageLoadListener) {
         loadImage(imageView, imagePath, 0, 0, imageLoadListener);
     }
 
     /**
-     * Load image from local SDCard
+     * Load image from local SDCard.
      *
-     * @param imageView ImageView
-     * @param imagePath Path
-     * @param width     Width
-     * @param height    Height
+     * @param imageView {@link ImageView}.
+     * @param imagePath path.
+     * @param width     width.
+     * @param height    height.
      */
     public void loadImage(ImageView imageView, String imagePath, int width, int height) {
         loadImage(imageView, imagePath, width, height, null);
     }
 
     /**
-     * According to the specified width high loading pictures, wide high, the greater the picture clearer, more memory
+     * According to the specified width high loading pictures, wide high, the greater the picture clearer, more memory.
      *
-     * @param imageView ImageView
-     * @param imagePath Path from local SDCard
-     * @param width     Target width
-     * @param height    Target height
+     * @param imageView         {@link ImageView}.
+     * @param imagePath         path from local SDCard.
+     * @param width             target width.
+     * @param height            target height.
+     * @param imageLoadListener {@link ImageLoadListener}.
      */
     public void loadImage(ImageView imageView, String imagePath, int width, int height, ImageLoadListener imageLoadListener) {
         if (imageLoadListener == null)

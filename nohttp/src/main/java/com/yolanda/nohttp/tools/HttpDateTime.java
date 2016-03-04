@@ -23,7 +23,7 @@ import java.util.TimeZone;
 
 /**
  * <p>Helper for parsing an HTTP date.</p>
- * Created in Jan 5, 2016 2:09:49 PM
+ * Created in Jan 5, 2016 2:09:49 PM.
  *
  * @author YOLANDA;
  */
@@ -34,10 +34,10 @@ public final class HttpDateTime {
     public static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
 
     /**
-     * Parsing the TimeZone of time in milliseconds
+     * Parsing the TimeZone of time in milliseconds.
      *
-     * @param gmtTime GRM Time, Format such as: {@value #FORMAT_HTTP_DATA}
-     * @return The number of milliseconds from 1970.1.1
+     * @param gmtTime GRM Time, Format such as: {@value #FORMAT_HTTP_DATA}.
+     * @return The number of milliseconds from 1970.1.1.
      * @throws ParseException if an error occurs during parsing.
      */
     public static long parseGMTToMillis(String gmtTime) throws ParseException {
@@ -48,10 +48,10 @@ public final class HttpDateTime {
     }
 
     /**
-     * Parsing the TimeZone of time from milliseconds
+     * Parsing the TimeZone of time from milliseconds.
      *
-     * @param milliseconds The number of milliseconds from 1970.1.1
-     * @return GRM Time, Format such as: {@value #FORMAT_HTTP_DATA}
+     * @param milliseconds the number of milliseconds from 1970.1.1.
+     * @return GRM Time, Format such as: {@value #FORMAT_HTTP_DATA}.
      */
     public static String formatMillisToGMT(long milliseconds) {
         Date date = new Date(milliseconds);
@@ -61,9 +61,9 @@ public final class HttpDateTime {
     }
 
     /**
-     * Returned the local number of milliseconds after 100
+     * Returned the local number of milliseconds after 100.
      *
-     * @return long format time
+     * @return Long format time.
      */
     public static long getMaxExpiryMillis() {
         return System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 365L * 100L;

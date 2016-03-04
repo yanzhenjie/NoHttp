@@ -36,14 +36,14 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * Created in Jan 31, 2016 8:03:59 PM
+ * Created in Jan 31, 2016 8:03:59 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class SSLContextUtil {
 
     /**
-     * 拿到https证书, SSLContext (NoHttp已经修补了系统的SecureRandom的bug)
+     * 拿到https证书, SSLContext (NoHttp已经修补了系统的SecureRandom的bug).
      */
     @SuppressLint("TrulyRandom")
     public static SSLContext getSSLContext() {
@@ -74,7 +74,7 @@ public class SSLContextUtil {
     }
 
     /**
-     * 如果不需要https证书.(NoHttp已经修补了系统的SecureRandom的bug)
+     * 如果不需要https证书.(NoHttp已经修补了系统的SecureRandom的bug).
      */
     public static SSLContext getDefaultSLLContext() {
         SSLContext sslContext = null;

@@ -25,20 +25,21 @@ import com.yolanda.nohttp.cache.CacheEntity;
 import android.text.TextUtils;
 
 /**
- * <p>Http header information analysis class</p>
- * Created in Oct 10, 2015 4:58:30 PM
+ * <p>Http header information analysis class.</p>
+ * Created in Oct 10, 2015 4:58:30 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class HeaderParser {
 
+
     /**
-     * A value of the header information
+     * A value of the header information.
      *
-     * @param content      like {@code text/html;charset=utf-8}
-     * @param key          like {@code charset}
-     * @param defaultValue list {@code utf-8}
-     * @return If you have a value key, you will return the parsed value if you don't return the default value
+     * @param content      like {@code text/html;charset=utf-8}.
+     * @param key          like {@code charset}.
+     * @param defaultValue list {@code utf-8}.
+     * @return If you have a value key, you will return the parsed value if you don't return the default value.
      */
     public static String parseHeadValue(String content, String key, String defaultValue) {
         if (!TextUtils.isEmpty(content) && !TextUtils.isEmpty(key)) {
@@ -59,10 +60,10 @@ public class HeaderParser {
     }
 
     /**
-     * Whether the content has been compressed
+     * Whether the content has been compressed.
      *
-     * @param contentEncoding Read the data from the server's head
-     * @return True: yes, false: no inclusion
+     * @param contentEncoding read the data from the server's head.
+     * @return True: yes, false: no inclusion.
      */
     public static boolean isGzipContent(String contentEncoding) {
         return contentEncoding != null && contentEncoding.toLowerCase(Locale.getDefault()).contains("gzip");
@@ -71,9 +72,9 @@ public class HeaderParser {
     /**
      * Extracts a {@link CacheEntity} from a {@link HttpResponse}.
      *
-     * @param responseHeaders Response headers
-     * @param responseBody    Response data
-     * @return Cache entity
+     * @param responseHeaders response headers.
+     * @param responseBody    response data.
+     * @return Cache entity.
      */
     public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
         long now = System.currentTimeMillis();

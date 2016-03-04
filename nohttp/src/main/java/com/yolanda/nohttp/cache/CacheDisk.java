@@ -15,17 +15,17 @@
  */
 package com.yolanda.nohttp.cache;
 
-import com.yolanda.nohttp.NoHttp;
-import com.yolanda.nohttp.db.Field;
-
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.db.Field;
+
 /**
- * <p>Cache database operation class</p>
- * Created in Jan 10, 2016 12:39:15 AM
+ * <p>Cache database operation class.</p>
+ * Created in Jan 10, 2016 12:39:15 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 class CacheDisk extends SQLiteOpenHelper implements Field {
 

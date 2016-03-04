@@ -15,6 +15,13 @@
  */
 package com.yolanda.nohttp.cookie;
 
+import android.text.TextUtils;
+
+import com.yolanda.nohttp.db.DBManager;
+import com.yolanda.nohttp.db.Field;
+import com.yolanda.nohttp.db.Where;
+import com.yolanda.nohttp.db.Where.Options;
+
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -25,15 +32,8 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.yolanda.nohttp.db.DBManager;
-import com.yolanda.nohttp.db.Field;
-import com.yolanda.nohttp.db.Where;
-import com.yolanda.nohttp.db.Where.Options;
-
-import android.text.TextUtils;
-
 /**
- * Created in Dec 17, 2015 7:20:52 PM
+ * Created in Dec 17, 2015 7:20:52 PM.
  *
  * @author YOLANDA;
  */
@@ -42,23 +42,23 @@ public enum DiskCookieStore implements CookieStore {
     INSTANCE;
 
     /**
-     * Cookie max count in disk
+     * Cookie max count in disk.
      */
     private final static int MAX_COOKIE_SIZE = 8888;
     /**
-     * Database sync lock
+     * Database sync lock.
      */
     private Lock mLock;
     /**
-     * Database Manager
+     * Database Manager.
      */
     private DBManager<CookieEntity> mManager;
     /**
-     * When delete expired cookies for the first time to delete temporary cookies
+     * When delete expired cookies for the first time to delete temporary cookies.
      */
     private volatile boolean firstDeleteExpiry = true;
     /**
-     * when Add and remove cookie notify
+     * When Add and remove cookie notify.
      */
     private CookieStoreListener mCookieStoreListener;
 
@@ -68,7 +68,9 @@ public enum DiskCookieStore implements CookieStore {
     }
 
     /**
-     * The callback when adding and deleting cookies
+     * The callback when adding and deleting cookies.
+     *
+     * @param mCookieStoreListener {@link CookieStoreListener}
      */
     public void setCookieStoreListener(CookieStoreListener mCookieStoreListener) {
         this.mCookieStoreListener = mCookieStoreListener;
@@ -215,7 +217,7 @@ public enum DiskCookieStore implements CookieStore {
     }
 
     /**
-     * Delete all expired cookies
+     * Delete all expired cookies.
      */
     private void deleteExpiryCookies() {
         if (firstDeleteExpiry) {
@@ -227,7 +229,7 @@ public enum DiskCookieStore implements CookieStore {
     }
 
     /**
-     * Delete all temp cookie
+     * Delete all temp cookie.
      */
     private void deleteTempCookie() {
         Where where = new Where(CookieDisk.EXPIRY, Options.EQUAL, -1L);
@@ -235,7 +237,7 @@ public enum DiskCookieStore implements CookieStore {
     }
 
     /**
-     * Trim the Cookie list
+     * Trim the Cookie list.
      */
     private void trimSize() {
         int count = mManager.count();
@@ -247,9 +249,9 @@ public enum DiskCookieStore implements CookieStore {
     }
 
     /**
-     * Get effective URI
+     * Get effective URI.
      *
-     * @param uri Cookie corresponding uri
+     * @param uri cookie corresponding uri.
      */
     private URI getEffectiveURI(final URI uri) {
         URI effectiveURI;

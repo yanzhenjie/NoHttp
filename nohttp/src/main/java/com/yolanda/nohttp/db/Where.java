@@ -18,12 +18,15 @@ package com.yolanda.nohttp.db;
 import java.util.List;
 
 /**
- * Created in Dec 19, 2015 4:16:24 PM
+ * Created in Dec 19, 2015 4:16:24 PM.
  *
  * @author YOLANDA;
  */
 public class Where {
 
+    /**
+     * Structure where the symbols.
+     */
     public enum Options {
 
         IN("IN"), EQUAL("="), NO_EQUAL("!="), ThAN_LARGE(">"), THAN_SMALL("<");
@@ -46,6 +49,11 @@ public class Where {
         builder = new StringBuilder();
     }
 
+    /**
+     * @param columnName columnName.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float).
+     */
     public Where(CharSequence columnName, Options op, Object value) {
         builder = new StringBuilder();
         add(columnName, op, value);
@@ -76,6 +84,12 @@ public class Where {
         return this;
     }
 
+    /**
+     * @param columnName columnName.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
+     * @return {@link Where}.
+     */
     public final Where add(CharSequence columnName, Options op, Object value) {
         if (Options.EQUAL.equals(op) || Options.ThAN_LARGE.equals(op) || Options.THAN_SMALL.equals(op) || Options.NO_EQUAL.equals(op)) {
             addColumnName(columnName, op);
@@ -112,6 +126,12 @@ public class Where {
         return this;
     }
 
+    /**
+     * @param columnName columnName.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
+     * @return {@link Where}.
+     */
     public final Where and(CharSequence columnName, Options op, Object value) {
         return and().add(columnName, op, value);
     }
@@ -130,6 +150,12 @@ public class Where {
         return this;
     }
 
+    /**
+     * @param columnName columnName.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
+     * @return {@link Where}.
+     */
     public final Where or(CharSequence columnName, Options op, Object value) {
         return or().add(columnName, op, value);
     }

@@ -16,8 +16,8 @@
 package com.yolanda.nohttp.error;
 
 /**
- * <p>The URL specified is incorrect</p>
- * Created in 2016/2/25 9:49
+ * <p>The URL specified is incorrect.</p>
+ * Created in 2016/2/25 9:49.
  *
  * @author YOLANDA;
  */
@@ -30,6 +30,14 @@ public class URLError extends Exception {
 
     public URLError(String detailMessage) {
         super(detailMessage);
+    }
+
+    public URLError(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
+
+    public URLError(Throwable throwable) {
+        super(throwable);
     }
 
 }

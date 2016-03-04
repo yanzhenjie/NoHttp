@@ -20,25 +20,25 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <p>In response to the class, use generic compatibility with all I to type, and put the parsing operation in Request</p>
- * Created in Oct 12, 2015 1:00:46 PM
+ * <p>In response to the class, use generic compatibility with all I to type, and put the parsing operation in {@link Request}.</p>
+ * Created in Oct 12, 2015 1:00:46 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class RestResponse<T> implements Response<T> {
 
     /**
-     * Corresponding request URL
+     * Corresponding request URL.
      */
     private final String url;
 
     /**
-     * RequestMethod
+     * RequestMethod.
      */
     private final RequestMethod method;
 
     /**
-     * Whether from the cache
+     * Whether from the cache.
      */
     private final boolean isFromCache;
 
@@ -53,20 +53,20 @@ public class RestResponse<T> implements Response<T> {
     private final byte[] byteArray;
 
     /**
-     * Corresponding request TAG
+     * Corresponding request TAG.
      */
     private final Object tag;
 
     /**
-     * Corresponding response results
+     * Corresponding response results.
      */
     private final T result;
     /**
-     * Millesecond of request
+     * Millisecond of request.
      */
     private final long mNetworkMillis;
     /**
-     * The error message
+     * The error message.
      */
     private Exception mException;
 

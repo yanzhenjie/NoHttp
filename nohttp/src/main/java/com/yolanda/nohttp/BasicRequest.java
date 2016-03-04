@@ -31,11 +31,13 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * <p>Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}</p>
- * Created in Nov 4, 2015 8:28:50 AM
+ * <p>Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}.</p>
+ * Created in Nov 4, 2015 8:28:50 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
+;
+
 public abstract class BasicRequest<T> implements Request<T> {
 
     private final String boundary = createBoundary();
@@ -43,41 +45,41 @@ public abstract class BasicRequest<T> implements Request<T> {
     private final String end_boundary = start_boundary + "--";
 
     /**
-     * User-Agent
+     * User-Agent.
      */
     private static String userAgent;
 
     /**
-     * Accept-Language
+     * Accept-Language.
      */
     private static String acceptLanguage;
 
     /**
-     * Target address
+     * Target address.
      */
     private String url;
     /**
-     * The real url
+     * The real .
      */
     private String buildUrl;
     /**
-     * Request method
+     * Request method.
      */
     private RequestMethod mRequestMethod;
     /**
-     * Cache key
+     * Cache key.
      */
     private String mCacheKey;
     /**
-     * If just read from cache
+     * If just read from cache.
      */
     private boolean isOnlyReadCache;
     /**
-     * If the request fails the data read from the cache
+     * If the request fails the data read from the cache.
      */
     private boolean isRequestFailedReadCache = false;
     /**
-     * Proxy server
+     * Proxy server.
      */
     private Proxy mProxy;
     /**
@@ -85,31 +87,31 @@ public abstract class BasicRequest<T> implements Request<T> {
      */
     private SSLSocketFactory mSSLSocketFactory = null;
     /**
-     * HostnameVerifier
+     * HostnameVerifier.
      */
     private HostnameVerifier mHostnameVerifier = null;
     /**
-     * Connect timeout of request
+     * Connect timeout of request.
      */
     private int mConnectTimeout = NoHttp.TIMEOUT_8S;
     /**
-     * Read data timeout
+     * Read data timeout.
      */
     private int mReadTimeout = NoHttp.TIMEOUT_8S;
     /**
-     * Redirect handler
+     * Redirect handler.
      */
     private RedirectHandler mRedirectHandler;
     /**
-     * Request heads
+     * Request heads.
      */
     private Headers mHeaders;
     /**
-     * RequestBody
+     * RequestBody.
      */
     private byte[] mRequestBody;
     /**
-     * Queue tag
+     * Queue tag.
      */
     private boolean queue = false;
     /**
@@ -117,36 +119,36 @@ public abstract class BasicRequest<T> implements Request<T> {
      */
     private boolean isStart = false;
     /**
-     * The request is completed
+     * The request is completed.
      */
     private boolean isFinished = false;
     /**
-     * Has been canceled
+     * Has been canceled.
      */
     private boolean isCanceled = false;
     /**
-     * Cancel sign
+     * Cancel sign.
      */
     private Object cancelSign;
     /**
-     * Tag of request
+     * Tag of request.
      */
     private Object mTag;
 
     /**
-     * Create a request, RequestMethod is {@link RequestMethod#GET}
+     * Create a request, RequestMethod is {@link RequestMethod#GET}.
      *
-     * @param url request adress, like: http://www.google.com
+     * @param url request address, like: http://www.google.com.
      */
     public BasicRequest(String url) {
         this(url, RequestMethod.GET);
     }
 
     /**
-     * Create a request
+     * Create a request.
      *
-     * @param url           request adress, like: http://www.google.com
-     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}
+     * @param url           request adress, like: http://www.google.com.
+     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public BasicRequest(String url, RequestMethod requestMethod) {
         if (TextUtils.isEmpty(url))
@@ -164,7 +166,9 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Rebuilding the URL, compatible with the GET method, using {@code request.add(key, value);}
+     * Rebuilding the URL, compatible with the GET method, using {@link Request#add(String, String)}.
+     *
+     * @return String url.
      */
     protected final String buildUrl() {
         StringBuffer urlBuffer = new StringBuffer(url);
@@ -186,7 +190,7 @@ public abstract class BasicRequest<T> implements Request<T> {
 
     @Override
     public boolean needCache() {
-        return RequestMethod.GET == getRequestMethod();
+        return RequestMethod.GET == getRequestMethod() || isRequestFailedReadCache();
     }
 
     @Override
@@ -389,7 +393,9 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Send form data
+     * Send form data.
+     *
+     * @param writer {@link Writer}.
      */
     protected void writeFormStreamData(Writer writer) {
         try {
@@ -409,7 +415,12 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Send text data in a form
+     * Send text data in a form.
+     *
+     * @param writer {@link Writer}
+     * @param key    equivalent to form the name of the input label, {@code "Content-Disposition: form-data; name=key"}.
+     * @param value  equivalent to form the value of the input label.
+     * @throws IOException Write the data may be abnormal.
      */
     private void writeFormString(Writer writer, String key, String value) throws IOException {
         print(writer.isPrint(), key + " = " + value);
@@ -426,7 +437,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Send binary data in a form
+     * Send binary data in a form.
      */
     private void writeFormBinary(Writer writer, String key, Binary value) throws IOException {
         print(writer.isPrint(), key + " is Binary");
@@ -448,7 +459,9 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Send non form data
+     * Send non form data.
+     *
+     * @param writer {@link Writer} structure of the Writer's need to HttpURLConnection OutputStream.
      */
     protected void writeCommonStreamData(Writer writer) {
         String requestBody = buildCommonParams().toString();
@@ -462,7 +475,9 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Send request {@code RequestBody}
+     * Send request requestBody.
+     *
+     * @param writer structure of the Writer's need to HttpURLConnection OutputStream.
      */
     protected void writeRequestBody(Writer writer) {
         try {
@@ -475,7 +490,9 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * split joint non form data
+     * split joint non form data.
+     *
+     * @return string parameter combination, each key value on nails with {@code "&"} space.
      */
     protected StringBuffer buildCommonParams() {
         StringBuffer paramBuffer = new StringBuffer();
@@ -587,22 +604,35 @@ public abstract class BasicRequest<T> implements Request<T> {
             cancel(true);
     }
 
+    /**
+     * Returns the data "Charset".
+     *
+     * @return Such as: {@code UTF-8}, {@code GBK}, {@code GB2312}.
+     */
     public String getParamsEncoding() {
         return NoHttp.CHARSET_UTF8;
     }
 
     /**
-     * Get the parameters set
+     * Get the parameters set.
+     *
+     * @return Should return the set of all the parameters.
      */
     protected abstract Set<String> keySet();
 
     /**
-     * Return {@link #keySet()} key corresponding to value
+     * Return {@link #keySet()} key corresponding to value.
      *
-     * @param key from {@link #keySet()}
+     * @param key from {@link #keySet()}.
+     * @return Param value
      */
     protected abstract Object value(String key);
 
+    /**
+     * Is there a Binary data upload ?
+     *
+     * @return Said true, false said no.
+     */
     protected boolean hasBinary() {
         Set<String> keys = keySet();
         for (String key : keys) {
@@ -620,7 +650,9 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Create acceptLanguage
+     * Create acceptLanguage.
+     *
+     * @return Returns the client can accept the language types. Such as:zh-CN,zh;0.8
      */
     public static final String createAcceptLanguage() {
         Locale locale = NoHttp.getContext().getResources().getConfiguration().locale;
@@ -633,9 +665,9 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     /**
-     * Randomly generated boundary mark
+     * Randomly generated boundary mark.
      *
-     * @return random code
+     * @return Random code.
      */
     public static final String createBoundary() {
         StringBuffer sb = new StringBuffer("------------------");

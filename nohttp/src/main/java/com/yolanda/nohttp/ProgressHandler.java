@@ -16,11 +16,18 @@
 package com.yolanda.nohttp;
 
 /**
- * Created in Jan 29, 2016 10:56:37 AM
+ * Created in Jan 29, 2016 10:56:37 AM.
  *
  * @author YOLANDA;
  */
 public interface ProgressHandler {
 
+    /**
+     * Invoked when the upload progress changes.
+     *
+     * @param what     what of {@link FileBinary#setUploadListener(int, OnUploadListener)}.
+     * @param progress progress
+     * @see FileBinary#setUploadListener(int, OnUploadListener)
+     */
     void onProgress(int what, int progress);
 }

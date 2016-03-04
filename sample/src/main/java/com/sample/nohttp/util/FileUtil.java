@@ -25,14 +25,14 @@ import android.os.Environment;
 import android.os.StatFs;
 
 /**
- * Created in Sep 10, 2015 4:22:18 PM
+ * Created in Sep 10, 2015 4:22:18 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class FileUtil {
 
     /**
-     * 得到SD卡根目录
+     * 得到SD卡根目录.
      */
     public static File getRootPath() {
         File path = null;
@@ -45,7 +45,7 @@ public class FileUtil {
     }
 
     /**
-     * SD卡是否可用
+     * SD卡是否可用.
      */
     public static boolean sdCardIsAvailable() {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -56,7 +56,7 @@ public class FileUtil {
     }
 
     /**
-     * 文件或者文件夹是否存在
+     * 文件或者文件夹是否存在.
      */
     public static boolean fileExists(String filePath) {
         File file = new File(filePath);
@@ -64,7 +64,7 @@ public class FileUtil {
     }
 
     /**
-     * 删除指定文件夹下所有文件, 保留文件夹
+     * 删除指定文件夹下所有文件, 保留文件夹.
      */
     public static boolean delAllFile(String path) {
         boolean flag = false;
@@ -89,7 +89,7 @@ public class FileUtil {
     }
 
     /**
-     * 文件复制
+     * 文件复制.
      */
     public static boolean copy(String srcFile, String destFile) {
         try {
@@ -110,10 +110,10 @@ public class FileUtil {
     }
 
     /**
-     * 复制整个文件夹内
+     * 复制整个文件夹内.
      *
-     * @param oldPath String 原文件路径如：c:/fqf
-     * @param newPath String 复制后路径如：f:/fqf/ff
+     * @param oldPath string 原文件路径如：c:/fqf.
+     * @param newPath string 复制后路径如：f:/fqf/ff.
      */
     public static void copyFolder(String oldPath, String newPath) {
         try {
@@ -150,7 +150,7 @@ public class FileUtil {
     }
 
     /**
-     * 重命名文件
+     * 重命名文件.
      */
     public static boolean renameFile(String resFilePath, String newFilePath) {
         File resFile = new File(resFilePath);
@@ -159,7 +159,7 @@ public class FileUtil {
     }
 
     /**
-     * 获取磁盘可用空间
+     * 获取磁盘可用空间.
      */
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
@@ -178,7 +178,7 @@ public class FileUtil {
     }
 
     /**
-     * 获取某个目录可用大小
+     * 获取某个目录可用大小.
      */
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
@@ -196,7 +196,7 @@ public class FileUtil {
     }
 
     /**
-     * 获取文件或者文件夹大小
+     * 获取文件或者文件夹大小.
      */
     public static long getFileAllSize(String path) {
         File file = new File(path);
@@ -217,7 +217,7 @@ public class FileUtil {
     }
 
     /**
-     * 创建一个文件
+     * 创建一个文件.
      */
     public static boolean initFile(String path) {
         boolean result = false;
@@ -238,7 +238,7 @@ public class FileUtil {
     }
 
     /**
-     * 创建一个文件夹
+     * 创建一个文件夹.
      */
     public static boolean initDirectory(String path) {
         boolean result = false;
@@ -255,7 +255,7 @@ public class FileUtil {
     }
 
     /**
-     * 复制文件
+     * 复制文件.
      */
     public static void copyFile(File from, File to) throws IOException {
         if (!from.exists()) {
@@ -270,7 +270,7 @@ public class FileUtil {
     }
 
     /**
-     * 复制文件
+     * 复制文件.
      */
     public static long copyFile(InputStream from, File to) throws IOException {
         long totalBytes = 0;
@@ -290,7 +290,7 @@ public class FileUtil {
     }
 
     /**
-     * 保存流到文件
+     * 保存流到文件.
      */
     public static void saveFile(InputStream inputStream, String filePath) {
         try {
@@ -308,7 +308,7 @@ public class FileUtil {
     }
 
     /**
-     * 用UTF8保存一个文件
+     * 用UTF8保存一个文件.
      */
     public static void saveFileUTF8(String path, String content, Boolean append) throws IOException {
         FileOutputStream fos = new FileOutputStream(path, append);
@@ -321,7 +321,7 @@ public class FileUtil {
     }
 
     /**
-     * 用UTF8读取一个文件
+     * 用UTF8读取一个文件.
      */
     public static String getFileUTF8(String path) {
         String result = "";
@@ -339,7 +339,7 @@ public class FileUtil {
     }
 
     /**
-     * 得到一个文件Intent
+     * 得到一个文件Intent.
      */
     public static Intent getFileIntent(String path, String mimetype) {
         Intent intent = new Intent(Intent.ACTION_VIEW);

@@ -18,60 +18,60 @@ package com.yolanda.nohttp.download;
 import com.yolanda.nohttp.Request;
 
 /**
- * <p>Download task request interface</p>
- * Created in Oct 21, 2015 11:09:04 AM
+ * <p>Download task request interface.</p>
+ * Created in Oct 21, 2015 11:09:04 AM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface DownloadRequest extends Request<Void> {
 
     /**
-     * Also didn't download to start download again
+     * Also didn't download to start download again.
      */
     int STATUS_RESTART = 0;
     /**
-     * Part has been downloaded, continue to download last time
+     * Part has been downloaded, continue to download last time.
      */
     int STATUS_RESUME = 1;
     /**
-     * Has the download is complete, not to download operation
+     * Has the download is complete, not to download operation.
      */
     int STATUS_FINISH = 2;
 
     /**
-     * Return the mFileDir
+     * Return the mFileDir.
      *
-     * @return String, not empty
+     * @return String, not empty.
      */
     String getFileDir();
 
     /**
-     * Return the mFileName
+     * Return the mFileName.
      *
-     * @return String, not empty
+     * @return String, not empty.
      */
     String getFileName();
 
     /**
-     * Return the isRange
+     * Return the isRange.
      *
-     * @return True: breakpoint continuing, false: don't need a breakpoint continuing
+     * @return true: breakpoint continuing, false: don't need a breakpoint continuing.
      */
     boolean isRange();
 
     /**
-     * If there is a old files, whether to delete the old files
+     * If there is a old files, whether to delete the old files.
      *
-     * @return True: deleted, false: don't delete
+     * @return true: deleted, false: don't delete.
      */
     boolean isDeleteOld();
 
     /**
-     * Query before download status
+     * <p>Query before download status
      * STATUS_RESTART representative no download do to download again; Download STATUS_RESUME represents a part of, to
-     * continue to download; STATUS_FINISH representatives have finished downloading.
+     * continue to download; STATUS_FINISH representatives have finished downloading.</p>
      *
-     * @return Int value, compared with the {@value #STATUS_RESTART}, {@value #STATUS_RESUME}, {@value #STATUS_FINISH}
+     * @return Int value, compared with the {@value #STATUS_RESTART}, {@value #STATUS_RESUME}, {@value #STATUS_FINISH}.
      * @see #STATUS_RESTART
      * @see #STATUS_RESUME
      * @see #STATUS_FINISH

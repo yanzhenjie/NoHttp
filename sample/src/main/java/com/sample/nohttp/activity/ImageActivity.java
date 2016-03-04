@@ -35,19 +35,19 @@ import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
 
 /**
- * <p>请求图片</p>
- * Created in Oct 23, 2015 7:46:17 PM
+ * <p>请求图片.</p>
+ * Created in Oct 23, 2015 7:46:17 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class ImageActivity extends BaseActivity implements HttpListener<Bitmap> {
 
     /**
-     * 显示图片
+     * 显示图片.
      */
     private ImageView mImageView;
     /**
-     * 显示状态
+     * 显示状态.
      */
     private TextView mTvResult;
 

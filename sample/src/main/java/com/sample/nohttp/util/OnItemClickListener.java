@@ -18,7 +18,7 @@ package com.sample.nohttp.util;
 import android.view.View;
 
 /**
- * Created in Jan 28, 2016 5:15:38 PM
+ * Created in Jan 28, 2016 5:15:38 PM.
  *
  * @author YOLANDA;
  */

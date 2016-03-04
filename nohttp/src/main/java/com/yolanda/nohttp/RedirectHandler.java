@@ -16,12 +16,18 @@
 package com.yolanda.nohttp;
 
 /**
- * Created in Jan 31, 2016 8:45:37 PM
+ * Created in Jan 31, 2016 8:45:37 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface RedirectHandler {
 
+    /**
+     * When the server's response code is 302 or 303 corresponding need to redirect is invoked.
+     *
+     * @param responseHeaders The service side head accordingly.
+     * @return {@link Request}.
+     */
     Request<?> onRedirect(Headers responseHeaders);
 
 }

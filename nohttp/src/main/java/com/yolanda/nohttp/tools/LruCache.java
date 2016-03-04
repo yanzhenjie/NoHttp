@@ -13,9 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Created in Jan 27, 2016 2:54:13 PM
+ * Created in Jan 27, 2016 2:54:13 PM.
  *
- * @author YOLANDA; QQ: 757699476
+ * @author YOLANDA;
  */
 public class LruCache<K, V> {
     private final LinkedHashMap<K, V> map;
@@ -208,17 +208,16 @@ public class LruCache<K, V> {
     }
 
     /**
-     * Called for entries that have been evicted or removed. This method is
+     * <p>Called for entries that have been evicted or removed. This method is
      * invoked when a value is evicted to make space, removed by a call to
      * {@link #remove}, or replaced by a call to {@link #put}. The default
-     * implementation does nothing.
-     * <p/>
-     * <p/>
-     * The method is called without synchronization: other threads may
-     * access the cache while this method is executing.
+     * implementation does nothing.</p>
+     * <p>The method is called without synchronization: other threads may
+     * access the cache while this method is executing.</p>
      *
      * @param evicted  true if the entry is being removed to make space, false
      *                 if the removal was caused by a {@link #put} or {@link #remove}.
+     * @param key      Key
      * @param oldValue Old Value
      * @param newValue the new value for {@code key}, if it exists. If non-null,
      *                 this removal was caused by a {@link #put}. Otherwise it was caused by
@@ -228,21 +227,17 @@ public class LruCache<K, V> {
     }
 
     /**
-     * Called after a cache miss to compute a value for the corresponding key.
+     * <p>Called after a cache miss to compute a value for the corresponding key.
      * Returns the computed value or null if no value can be computed. The
      * default implementation returns null.
-     * <p/>
-     * <p/>
      * The method is called without synchronization: other threads may
-     * access the cache while this method is executing.
-     * <p/>
-     * <p/>
-     * If a value for {@code key} exists in the cache when this method
+     * access the cache while this method is executing.</p>
+     * <p>If a value for {@code key} exists in the cache when this method
      * returns, the created value will be released with {@link #entryRemoved}
      * and discarded. This can occur when multiple threads request the same key
      * at the same time (causing multiple values to be created), or when one
      * thread calls {@link #put} while another is creating a value for the same
-     * key.
+     * key.</p>
      *
      * @param key Key
      * @return Value
@@ -260,12 +255,10 @@ public class LruCache<K, V> {
     }
 
     /**
-     * Returns the size of the entry for {@code key} and {@code value} in
+     * <p>Returns the size of the entry for {@code key} and {@code value} in
      * user-defined units. The default implementation returns 1 so that size
-     * is the number of entries and max size is the maximum number of entries.
-     * <p/>
-     * <p/>
-     * An entry's size must not change while it is in the cache.
+     * is the number of entries and max size is the maximum number of entries.</p>
+     * <p>An entry's size must not change while it is in the cache.</p>
      *
      * @param key   Key
      * @param value Value

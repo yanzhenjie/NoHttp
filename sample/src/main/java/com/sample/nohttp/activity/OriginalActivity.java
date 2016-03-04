@@ -33,25 +33,25 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * <p>最原始的使用方法</p>
- * Created in Nov 4, 2015 1:38:02 PM
+ * <p>最原始的使用方法.</p>
+ * Created in Nov 4, 2015 1:38:02 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public class OriginalActivity extends BaseActivity implements View.OnClickListener {
 
     /**
-     * 用来标志请求的what, 类似handler的what一样，这里用来区分请求
+     * 用来标志请求的what, 类似handler的what一样，这里用来区分请求.
      */
     private static final int NOHTTP_WHAT_TEST = 0x001;
 
     /**
-     * 请求的时候等待框
+     * 请求的时候等待框.
      */
     private WaitDialog mWaitDialog;
 
     /**
-     * 请求队列
+     * 请求队列.
      */
     private RequestQueue requestQueue;
 
@@ -96,7 +96,7 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 回调对象，接受请求结果
+     * 回调对象，接受请求结果.
      */
     private OnResponseListener<String> onResponseListener = new OnResponseListener<String>() {
         @SuppressWarnings("unused")

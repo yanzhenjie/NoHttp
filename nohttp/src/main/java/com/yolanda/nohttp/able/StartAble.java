@@ -16,29 +16,29 @@
 package com.yolanda.nohttp.able;
 
 /**
- * <p>Start interface</p>
- * Created in Nov 12, 2015 5:03:54 PM
+ * <p>Start interface.</p>
+ * Created in Nov 12, 2015 5:03:54 PM.
  *
  * @author YOLANDA;
  */
 public interface StartAble {
 
     /**
-     * Change start state
+     * Change start state.
      *
-     * @param start True: start, false: un start
+     * @param start true: start, false: un start.
      */
     void start(boolean start);
 
     /**
      * Has it been started ?
      *
-     * @return True: has already started, false: haven't started
+     * @return true: has already started, false: haven't started.
      */
     boolean isStarted();
 
     /**
-     * Change the current start status as contrary to the current status
+     * Change the current start status as contrary to the current status.
      */
     void toggleStart();
 

@@ -15,22 +15,21 @@
  */
 package com.yolanda.nohttp;
 
-import java.io.IOException;
+import com.yolanda.nohttp.tools.MultiValueMap;
+
+import org.json.JSONException;
+
 import java.net.CookieHandler;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
-
-import com.yolanda.nohttp.tools.MultiValueMap;
-
 /**
- * <p>Http header</p>
- * Created in Jan 10, 2016 2:29:42 PM
+ * <p>Http header.</p>
+ * Created in Jan 10, 2016 2:29:42 PM.
  *
- * @author YOLANDA
+ * @author YOLANDA;
  */
 public interface Headers extends MultiValueMap<String, String> {
 
@@ -91,138 +90,137 @@ public interface Headers extends MultiValueMap<String, String> {
     String HEAD_KEY_SET_COOKIE2 = "Set-Cookie2";
 
     /**
-     * Copy all head to Headers
+     * Copy all head to Headers.
      *
-     * @param headers Headers
+     * @param headers headers.
      */
     void addAll(Headers headers);
 
     /**
-     * Remove all of the head now, add a new head in
+     * Remove all of the head now, add a new head in.
      *
-     * @param headers headers
+     * @param headers headers.
      */
     void setAll(Headers headers);
 
     /**
-     * Conform to the URI of the Cookie is added to the head
+     * Conform to the URI of the Cookie is added to the head.
      *
-     * @param uri           url
-     * @param cookieHandler cookieHandler
-     * @throws IOException When reading a Cookie from CookieHandler may be exception
+     * @param uri           url.
+     * @param cookieHandler cookieHandler.
      */
     void addCookie(URI uri, CookieHandler cookieHandler);
 
     /**
-     * From the json format String parsing out the {@code Map<String, List<String>>} data
+     * From the json format String parsing out the {@code Map<String, List<String>>} data.
      *
-     * @param jsonString Json string
-     * @throws JSONException Thrown it when format error
+     * @param jsonString json string.
+     * @throws JSONException Thrown it when format error.
      */
     void setJSONString(String jsonString) throws JSONException;
 
     /**
-     * Into a json format string
+     * Into a json format string.
      *
-     * @return Json format data
+     * @return Json format data.
      */
     String toJSONString();
 
     /**
-     * Into a single key-value map
+     * Into a single key-value map.
      *
-     * @return Map
+     * @return Map.
      */
     Map<String, String> toRequestHeaders();
 
     /**
-     * To multiple key - the value of the map
+     * To multiple key - the value of the map.
      *
-     * @return Map format data
+     * @return Map format data.
      */
     Map<String, List<String>> toResponseHeaders();
 
     /**
-     * All the cookies in header information
+     * All the cookies in header information.
      *
-     * @return {@code List<Cookie>}
+     * @return {@code List<HttpCookie>}.
      */
     List<HttpCookie> getCookies();
 
     /**
-     * {@value #HEAD_KEY_CACHE_CONTROL}
+     * {@value #HEAD_KEY_CACHE_CONTROL}.
      *
-     * @return CacheControl
+     * @return CacheControl.
      */
     String getCacheControl();
 
     /**
-     * {@value #HEAD_KEY_CONTENT_ENCODING}
+     * {@value #HEAD_KEY_CONTENT_ENCODING}.
      *
-     * @return ContentEncoding
+     * @return ContentEncoding.
      */
     String getContentEncoding();
 
     /**
-     * {@value #HEAD_KEY_CONTENT_LENGTH}
+     * {@value #HEAD_KEY_CONTENT_LENGTH}.
      *
-     * @return ContentLength
+     * @return ContentLength.
      */
     int getContentLength();
 
     /**
-     * {@value #HEAD_KEY_CONTENT_TYPE}
+     * {@value #HEAD_KEY_CONTENT_TYPE}.
      *
-     * @return ContentType
+     * @return ContentType.
      */
     String getContentType();
 
     /**
-     * {@value #HEAD_KEY_DATE}
+     * {@value #HEAD_KEY_DATE}.
      *
-     * @return Date
+     * @return Date.
      */
     long getDate();
 
     /**
-     * {@value #HEAD_KEY_E_TAG}
+     * {@value #HEAD_KEY_E_TAG}.
      *
-     * @return ETag
+     * @return ETag.
      */
     String getETag();
 
     /**
-     * {@value #HEAD_KEY_EXPIRES}
+     * {@value #HEAD_KEY_EXPIRES}.
      *
-     * @return Expiration
+     * @return Expiration.
      */
     long getExpiration();
 
     /**
-     * {@value #HEAD_KEY_LAST_MODIFIED}
+     * {@value #HEAD_KEY_LAST_MODIFIED}.
      *
-     * @return LastModified
+     * @return LastModified.
      */
     long getLastModified();
 
     /**
-     * {@value #HEAD_KEY_LOCATION}
+     * {@value #HEAD_KEY_LOCATION}.
      *
-     * @return Location
+     * @return Location.
      */
     String getLocation();
 
     /**
-     * {@value #HEAD_KEY_RESPONSE_CODE}
+     * {@value #HEAD_KEY_RESPONSE_CODE}.
      *
-     * @return ResponseCode
+     * @return ResponseCode.
      */
     int getResponseCode();
 
     /**
-     * {@value #HEAD_KEY_RESPONSE_MESSAGE}
+     * {@value #HEAD_KEY_RESPONSE_MESSAGE}.
      *
-     * @throws ResponseMessage
+     * @return ResponseMessage.
      */
     String getResponseMessage();
 }
