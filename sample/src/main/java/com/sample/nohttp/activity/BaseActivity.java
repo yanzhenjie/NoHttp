@@ -15,8 +15,6 @@
  */
 package com.sample.nohttp.activity;
 
-import com.sample.nohttp.R;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
@@ -28,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.sample.nohttp.R;
 
 /**
  * Created in Jan 28, 2016 5:47:15 PM.

@@ -18,7 +18,6 @@ package com.sample.nohttp.activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +28,7 @@ import com.sample.nohttp.nohttp.CallServer;
 import com.sample.nohttp.nohttp.HttpListener;
 import com.sample.nohttp.util.Constants;
 import com.sample.nohttp.util.OnItemClickListener;
+import com.sample.nohttp.view.ListView;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
@@ -60,7 +60,7 @@ public class ImageActivity extends BaseActivity implements HttpListener<Bitmap> 
         mTvResult = findView(R.id.tv_status);
         String[] contentStrings = getResources().getStringArray(R.array.activity_method_item);
         StringAbsListAdapter listAdapter = new StringAbsListAdapter(this, R.layout.item_abs_grid_text, contentStrings, mItemClickListener);
-        ((AbsListView) findView(R.id.gv)).setAdapter(listAdapter);
+        ((ListView) findView(R.id.gv)).setAdapter(listAdapter);
     }
 
     private OnItemClickListener mItemClickListener = new OnItemClickListener() {

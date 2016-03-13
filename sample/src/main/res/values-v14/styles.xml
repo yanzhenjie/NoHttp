@@ -1,5 +1,7 @@
 <resources>
 
-    <style name="AppBaseTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar"></style>
+    <style name="AppBaseTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:windowActionBar">false</item>
+    </style>
 
 </resources>

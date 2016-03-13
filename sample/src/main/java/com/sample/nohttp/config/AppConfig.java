@@ -15,14 +15,14 @@
  */
 package com.sample.nohttp.config;
 
-import java.io.File;
-import java.util.Set;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.sample.nohttp.Application;
 import com.sample.nohttp.util.FileUtil;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import java.io.File;
+import java.util.Set;
 
 /**
  * Created in Nov 8, 2015 7:48:11 PM.
@@ -38,7 +38,7 @@ public class AppConfig {
     /**
      * 是否是测试环境.
      */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     /**
      * App根目录.

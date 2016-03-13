@@ -34,14 +34,14 @@ import android.widget.TextView;
  *
  * @author YOLANDA;
  */
-public class FastJsonActvity extends BaseActivity implements View.OnClickListener, HttpListener<JSONObject> {
+public class FastJsonActivity extends BaseActivity implements View.OnClickListener, HttpListener<JSONObject> {
 
     private TextView mTvResult;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setTitle(Application.getInstance().nohttpTitleList[1]);
-        setContentView(R.layout.activity_proxy);
+        setContentView(R.layout.activity_fastjson);
 
         findView(R.id.btn_start).setOnClickListener(this);
         mTvResult = findView(R.id.tv_result);

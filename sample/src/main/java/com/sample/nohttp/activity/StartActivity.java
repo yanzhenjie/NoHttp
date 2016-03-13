@@ -15,16 +15,16 @@
  */
 package com.sample.nohttp.activity;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
 import com.sample.nohttp.adapter.StringAbsListAdapter;
 import com.sample.nohttp.nohttp.CallServer;
 import com.sample.nohttp.util.OnItemClickListener;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AbsListView;
+import com.sample.nohttp.view.ListView;
 
 /**
  * <p>开始界面.</p>
@@ -41,7 +41,7 @@ public class StartActivity extends BaseActivity {
         hideBackBar();// 隐藏返回键
 
         StringAbsListAdapter listAdapter = new StringAbsListAdapter(this, R.layout.item_abs_list_text, Application.getInstance().nohttpTitleList, mItemClickListener);
-        ((AbsListView) findView(R.id.lv)).setAdapter(listAdapter);
+        ((ListView) findView(R.id.lv)).setAdapter(listAdapter);
     }
 
     /**
@@ -61,7 +61,7 @@ public class StartActivity extends BaseActivity {
                 intent = new Intent(this, OriginalActivity.class);
                 break;
             case 1:// 自定义请求FastJson
-                intent = new Intent(this, FastJsonActvity.class);
+                intent = new Intent(this, FastJsonActivity.class);
                 break;
             case 2:// 各种请求方法演示(GET, POST, HEAD, PUT等等)
                 intent = new Intent(this, MethodActivity.class);
@@ -72,8 +72,8 @@ public class StartActivity extends BaseActivity {
             case 4:// JsonObject, JsonArray
                 intent = new Intent(this, JsonActivity.class);
                 break;
-            case 5:// 响应码304缓存演示
-                intent = new Intent(this, CacheActivity.class);
+            case 5:// NoHttp缓存演示
+                intent = new Intent(this, CacheEntranceActivity.class);
                 break;
             case 6:// 响应码302/303重定向演示
                 intent = new Intent(this, RedirectActivity.class);

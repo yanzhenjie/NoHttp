@@ -341,9 +341,9 @@ public class FileUtil {
     /**
      * 得到一个文件Intent.
      */
-    public static Intent getFileIntent(String path, String mimetype) {
+    public static Intent getFileIntent(String path, String mimeType) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File(path)), mimetype);
+        intent.setDataAndType(Uri.fromFile(new File(path)), mimeType);
         return intent;
     }
 }

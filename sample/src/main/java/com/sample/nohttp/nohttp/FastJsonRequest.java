@@ -15,8 +15,6 @@
  */
 package com.sample.nohttp.nohttp;
 
-import android.text.TextUtils;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.yolanda.nohttp.Headers;
@@ -47,10 +45,10 @@ public class FastJsonRequest extends RestRequest<JSONObject> {
     @Override
     public JSONObject parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
         String result = StringRequest.parseResponseString(url, responseHeaders, responseBody);
-        JSONObject jsonObject = null;
-        if (!TextUtils.isEmpty(result)) {
+        JSONObject jsonObject;
+        try {
             jsonObject = JSON.parseObject(result);
-        } else {
+        } catch (Throwable e) {
             // 这里默认的错误可以定义为你们自己的协议
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("error", -1);

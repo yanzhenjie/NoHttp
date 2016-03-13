@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,12 @@
  */
 package com.sample.nohttp.activity;
 
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
 import com.sample.nohttp.adapter.StringAbsListAdapter;
@@ -23,47 +29,34 @@ import com.sample.nohttp.nohttp.HttpListener;
 import com.sample.nohttp.util.Constants;
 import com.sample.nohttp.util.OnItemClickListener;
 import com.sample.nohttp.util.Toast;
+import com.sample.nohttp.view.ListView;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.Response;
-
-import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ImageView;
-import android.widget.TextView;
+import com.yolanda.nohttp.cache.CacheMode;
 
 /**
- * <p>Http相应头304缓存演示.</p>
- * Created in Jan 31, 2016 12:11:03 PM.
+ * Created by YOLANDA on 2016/3/13.
  *
  * @author YOLANDA;
  */
-public class CacheActivity extends BaseActivity {
-
-	/*
-     * 先来普及一下响应码304缓存是什么意思:
-	 * 在RESTFUL的api中，http响应码很重要，一般响应码都是200; 当响应码是304时，表示客户端缓存有效, 客户端可以使用缓存;
-	 * 
-	 * NoHttp实现了Http协议1.1, 很好的支持RESTFUL接口; 根据协议当请求方式是GET时, 且服务器响应头包涵Last-Modified时,
-	 * 响应内容可以被客户端缓存起来, 下次请求时只需要验证缓存, 验证缓存时如果服务器响应码为304时, 表示客户端缓存有效, 可以
-	 * 继续使用缓存数据.
-	 * 
-	 * 由于NoHttp只是缓存了byte[], 所以不论图片, 还是String都可以很好的被缓存.
-	 */
-
+public class CacheOnlyReadCacheActivity extends BaseActivity {
+    /**
+     * 显示String或Json类型的请求结果。
+     */
     private TextView mTvResult;
-
+    /**
+     * 显示图片。
+     */
     private ImageView mIvResult;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
-        setTitle(Application.getInstance().nohttpTitleList[5]);
+        setTitle(Application.getInstance().cacheTitle[3]);
         setContentView(R.layout.activity_cache);
         String[] data = getResources().getStringArray(R.array.activity_cache_item);
         StringAbsListAdapter listAdapter = new StringAbsListAdapter(this, R.layout.item_abs_list_text, data, clickListener);
-        ((AbsListView) findView(R.id.lv)).setAdapter(listAdapter);
+        ((ListView) findView(R.id.lv)).setAdapter(listAdapter);
 
         mTvResult = findView(R.id.tv_result);
         mIvResult = findView(R.id.iv_result);
@@ -81,10 +74,11 @@ public class CacheActivity extends BaseActivity {
     };
 
     /**
-     * 请求String.
+     * 请求String。
      */
     private void requestString() {
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_CACHE_STRING);
+        request.setCacheMode(CacheMode.ONLY_READ_CACHE);//设置为ONLY_READ_CACHE表示只请求缓存，无论失败或者成功都不会请求服务器
         CallServer.getRequestInstance().add(this, 0, request, stringHttpListener, false, true);
     }
 
@@ -99,15 +93,16 @@ public class CacheActivity extends BaseActivity {
         public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
             mTvResult.setText("");
             mIvResult.setImageBitmap(null);
-            Toast.show("请求失败");
+            Toast.show("请求失败。");
         }
     };
 
     /**
-     * 请求Image.
+     * 请求Image。
      */
     private void requestImage() {
         Request<Bitmap> request = NoHttp.createImageRequest(Constants.URL_NOHTTP_CACHE_IMAGE);
+        request.setCacheMode(CacheMode.ONLY_READ_CACHE);//设置为ONLY_READ_CACHE表示只请求缓存，无论失败或者成功都不会请求服务器
         CallServer.getRequestInstance().add(this, 0, request, imageHttpListener, false, true);
     }
 
@@ -122,8 +117,7 @@ public class CacheActivity extends BaseActivity {
         public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
             mTvResult.setText("");
             mIvResult.setImageBitmap(null);
-            Toast.show("请求失败");
+            Toast.show("请求失败。");
         }
     };
-
 }

@@ -28,11 +28,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.OriginalActivity" />
-        <activity android:name=".activity.FastJsonActvity" />
+        <activity android:name=".activity.FastJsonActivity" />
         <activity android:name=".activity.MethodActivity" />
         <activity android:name=".activity.ImageActivity" />
         <activity android:name=".activity.JsonActivity" />
-        <activity android:name=".activity.CacheActivity" />
+        <activity android:name=".activity.CacheEntranceActivity" />
+        <activity android:name=".activity.CacheHttpActivity" />
+        <activity android:name=".activity.CacheRequestFailedReadCacheActivity" />
+        <activity android:name=".activity.CacheOnlyReadCacheActivity" />
+        <activity android:name=".activity.CacheIfNoneRequestActivity" />
         <activity android:name=".activity.RedirectActivity" />
         <activity android:name=".activity.UploadFileActivity" />
         <activity android:name=".activity.DownloadActivity" />

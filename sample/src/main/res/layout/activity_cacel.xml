@@ -6,6 +6,6 @@
 
     <TextView
         style="@style/TextViewStyle_WidthMatch"
-        android:text="@string/no_opration_des" />
+        android:text="@string/no_operation_des" />
 
 </LinearLayout>

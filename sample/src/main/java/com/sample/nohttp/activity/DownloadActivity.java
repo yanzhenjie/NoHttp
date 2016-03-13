@@ -15,7 +15,10 @@
  */
 package com.sample.nohttp.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,6 +27,8 @@ import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
 import com.sample.nohttp.config.AppConfig;
 import com.sample.nohttp.nohttp.CallServer;
+import com.sample.nohttp.util.FileUtil;
+import com.sample.nohttp.util.ProgressNotify;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.download.DownloadListener;
@@ -31,12 +36,14 @@ import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.error.ArgumentError;
 import com.yolanda.nohttp.error.ClientError;
 import com.yolanda.nohttp.error.NetworkError;
-import com.yolanda.nohttp.error.StorageReadWriteError;
 import com.yolanda.nohttp.error.ServerError;
+import com.yolanda.nohttp.error.StorageReadWriteError;
 import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
+
+import java.io.File;
 
 /**
  * <p>下载件demo.</p>
@@ -104,6 +111,12 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
             default:
                 break;
         }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setDataAndType(Uri.fromFile(new File("sdcard/es.apk")), "application/vnd.android.package-archive");
+        Application.getInstance().startActivity(intent);
+
     }
 
     @Override
@@ -116,12 +129,26 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
             // downloadRequest 下载请求对象
             // downloadListener 下载监听
             CallServer.getDownloadInstance().add(0, downloadRequest, this);
+            notify = new ProgressNotify();
+            Intent intent = new Intent(this, DownloadActivity.class);
+            notifyBuilder = notify.createNotification(0, intent, null, "正在下载", "正在下载", "正在下载文件，请稍候", R.mipmap.ic_launcher, 0);
         }
     }
 
+
+    /**
+     * 进度通知管理
+     */
+    private ProgressNotify notify;
+    /**
+     * 通知
+     */
+    private NotificationCompat.Builder notifyBuilder;
+
     @Override
     public void onStart(int what, boolean isResume, long beforeLenght, Headers headers, long allCount) {
-        int progress = 0;
+        int progress = AppConfig.getInstance().getInt(PROGRESS_KEY, 0);
+        notify.update(0, notifyBuilder, "已经下载了" + progress + "%", progress);
         if (allCount != 0) {
             progress = (int) (beforeLenght * 100 / allCount);
             mProgressBar.setProgress(progress);
@@ -132,6 +159,7 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onDownloadError(int what, Exception exception) {
+        notify.cancel(0);
         mBtnStart.setText("再次尝试");
 
         String message = "下载出错了：";
@@ -161,6 +189,7 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onProgress(int what, int progress, long fileCount) {
+        notify.update(0, notifyBuilder, "已经下载了" + progress + "%", progress);
         mTvStatus.setText("已下载: " + progress + "%");
         mProgressBar.setProgress(progress);
         AppConfig.getInstance().putInt(PROGRESS_KEY, progress);
@@ -168,19 +197,25 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onFinish(int what, String filePath) {
+        Intent installIntent = FileUtil.getFileIntent(filePath, "application/vnd.android.package-archive");
+        notify.finish(0, notifyBuilder, "下载完成", "点击我安装", installIntent, true);
+
         mTvStatus.setText("下载完成, 文件保存在: \n" + filePath);
         mBtnStart.setText("重新下载");
     }
 
     @Override
     public void onCancel(int what) {
-        mTvStatus.setText("下载被取消");
+        notify.cancel(0);
+        mTvStatus.setText("下载被暂停");
         mBtnStart.setText("继续下载");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (notify != null)
+            notify.cancel(0);
         if (downloadRequest != null)
             downloadRequest.cancel(true);
     }

@@ -28,7 +28,9 @@ public class Application extends android.app.Application {
 
     private static Application _instance;
 
-    public String[] nohttpTitleList = {};
+    public String[] nohttpTitleList;
+
+    public String[] cacheTitle;
 
     @Override
     public void onCreate() {
@@ -41,6 +43,7 @@ public class Application extends android.app.Application {
         Logger.setDebug(true);// 开始NoHttp的调试模式, 这样就能看到请求过程和日志
 
         nohttpTitleList = getResources().getStringArray(R.array.activity_start_items);
+        cacheTitle = getResources().getStringArray(R.array.activity_cache_entrance);
 
         AppConfig.getInstance();
     }

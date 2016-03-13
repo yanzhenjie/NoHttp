@@ -15,8 +15,9 @@
  */
 package com.sample.nohttp.activity;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import com.sample.nohttp.Application;
 import com.sample.nohttp.R;
@@ -28,9 +29,7 @@ import com.yolanda.nohttp.Request;
 import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.Response;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
+import javax.net.ssl.SSLContext;
 
 /**
  * Created in Nov 3, 2015 1:48:34 PM.
@@ -49,21 +48,25 @@ public class HttpsActivity extends BaseActivity implements View.OnClickListener,
         setTitle(Application.getInstance().nohttpTitleList[12]);
         setContentView(R.layout.activity_https);
 
-        findView(R.id.btn_https_reqeust).setOnClickListener(this);
+        findView(R.id.btn_https_request).setOnClickListener(this);
+        findView(R.id.btn_none_https_request).setOnClickListener(this);
         mTvResult = findView(R.id.tv_result);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.btn_https_reqeust) {
-            Request<String> httpsRequest = NoHttp.createStringRequest("https://kyfw.12306.cn/otn", RequestMethod.POST);
+        Request<String> httpsRequest = NoHttp.createStringRequest("https://kyfw.12306.cn/otn", RequestMethod.POST);
+        if (v.getId() == R.id.btn_https_request) {
             SSLContext sslContext = SSLContextUtil.getSSLContext();
-            if (sslContext != null) {
-                SSLSocketFactory socketFactory = sslContext.getSocketFactory();
-                httpsRequest.setSSLSocketFactory(socketFactory);
-            }
-            CallServer.getRequestInstance().add(this, 0, httpsRequest, this, false, true);
+            if (sslContext != null)
+                httpsRequest.setSSLSocketFactory(sslContext.getSocketFactory());
+        } else if (v.getId() == R.id.btn_none_https_request) {
+            SSLContext sslContext = SSLContextUtil.getSSLContext();
+            if (sslContext != null)
+                httpsRequest.setSSLSocketFactory(sslContext.getSocketFactory());
+            httpsRequest.setHostnameVerifier(SSLContextUtil.HOSTNAME_VERIFIER);
         }
+        CallServer.getRequestInstance().add(this, 0, httpsRequest, this, false, true);
     }
 
     @Override

@@ -7,13 +7,13 @@
     <RelativeLayout
         android:id="@+id/layout_activity_base_title_root"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
+        android:layout_height="@dimen/dp_50"
         android:background="@color/title_ground_normal">
 
         <ImageView
             android:id="@+id/iv_activity_base_backbar"
-            android:layout_width="?android:attr/actionBarSize"
-            android:layout_height="?android:attr/actionBarSize"
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_50"
             android:adjustViewBounds="false"
             android:background="@drawable/selector_transprent_button_gound"
             android:contentDescription="@string/app_name"

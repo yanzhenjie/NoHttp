@@ -9,7 +9,7 @@
         <Button
             android:id="@+id/btn_start"
             style="@style/ButtonStyle_WidthMatch"
-            android:text="@string/reqeust_sync" />
+            android:text="@string/request_sync" />
 
         <TextView
             android:id="@+id/tv_result"

@@ -9,7 +9,7 @@
         <Button
             android:id="@+id/btn_start"
             style="@style/ButtonStyle_WidthMatch"
-            android:text="@string/reqeust_proxy" />
+            android:text="@string/request_proxy" />
 
         <TextView
             android:id="@+id/tv_result"
