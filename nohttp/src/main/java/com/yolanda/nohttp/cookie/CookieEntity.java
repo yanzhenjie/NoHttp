@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,15 +28,12 @@ import java.net.URI;
  * <p>Cookie entity.</p>
  * Created in Dec 17, 2015 7:21:16 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 class CookieEntity implements DBId, Serializable {
 
     private static final long serialVersionUID = 6374381323722046732L;
 
-    /**
-     * Max expiry: 100 years.
-     */
     private long id = -1;
     private String uri; // cookie add by this uri.
     private String name;
@@ -55,6 +52,8 @@ class CookieEntity implements DBId, Serializable {
     }
 
     /**
+     * Cookie building database entities.
+     *
      * @param uri    cookie corresponding uri.
      * @param cookie cookie.
      */
@@ -67,14 +66,13 @@ class CookieEntity implements DBId, Serializable {
         this.discard = cookie.getDiscard();
         this.domain = cookie.getDomain();
         long maxAge = cookie.getMaxAge();
-        if (maxAge > 0L) { // session, temp cookie
+        if (maxAge > 0) {
             this.expiry = (maxAge * 1000L) + System.currentTimeMillis();
-            // 溢出
-            if (this.expiry < 0)
+            if (this.expiry < 0L) // 溢出
                 this.expiry = HttpDateTime.getMaxExpiryMillis();
-        } else {
+        } else
             this.expiry = -1L;
-        }
+
         this.path = cookie.getPath();
         if (!TextUtils.isEmpty(path) && path.length() > 1 && path.endsWith("/")) {
             this.path = path.substring(0, path.length() - 1);
@@ -84,6 +82,11 @@ class CookieEntity implements DBId, Serializable {
         this.version = cookie.getVersion();
     }
 
+    /**
+     * Into {@link HttpCookie}.
+     *
+     * @return {@link HttpCookie}.
+     */
     public HttpCookie toHttpCookie() {
         HttpCookie cookie = new HttpCookie(name, value);
         cookie.setComment(comment);

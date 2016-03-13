@@ -1,0 +1,13 @@
+*.iml
+/.gradle
+/.idea
+/gradle
+/local.properties
+.DS_Store
+/build
+/captures
+
+/sample/build
+/nohttp/build
+/*.properties
+/HttpServer/build

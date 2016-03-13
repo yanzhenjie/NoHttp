@@ -1,12 +1,12 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
- * <p/>
+/*
+ * Copyright 2015 Yan Zhenjie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import java.util.List;
  * {@link #getTableName()}.</p>
  * Created in Jan 10, 2016 8:18:28 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public abstract class DBManager<T extends DBId> {
 
@@ -48,18 +48,18 @@ public abstract class DBManager<T extends DBId> {
     /**
      * Open the database when the read data.
      *
-     * @return SQLiteDatabase.
+     * @return {@link SQLiteDatabase}.
      */
-    protected final SQLiteDatabase openReader() {
+    protected final SQLiteDatabase getReader() {
         return disk.getReadableDatabase();
     }
 
     /**
      * Open the database when the write data.
      *
-     * @return SQLiteDatabase.
+     * @return {@link SQLiteDatabase}.
      */
-    protected final SQLiteDatabase openWriter() {
+    protected final SQLiteDatabase getWriter() {
         return disk.getWritableDatabase();
     }
 
@@ -69,10 +69,10 @@ public abstract class DBManager<T extends DBId> {
      * @param execute {@link SQLiteDatabase}.
      * @param cursor  {@link Cursor}.
      */
-    protected final void readFinish(SQLiteDatabase execute, Cursor cursor) {
+    protected final void closeReader(SQLiteDatabase execute, Cursor cursor) {
         if (cursor != null && !cursor.isClosed())
             cursor.close();
-        writeFinish(execute);
+        closeWriter(execute);
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class DBManager<T extends DBId> {
      *
      * @param execute {@link SQLiteDatabase}.
      */
-    protected final void writeFinish(SQLiteDatabase execute) {
+    protected final void closeWriter(SQLiteDatabase execute) {
         if (execute != null && execute.isOpen()) {
             execute.close();
         }
@@ -99,7 +99,7 @@ public abstract class DBManager<T extends DBId> {
      * According to the "column" query "column" number.
      *
      * @param columnName ColumnName.
-     * @return Column count.
+     * @return column count.
      */
     public final int countColumn(String columnName) {
         StringBuilder sqlBuild = new StringBuilder("SELECT COUNT(").append(columnName).append(") FROM ").append(getTableName());
@@ -113,21 +113,21 @@ public abstract class DBManager<T extends DBId> {
      * @return count
      */
     public final int count(String sql) {
-        SQLiteDatabase execute = openReader();
+        SQLiteDatabase execute = getReader();
         print(sql);
         Cursor cursor = execute.rawQuery(sql, null);
         int count = 0;
         if (cursor.moveToNext()) {
             count = cursor.getInt(0);
         }
-        readFinish(execute, cursor);
+        closeReader(execute, cursor);
         return count;
     }
 
     /**
      * Delete all data.
      *
-     * @return A Boolean value, whether deleted successfully.
+     * @return a boolean value, whether deleted successfully.
      */
     public final boolean deleteAll() {
         return delete("1=1");
@@ -137,7 +137,7 @@ public abstract class DBManager<T extends DBId> {
      * Must have the id.
      *
      * @param ts delete the queue list.
-     * @return A Boolean value, whether deleted successfully.
+     * @return a boolean value, whether deleted successfully.
      */
     public final boolean delete(List<T> ts) {
         StringBuilder where = new StringBuilder(Field.ID).append(" IN(");
@@ -158,12 +158,12 @@ public abstract class DBManager<T extends DBId> {
      * According to the where to delete data.
      *
      * @param where performs conditional.
-     * @return A Boolean value, whether deleted successfully.
+     * @return a boolean value, whether deleted successfully.
      */
     public final boolean delete(String where) {
         if (TextUtils.isEmpty(where))
             return true;
-        SQLiteDatabase execute = openWriter();
+        SQLiteDatabase execute = getWriter();
         StringBuilder sqlBuild = new StringBuilder("DELETE FROM ").append(getTableName()).append(" WHERE ").append(where);
         boolean result = true;
         try {
@@ -174,14 +174,14 @@ public abstract class DBManager<T extends DBId> {
             Logger.e(e);
             result = false;
         }
-        writeFinish(execute);
+        closeWriter(execute);
         return result;
     }
 
     /**
      * Query all data.
      *
-     * @return List data.
+     * @return list data.
      */
     public final List<T> getAll() {
         return getAll(Field.ALL);
@@ -191,7 +191,7 @@ public abstract class DBManager<T extends DBId> {
      * All the data query a column.
      *
      * @param columnName columnName.
-     * @return List data.
+     * @return list data.
      */
     public final List<T> getAll(String columnName) {
         return get(columnName, null, null, null, null);
@@ -205,7 +205,7 @@ public abstract class DBManager<T extends DBId> {
      * @param orderBy    such as: {@code "age"}.
      * @param limit      such as. {@code '20'}.
      * @param offset     offset.
-     * @return List data.
+     * @return list data.
      */
     public final List<T> get(String columnName, String where, String orderBy, String limit, String offset) {
         return get(getSelectSql(columnName, where, orderBy, limit, offset));
@@ -219,7 +219,7 @@ public abstract class DBManager<T extends DBId> {
      * @param orderBy    orderBy.
      * @param limit      limit.
      * @param offset     offset.
-     * @return String.
+     * @return {@link String}.
      */
     private String getSelectSql(String columnName, String where, String orderBy, String limit, String offset) {
         StringBuilder sqlBuild = new StringBuilder("SELECT ").append(columnName).append(" FROM ").append(getTableName());
@@ -248,7 +248,7 @@ public abstract class DBManager<T extends DBId> {
      * According to the SQL query data list.
      *
      * @param querySql sql.
-     * @return List data.
+     * @return list data.
      */
     public abstract List<T> get(String querySql);
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchParent"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_10">
+
+    <TextView
+        style="@style/WrapContent.WidthMatchParent"
+        android:text="@string/no_operation_des" />
+
+</LinearLayout>

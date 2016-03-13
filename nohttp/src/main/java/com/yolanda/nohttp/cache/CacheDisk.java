@@ -1,12 +1,12 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
- * <p/>
+/*
+ * Copyright 2015 Yan Zhenjie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,17 @@
  */
 package com.yolanda.nohttp.cache;
 
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.db.Field;
+
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * <p>Cache database operation class.</p>
  * Created in Jan 10, 2016 12:39:15 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
 class CacheDisk extends SQLiteOpenHelper implements Field {
 
@@ -72,11 +72,6 @@ class CacheDisk extends SQLiteOpenHelper implements Field {
                 db.endTransaction();
             }
         }
-    }
-
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onUpgrade(db, oldVersion, newVersion);
     }
 
 }

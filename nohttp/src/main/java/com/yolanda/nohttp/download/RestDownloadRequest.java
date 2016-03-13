@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,30 @@
  */
 package com.yolanda.nohttp.download;
 
-import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.RequestMethod;
-import com.yolanda.nohttp.RestRequest;
-
 import java.io.File;
 
+import com.yolanda.nohttp.BasicRequest;
+import com.yolanda.nohttp.RedirectHandler;
+import com.yolanda.nohttp.RequestMethod;
+
 /**
- * <p>Download the implementation class of the parameter request, and convert it to the object of the network download.</p>
+ * <p>
+ * Download the implementation class of the parameter request, and convert it to the object of the network download.
+ * </p>
  * Created in Jul 31, 2015 10:38:10 AM.
  *
- * @author YOLANDA.
+ * @author Yan Zhenjie..
  */
-public class RestDownloadRequest extends RestRequest<Void> implements DownloadRequest {
+public class RestDownloadRequest extends BasicRequest implements DownloadRequest {
+
+    /**
+     * The callback mark.
+     */
+    private int what;
+    /**
+     * The request of the listener.
+     */
+    private DownloadListener downloadListener;
     /**
      * File the target folder.
      */
@@ -99,7 +110,22 @@ public class RestDownloadRequest extends RestRequest<Void> implements DownloadRe
     }
 
     @Override
-    public Void parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        return null;
+    public void onPreResponse(int what, DownloadListener downloadListener) {
+        this.what = what;
+        this.downloadListener = downloadListener;
+    }
+
+    @Override
+    public int what() {
+        return what;
+    }
+
+    @Override
+    public DownloadListener downloadListener() {
+        return downloadListener;
+    }
+
+    @Override
+    public void setRedirectHandler(RedirectHandler redirectHandler) {
     }
 }

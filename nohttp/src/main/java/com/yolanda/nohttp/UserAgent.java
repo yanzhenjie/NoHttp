@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,37 +15,62 @@
  */
 package com.yolanda.nohttp;
 
-import java.lang.reflect.Field;
-import java.util.Locale;
-
-import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
+
+import java.lang.reflect.Field;
+import java.util.Locale;
 
 /**
  * Created in Oct 15, 2015 12:39:06 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class UserAgent {
 
     /**
+     * Get the singleton UA.
+     *
+     * @return String.
+     * @see #newInstance()
+     * @deprecated use {@link #instance()} instead.
+     */
+    @Deprecated
+    public static String getUserAgent() {
+        return instance();
+    }
+
+    /**
+     * UserAgent.
+     */
+    private static String userAgent;
+
+    /**
+     * Get the singleton UA.
+     *
+     * @return String.
+     * @see #newInstance()
+     */
+    public static String instance() {
+        if (TextUtils.isEmpty(userAgent))
+            userAgent = newInstance();
+        return userAgent;
+    }
+
+    /**
      * Get User-Agent of System.
      *
-     * @param context {@link Context}.
      * @return UA.
      */
-    public static String getUserAgent(Context context) {
+    public static String newInstance() {
         String webUserAgent = null;
-        if (context != null) {
-            try {
-                Class<?> sysResCls = Class.forName("com.android.internal.R$string");
-                Field webUserAgentField = sysResCls.getDeclaredField("web_user_agent");
-                Integer resId = (Integer) webUserAgentField.get(null);
-                webUserAgent = context.getString(resId);
-            } catch (Exception e) {
-                // We have nothing to do
-            }
+        try {
+            Class<?> sysResCls = Class.forName("com.android.internal.R$string");
+            Field webUserAgentField = sysResCls.getDeclaredField("web_user_agent");
+            Integer resId = (Integer) webUserAgentField.get(null);
+            webUserAgent = NoHttp.getContext().getString(resId);
+        } catch (Exception e) {
+            // We have nothing to do
         }
         if (TextUtils.isEmpty(webUserAgent)) {
             webUserAgent = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 %sSafari/533.1";

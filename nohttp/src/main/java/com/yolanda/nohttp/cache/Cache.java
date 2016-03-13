@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package com.yolanda.nohttp.cache;
  * <p>Cache interface.</p>
  * Created in Dec 14, 2015 5:52:41 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
 public interface Cache<T> {
 
@@ -27,7 +27,7 @@ public interface Cache<T> {
      * According to the key to get the cache data.
      *
      * @param key unique key.
-     * @return Cache data.
+     * @return cache data.
      */
     T get(String key);
 
@@ -36,7 +36,7 @@ public interface Cache<T> {
      *
      * @param key  unique key.
      * @param data cache data.
-     * @return Cache data.
+     * @return cache data.
      */
     T replace(String key, T data);
 

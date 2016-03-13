@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary">#FF1B7AEA</color>
+    <color name="colorPrimaryDark">#FF1C8BDB</color>
+    <color name="colorAccent">#FF0A69D9</color>
 
     <color name="black">#FF000000</color>
     <color name="gray">#FF888888</color>
@@ -28,22 +31,22 @@
 
     <!-- 白色 -->
     <color name="white_normal">#FFFFFFFF</color>
-    <color name="white_pressed">#FFE0E0E0</color>
+    <color name="white_pressed">#FFB0B0B0</color>
 
     <!-- Button红色 -->
     <color name="red_normal">#FFFF4500</color>
     <color name="red_pressed">#FFB22222</color>
 
     <!-- QQ 蓝 -->
-    <color name="blueqq_normal">#FF3BB5F4</color>
-    <color name="blueqq_pressed">#FF1993e2</color>
+    <color name="blue_qq_normal">#FF3BB5F4</color>
+    <color name="blue_qq_pressed">#FF1993e2</color>
 
     <!-- 微信绿 -->
-    <color name="greenwechat_normal">#FF45C01A</color>
-    <color name="greenwechat_pressed">#FF298409</color>
+    <color name="green_wechat_normal">#FF45C01A</color>
+    <color name="green_wechat_pressed">#FF298409</color>
 
     <!-- 微博黄 -->
-    <color name="yellowweibo_normal">#FFFCDA53</color>
-    <color name="yellowweibo_pressed">#FFDAB831</color>
+    <color name="yellow_weibo_normal">#FFFCDA53</color>
+    <color name="yellow_weibo_pressed">#FFDAB831</color>
 
 </resources>

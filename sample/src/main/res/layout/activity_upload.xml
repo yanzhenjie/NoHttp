@@ -1,30 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ScrollViewStyle_Padding20">
-
-    <LinearLayout
-        style="@style/LayoutStyle_WidthMatch"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/btn_upload_file"
-            style="@style/ButtonStyle_WidthMatch"
-            android:text="@string/upload_start" />
-
-        <TextView
-            android:id="@+id/tv_upload_status"
-            style="@style/TextViewStyle_WidthMatch"
-            android:layout_marginTop="@dimen/dp_10" />
-
-        <TextView
-            android:id="@+id/tv_status"
-            style="@style/TextViewStyle_WidthMatch"
-            android:layout_marginTop="@dimen/dp_10" />
-
-        <TextView
-            android:id="@+id/tv_result"
-            style="@style/TextViewStyle_WidthMatch"
-            android:layout_marginTop="@dimen/dp_10" />
-    </LinearLayout>
-
-</ScrollView>
+<com.yanzhenjie.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv_upload_activity"
+    style="@style/WrapContent.WidthMatchParent" />

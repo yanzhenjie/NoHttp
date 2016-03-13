@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,20 +16,20 @@
 package com.yolanda.nohttp.tools;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build.VERSION;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
 import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.NoHttp;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -41,13 +41,13 @@ import java.util.concurrent.Executors;
 /**
  * Created in Nov 4, 2015 3:07:29 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class ImageLocalLoader {
     /**
-     * Single lock.
+     * Handler lock.
      */
-    private static final Object SINGLE_OBJECT = new Object();
+    private static final Object HANDLER_OBJECT = new Object();
     /**
      * Single module.
      */
@@ -75,7 +75,7 @@ public class ImageLocalLoader {
      * @return {@link ImageLocalLoader}.
      */
     public static ImageLocalLoader getInstance() {
-        synchronized (SINGLE_OBJECT) {
+        synchronized (ImageLocalLoader.class) {
             if (mInstance == null) {
                 mInstance = new ImageLocalLoader();
             }
@@ -92,15 +92,13 @@ public class ImageLocalLoader {
             @SuppressLint("NewApi")
             @Override
             protected int sizeOf(String key, Bitmap value) {
-                if (VERSION.SDK_INT >= 19)
-                    return value.getByteCount();
                 return value.getRowBytes() * value.getHeight();
             }
         };
     }
 
     private Handler getPostHandler() {
-        synchronized (SINGLE_OBJECT) {
+        synchronized (HANDLER_OBJECT) {
             if (mPosterHandler == null)
                 mPosterHandler = new Handler(Looper.getMainLooper());
         }
@@ -118,8 +116,9 @@ public class ImageLocalLoader {
     public Bitmap readImage(String imagePath, int maxWidth, int maxHeight) {
         File imageFile = new File(imagePath);
         if (imageFile.exists()) {
+            BufferedInputStream inputStream = null;
             try {
-                BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(imageFile));
+                inputStream = new BufferedInputStream(new FileInputStream(imageFile));
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeStream(inputStream, null, options);
@@ -137,7 +136,9 @@ public class ImageLocalLoader {
                     i += 1;
                 }
             } catch (IOException e) {
-                Logger.e(e, "This path does not exist" + imagePath);
+                Logger.e(e, "This path does not exist" + imagePath + ".");
+            } finally {
+                IOUtils.closeQuietly(inputStream);
             }
         }
         return null;
@@ -150,33 +151,30 @@ public class ImageLocalLoader {
      * @param viewSizes ViewSize.
      */
     public void measureSize(ImageView imageView, int[] viewSizes) {
-        final DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
+        final DisplayMetrics displayMetrics = NoHttp.getContext().getResources().getDisplayMetrics();
         final LayoutParams params = imageView.getLayoutParams();
-        // 测量宽
-        int width = params.width == LayoutParams.WRAP_CONTENT ? 0 : imageView.getWidth(); // Get actual image width
-        if (width <= 0)
-            width = params.width; // Get layout width parameter
-        if (width <= 0)
-            width = displayMetrics.widthPixels;
-        // 测量高
-        int height = params.height == LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
-        if (height <= 0)
-            height = params.height; // Get layout height parameter
-        if (height <= 0)
-            height = displayMetrics.heightPixels;
-        viewSizes[0] = width;
-        viewSizes[1] = height;
+        if (params == null) {
+            viewSizes[0] = displayMetrics.widthPixels;
+            viewSizes[1] = displayMetrics.heightPixels;
+        } else {
+            viewSizes[0] = params.width == LayoutParams.WRAP_CONTENT ? 0 : imageView.getWidth(); // Get actual image width
+            viewSizes[1] = params.height == LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
+
+            if (viewSizes[0] <= 0)
+                viewSizes[0] = displayMetrics.widthPixels; // Get layout width parameter
+            if (viewSizes[1] <= 0)
+                viewSizes[1] = displayMetrics.heightPixels; // Get layout height parameter
+        }
     }
 
     /**
      * Set the default image, resId from drawable. Is displayed when loading or loading failure.
      *
-     * @param context context.
-     * @param resId   res id.
+     * @param resId res id.
      */
     @SuppressLint("NewApi")
-    public void setDefaultImage(Context context, int resId) {
-        mDefaultDrawable = ResourcesCompat.getDrawable(context, resId);
+    public void setDefaultImage(int resId) {
+        mDefaultDrawable = ResCompat.getDrawable(resId);
     }
 
     /**
@@ -234,16 +232,16 @@ public class ImageLocalLoader {
         if (imageLoadListener == null)
             imageView.setTag(imagePath);
         Bitmap bitmap = getImageFromCache(imagePath + width + height);
-        if (bitmap != null) {
+        if (bitmap == null) {
+            imageView.setImageDrawable(mDefaultDrawable);
+            mExecutorService.execute(new TaskThread(imageView, imagePath, width, height, imageLoadListener));
+        } else {
             ImgBeanHolder holder = new ImgBeanHolder();
             holder.imageView = imageView;
             holder.imagePath = imagePath;
             holder.bitmap = bitmap;
             holder.imageLoadListener = imageLoadListener;
             getPostHandler().post(holder);
-        } else {
-            imageView.setImageDrawable(mDefaultDrawable);
-            mExecutorService.execute(new TaskThread(imageView, imagePath, width, height, imageLoadListener));
         }
     }
 
@@ -273,21 +271,25 @@ public class ImageLocalLoader {
 
         @Override
         public void run() {
-            Bitmap bitmap;
-            if (width != 0 && height != 0)
-                bitmap = readImage(mImagePath, width, height);
+            if (TextUtils.isEmpty(mImagePath))
+                Logger.e("The image path is null");
             else {
-                int[] viewSizes = new int[2];
-                measureSize(mImageView, viewSizes);
-                bitmap = readImage(mImagePath, viewSizes[0], viewSizes[1]);
+                Bitmap bitmap;
+                if (width != 0 && height != 0)
+                    bitmap = readImage(mImagePath, width, height);
+                else {
+                    int[] viewSizes = new int[2];
+                    measureSize(mImageView, viewSizes);
+                    bitmap = readImage(mImagePath, viewSizes[0], viewSizes[1]);
+                }
+                addImageToCache(mImagePath + width + height, bitmap);
+                ImgBeanHolder holder = new ImgBeanHolder();
+                holder.bitmap = getImageFromCache(mImagePath + width + height);
+                holder.imageView = mImageView;
+                holder.imagePath = mImagePath;
+                holder.imageLoadListener = imageLoadListener;
+                getPostHandler().post(holder);
             }
-            addImageToCache(mImagePath + width + height, bitmap);
-            ImgBeanHolder holder = new ImgBeanHolder();
-            holder.bitmap = getImageFromCache(mImagePath + width + height);
-            holder.imageView = mImageView;
-            holder.imagePath = mImagePath;
-            holder.imageLoadListener = imageLoadListener;
-            getPostHandler().post(holder);
         }
     }
 
@@ -301,11 +303,13 @@ public class ImageLocalLoader {
 
         @Override
         public void run() {
-            if (imageLoadListener == null) {
-                if (imagePath.equals(imageView.getTag())) {
+            if (imagePath.equals(imageView.getTag())) {
+                if (bitmap == null)
+                    imageView.setImageDrawable(mDefaultDrawable);
+                else
                     imageView.setImageBitmap(bitmap);
-                }
-            } else {
+            }
+            if (imageLoadListener != null) {
                 if (bitmap != null)
                     imageLoadListener.onLoadSucceed(imageView, bitmap, imagePath);
                 else

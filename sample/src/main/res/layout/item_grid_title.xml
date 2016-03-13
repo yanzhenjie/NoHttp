@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/WrapContent.WidthMatchParent.RecyclerItem.Foreground">
+
+    <TextView
+        android:id="@+id/item_list_title"
+        style="@style/MatchParent"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_18" />
+
+</android.support.v7.widget.CardView>

@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created in Dec 19, 2015 4:16:24 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class Where {
 
@@ -51,8 +51,8 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
-     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float).
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
+     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      */
     public Where(CharSequence columnName, Options op, Object value) {
         builder = new StringBuilder();
@@ -86,7 +86,7 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
      * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      * @return {@link Where}.
      */
@@ -128,7 +128,7 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
      * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      * @return {@link Where}.
      */
@@ -152,7 +152,7 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
      * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      * @return {@link Where}.
      */

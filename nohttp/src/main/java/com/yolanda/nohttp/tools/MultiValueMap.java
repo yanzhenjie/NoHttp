@@ -1,12 +1,12 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
- * <p/>
+/*
+ * Copyright 2015 Yan Zhenjie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ import java.util.Set;
  * <p>Can save multiple the value of the map.</p>
  * Created in Jan 10, 2016 5:00:07 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface MultiValueMap<K, V> {
 
@@ -69,8 +69,9 @@ public interface MultiValueMap<K, V> {
      * Delete a key-value.
      *
      * @param key key.
+     * @return value.
      */
-    void remove(K key);
+    List<V> remove(K key);
 
     /**
      * Remove all key-value.

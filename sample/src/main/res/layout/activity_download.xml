@@ -1,23 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/LayoutStyle_WidthMatch"
-    android:orientation="vertical"
-    android:padding="@dimen/dp_20" >
-
-    <ProgressBar
-        android:id="@+id/pb_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_10" />
-
-    <TextView
-        android:id="@+id/tv_status"
-        style="@style/TextViewStyle_WidthMatch" />
-
-    <Button
-        android:id="@+id/btn_start_download"
-        style="@style/ButtonStyle_WidthMatch"
-        android:layout_marginTop="@dimen/dp_10"
-        android:text="@string/download_start" />
-
-</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<com.yanzhenjie.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv_download_activity"
+    style="@style/WrapContent.WidthMatchParent" />

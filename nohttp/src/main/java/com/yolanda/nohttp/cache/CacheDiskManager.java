@@ -1,12 +1,12 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
- * <p/>
+/*
+ * Copyright 2015 Yan Zhenjie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import java.util.List;
  * <p>Cache database manager.</p>
  * Created in Jan 10, 2016 12:42:29 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
 class CacheDiskManager extends DBManager<CacheEntity> {
 
@@ -48,7 +48,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
 
     @Override
     public long replace(CacheEntity cacheEntity) {
-        SQLiteDatabase execute = openWriter();
+        SQLiteDatabase execute = getWriter();
         ContentValues values = new ContentValues();
         values.put(CacheDisk.KEY, cacheEntity.getKey());
         values.put(CacheDisk.HEAD, cacheEntity.getResponseHeadersJson());
@@ -59,13 +59,13 @@ class CacheDiskManager extends DBManager<CacheEntity> {
         } catch (Throwable e) {
             Logger.e(e);
         }
-        writeFinish(execute);
+        closeWriter(execute);
         return id;
     }
 
     @Override
     public List<CacheEntity> get(String querySql) {
-        SQLiteDatabase execute = openReader();
+        SQLiteDatabase execute = getReader();
 
         List<CacheEntity> cacheEntities = new ArrayList<CacheEntity>();
         Cursor cursor = null;
@@ -98,7 +98,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
         } catch (Throwable e) {
             Logger.e(e);
         }
-        readFinish(execute, cursor);
+        closeReader(execute, cursor);
         return cacheEntities;
     }
 

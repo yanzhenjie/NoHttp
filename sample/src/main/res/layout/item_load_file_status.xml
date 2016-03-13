@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv_upload_file_single_root"
+    style="@style/WrapContent.WidthMatchParent.RecyclerItem.Foreground">
+
+    <LinearLayout
+        style="@style/MatchParent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            style="@style/WrapContent.WidthMatchParent"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/WrapContent"
+                android:text="@string/upload_file_status" />
+
+            <TextView
+                android:id="@+id/tv_result"
+                style="@style/WrapContent"
+                android:text="@string/upload_file_status_wait" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/pb_progress"
+            style="@style/ProgressBar.WrapContentHeight" />
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

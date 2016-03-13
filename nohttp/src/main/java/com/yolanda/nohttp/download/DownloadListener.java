@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import com.yolanda.nohttp.Headers;
  * <p>The download process monitor.</p>
  * Created in Jul 31, 2015 9:12:55 AM;
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface DownloadListener {
 
@@ -29,7 +29,14 @@ public interface DownloadListener {
      * An error occurred while downloading.
      *
      * @param what      which is used to mark the download tasks.
-     * @param exception error.
+     * @param exception error types. Error types include the following:<p>{@link com.yolanda.nohttp.error.ArgumentError} Need to check the download parameters are correct.</p>
+     *                  <p>{@link com.yolanda.nohttp.error.NetworkError} The network is not available, please check the network.</p>
+     *                  <p>{@link com.yolanda.nohttp.error.ServerError} When the response code is more than 400, you need to look at the response code specific how much is the judgement is something wrong.</p>
+     *                  <p>{@link com.yolanda.nohttp.error.StorageReadWriteError} An error occurred when read/write memory CARDS, please check the memory card.</p>
+     *                  <p>{@link com.yolanda.nohttp.error.StorageSpaceNotEnoughError} There is insufficient space on the memory card, please check the memory card.</p>
+     *                  <p>{@link com.yolanda.nohttp.error.TimeoutError} Timeout connecting to the server or read the file.</p>
+     *                  <p>{@link com.yolanda.nohttp.error.UnKnownHostError} Is not found in the network of the target server.</p>
+     *                  <p>{@link com.yolanda.nohttp.error.URLError} Download url is wrong.</p>
      */
     void onDownloadError(int what, Exception exception);
 

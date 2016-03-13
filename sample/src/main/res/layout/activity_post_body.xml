@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchParent">
+
+    <LinearLayout
+        style="@style/MatchParent"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_5">
+
+        <EditText
+            android:id="@+id/edt_post_body"
+            style="@style/EditTextMd.WidthMatch" />
+
+        <Button
+            android:id="@+id/btn_start"
+            style="@style/ButtonWrapContent.WidthMatch"
+            android:text="@string/request_start" />
+
+        <TextView
+            android:id="@+id/tv_result"
+            style="@style/WrapContent.WidthMatchParent" />
+
+        <TextView
+            android:id="@+id/tv_head"
+            style="@style/WrapContent.WidthMatchParent" />
+    </LinearLayout>
+
+</ScrollView>

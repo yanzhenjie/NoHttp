@@ -1,12 +1,12 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
- * <p/>
+/*
+ * Copyright 2015 Yan Zhenjie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,14 +29,17 @@ import java.io.Serializable;
  * <p>Cache entity class.</p>
  * Created in Jan 10, 2016 12:43:10 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
 public class CacheEntity implements DBId, Field, Serializable {
 
-    private static final long serialVersionUID = 1234857234793L;
+    private static final long serialVersionUID = 12348534793L;
 
     private long id;
 
+    /**
+     * The cache key.
+     */
     private String key;
     /**
      * The server response headers.
@@ -54,7 +57,6 @@ public class CacheEntity implements DBId, Field, Serializable {
     private long localExpire;
 
     public CacheEntity() {
-        super();
     }
 
     /**
@@ -115,6 +117,11 @@ public class CacheEntity implements DBId, Field, Serializable {
         this.responseHeaders = responseHeaders;
     }
 
+    /**
+     * Set the {@link Headers#setJSONString(String)} can Parse the json data, format conforms to the corresponding Http header format.
+     *
+     * @param jsonString conform to the relevant head of the Json data format.
+     */
     public void setResponseHeadersJson(String jsonString) {
         try {
             this.responseHeaders.setJSONString(jsonString);
@@ -126,7 +133,7 @@ public class CacheEntity implements DBId, Field, Serializable {
     /**
      * To get the json data format of the head.
      *
-     * @return Json.
+     * @return json.
      */
     public String getResponseHeadersJson() {
         return this.responseHeaders.toJSONString();

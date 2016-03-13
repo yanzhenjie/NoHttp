@@ -1,12 +1,12 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
- * <p/>
+/*
+ * Copyright 2015 Yan Zhenjie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,10 +24,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * <p>HTTP cache interface implementation.</p>
+ * <p>Http cache interface implementation.</p>
  * Created in Jan 10, 2016 12:45:34 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
 public enum DiskCacheStore implements Cache<CacheEntity> {
 
@@ -73,10 +73,10 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
 
     @Override
     public boolean remove(String key) {
-        if (key == null)
-            return true;
         mLock.lock();
         try {
+            if (key == null)
+                return true;
             Where where = new Where(CacheDisk.KEY, Options.EQUAL, key);
             return mManager.delete(where.toString());
         } finally {

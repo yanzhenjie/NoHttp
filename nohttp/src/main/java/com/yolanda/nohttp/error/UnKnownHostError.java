@@ -1,5 +1,5 @@
 /*
- * Copyright © ${user}. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.yolanda.nohttp.error;
  * <p>The target host not found.</p>
  * Created in 2016/2/25 10:49.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class UnKnownHostError extends Exception {
 

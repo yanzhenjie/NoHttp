@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
- * Licensed under the Apache License, Version 2.0 (the "License";;
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ import com.yolanda.nohttp.db.Field;
  * <p>Cookie database operation class.</p>
  * Created in Dec 18, 2015 6:30:59 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 class CookieDisk extends SQLiteOpenHelper implements Field {
 
@@ -42,11 +42,11 @@ class CookieDisk extends SQLiteOpenHelper implements Field {
     public static final String DOMAIN = "domain";
     public static final String EXPIRY = "expiry";
     public static final String PATH = "path";
-    public static final String PORT_LIST = "portlist";
+    public static final String PORT_LIST = "port_list";
     public static final String SECURE = "secure";
     public static final String VERSION = "version";
 
-    private static final String SQL_CREATE_TABLE = "CREATE TABLE cookies_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, name TEXT, value TEXT, comment TEXT, comment_url TEXT, discard TEXT, domain TEXT, expiry INTEGER, path TEXT, portlist TEXT, secure TEXT, version INTEGER)";
+    private static final String SQL_CREATE_TABLE = "CREATE TABLE cookies_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, name TEXT, value TEXT, comment TEXT, comment_url TEXT, discard TEXT, domain TEXT, expiry INTEGER, path TEXT, port_list TEXT, secure TEXT, version INTEGER)";
     private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cookie_unique_index ON cookies_table(\"name\", \"domain\", \"path\")";
     private static final String SQL_DELETE_TABLE = "DROP TABLE cookies_table";
     private static final String SQL_DELETE_UNIQUE_INDEX = "DROP UNIQUE INDEX cookie_unique_index";
@@ -81,10 +81,5 @@ class CookieDisk extends SQLiteOpenHelper implements Field {
                 db.endTransaction();
             }
         }
-    }
-
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onUpgrade(db, oldVersion, newVersion);
     }
 }

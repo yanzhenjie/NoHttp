@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchParent"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_5">
+
+    <LinearLayout
+        style="@style/WrapContent.WidthMatchParent"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/WrapContent"
+            android:text="@string/upload_file_status" />
+
+        <TextView
+            android:id="@+id/tv_result"
+            style="@style/WrapContent"
+            android:text="@string/upload_file_status_wait" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_progress"
+        style="@style/ProgressBar.WrapContentHeight" />
+
+    <Button
+        android:id="@+id/btn_album"
+        style="@style/ButtonWrapContent.WidthMatch"
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="@string/upload_file_select_album" />
+
+    <Button
+        android:id="@+id/btn_start"
+        style="@style/ButtonWrapContent.WidthMatch"
+        android:text="@string/upload_start" />
+
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>

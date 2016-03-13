@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,12 @@
 package com.yolanda.nohttp;
 
 /**
- * <p>HTTP request method.</p>
+ * <p>
+ * HTTP request method.
+ * </p>
  * Created in Oct 10, 2015 8:00:48 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public enum RequestMethod {
 
@@ -29,15 +31,21 @@ public enum RequestMethod {
 
     PUT("PUT"),
 
+    MOVE("MOVE"),
+
+    COPY("COPY"),
+
     DELETE("DELETE"),
 
     HEAD("HEAD"),
+
+    PATCH("PATCH"),
 
     OPTIONS("OPTIONS"),
 
     TRACE("TRACE"),
 
-    PATCH("PATCH");
+    CONNECT("CONNECT");
 
     private final String value;
 
@@ -48,6 +56,10 @@ public enum RequestMethod {
     @Override
     public String toString() {
         return this.value;
+    }
+
+    public boolean allowRequestBody() {
+        return this == POST || this == PUT || this == PATCH || this == DELETE;
     }
 
 }

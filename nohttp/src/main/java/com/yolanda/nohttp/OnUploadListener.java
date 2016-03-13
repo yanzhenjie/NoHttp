@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@ package com.yolanda.nohttp;
 /**
  * Created in Jan 29, 2016 10:56:37 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
-public interface OnUploadListener extends ProgressHandler {
+public interface OnUploadListener {
 
     /**
      * At the start of the upload is invoked.
@@ -39,6 +39,15 @@ public interface OnUploadListener extends ProgressHandler {
     void onCancel(int what);
 
     /**
+     * Invoked when the upload progress changes.
+     *
+     * @param what     what of {@link FileBinary#setUploadListener(int, OnUploadListener)}.
+     * @param progress progress
+     * @see FileBinary#setUploadListener(int, OnUploadListener)
+     */
+    void onProgress(int what, int progress);
+
+    /**
      * Upload is complete is invoked.
      *
      * @param what what of {@link FileBinary#setUploadListener(int, OnUploadListener)}.
@@ -49,9 +58,9 @@ public interface OnUploadListener extends ProgressHandler {
     /**
      * Upload error is called.
      *
-     * @param what      what of {@link FileBinary#setUploadListener(int, OnUploadListener)}.     * @param exception upload is called when an error occurs.
-     * @param exception may be {@link com.yolanda.nohttp.error.NotFoundFileError}, {@link java.io.IOException}
-     * @see FileBinary#setUploadListener(int, OnUploadListener)
+     * @param what      what of {@link FileBinary#setUploadListener(int, OnUploadListener)}. * @param exception upload is called when an error occurs.
+     * @param exception error type.
+     * @see BasicBinary#setUploadListener(int, OnUploadListener)
      */
     void onError(int what, Exception exception);
 }

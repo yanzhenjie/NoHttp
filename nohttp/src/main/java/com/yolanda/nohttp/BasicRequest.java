@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright 2015 Yan Zhenjie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,42 +18,53 @@ package com.yolanda.nohttp;
 import android.text.TextUtils;
 
 import com.yolanda.nohttp.tools.CounterOutputStream;
-import com.yolanda.nohttp.tools.Writer;
+import com.yolanda.nohttp.tools.IOUtils;
+import com.yolanda.nohttp.tools.LinkedMultiValueMap;
+import com.yolanda.nohttp.tools.MultiValueMap;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * <p>Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}.</p>
+ * <p>
+ * Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}.
+ * </p>
  * Created in Nov 4, 2015 8:28:50 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 ;
 
-public abstract class BasicRequest<T> implements Request<T> {
+public abstract class BasicRequest implements BasicClientRequest, BasicServerRequest {
 
     private final String boundary = createBoundary();
-    private final String start_boundary = "--" + boundary;
-    private final String end_boundary = start_boundary + "--";
+    private final String startBoundary = "--" + boundary;
+    private final String endBoundary = startBoundary + "--";
 
     /**
-     * User-Agent.
+     * Request priority.
      */
-    private static String userAgent;
-
+    private Priority mPriority = Priority.DEFAULT;
     /**
-     * Accept-Language.
+     * The sequence.
      */
-    private static String acceptLanguage;
-
+    private int sequence;
     /**
      * Target address.
      */
@@ -66,18 +77,6 @@ public abstract class BasicRequest<T> implements Request<T> {
      * Request method.
      */
     private RequestMethod mRequestMethod;
-    /**
-     * Cache key.
-     */
-    private String mCacheKey;
-    /**
-     * If just read from cache.
-     */
-    private boolean isOnlyReadCache;
-    /**
-     * If the request fails the data read from the cache.
-     */
-    private boolean isRequestFailedReadCache = false;
     /**
      * Proxy server.
      */
@@ -99,21 +98,29 @@ public abstract class BasicRequest<T> implements Request<T> {
      */
     private int mReadTimeout = NoHttp.TIMEOUT_8S;
     /**
-     * Redirect handler.
+     * ContentType
      */
-    private RedirectHandler mRedirectHandler;
+    private String mContentType;
     /**
      * Request heads.
      */
     private Headers mHeaders;
     /**
+     * Param collection.
+     */
+    private MultiValueMap<String, Object> mParamKeyValues;
+    /**
      * RequestBody.
      */
-    private byte[] mRequestBody;
+    private InputStream mRequestBody;
     /**
-     * Queue tag.
+     * Redirect handler.
      */
-    private boolean queue = false;
+    private RedirectHandler mRedirectHandler;
+    /**
+     * Request queue
+     */
+    private BlockingQueue<?> blockingQueue;
     /**
      * The record has started.
      */
@@ -151,76 +158,59 @@ public abstract class BasicRequest<T> implements Request<T> {
      * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public BasicRequest(String url, RequestMethod requestMethod) {
-        if (TextUtils.isEmpty(url))
-            throw new IllegalArgumentException("url is null");
         this.url = url;
-        this.mRequestMethod = requestMethod;
-        this.mHeaders = new HttpHeaders();
+        mRequestMethod = requestMethod;
+        mHeaders = new HttpHeaders();
+        mParamKeyValues = new LinkedMultiValueMap<String, Object>();
+    }
+
+    @Override
+    public void setPriority(Priority priority) {
+        this.mPriority = priority;
+    }
+
+    @Override
+    public Priority getPriority() {
+        return mPriority;
+    }
+
+    @Override
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
+    }
+
+    @Override
+    public int getSequence() {
+        return this.sequence;
+    }
+
+    @Override
+    public final int compareTo(BasicServerRequest another) {
+        final Priority me = getPriority();
+        final Priority it = another.getPriority();
+        return me == it ? getSequence() - another.getSequence() : it.ordinal() - me.ordinal();
     }
 
     @Override
     public String url() {
-        if (TextUtils.isEmpty(buildUrl))
-            buildUrl = buildUrl();
-        return buildUrl;
-    }
-
-    /**
-     * Rebuilding the URL, compatible with the GET method, using {@link Request#add(String, String)}.
-     *
-     * @return String url.
-     */
-    protected final String buildUrl() {
-        StringBuffer urlBuffer = new StringBuffer(url);
-        if (!doOutPut() && keySet().size() > 0) {
-            StringBuffer paramBuffer = buildCommonParams();
-            if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
-                urlBuffer.append("&");
-            else if (paramBuffer.length() > 0)
-                urlBuffer.append("?");
-            urlBuffer.append(paramBuffer);
+        if (TextUtils.isEmpty(buildUrl)) {
+            StringBuilder urlBuilder = new StringBuilder(url);
+            if (!getRequestMethod().allowRequestBody() && mParamKeyValues.size() > 0) {
+                StringBuffer paramBuffer = buildCommonParams(getParamKeyValues(), getParamsEncoding());
+                if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
+                    urlBuilder.append("&");
+                else if (paramBuffer.length() > 0)
+                    urlBuilder.append("?");
+                urlBuilder.append(paramBuffer);
+            }
+            buildUrl = urlBuilder.toString();
         }
-        return urlBuffer.toString();
+        return buildUrl;
     }
 
     @Override
     public RequestMethod getRequestMethod() {
         return mRequestMethod;
-    }
-
-    @Override
-    public boolean needCache() {
-        return RequestMethod.GET == getRequestMethod() || isRequestFailedReadCache();
-    }
-
-    @Override
-    public void setCacheKey(String key) {
-        this.mCacheKey = key;
-    }
-
-    @Override
-    public String getCacheKey() {
-        return TextUtils.isEmpty(mCacheKey) ? buildUrl() : mCacheKey;
-    }
-
-    @Override
-    public void setOnlyReadCache(boolean onlyReadCache) {
-        this.isOnlyReadCache = onlyReadCache;
-    }
-
-    @Override
-    public boolean onlyReadCache() {
-        return isOnlyReadCache;
-    }
-
-    @Override
-    public void setRequestFailedReadCache(boolean isEnable) {
-        this.isRequestFailedReadCache = isEnable;
-    }
-
-    @Override
-    public boolean isRequestFailedReadCache() {
-        return isRequestFailedReadCache;
     }
 
     @Override
@@ -245,7 +235,7 @@ public abstract class BasicRequest<T> implements Request<T> {
 
     @Override
     public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
-        this.mHostnameVerifier = hostnameVerifier;
+        mHostnameVerifier = hostnameVerifier;
     }
 
     @Override
@@ -254,26 +244,8 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public boolean doOutPut() {
-        switch (mRequestMethod) {
-            case GET:
-            case DELETE:
-            case HEAD:
-            case OPTIONS:
-            case TRACE:
-                return false;
-            case POST:
-            case PUT:
-            case PATCH:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
     public void setConnectTimeout(int connectTimeout) {
-        this.mConnectTimeout = connectTimeout;
+        mConnectTimeout = connectTimeout;
     }
 
     @Override
@@ -283,7 +255,7 @@ public abstract class BasicRequest<T> implements Request<T> {
 
     @Override
     public void setReadTimeout(int readTimeout) {
-        this.mReadTimeout = readTimeout;
+        mReadTimeout = readTimeout;
     }
 
     @Override
@@ -292,23 +264,18 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public void setRedirectHandler(RedirectHandler redirectHandler) {
-        this.mRedirectHandler = redirectHandler;
-    }
-
-    @Override
-    public RedirectHandler getRedirectHandler() {
-        return mRedirectHandler;
-    }
-
-    @Override
-    public void setHeader(String key, String value) {
-        mHeaders.set(key, value);
+    public void setContentType(String contentType) {
+        this.mContentType = contentType;
     }
 
     @Override
     public void addHeader(String key, String value) {
         mHeaders.add(key, value);
+    }
+
+    @Override
+    public void setHeader(String key, String value) {
+        mHeaders.set(key, value);
     }
 
     @Override
@@ -323,70 +290,253 @@ public abstract class BasicRequest<T> implements Request<T> {
 
     @Override
     public Headers headers() {
-        return this.mHeaders;
-    }
-
-    @Override
-    public String getAcceptCharset() {
-        return NoHttp.CHARSET_UTF8;
+        return mHeaders;
     }
 
     @Override
     public String getAcceptLanguage() {
-        if (TextUtils.isEmpty(acceptLanguage))
-            acceptLanguage = createAcceptLanguage();
-        return acceptLanguage;
+        return defaultAcceptLanguage();
     }
 
     @Override
     public long getContentLength() {
         CounterOutputStream outputStream = new CounterOutputStream();
-        onWriteRequestBody(new Writer(outputStream));
-        long contentLength = outputStream.get();
-        return contentLength;
+        try {
+            onWriteRequestBody(outputStream);
+        } catch (IOException e) {
+            Logger.e(e);
+        }
+        return outputStream.get();
     }
 
     @Override
     public String getContentType() {
         StringBuilder contentTypeBuild = new StringBuilder();
-        if (doOutPut() && hasBinary())
-            contentTypeBuild.append("multipart/form-data; boundary=").append(boundary);
+        if (getRequestMethod().allowRequestBody() && hasBinary())
+            contentTypeBuild.append(NoHttp.MULTIPART_FORM_DATA).append("; boundary=").append(boundary);
+        else if (TextUtils.isEmpty(mContentType))
+            contentTypeBuild.append(NoHttp.APPLICATION_X_WWW_FORM_URLENCODED).append("; charset=").append(getParamsEncoding());
         else
-            contentTypeBuild.append("application/x-www-form-urlencoded; charset=").append(getParamsEncoding());
+            contentTypeBuild.append(mContentType);
         return contentTypeBuild.toString();
     }
 
     @Override
     public String getUserAgent() {
-        if (TextUtils.isEmpty(userAgent))
-            userAgent = UserAgent.getUserAgent(NoHttp.getContext());
-        return userAgent;
+        return UserAgent.instance();
+    }
+
+    /**
+     * Get the parameters of key-value pairs.
+     *
+     * @return Not empty Map.
+     */
+    protected final MultiValueMap<String, Object> getParamKeyValues() {
+        return mParamKeyValues;
     }
 
     @Override
-    public void setRequestBody(byte[] requestBody) {
-        this.mRequestBody = requestBody;
+    public void add(String key, String value) {
+        if (value != null) {
+            if (getRequestMethod().allowRequestBody())
+                mParamKeyValues.add(key, value);
+            else
+                mParamKeyValues.set(key, value);
+        }
     }
 
     @Override
-    public void setRequestBody(String requestBody) {
-        if (!TextUtils.isEmpty(requestBody))
+    public void set(String key, String value) {
+        if (value != null)
+            mParamKeyValues.set(key, value);
+    }
+
+    @Override
+    public void add(String key, int value) {
+        add(key, Integer.toString(value));
+    }
+
+    @Override
+    public void add(String key, long value) {
+        add(key, Long.toString(value));
+    }
+
+    @Override
+    public void add(String key, boolean value) {
+        add(key, String.valueOf(value));
+    }
+
+    @Override
+    public void add(String key, char value) {
+        add(key, String.valueOf(value));
+    }
+
+    @Override
+    public void add(String key, double value) {
+        add(key, Double.toString(value));
+    }
+
+    @Override
+    public void add(String key, float value) {
+        add(key, Float.toString(value));
+    }
+
+    @Override
+    public void add(String key, short value) {
+        add(key, Integer.toString(value));
+    }
+
+    @Override
+    public void add(String key, byte value) {
+        add(key, Integer.toString(value));
+    }
+
+    @Override
+    public void add(String key, Binary binary) {
+        mParamKeyValues.add(key, binary);
+    }
+
+    @Override
+    public void add(String key, List<Binary> binaries) {
+        if (binaries != null)
+            for (Binary binary : binaries)
+                mParamKeyValues.add(key, binary);
+        else
+            Logger.e("The binaries is null.");
+    }
+
+    @Override
+    public void set(String key, List<Binary> binaries) {
+        mParamKeyValues.remove(key);
+        if (binaries != null)
+            add(key, binaries);
+        else
+            Logger.e("The binaries is null.");
+    }
+
+    @Override
+    public void add(Map<String, String> params) {
+        if (params != null) {
+            for (Map.Entry<String, String> stringEntry : params.entrySet())
+                add(stringEntry.getKey(), stringEntry.getValue());
+        }
+    }
+
+    @Override
+    public void set(Map<String, String> params) {
+        if (params != null) {
+            mParamKeyValues.clear();
+            for (Map.Entry<String, String> stringEntry : params.entrySet())
+                set(stringEntry.getKey(), stringEntry.getValue());
+        }
+    }
+
+    @Override
+    public List<Object> remove(String key) {
+        return mParamKeyValues.remove(key);
+    }
+
+    @Override
+    public void removeAll() {
+        mParamKeyValues.clear();
+    }
+
+    @Override
+    public void setDefineRequestBody(InputStream requestBody, String contentType) {
+        if (requestBody == null || contentType == null)
+            throw new IllegalArgumentException("The requestBody and contentType must be can't be null");
+        if (requestBody instanceof ByteArrayInputStream || requestBody instanceof FileInputStream) {
+            this.mRequestBody = requestBody;
+            this.mContentType = contentType;
+        } else {
+            throw new IllegalArgumentException("Can only accept ByteArrayInputStream and FileInputStream type of stream");
+        }
+    }
+
+    @Override
+    public void setDefineRequestBody(String requestBody, String contentType) {
+        if (!TextUtils.isEmpty(requestBody)) {
             try {
-                this.mRequestBody = requestBody.getBytes(getParamsEncoding());
+                mRequestBody = IOUtils.toInputStream(requestBody, getParamsEncoding());
+                if (!TextUtils.isEmpty(contentType))
+                    mContentType = contentType + "; charset=" + getParamsEncoding();
             } catch (UnsupportedEncodingException e) {
-                Logger.e(e);
+                setDefineRequestBody(IOUtils.toInputStream(requestBody), contentType);
             }
+        }
+    }
+
+    @Override
+    public void setDefineRequestBodyForJson(String jsonBody) {
+        if (!TextUtils.isEmpty(jsonBody))
+            setDefineRequestBody(jsonBody, NoHttp.APPLICATION_JSON);
+    }
+
+    @Override
+    public void setDefineRequestBodyForJson(JSONObject jsonBody) {
+        if (jsonBody != null)
+            setDefineRequestBody(jsonBody.toString(), NoHttp.APPLICATION_JSON);
+    }
+
+    @Override
+    public void setDefineRequestBodyForXML(String xmlBody) {
+        if (!TextUtils.isEmpty(xmlBody))
+            setDefineRequestBody(xmlBody, NoHttp.APPLICATION_XML);
+    }
+
+    /**
+     * @param body string of request body.
+     * @deprecated use {@link #setDefineRequestBody(String, String)} instead.
+     */
+    @Deprecated
+    @Override
+    public void setRequestBody(String body) {
+        if (body != null)
+            try {
+                setRequestBody(body.getBytes(getParamsEncoding()));
+            } catch (UnsupportedEncodingException e) {
+                Logger.e("From getParamsEncoding() returns the charset not supported by the system, the requestBody is invalid, please check the method returns getParamsEncoding() value");
+            }
+    }
+
+    /**
+     * @param body byte array of request body.
+     * @deprecated use {@link #setDefineRequestBody(String, String)} instead.
+     */
+    @Deprecated
+    @Override
+    public void setRequestBody(byte[] body) {
+        if (body != null)
+            this.mRequestBody = new ByteArrayInputStream(body);
     }
 
     @Override
     public void onPreExecute() {
     }
 
+    /**
+     * Is there a custom request inclusions.
+     *
+     * @return Returns true representatives have, return false on behalf of the no.
+     */
+    protected boolean hasDefineRequestBody() {
+        return mRequestBody != null;
+    }
+
+    /**
+     * To get custom inclusions.
+     *
+     * @return {@link InputStream}.
+     */
+    protected InputStream getDefineRequestBody() {
+        return mRequestBody;
+    }
+
     @Override
-    public void onWriteRequestBody(Writer writer) {
-        if (mRequestBody == null && hasBinary())
+    public void onWriteRequestBody(OutputStream writer) throws IOException {
+        if (!hasDefineRequestBody() && hasBinary())
             writeFormStreamData(writer);
-        else if (mRequestBody == null)
+        else if (!hasDefineRequestBody())
             writeCommonStreamData(writer);
         else
             writeRequestBody(writer);
@@ -395,42 +545,43 @@ public abstract class BasicRequest<T> implements Request<T> {
     /**
      * Send form data.
      *
-     * @param writer {@link Writer}.
+     * @param writer {@link OutputStream}.
+     * @throws IOException write error.
      */
-    protected void writeFormStreamData(Writer writer) {
-        try {
-            Set<String> keys = keySet();
-            for (String key : keys) {// 文件或者图片
-                Object value = value(key);
+    protected void writeFormStreamData(OutputStream writer) throws IOException {
+        Set<String> keys = mParamKeyValues.keySet();
+        for (String key : keys) {
+            List<Object> values = mParamKeyValues.getValues(key);
+            for (Object value : values) {
                 if (value != null && value instanceof String) {
+                    if (!(writer instanceof CounterOutputStream))
+                        Logger.i(key + "=" + value);
                     writeFormString(writer, key, value.toString());
                 } else if (value != null && value instanceof Binary) {
+                    if (!(writer instanceof CounterOutputStream))
+                        Logger.i(key + " is Binary");
                     writeFormBinary(writer, key, (Binary) value);
                 }
             }
-            writer.write(("\r\n" + end_boundary + "\r\n").getBytes());
-        } catch (IOException e) {
-            Logger.e(e);
         }
+        writer.write(("\r\n" + endBoundary).getBytes());
     }
 
     /**
      * Send text data in a form.
      *
-     * @param writer {@link Writer}
+     * @param writer {@link OutputStream}
      * @param key    equivalent to form the name of the input label, {@code "Content-Disposition: form-data; name=key"}.
      * @param value  equivalent to form the value of the input label.
      * @throws IOException Write the data may be abnormal.
      */
-    private void writeFormString(Writer writer, String key, String value) throws IOException {
-        print(writer.isPrint(), key + " = " + value);
-
-        StringBuilder stringFieldBuilder = new StringBuilder(start_boundary).append("\r\n");
+    private void writeFormString(OutputStream writer, String key, String value) throws IOException {
+        StringBuilder stringFieldBuilder = new StringBuilder(startBoundary).append("\r\n");
 
         stringFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"\r\n");
         stringFieldBuilder.append("Content-Type: text/plain; charset=").append(getParamsEncoding()).append("\r\n\r\n");
 
-        writer.write(stringFieldBuilder.toString().getBytes());
+        writer.write(stringFieldBuilder.toString().getBytes(getParamsEncoding()));
 
         writer.write(value.getBytes(getParamsEncoding()));
         writer.write("\r\n".getBytes());
@@ -439,81 +590,69 @@ public abstract class BasicRequest<T> implements Request<T> {
     /**
      * Send binary data in a form.
      */
-    private void writeFormBinary(Writer writer, String key, Binary value) throws IOException {
-        print(writer.isPrint(), key + " is Binary");
+    private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
+        long contentLength = value.getLength();
+        if (contentLength > 0) {// Have content to send
+            StringBuilder binaryFieldBuilder = new StringBuilder(startBoundary).append("\r\n");
+            binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"");
+            String filename = value.getFileName();
+            if (!TextUtils.isEmpty(filename))
+                binaryFieldBuilder.append("; filename=\"").append(filename).append("\"");
+            binaryFieldBuilder.append("\r\n");
 
-        StringBuilder binaryFieldBuilder = new StringBuilder(start_boundary).append("\r\n");
-        binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"");
-        String filename = value.getFileName();
-        if (!TextUtils.isEmpty(filename))
-            binaryFieldBuilder.append("; filename=\"").append(value.getFileName()).append("\"");
-        binaryFieldBuilder.append("\r\n");
+            binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
+            binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
 
-        binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
-        binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
+            writer.write(binaryFieldBuilder.toString().getBytes());
 
-        writer.write(binaryFieldBuilder.toString().getBytes());
-
-        writer.write(value);
-        writer.write("\r\n".getBytes());
+            if (writer instanceof CounterOutputStream) {
+                ((CounterOutputStream) writer).write(contentLength);
+            } else {
+                value.onWriteBinary(writer);
+            }
+            writer.write("\r\n".getBytes());
+        }
     }
 
     /**
      * Send non form data.
      *
-     * @param writer {@link Writer} structure of the Writer's need to HttpURLConnection OutputStream.
+     * @param writer {@link OutputStream}.
+     * @throws IOException write error.
      */
-    protected void writeCommonStreamData(Writer writer) {
-        String requestBody = buildCommonParams().toString();
-        print(writer.isPrint(), "RequestBody: " + requestBody);
-        try {
-            if (requestBody.length() > 0)
-                writer.write(requestBody.getBytes());
-        } catch (IOException e) {
-            Logger.e(e);
-        }
+    protected void writeCommonStreamData(OutputStream writer) throws IOException {
+        String requestBody = buildCommonParams(getParamKeyValues(), getParamsEncoding()).toString();
+        if (!(writer instanceof CounterOutputStream))
+            Logger.i("Push RequestBody: " + requestBody);
+        writer.write(requestBody.getBytes());
     }
 
     /**
      * Send request requestBody.
      *
-     * @param writer structure of the Writer's need to HttpURLConnection OutputStream.
+     * @param writer {@link OutputStream}.
+     * @throws IOException write error.
      */
-    protected void writeRequestBody(Writer writer) {
-        try {
-            print(writer.isPrint(), "RequestBody: " + mRequestBody);
-            if (mRequestBody.length > 0)
-                writer.write(mRequestBody);
-        } catch (IOException e) {
-            Logger.e(e);
+    protected void writeRequestBody(OutputStream writer) throws IOException {
+        if (hasDefineRequestBody()) {
+            if (writer instanceof CounterOutputStream) {
+                writer.write(mRequestBody.available());
+            } else {
+                IOUtils.write(mRequestBody, writer);
+                IOUtils.closeQuietly(mRequestBody);
+                mRequestBody = null;
+            }
         }
     }
 
-    /**
-     * split joint non form data.
-     *
-     * @return string parameter combination, each key value on nails with {@code "&"} space.
-     */
-    protected StringBuffer buildCommonParams() {
-        StringBuffer paramBuffer = new StringBuffer();
-        Set<String> keySet = keySet();
-        for (String key : keySet) {
-            Object value = value(key);
-            if (value != null && value instanceof CharSequence) {
-                paramBuffer.append("&");
-                String paramEncoding = getParamsEncoding();
-                try {
-                    paramBuffer.append(URLEncoder.encode(key, paramEncoding));
-                    paramBuffer.append("=");
-                    paramBuffer.append(URLEncoder.encode(value.toString(), paramEncoding));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException("Encoding " + getParamsEncoding() + " format is not supported by the system");
-                }
-            }
-        }
-        if (paramBuffer.length() > 0)
-            paramBuffer.deleteCharAt(0);
-        return paramBuffer;
+    @Override
+    public void setRedirectHandler(RedirectHandler redirectHandler) {
+        mRedirectHandler = redirectHandler;
+    }
+
+    @Override
+    public RedirectHandler getRedirectHandler() {
+        return mRedirectHandler;
     }
 
     @Override
@@ -527,25 +666,18 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public void queue(boolean queue) {
-        this.queue = queue;
+    public void setQueue(BlockingQueue<?> queue) {
+        blockingQueue = queue;
     }
 
     @Override
-    public boolean isQueue() {
-        return queue;
+    public boolean inQueue() {
+        return blockingQueue != null && blockingQueue.contains(this);
     }
 
     @Override
-    public void toggleQueue() {
-        this.queue = !queue;
-    }
-
-    @Override
-    public void start(boolean start) {
-        this.isStart = start;
-        if (start)
-            this.isFinished = false;
+    public void start() {
+        this.isStart = true;
     }
 
     @Override
@@ -554,15 +686,8 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public void toggleStart() {
-        this.isStart = !isStart;
-    }
-
-    @Override
-    public void finish(boolean finish) {
-        this.isFinished = finish;
-        if (finish)
-            this.isStart = false;
+    public void finish() {
+        this.isFinished = true;
     }
 
     @Override
@@ -570,28 +695,44 @@ public abstract class BasicRequest<T> implements Request<T> {
         return isFinished;
     }
 
-    @Override
-    public void toggleFinish() {
-        this.isFinished = !isFinished;
-    }
-
+    /**
+     * Cancel handle.
+     *
+     * @param cancel true or false.
+     * @deprecated use {@link #cancel()} instead.
+     */
+    @Deprecated
     @Override
     public void cancel(boolean cancel) {
-        this.isCanceled = cancel;
         if (cancel)
-            this.isStart = false;
+            cancel();
     }
 
     @Override
-    public void toggleCancel() {
-        this.isCanceled = false;
+    public void cancel() {
+        if (!isCanceled) {
+            isCanceled = true;
+            if (hasDefineRequestBody())
+                IOUtils.closeQuietly(getDefineRequestBody());
+
+            if(blockingQueue != null)
+                blockingQueue.remove(this);
+
+            // cancel file upload
+            Set<String> keys = mParamKeyValues.keySet();
+            for (String key : keys) {
+                List<Object> values = mParamKeyValues.getValues(key);
+                for (Object value : values)
+                    if (value != null && value instanceof Binary)
+                        ((Binary) value).cancel();
+            }
+        }
     }
 
     @Override
     public boolean isCanceled() {
         return isCanceled;
     }
-
 
     @Override
     public void setCancelSign(Object sign) {
@@ -601,32 +742,17 @@ public abstract class BasicRequest<T> implements Request<T> {
     @Override
     public void cancelBySign(Object sign) {
         if (cancelSign == sign)
-            cancel(true);
+            cancel();
     }
 
     /**
      * Returns the data "Charset".
      *
-     * @return Such as: {@code UTF-8}, {@code GBK}, {@code GB2312}.
+     * @return Such as: {@code UTF-8}.
      */
     public String getParamsEncoding() {
         return NoHttp.CHARSET_UTF8;
     }
-
-    /**
-     * Get the parameters set.
-     *
-     * @return Should return the set of all the parameters.
-     */
-    protected abstract Set<String> keySet();
-
-    /**
-     * Return {@link #keySet()} key corresponding to value.
-     *
-     * @param key from {@link #keySet()}.
-     * @return Param value
-     */
-    protected abstract Object value(String key);
 
     /**
      * Is there a Binary data upload ?
@@ -634,34 +760,73 @@ public abstract class BasicRequest<T> implements Request<T> {
      * @return Said true, false said no.
      */
     protected boolean hasBinary() {
-        Set<String> keys = keySet();
+        Set<String> keys = mParamKeyValues.keySet();
         for (String key : keys) {
-            Object value = value(key);
-            if (value instanceof Binary) {
-                return true;
+            List<Object> values = mParamKeyValues.getValues(key);
+            for (Object value : values) {
+                if (value instanceof Binary)
+                    return true;
             }
         }
         return false;
     }
 
-    private void print(boolean isPrint, String msg) {
-        if (isPrint)
-            Logger.d(msg);
+    ////////// static module /////////
+
+    /**
+     * Split joint non form data.
+     *
+     * @param paramMap      param map.
+     * @param encodeCharset charset.
+     * @return string parameter combination, each key value on nails with {@code "&"} space.
+     */
+    public static StringBuffer buildCommonParams(MultiValueMap<String, Object> paramMap, String encodeCharset) {
+        StringBuffer paramBuffer = new StringBuffer();
+        Set<String> keySet = paramMap.keySet();
+        for (String key : keySet) {
+            List<Object> values = paramMap.getValues(key);
+            for (Object value : values) {
+                if (value != null && value instanceof CharSequence) {
+                    paramBuffer.append("&");
+                    try {
+                        paramBuffer.append(URLEncoder.encode(key, encodeCharset));
+                        paramBuffer.append("=");
+                        paramBuffer.append(URLEncoder.encode(value.toString(), encodeCharset));
+                    } catch (UnsupportedEncodingException e) {
+                        Logger.e("Encoding " + encodeCharset + " format is not supported by the system");
+                        paramBuffer.append(key);
+                        paramBuffer.append("=");
+                        paramBuffer.append(value.toString());
+                    }
+                }
+            }
+        }
+        if (paramBuffer.length() > 0)
+            paramBuffer.deleteCharAt(0);
+        return paramBuffer;
     }
+
+    /**
+     * Accept-Language.
+     */
+    private static String acceptLanguage;
 
     /**
      * Create acceptLanguage.
      *
-     * @return Returns the client can accept the language types. Such as:zh-CN,zh;0.8
+     * @return Returns the client can accept the language types. Such as:zh-CN,zh.
      */
-    public static final String createAcceptLanguage() {
-        Locale locale = NoHttp.getContext().getResources().getConfiguration().locale;
-        String language = locale.getLanguage();
-        String country = locale.getCountry();
-        StringBuilder acceptLanguageBuilder = new StringBuilder(language);
-        if (!TextUtils.isEmpty(country))
-            acceptLanguageBuilder.append('-').append(country).append(',').append(language).append(";q=0.8");
-        return acceptLanguageBuilder.toString();
+    public static String defaultAcceptLanguage() {
+        if (TextUtils.isEmpty(acceptLanguage)) {
+            Locale locale = Locale.getDefault();
+            String language = locale.getLanguage();
+            String country = locale.getCountry();
+            StringBuilder acceptLanguageBuilder = new StringBuilder(language);
+            if (!TextUtils.isEmpty(country))
+                acceptLanguageBuilder.append('-').append(country).append(',').append(language);
+            acceptLanguage = acceptLanguageBuilder.toString();
+        }
+        return acceptLanguage;
     }
 
     /**
@@ -669,7 +834,7 @@ public abstract class BasicRequest<T> implements Request<T> {
      *
      * @return Random code.
      */
-    public static final String createBoundary() {
+    public static String createBoundary() {
         StringBuffer sb = new StringBuffer("------------------");
         for (int t = 1; t < 12; t++) {
             long time = System.currentTimeMillis() + t;

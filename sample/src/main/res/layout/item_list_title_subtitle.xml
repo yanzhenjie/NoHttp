@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/WrapContent.WidthMatchParent.RecyclerItem.Foreground">
+
+    <LinearLayout
+        style="@style/MatchParent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_list_title"
+            style="@style/WrapContent"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18" />
+
+        <TextView
+            android:id="@+id/item_list_title_sub"
+            style="@style/WrapContent"
+            android:layout_marginTop="@dimen/dp_5" />
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>
