@@ -62,12 +62,18 @@ Request<String> request = NoHttp.createStringRequest(url);
 ...
 request.cancel();
 ```
+
 ####从队列中取消指定的请求
 ```java
 Request<String> request = NoHttp.createStringRequest(url);
 request.setCancelSign(sign);
 ...
 queue.cancelBySign(sign);
+```
+
+####取消队列中所有请求
+```java
+queue.cancelAll();
 ```
 
 ####停止队列
@@ -118,7 +124,7 @@ request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST);
 　　请求图片，缓存图片。
 ```java
 // 如果没有缓存才去请求服务器，否则使用缓存，缓存图片演示
-Request<Bitmap> request = NoHttp.createImageRequest("http://image.tianjimedia.com/uploadImages/2013/214/CN267OUS22LM.jpg");
+Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
 request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST);
 ...
 ```
@@ -227,6 +233,7 @@ private DownloadListener downloadListener = new DownloadListener() {
 		
 	@Override
 	public void onProgress(int what, int progress, long downCount) {
+		// 更新下载进度
 	}
 		
  	@Override
