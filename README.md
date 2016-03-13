@@ -3,10 +3,10 @@
 技术交流2群：46505645  
 E-mail：nohttp@foxmail.com    
 NoHttp 教程博客：[http://blog.csdn.net/yanzhenjie1003][1]  
-Android直播地址：[http://www.huya.com/yolanda][2]
-直播视频下载地址：[http://pan.baidu.com/s/1bnM0CxD][3]
+Android直播地址：[http://www.huya.com/yolanda][2]  
+直播视频下载地址：[http://pan.baidu.com/s/1bnM0CxD][3]  
 
-NoHttp是专门做Android网络请求与下载的框架。
+NoHttp是专门做Android网络请求与下载的框架。  
 
 ----
 ##NoHttp特性:
