@@ -15,6 +15,7 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.cache.CacheMode;
 import com.yolanda.nohttp.tools.Writer;
 
 import java.net.Proxy;
@@ -59,18 +60,11 @@ public interface ImplServerRequest {
     String getCacheKey();
 
     /**
-     * If just read from cache.
+     * He got the request cache mode.
      *
-     * @return True: Only read cache, false: need request network.
+     * @return Value from {@link CacheMode}.
      */
-    boolean onlyReadCache();
-
-    /**
-     * Whether you need to read the cache request failure.
-     *
-     * @return True: Request failed to read the cache, false: don't need to read the cache.
-     */
-    boolean isRequestFailedReadCache();
+    CacheMode getCacheMode();
 
     /**
      * Get proxy server.
@@ -134,13 +128,6 @@ public interface ImplServerRequest {
      * @return Such as: {@code application/json}.
      */
     String getAccept();
-
-    /**
-     * The client wants to accept data encoding format.
-     *
-     * @return Such as: {@code UTF-8}.
-     */
-    String getAcceptCharset();
 
     /**
      * The client wants to accept data language types.

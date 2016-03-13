@@ -17,6 +17,7 @@ package com.yolanda.nohttp;
 
 import android.text.TextUtils;
 
+import com.yolanda.nohttp.cache.CacheMode;
 import com.yolanda.nohttp.tools.CounterOutputStream;
 import com.yolanda.nohttp.tools.Writer;
 
@@ -73,11 +74,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     /**
      * If just read from cache.
      */
-    private boolean isOnlyReadCache;
-    /**
-     * If the request fails the data read from the cache.
-     */
-    private boolean isRequestFailedReadCache = false;
+    private CacheMode mCacheMode = CacheMode.DEFAULT;
     /**
      * Proxy server.
      */
@@ -190,7 +187,7 @@ public abstract class BasicRequest<T> implements Request<T> {
 
     @Override
     public boolean needCache() {
-        return RequestMethod.GET == getRequestMethod() || isRequestFailedReadCache();
+        return RequestMethod.GET == getRequestMethod() || CacheMode.REQUEST_FAILED_READ_CACHE == getCacheMode();
     }
 
     @Override
@@ -204,23 +201,13 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public void setOnlyReadCache(boolean onlyReadCache) {
-        this.isOnlyReadCache = onlyReadCache;
+    public void setCacheMode(CacheMode cacheMode) {
+        this.mCacheMode = cacheMode;
     }
 
     @Override
-    public boolean onlyReadCache() {
-        return isOnlyReadCache;
-    }
-
-    @Override
-    public void setRequestFailedReadCache(boolean isEnable) {
-        this.isRequestFailedReadCache = isEnable;
-    }
-
-    @Override
-    public boolean isRequestFailedReadCache() {
-        return isRequestFailedReadCache;
+    public CacheMode getCacheMode() {
+        return mCacheMode;
     }
 
     @Override
@@ -327,11 +314,6 @@ public abstract class BasicRequest<T> implements Request<T> {
     }
 
     @Override
-    public String getAcceptCharset() {
-        return NoHttp.CHARSET_UTF8;
-    }
-
-    @Override
     public String getAcceptLanguage() {
         if (TextUtils.isEmpty(acceptLanguage))
             acceptLanguage = createAcceptLanguage();
@@ -342,8 +324,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     public long getContentLength() {
         CounterOutputStream outputStream = new CounterOutputStream();
         onWriteRequestBody(new Writer(outputStream));
-        long contentLength = outputStream.get();
-        return contentLength;
+        return outputStream.get();
     }
 
     @Override
@@ -359,7 +340,7 @@ public abstract class BasicRequest<T> implements Request<T> {
     @Override
     public String getUserAgent() {
         if (TextUtils.isEmpty(userAgent))
-            userAgent = UserAgent.getUserAgent(NoHttp.getContext());
+            userAgent = UserAgent.getUserAgent();
         return userAgent;
     }
 
@@ -481,7 +462,7 @@ public abstract class BasicRequest<T> implements Request<T> {
      */
     protected void writeRequestBody(Writer writer) {
         try {
-            print(writer.isPrint(), "RequestBody: " + mRequestBody);
+            print(writer.isPrint(), "Write RequestBody");
             if (mRequestBody.length > 0)
                 writer.write(mRequestBody);
         } catch (IOException e) {
@@ -654,8 +635,8 @@ public abstract class BasicRequest<T> implements Request<T> {
      *
      * @return Returns the client can accept the language types. Such as:zh-CN,zh;0.8
      */
-    public static final String createAcceptLanguage() {
-        Locale locale = NoHttp.getContext().getResources().getConfiguration().locale;
+    public static String createAcceptLanguage() {
+        Locale locale = Locale.getDefault();
         String language = locale.getLanguage();
         String country = locale.getCountry();
         StringBuilder acceptLanguageBuilder = new StringBuilder(language);
@@ -669,7 +650,7 @@ public abstract class BasicRequest<T> implements Request<T> {
      *
      * @return Random code.
      */
-    public static final String createBoundary() {
+    public static String createBoundary() {
         StringBuffer sb = new StringBuffer("------------------");
         for (int t = 1; t < 12; t++) {
             long time = System.currentTimeMillis() + t;

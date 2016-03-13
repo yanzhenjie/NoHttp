@@ -31,7 +31,7 @@ public interface CancelAble {
     void cancel(boolean cancel);
 
     /**
-     * Has it been canceled ?
+     * Has it been canceled.
      *
      * @return true: canceled, false: no cancellation.
      */

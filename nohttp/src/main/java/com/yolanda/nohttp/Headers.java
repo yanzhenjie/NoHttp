@@ -39,8 +39,6 @@ public interface Headers extends MultiValueMap<String, String> {
 
     String HEAD_KEY_ACCEPT = "Accept";
 
-    String HEAD_KEY_ACCEPT_CHARSET = "Accept-Charset";
-
     String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
 
     String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate";// no sdch

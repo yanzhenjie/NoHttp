@@ -96,9 +96,10 @@ public class FileBinary implements Binary {
     @Override
     public void onWriteBinary(OutputStream outputStream) {
         if (file == null || !file.exists()) {
-            Logger.e("一个文件是不存在的");
+            String errorInfo = "File does not exist or the file object is null";
+            Logger.e(errorInfo);
             UploadPoster error = new UploadPoster(handlerWhat, mUploadListener);
-            error.error(new NotFoundFileError("File does not exist or the file object is null"));
+            error.error(new NotFoundFileError(errorInfo));
             getPosterHandler().post(error);
         } else {
             RandomAccessFile accessFile = null;

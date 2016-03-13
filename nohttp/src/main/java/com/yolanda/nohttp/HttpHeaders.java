@@ -91,7 +91,8 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
         Iterator<String> keySet = jsonObject.keys();
         while (keySet.hasNext()) {
             String key = keySet.next();
-            JSONArray values = jsonObject.optJSONArray(key);
+            String value = jsonObject.optString(key);
+            JSONArray values = new JSONArray(value);
             if (values != null)
                 for (int i = 0; i < values.length(); i++)
                     add(key, values.optString(i));
@@ -100,7 +101,20 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
 
     @Override
     public final String toJSONString() {
-        return new JSONObject(mSource).toString();
+        JSONObject jsonObject = new JSONObject();
+        Set<Map.Entry<String, List<String>>> entrySet = mSource.entrySet();
+        for (Map.Entry<String, List<String>> entry : entrySet) {
+            String key = entry.getKey();
+            List<String> values = entry.getValue();
+            JSONArray value = new JSONArray(values);
+            try {
+                jsonObject.put(key, value);
+            } catch (JSONException e) {
+                Logger.w(e);
+            }
+        }
+
+        return jsonObject.toString();
     }
 
     @Override

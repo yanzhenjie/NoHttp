@@ -19,6 +19,7 @@ import com.yolanda.nohttp.able.FinishAble;
 import com.yolanda.nohttp.able.QueueAble;
 import com.yolanda.nohttp.able.SignCancelAble;
 import com.yolanda.nohttp.able.StartAble;
+import com.yolanda.nohttp.cache.CacheMode;
 
 import java.net.Proxy;
 
@@ -49,18 +50,11 @@ public interface ImplClientRequest extends QueueAble, StartAble, SignCancelAble,
     void setCacheKey(String key);
 
     /**
-     * Just read the cache, Is not enabled by default.
+     * Set the cache mode.
      *
-     * @param onlyReadCache true: read, false, don't read.
+     * @param cacheMode The value from {@link CacheMode}.
      */
-    void setOnlyReadCache(boolean onlyReadCache);
-
-    /**
-     * Read from the cache enabled are failing, is not enabled by default.
-     *
-     * @param isEnable true: enable ,false: close. isn't enable.
-     */
-    void setRequestFailedReadCache(boolean isEnable);
+    void setCacheMode(CacheMode cacheMode);
 
     /**
      * Sets the {@link SSLSocketFactory} for this request.

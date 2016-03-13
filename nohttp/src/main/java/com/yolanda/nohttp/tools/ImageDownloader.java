@@ -191,7 +191,7 @@ public class ImageDownloader {
                 if (HttpURLConnection.HTTP_OK == responseCode) {
                     OutputStream outputStream = new FileOutputStream(new File(mImagePath), false);
                     InputStream inputStream = urlConnection.getInputStream();
-                    int len = -1;
+                    int len;
                     byte[] buffer = new byte[1024];
                     while ((len = inputStream.read(buffer)) != -1) {
                         outputStream.write(buffer, 0, len);
@@ -200,9 +200,9 @@ public class ImageDownloader {
                     outputStream.flush();
                     outputStream.close();
                     holder.isSucceed = true;
-                    Logger.d(mImageUrl + " download finished; path: " + mImagePath);
+                    Logger.d(mImageUrl + " download finished; path: " + mImagePath + ".");
                 } else {
-                    Logger.d(mImageUrl + " responseCode: " + responseCode);
+                    Logger.d(mImageUrl + " responseCode: " + responseCode + ".");
                 }
             } catch (Exception e) {
                 Logger.w(e);

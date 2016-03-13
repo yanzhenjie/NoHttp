@@ -52,7 +52,7 @@ public class Where {
     /**
      * @param columnName columnName.
      * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
-     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float).
+     * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      */
     public Where(CharSequence columnName, Options op, Object value) {
         builder = new StringBuilder();

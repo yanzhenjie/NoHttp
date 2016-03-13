@@ -15,7 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.error.ClientError;
 import com.yolanda.nohttp.error.NetworkError;
 import com.yolanda.nohttp.error.ServerError;
 import com.yolanda.nohttp.error.TimeoutError;
@@ -31,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -55,7 +55,7 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
     @Override
     public HttpResponse requestNetwork(ImplServerRequest request) {
         if (request == null)
-            throw new IllegalArgumentException("request == null");
+            throw new IllegalArgumentException("request == null.");
 
         Logger.d("--------------Request start--------------");
 
@@ -64,9 +64,10 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
         Exception exception = null;
 
         HttpURLConnection httpConnection = null;
+        String url = request.url();
         try {
             if (!NetUtil.isNetworkAvailable(NoHttp.getContext()))
-                throw new NetworkError("Network error");
+                throw new NetworkError("The network is not available, please check the network. The requested url is: " + url);
 
             //MalformedURLException, IOException, ProtocolException, UnknownHostException, SocketTimeoutException
             httpConnection = getHttpConnection(request);
@@ -83,28 +84,28 @@ public final class HttpRestConnection extends BasicConnection implements ImplRes
                         inputStream = new GZIPInputStream(inputStream);
                     responseBody = readResponseBody(inputStream);
                 } catch (IOException e) {
+                    StringBuilder errorInfo = new StringBuilder("%1$s , the response code is ");
+                    errorInfo.append(responseCode).append(", the requested url is: ").append(url);
                     if (responseCode >= 500)
-                        throw new ServerError("Internal Server Error: " + e.getMessage());
+                        throw new ServerError(String.format(Locale.getDefault(), errorInfo.toString(), "Server internal error."));
                     else if (responseCode >= 400)
-                        throw new ClientError("Internal Client Error: " + e.getMessage());
+                        throw new ServerError(String.format(Locale.getDefault(), errorInfo.toString(), "The client request error."));
                 } finally {
                     if (inputStream != null)
                         inputStream.close();
                 }
             }
         } catch (MalformedURLException e) {
-            Logger.e(e);
-            exception = new URLError(e.getMessage());
+            exception = new URLError("The url is malformed: " + url + ".");
         } catch (UnknownHostException e) {
-            Logger.e(e);
-            exception = new UnKnownHostError(e.getMessage());
+            exception = new UnKnownHostError("Hostname can not be resolved: " + url + ".");
         } catch (SocketTimeoutException e) {
-            Logger.e(e);
-            exception = new TimeoutError(e.getMessage());
+            exception = new TimeoutError("Request time out, the requested url is: " + url + ".");
         } catch (Exception e) {
-            Logger.e(e);
             exception = e;
         } finally {
+            if (exception != null)
+                Logger.e(exception);
             if (httpConnection != null)
                 httpConnection.disconnect();
             Logger.d("-------Response end-------");

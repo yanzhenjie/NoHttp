@@ -16,7 +16,6 @@
 package com.yolanda.nohttp.tools;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -30,6 +29,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
 import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.NoHttp;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -137,7 +137,7 @@ public class ImageLocalLoader {
                     i += 1;
                 }
             } catch (IOException e) {
-                Logger.e(e, "This path does not exist" + imagePath);
+                Logger.e(e, "This path does not exist" + imagePath + ".");
             }
         }
         return null;
@@ -150,7 +150,7 @@ public class ImageLocalLoader {
      * @param viewSizes ViewSize.
      */
     public void measureSize(ImageView imageView, int[] viewSizes) {
-        final DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
+        final DisplayMetrics displayMetrics = NoHttp.getContext().getResources().getDisplayMetrics();
         final LayoutParams params = imageView.getLayoutParams();
         // 测量宽
         int width = params.width == LayoutParams.WRAP_CONTENT ? 0 : imageView.getWidth(); // Get actual image width
@@ -171,12 +171,11 @@ public class ImageLocalLoader {
     /**
      * Set the default image, resId from drawable. Is displayed when loading or loading failure.
      *
-     * @param context context.
-     * @param resId   res id.
+     * @param resId res id.
      */
     @SuppressLint("NewApi")
-    public void setDefaultImage(Context context, int resId) {
-        mDefaultDrawable = ResourcesCompat.getDrawable(context, resId);
+    public void setDefaultImage(int resId) {
+        mDefaultDrawable = ResCompat.getDrawable(resId);
     }
 
     /**

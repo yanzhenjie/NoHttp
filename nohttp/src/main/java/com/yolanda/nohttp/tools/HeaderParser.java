@@ -74,9 +74,10 @@ public class HeaderParser {
      *
      * @param responseHeaders response headers.
      * @param responseBody    response data.
+     * @param forceCache      Whether mandatory cache
      * @return Cache entity.
      */
-    public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
+    public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody, boolean forceCache) {
         long now = System.currentTimeMillis();
 
         long date = responseHeaders.getDate();
@@ -91,7 +92,7 @@ public class HeaderParser {
             StringTokenizer tokens = new StringTokenizer(cacheControl, ",");
             while (tokens.hasMoreTokens()) {
                 String token = tokens.nextToken().trim().toLowerCase(Locale.getDefault());
-                if (token.equals("no-cache") || token.equals("no-store")) {
+                if ((token.equals("no-cache") || token.equals("no-store")) && !forceCache) {
                     return null;
                 } else if (token.startsWith("max-age=")) {
                     try {

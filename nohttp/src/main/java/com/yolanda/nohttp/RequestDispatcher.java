@@ -91,7 +91,7 @@ public class RequestDispatcher extends Thread {
             }
 
             if (request.request.isCanceled()) {
-                Logger.d(request.request.url() + " is canceled");
+                Logger.d(request.request.url() + " is canceled.");
                 continue;
             }
             request.request.start(true);
@@ -112,7 +112,7 @@ public class RequestDispatcher extends Thread {
 
             // response
             if (request.request.isCanceled())
-                Logger.d(request.request.url() + " finish, but it's canceled");
+                Logger.d(request.request.url() + " finish, but it's canceled.");
             else {
                 final ThreadPoster responseThread = new ThreadPoster(request.what, request.responseListener);
                 responseThread.onResponse(response);
@@ -169,7 +169,7 @@ public class RequestDispatcher extends Thread {
                     responseListener.onFinish(what);
                 else if (command == COMMAND_RESPONSE) {
                     if (response == null) {
-                        responseListener.onFailed(what, null, null, null, 0, 0);
+                        responseListener.onFailed(what, null, null, new Exception("Unknown abnormal."), 0, 0);
                     } else {
                         if (response.isSucceed()) {
                             responseListener.onSucceed(what, response);

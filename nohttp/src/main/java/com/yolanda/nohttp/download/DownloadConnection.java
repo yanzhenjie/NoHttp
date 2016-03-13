@@ -64,21 +64,21 @@ public class DownloadConnection extends BasicConnection implements Downloader {
         HttpURLConnection httpConnection = null;
         InputStream inputStream = null;
         if (downloadRequest == null)
-            throw new IllegalArgumentException("downloadRequest == null");
+            throw new IllegalArgumentException("downloadRequest == null.");
         if (downloadListener == null)
-            throw new IllegalArgumentException("downloadListener == null");
+            throw new IllegalArgumentException("downloadListener == null.");
 
         RandomAccessFile randomAccessFile = null;
         String savePathDir = downloadRequest.getFileDir();
         try {
             if (TextUtils.isEmpty(savePathDir) || TextUtils.isEmpty(downloadRequest.getFileName()))
-                throw new ArgumentError("Destination folder creation failed, please check folder parameters and storage devices");
+                throw new ArgumentError("Destination folder creation failed, please check folder parameters and storage devices.");
 
             if (!NetUtil.isNetworkAvailable(NoHttp.getContext()))
-                throw new NetworkError("Network is not available");
+                throw new NetworkError("Network is not available.");
 
             if (!FileUtil.createFolder(savePathDir))
-                throw new StorageReadWriteError("Failed to create the folder " + savePathDir + ", please check storage devices");
+                throw new StorageReadWriteError("Failed to create the folder " + savePathDir + ", please check storage devices.");
 
             File tempFile = new File(savePathDir, downloadRequest.getFileName() + ".nohttp");
             // 根据临时文件处理断点头
@@ -107,7 +107,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                 try {
                     contentLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
                 } catch (Exception e) {
-                    throw new ServerError("ResponseCode is 206, but content-Range error in Server HTTP header information: " + range);
+                    throw new ServerError("ResponseCode is 206, but content-Range error in Server HTTP header information: " + range + ".");
                 }
             } else if (responseCode == 200) {
                 contentLength = httpHeaders.getContentLength();// 直接下载
@@ -130,13 +130,13 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
             // 生成临时文件
             if (responseCode == 200 && !FileUtil.createNewFile(tempFile))
-                throw new StorageReadWriteError("Failed to create the file, please check storage devices");
+                throw new StorageReadWriteError("Failed to create the file, please check storage devices.");
 
             if (FileUtil.getDirSize(savePathDir) < contentLength)
-                throw new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir);
+                throw new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir + ".");
 
             if (downloadRequest.isCanceled()) {
-                Log.i("NoHttpDownloader", "Download request is canceled");
+                Log.i("NoHttpDownloader", "Download request is canceled.");
                 downloadListener.onCancel(what);
                 return;
             }
@@ -169,7 +169,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
             while (((len = inputStream.read(buffer)) != -1)) {
                 if (downloadRequest.isCanceled()) {
-                    Log.i("NoHttpDownloader", "Download request is canceled");
+                    Log.i("NoHttpDownloader", "Download request is canceled.");
                     downloadListener.onCancel(what);
                     break;
                 } else {
@@ -202,15 +202,15 @@ public class DownloadConnection extends BasicConnection implements Downloader {
             if (NetUtil.isNetworkAvailable(NoHttp.getContext()))
                 downloadListener.onDownloadError(what, e);
             else {
-                String message = "The network is not available ";
+                String message = "The network is not available.";
                 Logger.e(e, message);
                 downloadListener.onDownloadError(what, new NetworkError(message));
             }
         } catch (IOException e) {
             if (!FileUtil.canWrite(savePathDir))
-                downloadListener.onDownloadError(what, new StorageReadWriteError("This folder cannot be written to the file: " + savePathDir));
+                downloadListener.onDownloadError(what, new StorageReadWriteError("This folder cannot be written to the file: " + savePathDir + "."));
             else if (FileUtil.getDirSize(savePathDir) < 1024)
-                downloadListener.onDownloadError(what, new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir));
+                downloadListener.onDownloadError(what, new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir + "."));
             else
                 downloadListener.onDownloadError(what, e);
         } catch (Exception e) {// NetworkError | ClientError | ServerError | StorageCantWriteError | StorageSpaceNotEnoughError

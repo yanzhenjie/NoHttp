@@ -16,7 +16,6 @@
 package com.yolanda.nohttp.tools;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
@@ -31,28 +30,23 @@ import android.text.style.StrikethroughSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import com.yolanda.nohttp.NoHttp;
+
 /**
  * Created in Nov 27, 2015 6:20:48 PM.
  *
  * @author YOLANDA;
  */
-public class ResourcesCompat {
+public class ResCompat {
 
-    public static Drawable getDrawable(Context context, int resId) {
-        return getDrawable(context.getResources(), resId);
-    }
-
-    public static Drawable getDrawable(Context context, int resId, Theme theme) {
-        return getDrawable(context.getResources(), resId, theme);
-    }
-
-    public static Drawable getDrawable(Resources resources, int resId) {
-        return getDrawable(resources, resId, null);
+    public static Drawable getDrawable(int resId) {
+        return getDrawable(resId, null);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressWarnings("deprecation")
-    public static Drawable getDrawable(Resources resources, int resId, Theme theme) {
+    public static Drawable getDrawable(int resId, Theme theme) {
+        Resources resources = NoHttp.getContext().getResources();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             return resources.getDrawable(resId, theme);
         else
@@ -61,51 +55,62 @@ public class ResourcesCompat {
 
     public static void setLeftDrawable(TextView textView, Drawable leftDrawable) {
         setDrawableBounds(leftDrawable);
-        textView.setCompoundDrawables(leftDrawable, null, null, null);
+        Drawable top = textView.getCompoundDrawables()[1];
+        Drawable right = textView.getCompoundDrawables()[2];
+        Drawable bottom = textView.getCompoundDrawables()[3];
+        textView.setCompoundDrawables(leftDrawable, top, right, bottom);
     }
 
     public static void setLeftDrawable(TextView textView, int resId) {
-        setLeftDrawable(textView, getDrawable(textView.getContext(), resId));
+        setLeftDrawable(textView, getDrawable(resId));
     }
 
     public static void setTopDrawable(TextView textView, Drawable topDrawable) {
         setDrawableBounds(topDrawable);
-        textView.setCompoundDrawables(null, topDrawable, null, null);
+        Drawable left = textView.getCompoundDrawables()[0];
+        Drawable right = textView.getCompoundDrawables()[2];
+        Drawable bottom = textView.getCompoundDrawables()[3];
+        textView.setCompoundDrawables(left, topDrawable, right, bottom);
     }
 
     public static void setTopDrawable(TextView textView, int resId) {
-        setTopDrawable(textView, getDrawable(textView.getContext(), resId));
+        setTopDrawable(textView, getDrawable(resId));
     }
 
     public static void setRightDrawable(TextView textView, Drawable rightDrawable) {
         setDrawableBounds(rightDrawable);
-        textView.setCompoundDrawables(null, null, rightDrawable, null);
+        Drawable left = textView.getCompoundDrawables()[0];
+        Drawable top = textView.getCompoundDrawables()[1];
+        Drawable bottom = textView.getCompoundDrawables()[3];
+        textView.setCompoundDrawables(left, top, rightDrawable, bottom);
     }
 
     public static void setRightDrawable(TextView textView, int resId) {
-        setRightDrawable(textView, getDrawable(textView.getContext(), resId));
+        setRightDrawable(textView, getDrawable(resId));
     }
 
     public static void setBottomDrawable(TextView textView, Drawable bottomDrawable) {
         setDrawableBounds(bottomDrawable);
-        textView.setCompoundDrawables(null, null, bottomDrawable, null);
+        Drawable left = textView.getCompoundDrawables()[0];
+        Drawable top = textView.getCompoundDrawables()[1];
+        Drawable bottom = textView.getCompoundDrawables()[2];
+        textView.setCompoundDrawables(left, top, bottom, bottomDrawable);
     }
 
     public static void setBottomDrawable(TextView textView, int resId) {
-        setBottomDrawable(textView, getDrawable(textView.getContext(), resId));
+        setBottomDrawable(textView, getDrawable(resId));
     }
 
-    public static void setCompoundDrawables(TextView textView, Drawable leftmDrawable, Drawable topDrawable, Drawable rightDrawable, Drawable bottomDrawable) {
-        setDrawableBounds(leftmDrawable);
+    public static void setCompoundDrawables(TextView textView, Drawable leftDrawable, Drawable topDrawable, Drawable rightDrawable, Drawable bottoDrawable) {
+        setDrawableBounds(leftDrawable);
         setDrawableBounds(topDrawable);
         setDrawableBounds(rightDrawable);
-        setDrawableBounds(bottomDrawable);
-        textView.setCompoundDrawables(leftmDrawable, topDrawable, rightDrawable, bottomDrawable);
+        setDrawableBounds(bottoDrawable);
+        textView.setCompoundDrawables(leftDrawable, topDrawable, rightDrawable, bottoDrawable);
     }
 
     public static void setCompoundDrawables(TextView textView, int resLeftId, int resRightId, int resTopId, int resBottomId) {
-        Context context = textView.getContext();
-        setCompoundDrawables(textView, getDrawable(context, resLeftId), getDrawable(context, resRightId), getDrawable(context, resTopId), getDrawable(context, resBottomId));
+        setCompoundDrawables(textView, getDrawable(resLeftId), getDrawable(resRightId), getDrawable(resTopId), getDrawable(resBottomId));
     }
 
     public static void setDrawableBounds(Drawable drawable) {
@@ -113,16 +118,12 @@ public class ResourcesCompat {
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
     }
 
-    public static int getColor(Context context, int resId) {
-        return getColor(context.getResources(), resId);
+    public static int getColor(int resId) {
+        return getColor(resId, null);
     }
 
-    public static int getColor(Context context, int resId, Theme theme) {
-        return getColor(context.getResources(), resId, theme);
-    }
-
-    public static int getColor(Resources resources, int resId) {
-        return getColor(resources, resId, null);
+    public static int getColor(int resId, Theme theme) {
+        return getColor(NoHttp.getContext().getResources(), resId, theme);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -134,21 +135,14 @@ public class ResourcesCompat {
             return resources.getColor(resId);
     }
 
-    public static ColorStateList getColorStateList(Context context, int resId) {
-        return getColorStateList(context.getResources(), resId);
-    }
-
-    public static ColorStateList getColorStateList(Context context, int resId, Theme theme) {
-        return getColorStateList(context.getResources(), resId, theme);
-    }
-
-    public static ColorStateList getColorStateList(Resources resources, int resId) {
-        return getColorStateList(resources, resId, null);
+    public static ColorStateList getColorStateList(int resId) {
+        return getColorStateList(resId, null);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     @SuppressWarnings("deprecation")
-    public static ColorStateList getColorStateList(Resources resources, int resId, Theme theme) {
+    public static ColorStateList getColorStateList(int resId, Theme theme) {
+        Resources resources = NoHttp.getContext().getResources();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             return resources.getColorStateList(resId, theme);
         else

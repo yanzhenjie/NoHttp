@@ -79,7 +79,7 @@ public class BasicConnection {
 
         // 3. Base attribute
         String requestMethod = request.getRequestMethod().toString();
-        Logger.i("Request method: " + requestMethod);
+        Logger.i("Request method: " + requestMethod + ".");
         connection.setRequestMethod(requestMethod);
         connection.setDoInput(true);
         connection.setDoOutput(request.doOutPut());
@@ -111,27 +111,25 @@ public class BasicConnection {
         Headers headers = request.headers();
 
         // 2.Base header
-        // 2.1 Accept-*
+        // 2.1 Accept
         String accept = request.getAccept();
         if (!TextUtils.isEmpty(accept))
             headers.set(Headers.HEAD_KEY_ACCEPT, accept);
         headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
 
-        String acceptCharset = request.getAcceptCharset();
-        if (!TextUtils.isEmpty(acceptCharset))
-            headers.set(Headers.HEAD_KEY_ACCEPT_CHARSET, acceptCharset);
-
+        // 2.2 Accept-Language
         String acceptLanguage = request.getAcceptLanguage();
         if (!TextUtils.isEmpty(acceptLanguage))
             headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
 
-        // 2.2 Connection
+        // 2.3 Connection
         // To fix bug: accidental EOFException before API 19
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
             headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);
         else
             headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_CLOSE);
-        // 2.3 Content-*
+
+        // 2.4 Content-Length
         if (request.doOutPut()) {
             long contentLength = request.getContentLength();
             if (contentLength < Integer.MAX_VALUE && contentLength > 0)
@@ -143,16 +141,19 @@ public class BasicConnection {
             headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
         }
 
+        // 2.5 Content-Type
         String contentType = request.getContentType();
         if (!TextUtils.isEmpty(contentType))
             headers.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
 
-        // 2.4 Cookie
+        // 2.6 Cookie
         if (uri != null)
             headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
 
         // 3. UserAgent
-        headers.set(Headers.HEAD_KEY_USER_AGENT, request.getUserAgent());
+        String userAgent = request.getUserAgent();
+        if (!TextUtils.isEmpty(userAgent))
+            headers.set(Headers.HEAD_KEY_USER_AGENT, userAgent);
 
         Map<String, String> requestHeaders = headers.toRequestHeaders();
 
@@ -179,7 +180,7 @@ public class BasicConnection {
         try {
             NoHttp.getDefaultCookieHandler().put(uri, responseHeaders);
         } catch (IOException e) {
-            Logger.e(e, "Save cookie filed: " + uri.toString());
+            Logger.e(e, "Save cookie filed: " + uri.toString() + ".");
         }
 
         // handle headers

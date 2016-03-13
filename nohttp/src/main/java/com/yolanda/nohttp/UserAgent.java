@@ -18,7 +18,6 @@ package com.yolanda.nohttp;
 import java.lang.reflect.Field;
 import java.util.Locale;
 
-import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -32,20 +31,17 @@ public class UserAgent {
     /**
      * Get User-Agent of System.
      *
-     * @param context {@link Context}.
      * @return UA.
      */
-    public static String getUserAgent(Context context) {
+    public static String getUserAgent() {
         String webUserAgent = null;
-        if (context != null) {
-            try {
-                Class<?> sysResCls = Class.forName("com.android.internal.R$string");
-                Field webUserAgentField = sysResCls.getDeclaredField("web_user_agent");
-                Integer resId = (Integer) webUserAgentField.get(null);
-                webUserAgent = context.getString(resId);
-            } catch (Exception e) {
-                // We have nothing to do
-            }
+        try {
+            Class<?> sysResCls = Class.forName("com.android.internal.R$string");
+            Field webUserAgentField = sysResCls.getDeclaredField("web_user_agent");
+            Integer resId = (Integer) webUserAgentField.get(null);
+            webUserAgent = NoHttp.getContext().getString(resId);
+        } catch (Exception e) {
+            // We have nothing to do
         }
         if (TextUtils.isEmpty(webUserAgent)) {
             webUserAgent = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 %sSafari/533.1";

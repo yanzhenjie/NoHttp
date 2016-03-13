@@ -69,16 +69,18 @@ public class NetUtil {
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Network[] networks = connectivity.getAllNetworks();
-                for (Network network : networks) {
-                    NetworkInfo networkInfo = connectivity.getNetworkInfo(network);
-                    if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
-                        return true;
-                }
+                if (networks != null)
+                    for (Network network : networks) {
+                        NetworkInfo networkInfo = connectivity.getNetworkInfo(network);
+                        if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
+                            return true;
+                    }
             } else {
                 NetworkInfo[] networkInfoArray = connectivity.getAllNetworkInfo();
-                for (NetworkInfo networkInfo : networkInfoArray)
-                    if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
-                        return true;
+                if (networkInfoArray != null)
+                    for (NetworkInfo networkInfo : networkInfoArray)
+                        if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
+                            return true;
             }
         }
         return false;
@@ -121,11 +123,12 @@ public class NetUtil {
         ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Network[] networks = mConnectivityManager.getAllNetworks();
-            for (Network network : networks) {
-                NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
-                if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
-                    return networkInfo.isAvailable() && networkInfo.isConnected();
-            }
+            if (networks != null)
+                for (Network network : networks) {
+                    NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
+                    if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+                        return networkInfo.isAvailable() && networkInfo.isConnected();
+                }
         } else {
             @SuppressWarnings("deprecation")
             NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -192,12 +195,13 @@ public class NetUtil {
                 NetworkInterface nif = enumeration.nextElement();// 得到每一个网络接口绑定的地址
                 Enumeration<InetAddress> inetAddresses = nif.getInetAddresses();
                 // 遍历每一个接口绑定的所有ip
-                while (inetAddresses.hasMoreElements()) {
-                    InetAddress ip = inetAddresses.nextElement();
-                    if (!ip.isLoopbackAddress() && isIPv4Address(ip.getHostAddress())) {
-                        return ip.getHostAddress();
+                if (inetAddresses != null)
+                    while (inetAddresses.hasMoreElements()) {
+                        InetAddress ip = inetAddresses.nextElement();
+                        if (!ip.isLoopbackAddress() && isIPv4Address(ip.getHostAddress())) {
+                            return ip.getHostAddress();
+                        }
                     }
-                }
             }
         }
         return "";
