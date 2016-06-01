@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.net.URI;
  * <p>The listener when save or delete the Cookie.</p>
  * Created in Dec 22, 2015 8:23:49 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface CookieStoreListener {
 
@@ -30,7 +30,7 @@ public interface CookieStoreListener {
      * When saving a Cookie callback.
      *
      * @param uri    cookie corresponding uri.
-     * @param cookie cookie.
+     * @param cookie {@link HttpCookie}.
      */
     void onSaveCookie(URI uri, HttpCookie cookie);
 
@@ -38,7 +38,7 @@ public interface CookieStoreListener {
      * The callback when deleting cookies.
      *
      * @param uri    cookie corresponding uri.
-     * @param cookie cookie.
+     * @param cookie {@link HttpCookie}.
      */
     void onRemoveCookie(URI uri, HttpCookie cookie);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,23 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.tools.MultiValueMap;
-
-import org.json.JSONException;
-
 import java.net.CookieHandler;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+
+import com.yolanda.nohttp.tools.MultiValueMap;
+
 /**
- * <p>Http header.</p>
+ * <p>
+ * Http header.
+ * </p>
  * Created in Jan 10, 2016 2:29:42 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface Headers extends MultiValueMap<String, String> {
 
@@ -104,7 +106,7 @@ public interface Headers extends MultiValueMap<String, String> {
     /**
      * Conform to the URI of the Cookie is added to the head.
      *
-     * @param uri           url.
+     * @param uri url.
      * @param cookieHandler cookieHandler.
      */
     void addCookie(URI uri, CookieHandler cookieHandler);
@@ -113,7 +115,7 @@ public interface Headers extends MultiValueMap<String, String> {
      * From the json format String parsing out the {@code Map<String, List<String>>} data.
      *
      * @param jsonString json string.
-     * @throws JSONException Thrown it when format error.
+     * @throws JSONException thrown it when format error.
      */
     void setJSONString(String jsonString) throws JSONException;
 

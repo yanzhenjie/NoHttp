@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package com.yolanda.nohttp.able;
  * <p>According to the sign cancel interface.</p>
  * Created in Nov 12, 2015 5:11:56 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
-public interface SignCancelAble extends CancelAble {
+public interface SignCancelable {
 
     /**
      * Cancel operation by contrast the sign.
@@ -33,7 +33,7 @@ public interface SignCancelAble extends CancelAble {
     /**
      * Set cancel sign.
      *
-     * @param object save a object.
+     * @param object a object.
      */
     void setCancelSign(Object object);
 

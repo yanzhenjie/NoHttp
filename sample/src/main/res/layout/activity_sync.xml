@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ScrollViewStyle_Padding20" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchParent"
+    android:padding="@dimen/dp_5">
 
-    <LinearLayout
-        style="@style/LayoutStyle_WidthMatch"
-        android:orientation="vertical" >
+    <Button
+        android:id="@+id/btn_start"
+        style="@style/WrapContent.WidthMatchParent"
+        android:text="@string/request_start" />
 
-        <Button
-            android:id="@+id/btn_start"
-            style="@style/ButtonStyle_WidthMatch"
-            android:text="@string/request_sync" />
-
-        <TextView
-            android:id="@+id/tv_result"
-            style="@style/TextViewStyle_WidthMatch"
-            android:layout_marginTop="@dimen/dp_10" />
-    </LinearLayout>
-
-</ScrollView>
+</LinearLayout>

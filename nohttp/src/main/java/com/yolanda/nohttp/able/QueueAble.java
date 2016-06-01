@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,28 @@
  */
 package com.yolanda.nohttp.able;
 
+import java.util.concurrent.BlockingQueue;
+
 /**
  * <p>Queue interface.</p>
  * Created in Nov 12, 2015 5:59:29 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
-public interface QueueAble {
+public interface Queueable {
 
     /**
-     * Are already in the queue ?
+     * Set the request in the queue.
      *
-     * @return true: In the queue, false: not in the queue.
+     * @param queue queue.
      */
-    boolean isQueue();
+    void setQueue(BlockingQueue<?> queue);
 
     /**
-     * Change queue state.
+     * In the queue?
      *
-     * @param queue true: In the queue, false: not in the queue.
+     * @return true: in the queue, false: not in the queue.
      */
-    void queue(boolean queue);
-
-    /**
-     * Change the current queue status as contrary to the current status.
-     */
-    void toggleQueue();
+    boolean inQueue();
 
 }

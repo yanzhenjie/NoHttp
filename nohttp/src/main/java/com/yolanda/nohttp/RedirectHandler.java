@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,29 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.rest.Request;
+
 /**
  * Created in Jan 31, 2016 8:45:37 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface RedirectHandler {
 
     /**
      * When the server's response code is 302 or 303 corresponding need to redirect is invoked.
      *
-     * @param responseHeaders The service side head accordingly.
+     * @param responseHeaders the service side head accordingly.
      * @return {@link Request}.
      */
     Request<?> onRedirect(Headers responseHeaders);
 
+    /**
+     * Whether to allow the redirection, if not redirect will not be {@code #onRedirect(Headers)} callback method, at the same time will ban NoHttp automatic redirection.If allowed to redirect, first
+     * call {@code #onRedirect(Headers)} method, if {@code #onRedirect(Headers)} method returns null, execute NoHttp default redirect.
+     *
+     * @param responseHeaders the service side head accordingly.
+     * @return returns true said allow redirection, returns false said do not allow the redirection.
+     */
+    boolean isDisallowedRedirect(Headers responseHeaders);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,18 @@
  */
 package com.yolanda.nohttp.download;
 
-import com.yolanda.nohttp.Request;
+import com.yolanda.nohttp.BasicClientRequest;
+import com.yolanda.nohttp.BasicServerRequest;
 
 /**
- * <p>Download task request interface.</p>
+ * <p>
+ * Download task request interface.
+ * </p>
  * Created in Oct 21, 2015 11:09:04 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
-public interface DownloadRequest extends Request<Void> {
+public interface DownloadRequest extends BasicClientRequest, BasicServerRequest {
 
     /**
      * Also didn't download to start download again.
@@ -41,14 +44,14 @@ public interface DownloadRequest extends Request<Void> {
     /**
      * Return the mFileDir.
      *
-     * @return String, not empty.
+     * @return it won't be empty.
      */
     String getFileDir();
 
     /**
      * Return the mFileName.
      *
-     * @return String, not empty.
+     * @return it won't be empty.
      */
     String getFileName();
 
@@ -67,14 +70,38 @@ public interface DownloadRequest extends Request<Void> {
     boolean isDeleteOld();
 
     /**
-     * <p>Query before download status
-     * STATUS_RESTART representative no download do to download again; Download STATUS_RESUME represents a part of, to
-     * continue to download; STATUS_FINISH representatives have finished downloading.</p>
+     * <p>
+     * Query before download status {@link #STATUS_RESTART} representative no download do to download again; Download {@link #STATUS_RESUME} represents a part of, to continue to download; {@link #STATUS_FINISH} representatives have finished downloading.
+     * </p>
      *
-     * @return Int value, compared with the {@value #STATUS_RESTART}, {@value #STATUS_RESUME}, {@value #STATUS_FINISH}.
+     * @return int value, compared with the {@value #STATUS_RESTART}, {@value #STATUS_RESUME}, {@value #STATUS_FINISH}.
      * @see #STATUS_RESTART
      * @see #STATUS_RESUME
      * @see #STATUS_FINISH
      */
     int checkBeforeStatus();
+
+    /**
+     * Prepare the callback parameter, while waiting for the response callback with thread.
+     *
+     * @param what             the callback mark.
+     * @param downloadListener {@link DownloadListener}.
+     */
+    void onPreResponse(int what, DownloadListener downloadListener);
+
+    /**
+     * The callback mark.
+     *
+     * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
+     * @see #onPreResponse(int, DownloadListener)
+     */
+    int what();
+
+    /**
+     * The request of the listener.
+     *
+     * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
+     * @see #onPreResponse(int, DownloadListener)
+     */
+    DownloadListener downloadListener();
 }

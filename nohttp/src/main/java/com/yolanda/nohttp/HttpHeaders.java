@@ -1,5 +1,5 @@
 /**
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import android.text.TextUtils;
-
-import com.yolanda.nohttp.tools.HttpDateTime;
-import com.yolanda.nohttp.tools.LinkedMultiValueMap;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.HttpCookie;
@@ -37,11 +28,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.tools.LinkedMultiValueMap;
+
+import android.text.TextUtils;
+
 /**
- * <p>{@link Headers} The default implementation.</p>
+ * <p>
+ * {@link Headers} The default implementation.
+ * </p>
  * Created in Jan 10, 2016 2:37:06 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class HttpHeaders extends LinkedMultiValueMap<String, String> implements Headers {
 
@@ -75,7 +77,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
             for (Map.Entry<String, List<String>> entry : diskCookies.entrySet()) {
                 String key = entry.getKey();
                 List<String> value = entry.getValue();
-                if ((Headers.HEAD_KEY_COOKIE.equalsIgnoreCase(key) || Headers.HEAD_KEY_COOKIE2.equalsIgnoreCase(key))) {
+                if ((HEAD_KEY_COOKIE.equalsIgnoreCase(key) || HEAD_KEY_COOKIE2.equalsIgnoreCase(key))) {
                     add(key, TextUtils.join("; ", value));
                 }
             }
@@ -222,8 +224,10 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
     }
 
     /**
-     * <p>Returns the date value in milliseconds since 1970.1.1, 00:00h corresponding to the header field field. The
-     * defaultValue will be returned if no such field can be found in the response header.</p>
+     * <p>
+     * Returns the date value in milliseconds since 1970.1.1, 00:00h corresponding to the header field field. The
+     * defaultValue will be returned if no such field can be found in the response header.
+     * </p>
      *
      * @param key the header field name.
      * @return the header field represented in milliseconds since January 1, 1970 GMT.

@@ -1,6 +1,4 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ScrollViewStyle_Padding20" >
-
-    <include layout="@layout/lv" />
-
-</ScrollView>
+<?xml version="1.0" encoding="utf-8"?>
+<com.perfoct.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv_start_activity"
+    style="@style/WrapContent.WidthMatchParent" />

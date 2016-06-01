@@ -1,5 +1,5 @@
 /*
- * Copyright © ${user}. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.yolanda.nohttp.error;
  * <p>Request connection timeout.</p>
  * Created in 2016/2/25 10:17.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class TimeoutError extends Exception {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,19 @@ package com.yolanda.nohttp.able;
  * <p>Start interface.</p>
  * Created in Nov 12, 2015 5:03:54 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
-public interface StartAble {
+public interface Startable {
 
     /**
-     * Change start state.
-     *
-     * @param start true: start, false: un start.
+     * Start handle.
      */
-    void start(boolean start);
+    void start();
 
     /**
-     * Has it been started ?
+     * Whether has already begun.
      *
      * @return true: has already started, false: haven't started.
      */
     boolean isStarted();
-
-    /**
-     * Change the current start status as contrary to the current status.
-     */
-    void toggleStart();
-
 }

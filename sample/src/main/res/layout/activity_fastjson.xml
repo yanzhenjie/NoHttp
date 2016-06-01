@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ScrollViewStyle_Padding20" >
+    style="@style/MatchParent">
 
     <LinearLayout
-        style="@style/LayoutStyle_WidthMatch"
-        android:orientation="vertical" >
+        style="@style/MatchParent"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/btn_start"
-            style="@style/ButtonStyle_WidthMatch"
+            style="@style/ButtonWrapContent.WidthMatch"
             android:text="@string/request_fast_json" />
 
         <TextView
             android:id="@+id/tv_result"
-            style="@style/TextViewStyle_WidthMatch"
+            style="@style/WrapContent.WidthMatchParent"
             android:layout_marginTop="@dimen/dp_10" />
     </LinearLayout>
 

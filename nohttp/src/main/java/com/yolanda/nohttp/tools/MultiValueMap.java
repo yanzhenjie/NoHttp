@@ -1,5 +1,5 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
+/*
+ * Copyright © Yan Zhenjie. All Rights Reserved
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Set;
  * <p>Can save multiple the value of the map.</p>
  * Created in Jan 10, 2016 5:00:07 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface MultiValueMap<K, V> {
 
@@ -69,8 +69,9 @@ public interface MultiValueMap<K, V> {
      * Delete a key-value.
      *
      * @param key key.
+     * @return value.
      */
-    void remove(K key);
+    List<V> remove(K key);
 
     /**
      * Remove all key-value.

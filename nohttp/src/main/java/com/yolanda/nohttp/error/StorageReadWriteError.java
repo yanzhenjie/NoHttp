@@ -1,5 +1,5 @@
 /*
- * Copyright © ${user}. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.yolanda.nohttp.error;
 /**
  * Created in 2016/2/26 19:14.
  *
- * @author YOLANDA.;
+ * @author Yan Zhenjie..;
  */
 public class StorageReadWriteError extends Exception {
 

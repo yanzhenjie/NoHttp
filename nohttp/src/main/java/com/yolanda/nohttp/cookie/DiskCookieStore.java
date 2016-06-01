@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,6 @@
  */
 package com.yolanda.nohttp.cookie;
 
-import android.text.TextUtils;
-
-import com.yolanda.nohttp.db.DBManager;
-import com.yolanda.nohttp.db.Field;
-import com.yolanda.nohttp.db.Where;
-import com.yolanda.nohttp.db.Where.Options;
-
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -32,10 +25,17 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.yolanda.nohttp.db.DBManager;
+import com.yolanda.nohttp.db.Field;
+import com.yolanda.nohttp.db.Where;
+import com.yolanda.nohttp.db.Where.Options;
+
+import android.text.TextUtils;
+
 /**
  * Created in Dec 17, 2015 7:20:52 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public enum DiskCookieStore implements CookieStore {
 
@@ -70,34 +70,34 @@ public enum DiskCookieStore implements CookieStore {
     /**
      * The callback when adding and deleting cookies.
      *
-     * @param mCookieStoreListener {@link CookieStoreListener}
+     * @param cookieStoreListener {@link CookieStoreListener}.
      */
-    public void setCookieStoreListener(CookieStoreListener mCookieStoreListener) {
-        this.mCookieStoreListener = mCookieStoreListener;
+    public void setCookieStoreListener(CookieStoreListener cookieStoreListener) {
+        mCookieStoreListener = cookieStoreListener;
     }
 
     @Override
     public void add(URI uri, HttpCookie cookie) {
-        if (uri != null && cookie != null) {
-            mLock.lock();
-            try {
+        mLock.lock();
+        try {
+            if (uri != null && cookie != null) {
                 uri = getEffectiveURI(uri);
                 if (mCookieStoreListener != null)
                     mCookieStoreListener.onSaveCookie(uri, cookie);
                 mManager.replace(new CookieEntity(uri, cookie));
                 trimSize();
-            } finally {
-                mLock.unlock();
             }
+        } finally {
+            mLock.unlock();
         }
     }
 
     @Override
     public List<HttpCookie> get(URI uri) {
-        if (uri == null)
-            return Collections.emptyList();
         mLock.lock();
         try {
+            if (uri == null)
+                return Collections.emptyList();
             uri = getEffectiveURI(uri);
             deleteExpiryCookies();
             Where where = new Where();
@@ -181,10 +181,10 @@ public enum DiskCookieStore implements CookieStore {
 
     @Override
     public boolean remove(URI uri, HttpCookie httpCookie) {
-        if (httpCookie == null)
-            return true;
         mLock.lock();
         try {
+            if (httpCookie == null)
+                return true;
             if (mCookieStoreListener != null)
                 mCookieStoreListener.onRemoveCookie(uri, httpCookie);
             Where where = new Where(CookieDisk.NAME, Options.EQUAL, httpCookie.getName());

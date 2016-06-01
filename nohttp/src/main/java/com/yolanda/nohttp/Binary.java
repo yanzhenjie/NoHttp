@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.able.CancelAble;
-import com.yolanda.nohttp.able.FinishAble;
+import com.yolanda.nohttp.able.Cancelable;
 
 import java.io.OutputStream;
 
@@ -25,12 +24,12 @@ import java.io.OutputStream;
  * All the methods are called in Son thread.</p>
  * Created in Oct 12, 2015 4:44:07 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
-public interface Binary extends CancelAble, FinishAble {
+public interface Binary extends Cancelable {
 
     /**
-     * Length of byteArray.
+     * Returns the size of the Binary, if size is 0, the Binary Field will not be sent. The rest of the {@link Binary} method will not be invoked.
      *
      * @return Long length.
      */

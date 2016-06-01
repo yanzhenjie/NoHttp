@@ -1,5 +1,5 @@
 /*
- * Copyright © ${user}. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.yolanda.nohttp.error;
  * <p>Specify the location of the file space is not enough.</p>
  * Created in 2016/2/25 11:50.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class StorageSpaceNotEnoughError extends Exception {
 

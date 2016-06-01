@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,7 @@
  */
 package com.yolanda.nohttp.tools;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
-import android.os.Build;
-import android.provider.Settings;
-
-import com.yolanda.nohttp.Logger;
-
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -33,154 +23,189 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
+import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.NoHttp;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
+
 /**
- * <p>Check the network utility class.</p>
+ * <p>
+ * Check the network utility class.
+ * </p>
  * Created in Jul 31, 2015 1:19:47 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class NetUtil {
 
+    public enum NetType {
+        Any,
+
+        Wifi,
+
+        Mobile
+    }
+
+    /**
+     * Class name of the {@link android.provider.Settings}.
+     */
+    private static final String ANDROID_PROVIDER_SETTINGS = "android.provider.Settings";
+
     /**
      * Open network settings page.
-     *
-     * @param context {@link Context}.
      */
-    public static void openSetting(Context context) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-            context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-        } else {
-            context.startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+    public static void openSetting() {
+        if (Build.VERSION.SDK_INT > AndroidVersion.GINGERBREAD_MR1)
+            openSetting("ACTION_WIFI_SETTINGS");
+        else
+            openSetting("ACTION_WIRELESS_SETTINGS");
+    }
+
+    private static void openSetting(String ActionName) {
+        try {
+            Class<?> settingsClass = Class.forName(ANDROID_PROVIDER_SETTINGS);
+            Field actionWifiSettingsField = settingsClass.getDeclaredField(ActionName);
+            Intent settingIntent = new Intent(actionWifiSettingsField.get(null).toString());
+            settingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            NoHttp.getContext().startActivity(settingIntent);
+        } catch (Throwable e) {
+            Logger.w(e);
         }
     }
 
     /**
      * Check the network is enable.
      *
-     * @param context access to {@code ConnectivityManager} services.
      * @return Available returns true, unavailable returns false.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @SuppressWarnings("deprecation")
-    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity == null) {
-            return false;
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Network[] networks = connectivity.getAllNetworks();
-                if (networks != null)
-                    for (Network network : networks) {
-                        NetworkInfo networkInfo = connectivity.getNetworkInfo(network);
-                        if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
-                            return true;
-                    }
-            } else {
-                NetworkInfo[] networkInfoArray = connectivity.getAllNetworkInfo();
-                if (networkInfoArray != null)
-                    for (NetworkInfo networkInfo : networkInfoArray)
-                        if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
-                            return true;
-            }
-        }
-        return false;
+    public static boolean isNetworkAvailable() {
+        return isNetworkAvailable(NetType.Any);
     }
 
     /**
      * To determine whether a WiFi network is available.
      *
-     * @param context access to {@code ConnectivityManager} services.
      * @return Open return true, close returns false.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public boolean isWifiConnected(Context context) {
-        if (context != null) {
-            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Network[] networks = mConnectivityManager.getAllNetworks();
-                for (Network network : networks) {
-                    NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
-                    if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
-                        return networkInfo.isAvailable() && networkInfo.isConnected();
+    public static boolean isWifiConnected() {
+        return isNetworkAvailable(NetType.Wifi);
+    }
+
+    /**
+     * To determine whether a mobile phone network is available.
+     *
+     * @return Open return true, close returns false.
+     */
+    public static boolean isMobileConnected() {
+        return isNetworkAvailable(NetType.Mobile);
+    }
+
+    /**
+     * According to the different type of network to determine whether the network connection.
+     *
+     * @param netType from {@link NetType}.
+     * @return Connection state return true, otherwise it returns false.
+     */
+    public static boolean isNetworkAvailable(NetType netType) {
+        ConnectivityManager connectivity = (ConnectivityManager) NoHttp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        Class<?> connectivityManagerClass = connectivity.getClass();
+        if (Build.VERSION.SDK_INT >= AndroidVersion.LOLLIPOP) {
+            try {
+                Method getAllNetworksMethod = connectivityManagerClass.getMethod("getAllNetworks");
+                getAllNetworksMethod.setAccessible(true);
+                Object[] networkArray = (Object[]) getAllNetworksMethod.invoke(connectivity);
+                for (Object network : networkArray) {
+                    Method getNetworkInfoMethod = connectivityManagerClass.getMethod("getNetworkInfo", Class.forName("android.net.Network"));
+                    getNetworkInfoMethod.setAccessible(true);
+                    NetworkInfo networkInfo = (NetworkInfo) getNetworkInfoMethod.invoke(connectivity, network);
+                    if (isConnected(netType, networkInfo))
+                        return true;
                 }
-            } else {
-                @SuppressWarnings("deprecation")
-                NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
+            } catch (Throwable e) {
+            }
+        } else {
+            try {
+                Method getAllNetworkInfoMethod = connectivityManagerClass.getMethod("getAllNetworkInfo");
+                getAllNetworkInfoMethod.setAccessible(true);
+                Object[] networkInfoArray = (Object[]) getAllNetworkInfoMethod.invoke(connectivity);
+                for (Object object : networkInfoArray) {
+                    if (isConnected(netType, (NetworkInfo) object))
+                        return true;
+                }
+            } catch (Throwable e) {
             }
         }
         return false;
     }
 
     /**
-     * To determine whether a mobile phone network is available.
+     * According to the different type of network to determine whether the network connection.
      *
-     * @param context access to {@code ConnectivityManager} services.
-     * @return Open return true, close returns false.
+     * @param netType     from {@link NetType}.
+     * @param networkInfo from {@link NetworkInfo}.
+     * @return Connection state return true, otherwise it returns false.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public boolean isMobileConnected(Context context) {
-        ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Network[] networks = mConnectivityManager.getAllNetworks();
-            if (networks != null)
-                for (Network network : networks) {
-                    NetworkInfo networkInfo = mConnectivityManager.getNetworkInfo(network);
-                    if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
-                        return networkInfo.isAvailable() && networkInfo.isConnected();
-                }
-        } else {
-            @SuppressWarnings("deprecation")
-            NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable() && mWiFiNetworkInfo.isConnected();
-        }
+    public static boolean isConnected(NetType netType, NetworkInfo networkInfo) {
+        if (netType == NetType.Any && networkInfo != null && isConnected(networkInfo))
+            return true;
+        else if (netType == NetType.Wifi && networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI && isConnected(networkInfo))
+            return true;
+        else if (netType == NetType.Mobile && networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE && isConnected(networkInfo))
+            return true;
         return false;
+    }
+
+    /**
+     * Whether network connection.
+     *
+     * @param networkInfo from {@link NetworkInfo}.
+     * @return Connection state return true, otherwise it returns false.
+     */
+    public static boolean isConnected(NetworkInfo networkInfo) {
+        return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
     }
 
     /**
      * Check the GPRS whether available.
      *
-     * @param context access to {@code ConnectivityManager} services.
      * @return Open return true, close returns false.
      */
-    public static boolean isGPRSOpen(Context context) {
-        boolean isOpen = false;
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isGPRSOpen() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) NoHttp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         Class<?> cmClass = connectivityManager.getClass();
-        Class<?>[] argClasses = null;
         try {
-            Method method = cmClass.getMethod("getMobileDataEnabled", argClasses);
-            Object[] argObject = null;
-            isOpen = (Boolean) method.invoke(connectivityManager, argObject);
-        } catch (Exception e) {
-            Logger.w(e);
+            Method getMobileDataEnabledMethod = cmClass.getMethod("getMobileDataEnabled");
+            getMobileDataEnabledMethod.setAccessible(true);
+            return (Boolean) getMobileDataEnabledMethod.invoke(connectivityManager);
+        } catch (Throwable e) {
         }
-        return isOpen;
+        return false;
     }
 
     /**
      * Open or close the GPRS.
      *
-     * @param context  access to {@code ConnectivityManager} services.
      * @param isEnable Open to true, close to false.
      */
-    public static void setGPRSEnable(Context context, boolean isEnable) {
+    public static void setGPRSEnable(boolean isEnable) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) NoHttp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        Class<?> cmClass = connectivityManager.getClass();
         try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            Class<?> cmClass = connectivityManager.getClass();
-            Class<?>[] argClasses = new Class[1];
-            argClasses[0] = boolean.class;
-            Method method = cmClass.getMethod("setMobileDataEnabled", argClasses);
-            method.invoke(connectivityManager, isEnable);
-        } catch (Exception e) {
-            Logger.w(e);
+            Method setMobileDataEnabledMethod = cmClass.getMethod("setMobileDataEnabled", boolean.class);
+            setMobileDataEnabledMethod.setAccessible(true);
+            setMobileDataEnabledMethod.invoke(connectivityManager, isEnable);
+        } catch (Throwable e) {
         }
     }
 
     /**
      * Tet local ip address.
      *
-     * @return Such as：192.168.1.1
+     * @return Such as: {@code 192.168.1.1}.
      */
     public static String getLocalIPAddress() {
         Enumeration<NetworkInterface> enumeration = null;
@@ -227,7 +252,7 @@ public class NetUtil {
     // 未压缩过的IPv6地址检查
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
     // 压缩过的IPv6地址检查
-    private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                             // 0-6
+    private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                              // 0-6
             "::" + "(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)$");// 0-6 hex fields
 
     /**

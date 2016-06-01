@@ -1,0 +1,122 @@
+/*
+ * Copyright © Yan Zhenjie. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.perfoct.nohttp.sample.activity;
+
+import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.EditText;
+
+import com.perfoct.nohttp.sample.R;
+import com.perfoct.nohttp.sample.nohttp.CallServer;
+import com.perfoct.nohttp.sample.nohttp.HttpListener;
+import com.perfoct.nohttp.sample.util.Constants;
+import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.RequestMethod;
+import com.yolanda.nohttp.rest.Request;
+import com.yolanda.nohttp.rest.Response;
+import com.yolanda.nohttp.tools.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * <p>提交Json到服务器。</p>
+ * Created on 2016/5/29.
+ *
+ * @author Yan Zhenjie;
+ */
+public class PostBodyActivity extends BaseActivity implements View.OnClickListener {
+
+    /**
+     * 要提交的数据。
+     */
+    private EditText mEdtPostBody;
+
+    @Override
+    protected void onActivityCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_post_body);
+        mEdtPostBody = (EditText) findViewById(R.id.edt_post_body);
+        findView(R.id.btn_start).setOnClickListener(this);
+
+        try {
+            InputStream inputStream = getAssets().open("json");
+            String s = IOUtils.toString(inputStream);
+            mEdtPostBody.setText(s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btn_start) {
+            pushBody();
+        }
+    }
+
+    /**
+     * 提交JSON、XML、String、InputStream、ByteArray。
+     */
+    private void pushBody() {
+        /**
+         * 这里要注意的是：
+         * 1. 请求方法一定是POST、PUT等可以直接写流出去的方法。
+         */
+        Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_POSTBODY, RequestMethod.POST);
+
+        /**
+         * 下面就是怎么setBody，几种方法，根据自己的需要选择：
+         */
+
+//        1. 这里可以push任何数据上去（比如String、Json、XML、图片）。
+//        request.setDefineRequestBody(InputStream body, String contentType);
+
+//        2. 这里可以push任何string数据（json、xml等），并可以指定contentType。
+//        request.setDefineRequestBody(String body, String contentType);
+
+//        3. 下面的两个的contentType默认为application/json，传进去的数据要为json。
+//        request.setDefineRequestBodyForJson(JSONObject jsonBody);
+//        request.setDefineRequestBodyForJson(String jsonBody);
+
+//        4. 这里的contentType默认为application/xml。
+//        request.setDefineRequestBodyForXML(String xmlBody);
+
+        // 这里我们用json多例子
+        String jsonBody = mEdtPostBody.getText().toString();
+        if (TextUtils.isEmpty(jsonBody)) {
+            Snackbar.make(mEdtPostBody, R.string.request_json_body_input_tip, Snackbar.LENGTH_LONG).show();
+        } else {
+            Logger.i("提交的数据：" + jsonBody);
+            request.setDefineRequestBodyForJson(jsonBody);
+            CallServer.getRequestInstance().add(this, 0, request, httpListener, false, true);
+        }
+    }
+
+    private HttpListener<String> httpListener = new HttpListener<String>() {
+        @Override
+        public void onSucceed(int what, Response<String> response) {
+            showMessageDialog(R.string.request_succeed, response.get());
+        }
+
+        @Override
+        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+            showMessageDialog(R.string.request_failed, exception.getMessage());
+        }
+    };
+}

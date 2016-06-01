@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created in Jan 27, 2016 2:54:13 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class LruCache<K, V> {
     private final LinkedHashMap<K, V> map;

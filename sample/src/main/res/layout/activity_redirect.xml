@@ -1,20 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ScrollViewStyle_Padding20" >
-
-    <LinearLayout
-        style="@style/LayoutStyle_WidthMatch"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/btn_start"
-            style="@style/ButtonStyle_WidthMatch"
-            android:text="@string/request_start" />
-
-        <TextView
-            android:id="@+id/tv_result"
-            style="@style/TextViewStyle_WidthMatch"
-            android:layout_marginTop="@dimen/dp_10" />
-    </LinearLayout>
-
-</ScrollView>
+<com.perfoct.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv_redirect_activity"
+    style="@style/WrapContent.WidthMatchParent" />

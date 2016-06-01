@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.yolanda.nohttp.download;
  * <p>Download Network Interface.</p>
  * Created in Oct 20, 2015 4:13:04 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface Downloader {
 

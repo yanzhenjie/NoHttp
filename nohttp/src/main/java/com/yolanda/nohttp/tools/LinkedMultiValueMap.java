@@ -1,5 +1,5 @@
 /**
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Created in Jan 10, 2016 5:03:17 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V> {
 
@@ -70,8 +70,8 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V> {
     }
 
     @Override
-    public void remove(K key) {
-        mSource.remove(key);
+    public List<V> remove(K key) {
+        return mSource.remove(key);
     }
 
     @Override

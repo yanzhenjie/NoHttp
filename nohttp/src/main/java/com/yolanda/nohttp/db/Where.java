@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created in Dec 19, 2015 4:16:24 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class Where {
 
@@ -51,7 +51,7 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
      * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      */
     public Where(CharSequence columnName, Options op, Object value) {
@@ -86,7 +86,7 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
      * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      * @return {@link Where}.
      */
@@ -128,7 +128,7 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
      * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      * @return {@link Where}.
      */
@@ -152,7 +152,7 @@ public class Where {
 
     /**
      * @param columnName columnName.
-     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link com.yolanda.nohttp.db.Where.Options}.
+     * @param op         such as: {@code >, =, <, IN}, but it's come from {@link Options}.
      * @param value      {@link Character}, {@link Integer}, {@link Long}, {@link Short}, {@link Double}, {@link Float}.
      * @return {@link Where}.
      */

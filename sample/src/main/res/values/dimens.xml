@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="text_size_12">12sp</dimen>
-    <dimen name="text_size_13">13sp</dimen>
-    <dimen name="text_size_14">14sp</dimen>
-    <dimen name="text_size_15">15sp</dimen>
-    <dimen name="text_size_16">16sp</dimen>
-    <dimen name="text_size_18">18sp</dimen>
-    <dimen name="text_size_20">20sp</dimen>
-    <dimen name="text_size_22">22sp</dimen>
-    <dimen name="text_size_24">24sp</dimen>
-    <dimen name="text_size_26">26sp</dimen>
-    <dimen name="text_size_28">28sp</dimen>
-    <dimen name="text_size_30">30sp</dimen>
-    <dimen name="text_size_35">35sp</dimen>
-    <dimen name="text_size_40">40sp</dimen>
+    <dimen name="sp_12">12sp</dimen>
+    <dimen name="sp_13">13sp</dimen>
+    <dimen name="sp_14">14sp</dimen>
+    <dimen name="sp_15">15sp</dimen>
+    <dimen name="sp_16">16sp</dimen>
+    <dimen name="sp_18">18sp</dimen>
+    <dimen name="sp_20">20sp</dimen>
+    <dimen name="sp_22">22sp</dimen>
+    <dimen name="sp_24">24sp</dimen>
+    <dimen name="sp_26">26sp</dimen>
+    <dimen name="sp_28">28sp</dimen>
+    <dimen name="sp_30">30sp</dimen>
+    <dimen name="sp_35">35sp</dimen>
+    <dimen name="sp_40">40sp</dimen>
 
     <dimen name="dp_3">3dp</dimen>
     <dimen name="dp_5">5dp</dimen>

@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,10 @@ import java.util.List;
  * <p>Cookie database manager.</p>
  * Created in Dec 18, 2015 7:01:31 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 class CookieDiskManager extends DBManager<CookieEntity> {
-    /**
-     * Instance.
-     */
+
     private static DBManager<CookieEntity> _Instance;
 
     private CookieDiskManager() {
@@ -54,7 +52,7 @@ class CookieDiskManager extends DBManager<CookieEntity> {
      */
     @Override
     public long replace(CookieEntity cookie) {
-        SQLiteDatabase execute = openWriter();
+        SQLiteDatabase execute = getWriter();
         ContentValues values = new ContentValues();
         values.put(CookieDisk.URI, cookie.getUri());
         values.put(CookieDisk.NAME, cookie.getName());
@@ -75,13 +73,13 @@ class CookieDiskManager extends DBManager<CookieEntity> {
         } catch (Throwable e) {
             Logger.w(e);
         }
-        writeFinish(execute);
+        closeWriter(execute);
         return id;
     }
 
     @Override
     public List<CookieEntity> get(String querySql) {
-        SQLiteDatabase execute = openReader();
+        SQLiteDatabase execute = getReader();
 
         List<CookieEntity> cookies = new ArrayList<CookieEntity>();
         Cursor cursor = null;
@@ -151,7 +149,7 @@ class CookieDiskManager extends DBManager<CookieEntity> {
         } catch (Throwable e) {
             Logger.e(e);
         }
-        readFinish(execute, cursor);
+        closeReader(execute, cursor);
         return cookies;
     }
 

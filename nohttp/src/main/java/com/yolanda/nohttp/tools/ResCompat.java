@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
  */
 package com.yolanda.nohttp.tools;
 
-import android.annotation.TargetApi;
+import java.lang.reflect.Method;
+
+import com.yolanda.nohttp.NoHttp;
+
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
@@ -30,27 +34,35 @@ import android.text.style.StrikethroughSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import com.yolanda.nohttp.NoHttp;
-
 /**
  * Created in Nov 27, 2015 6:20:48 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class ResCompat {
 
-    public static Drawable getDrawable(int resId) {
-        return getDrawable(resId, null);
+    public static Drawable getDrawable(int drawableId) {
+        return getDrawable(drawableId, null);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @SuppressWarnings("deprecation")
-    public static Drawable getDrawable(int resId, Theme theme) {
+    public static Drawable getDrawable(int drawableId, Theme theme) {
         Resources resources = NoHttp.getContext().getResources();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            return resources.getDrawable(resId, theme);
+        Class<?> resourcesClass = resources.getClass();
+        if (Build.VERSION.SDK_INT >= AndroidVersion.LOLLIPOP)
+            try {
+                Method getDrawableMethod = resourcesClass.getMethod("getDrawable", int.class, Theme.class);
+                getDrawableMethod.setAccessible(true);
+                return (Drawable) getDrawableMethod.invoke(resources, drawableId, theme);
+            } catch (Throwable e) {
+            }
         else
-            return resources.getDrawable(resId);
+            try {
+                Method getDrawableMethod = resourcesClass.getMethod("getDrawable", int.class);
+                getDrawableMethod.setAccessible(true);
+                return (Drawable) getDrawableMethod.invoke(resources, drawableId);
+            } catch (Throwable e) {
+            }
+        return null;
     }
 
     public static void setLeftDrawable(TextView textView, Drawable leftDrawable) {
@@ -61,8 +73,8 @@ public class ResCompat {
         textView.setCompoundDrawables(leftDrawable, top, right, bottom);
     }
 
-    public static void setLeftDrawable(TextView textView, int resId) {
-        setLeftDrawable(textView, getDrawable(resId));
+    public static void setLeftDrawable(TextView textView, int drawableId) {
+        setLeftDrawable(textView, getDrawable(drawableId));
     }
 
     public static void setTopDrawable(TextView textView, Drawable topDrawable) {
@@ -73,8 +85,8 @@ public class ResCompat {
         textView.setCompoundDrawables(left, topDrawable, right, bottom);
     }
 
-    public static void setTopDrawable(TextView textView, int resId) {
-        setTopDrawable(textView, getDrawable(resId));
+    public static void setTopDrawable(TextView textView, int drawableId) {
+        setTopDrawable(textView, getDrawable(drawableId));
     }
 
     public static void setRightDrawable(TextView textView, Drawable rightDrawable) {
@@ -85,8 +97,8 @@ public class ResCompat {
         textView.setCompoundDrawables(left, top, rightDrawable, bottom);
     }
 
-    public static void setRightDrawable(TextView textView, int resId) {
-        setRightDrawable(textView, getDrawable(resId));
+    public static void setRightDrawable(TextView textView, int drawableId) {
+        setRightDrawable(textView, getDrawable(drawableId));
     }
 
     public static void setBottomDrawable(TextView textView, Drawable bottomDrawable) {
@@ -97,8 +109,8 @@ public class ResCompat {
         textView.setCompoundDrawables(left, top, bottom, bottomDrawable);
     }
 
-    public static void setBottomDrawable(TextView textView, int resId) {
-        setBottomDrawable(textView, getDrawable(resId));
+    public static void setBottomDrawable(TextView textView, int drawableId) {
+        setBottomDrawable(textView, getDrawable(drawableId));
     }
 
     public static void setCompoundDrawables(TextView textView, Drawable leftDrawable, Drawable topDrawable, Drawable rightDrawable, Drawable bottoDrawable) {
@@ -109,8 +121,8 @@ public class ResCompat {
         textView.setCompoundDrawables(leftDrawable, topDrawable, rightDrawable, bottoDrawable);
     }
 
-    public static void setCompoundDrawables(TextView textView, int resLeftId, int resRightId, int resTopId, int resBottomId) {
-        setCompoundDrawables(textView, getDrawable(resLeftId), getDrawable(resRightId), getDrawable(resTopId), getDrawable(resBottomId));
+    public static void setCompoundDrawables(TextView textView, int drawableLeftId, int drawableRightId, int drawableTopId, int drawableBottomId) {
+        setCompoundDrawables(textView, getDrawable(drawableLeftId), getDrawable(drawableRightId), getDrawable(drawableTopId), getDrawable(drawableBottomId));
     }
 
     public static void setDrawableBounds(Drawable drawable) {
@@ -118,45 +130,72 @@ public class ResCompat {
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
     }
 
-    public static int getColor(int resId) {
-        return getColor(resId, null);
+    public static int getColor(int colorId) {
+        return getColor(colorId, null);
     }
 
-    public static int getColor(int resId, Theme theme) {
-        return getColor(NoHttp.getContext().getResources(), resId, theme);
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    @SuppressWarnings("deprecation")
-    public static int getColor(Resources resources, int resId, Theme theme) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            return resources.getColor(resId, theme);
-        else
-            return resources.getColor(resId);
-    }
-
-    public static ColorStateList getColorStateList(int resId) {
-        return getColorStateList(resId, null);
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    @SuppressWarnings("deprecation")
-    public static ColorStateList getColorStateList(int resId, Theme theme) {
+    public static int getColor(int colorId, Theme theme) {
         Resources resources = NoHttp.getContext().getResources();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            return resources.getColorStateList(resId, theme);
+        Class<?> resourcesClass = resources.getClass();
+        if (Build.VERSION.SDK_INT >= AndroidVersion.M)
+            try {
+                Method getColorMethod = resourcesClass.getMethod("getColor", int.class, Theme.class);
+                getColorMethod.setAccessible(true);
+                return (Integer) getColorMethod.invoke(resources, colorId, theme);
+            } catch (Throwable e) {
+            }
         else
-            return resources.getColorStateList(resId);
-
+            try {
+                Method getColorMethod = resourcesClass.getMethod("getColor", int.class);
+                getColorMethod.setAccessible(true);
+                return (Integer) getColorMethod.invoke(resources, colorId, theme);
+            } catch (Throwable e) {
+            }
+        return Color.BLACK;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @SuppressWarnings("deprecation")
-    public static void setBackground(View view, Drawable background) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            view.setBackground(background);
+    public static ColorStateList getColorStateList(int colorStateId) {
+        return getColorStateList(colorStateId, null);
+    }
+
+    public static ColorStateList getColorStateList(int colorStateId, Theme theme) {
+        Resources resources = NoHttp.getContext().getResources();
+        Class<?> resourcesClass = resources.getClass();
+        if (Build.VERSION.SDK_INT >= AndroidVersion.M)
+            try {
+                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class);
+                getColorStateListMethod.setAccessible(true);
+                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId);
+            } catch (Throwable e) {
+            }
         else
-            view.setBackgroundDrawable(background);
+            try {
+                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class, Theme.class);
+                getColorStateListMethod.setAccessible(true);
+                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId, theme);
+            } catch (Throwable e) {
+            }
+        return null;
+    }
+
+    public static void setBackground(View view, int drawableId) {
+        setBackground(view, getDrawable(drawableId));
+    }
+
+    public static void setBackground(View view, Drawable background) {
+        if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN)
+            setBackground("setBackground", view, background);
+        else
+            setBackground("setBackgroundDrawable", view, background);
+    }
+
+    public static void setBackground(String method, View view, Drawable background) {
+        try {
+            Method viewMethod = view.getClass().getMethod(method, Drawable.class);
+            viewMethod.setAccessible(true);
+            viewMethod.invoke(view, background);
+        } catch (Throwable e) {
+        }
     }
 
     public static SpannableString getScaleText(String content, int start, int end, int px) {

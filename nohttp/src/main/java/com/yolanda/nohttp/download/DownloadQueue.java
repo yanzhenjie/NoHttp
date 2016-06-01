@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,30 @@ package com.yolanda.nohttp.download;
 
 import com.yolanda.nohttp.Logger;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * <p>Download queue.</p>
+ * <p>
+ * Download queue.
+ * </p>
  * Created in Oct 21, 2015 2:44:19 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class DownloadQueue {
+
+    private AtomicInteger mInteger = new AtomicInteger();
+    /**
+     * Save un finish task.
+     */
+    private final BlockingQueue<DownloadRequest> mUnFinishQueue = new LinkedBlockingDeque<DownloadRequest>();
     /**
      * Save download task.
      */
-    private final LinkedBlockingQueue<NetworkDownloadRequest> mDownloadQueue = new LinkedBlockingQueue<NetworkDownloadRequest>();
+    private final BlockingQueue<DownloadRequest> mDownloadQueue = new PriorityBlockingQueue<DownloadRequest>();
     /**
      * Download Network task execution interface.
      */
@@ -57,7 +68,7 @@ public class DownloadQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mDownloadQueue, mDownloader);
+            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mUnFinishQueue, mDownloadQueue, mDownloader);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }
@@ -71,14 +82,14 @@ public class DownloadQueue {
      * @param downloadListener download results monitor.
      */
     public void add(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-        if (downloadRequest.isQueue())
+        if (downloadRequest.inQueue())
             Logger.w("This request has been in the queue");
         else {
-            downloadRequest.queue(true);
-            downloadRequest.start(false);
-            downloadRequest.cancel(false);
-            downloadRequest.finish(false);
-            mDownloadQueue.add(new NetworkDownloadRequest(what, downloadRequest, downloadListener));
+            downloadRequest.setQueue(mUnFinishQueue);
+            downloadRequest.onPreResponse(what, downloadListener);
+            downloadRequest.setSequence(mInteger.incrementAndGet());
+            mUnFinishQueue.add(downloadRequest);
+            mDownloadQueue.add(downloadRequest);
         }
     }
 
@@ -86,9 +97,9 @@ public class DownloadQueue {
      * Polling the queue will not be executed, and this will not be canceled.
      */
     public void stop() {
-        for (DownloadDispatcher mDispatcher : mDispatchers) {
-            if (mDispatcher != null)
-                mDispatcher.quit();
+        for (DownloadDispatcher dispatcher : mDispatchers) {
+            if (dispatcher != null)
+                dispatcher.quit();
         }
     }
 
@@ -98,9 +109,9 @@ public class DownloadQueue {
      * @param sign this sign will be the same as sign's DownloadRequest, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
-        synchronized (mDownloadQueue) {
-            for (NetworkDownloadRequest networkDownloadRequest : mDownloadQueue)
-                networkDownloadRequest.downloadRequest.cancelBySign(sign);
+        synchronized (mUnFinishQueue) {
+            for (DownloadRequest downloadRequest : mUnFinishQueue)
+                downloadRequest.cancelBySign(sign);
         }
     }
 
@@ -108,9 +119,9 @@ public class DownloadQueue {
      * Cancel all requests, Already in the execution of the request can't use this method.
      */
     public void cancelAll() {
-        synchronized (mDownloadQueue) {
-            for (NetworkDownloadRequest request : mDownloadQueue)
-                request.downloadRequest.cancel(true);
+        synchronized (mUnFinishQueue) {
+            for (DownloadRequest downloadRequest : mUnFinishQueue)
+                downloadRequest.cancel();
         }
     }
 

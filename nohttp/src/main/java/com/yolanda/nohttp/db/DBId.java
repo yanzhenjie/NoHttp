@@ -1,5 +1,5 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
+/*
+ * Copyright © Yan Zhenjie. All Rights Reserved
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package com.yolanda.nohttp.db;
  * <p>The entity class id of the interface.</p>
  * Created in Jan 10, 2016 11:03:21 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface DBId {
 
     /**
      * Get the object id.
      *
-     * @return {@link Integer} format.
+     * @return {@link Long}.
      */
     long getId();
 

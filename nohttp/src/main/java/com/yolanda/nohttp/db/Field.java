@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.yolanda.nohttp.db;
  * <p>General field class.</p>
  * Created in Jan 11, 2016 12:46:38 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public interface Field {
 

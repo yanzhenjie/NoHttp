@@ -1,24 +1,24 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ScrollViewStyle_Padding20" >
+    style="@style/MatchParent">
 
     <LinearLayout
-        style="@style/LayoutStyle_WidthMatch"
-        android:orientation="vertical" >
+        style="@style/MatchParent"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_5">
 
         <Button
             android:id="@+id/btn_object_reqeust"
-            style="@style/ButtonStyle_WidthMatch"
+            style="@style/WrapContent.WidthMatchParent"
             android:text="@string/request_json_object" />
 
         <Button
-            android:id="@+id/btn_array_reqeust"
-            style="@style/ButtonStyle_WidthMatch"
-            android:layout_marginTop="@dimen/dp_10"
+            android:id="@+id/btn_array_request"
+            style="@style/WrapContent.WidthMatchParent"
             android:text="@string/request_json_array" />
 
         <TextView
             android:id="@+id/tv_result"
-            style="@style/TextViewStyle_WidthMatch"
+            style="@style/WrapContent.WidthMatchParent"
             android:layout_marginTop="@dimen/dp_10" />
     </LinearLayout>
 

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.sample.nohttp"
+        applicationId "com.perfoct.nohttp.sample"
         minSdkVersion 9
         targetSdkVersion 23
         versionCode 1
@@ -22,6 +22,9 @@ android {
 
 dependencies {
     compile project(':nohttp')
-    compile files('libs/fastjson.jar')
-    compile files('libs/android-support-v4.jar')
+    compile 'com.alibaba:fastjson:1.2.11'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:cardview-v7:23.4.0'
 }

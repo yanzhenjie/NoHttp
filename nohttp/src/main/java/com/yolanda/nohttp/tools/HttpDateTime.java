@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.util.TimeZone;
  * <p>Helper for parsing an HTTP date.</p>
  * Created in Jan 5, 2016 2:09:49 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public final class HttpDateTime {
 

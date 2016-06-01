@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,29 @@ package com.yolanda.nohttp.able;
  * <p>Cancel interface.</p>
  * Created in Dec 17, 2015 11:42:10 AM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
-public interface CancelAble {
+public interface Cancelable {
 
     /**
      * Change cancel state.
      *
-     * @param cancel true or yes.
+     * @param cancel true or false.
+     * @deprecated use {@link #cancel()} instead.
      */
+    @Deprecated
     void cancel(boolean cancel);
 
     /**
-     * Has it been canceled.
-     *
-     * @return true: canceled, false: no cancellation.
+     * Cancel handle.
      */
-    boolean isCanceled();
+    void cancel();
 
     /**
-     * Change the current cancel status as contrary to the current status.
+     * Whether has been cancelled.
+     *
+     * @return true: canceled, false: there is no cancel.
      */
-    void toggleCancel();
+    boolean isCanceled();
 
 }

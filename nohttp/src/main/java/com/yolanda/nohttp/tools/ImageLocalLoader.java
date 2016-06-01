@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build.VERSION;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
@@ -41,13 +40,17 @@ import java.util.concurrent.Executors;
 /**
  * Created in Nov 4, 2015 3:07:29 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class ImageLocalLoader {
     /**
      * Single lock.
      */
     private static final Object SINGLE_OBJECT = new Object();
+    /**
+     * Handler lock.
+     */
+    private static final Object HANDLER_OBJECT = new Object();
     /**
      * Single module.
      */
@@ -92,15 +95,13 @@ public class ImageLocalLoader {
             @SuppressLint("NewApi")
             @Override
             protected int sizeOf(String key, Bitmap value) {
-                if (VERSION.SDK_INT >= 19)
-                    return value.getByteCount();
                 return value.getRowBytes() * value.getHeight();
             }
         };
     }
 
     private Handler getPostHandler() {
-        synchronized (SINGLE_OBJECT) {
+        synchronized (HANDLER_OBJECT) {
             if (mPosterHandler == null)
                 mPosterHandler = new Handler(Looper.getMainLooper());
         }
@@ -118,8 +119,9 @@ public class ImageLocalLoader {
     public Bitmap readImage(String imagePath, int maxWidth, int maxHeight) {
         File imageFile = new File(imagePath);
         if (imageFile.exists()) {
+            BufferedInputStream inputStream = null;
             try {
-                BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(imageFile));
+                inputStream = new BufferedInputStream(new FileInputStream(imageFile));
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeStream(inputStream, null, options);
@@ -138,6 +140,8 @@ public class ImageLocalLoader {
                 }
             } catch (IOException e) {
                 Logger.e(e, "This path does not exist" + imagePath + ".");
+            } finally {
+                IOUtils.closeQuietly(inputStream);
             }
         }
         return null;
@@ -152,20 +156,17 @@ public class ImageLocalLoader {
     public void measureSize(ImageView imageView, int[] viewSizes) {
         final DisplayMetrics displayMetrics = NoHttp.getContext().getResources().getDisplayMetrics();
         final LayoutParams params = imageView.getLayoutParams();
-        // 测量宽
-        int width = params.width == LayoutParams.WRAP_CONTENT ? 0 : imageView.getWidth(); // Get actual image width
-        if (width <= 0)
-            width = params.width; // Get layout width parameter
-        if (width <= 0)
-            width = displayMetrics.widthPixels;
-        // 测量高
-        int height = params.height == LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
-        if (height <= 0)
-            height = params.height; // Get layout height parameter
-        if (height <= 0)
-            height = displayMetrics.heightPixels;
-        viewSizes[0] = width;
-        viewSizes[1] = height;
+        if (params == null) {
+            viewSizes[0] = displayMetrics.widthPixels;
+            viewSizes[1] = displayMetrics.heightPixels;
+        } else {
+            viewSizes[0] = params.width == LayoutParams.WRAP_CONTENT ? 0 : imageView.getWidth(); // Get actual image width
+            if (viewSizes[0] <= 0)
+                viewSizes[0] = params.width; // Get layout width parameter
+            viewSizes[1] = params.height == LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
+            if (viewSizes[1] <= 0)
+                viewSizes[1] = params.height; // Get layout height parameter
+        }
     }
 
     /**

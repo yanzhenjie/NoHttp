@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p> Measure the length of the flow.</p>
  * Created in Dec 17, 2015 2:57:46 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class CounterOutputStream extends OutputStream {
 
@@ -54,5 +54,23 @@ public class CounterOutputStream extends OutputStream {
     @Override
     public void write(byte[] buffer, int offset, int count) throws IOException {
         length.addAndGet(count);
+    }
+
+    /**
+     * Didn't do anything here.
+     *
+     * @throws IOException nothing.
+     */
+    @Override
+    public void close() throws IOException {
+    }
+
+    /**
+     * Didn't do anything here.
+     *
+     * @throws IOException nothing.
+     */
+    @Override
+    public void flush() throws IOException {
     }
 }

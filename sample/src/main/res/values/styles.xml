@@ -1,122 +1,91 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppBaseTheme" parent="@android:style/Theme.Light"></style>
-
-    <style name="AppTheme" parent="AppBaseTheme">
-        <item name="android:windowFullscreen">false</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:textColor">@color/font_color</item>
-        <item name="android:textSize">@dimen/text_size_14</item>
-        <item name="android:windowBackground">@color/page_ground</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="TextViewStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="TextViewStyle_WidthMatch" parent="TextViewStyle">
+    <style name="AppTheme.NoActionBar.Launch">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MatchParent">
         <item name="android:layout_width">match_parent</item>
-    </style>
-
-    <style name="TextViewStyle_HeightMatch" parent="TextViewStyle">
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="TextListItem" parent="TextViewStyle_WidthMatch">
-        <item name="android:textColor">@color/white</item>
+    <style name="MatchParent.Weight">
+        <item name="android:layout_weight">1</item>
     </style>
 
-    <style name="TextGridItem" parent="TextViewStyle">
-        <item name="android:textColor">@color/white</item>
+    <style name="MatchParent.Weight.Height">
+        <item name="android:layout_height">0dp</item>
     </style>
 
-    <style name="ButtonStyle_WidthMatch" parent="TextViewStyle_WidthMatch">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/selector_green_wechat_circle</item>
+    <style name="MatchParent.Weight.Width">
+        <item name="android:layout_width">0dp</item>
     </style>
 
-    <style name="ImageViewStyle">
+    <style name="WrapContent">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="WrapContent.WidthMatchParent">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="WrapContent.HeightMatchParent">
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="WrapContent.AdjustViewBoundsFalse">
         <item name="android:adjustViewBounds">false</item>
     </style>
 
-    <style name="ImageViewStyle_WidthMatch" parent="ImageViewStyle">
-        <item name="android:layout_width">match_parent</item>
-    </style>
-
-    <style name="ImageViewStyle_WidthMatch_Original" parent="ImageViewStyle_WidthMatch">
-        <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:layout_marginBottom">@dimen/dp_20</item>
-    </style>
-
-    <style name="LayoutStyle">
+    <style name="ButtonWrapContent" parent="@style/Widget.AppCompat.Button">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="LayoutStyle_Match">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+    <style name="WrapContent.WidthMatchParent.RecyclerItem">
+        <item name="cardCornerRadius">@dimen/dp_5</item>
+        <item name="cardElevation">@dimen/dp_5</item>
+        <item name="contentPadding">@dimen/dp_15</item>
     </style>
 
-    <style name="LayoutStyle_WidthMatch" parent="LayoutStyle">
-        <item name="android:layout_width">match_parent</item>
+    <style name="WrapContent.WidthMatchParent.RecyclerItem.Foreground">
+        <item name="android:foreground">@drawable/selector_recycler_item</item>
     </style>
 
-    <style name="LayoutStyle_HeightMatch" parent="LayoutStyle">
-        <item name="android:layout_height">match_parent</item>
-    </style>
+    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal" />
 
-    <style name="AbsItemGroup" parent="LayoutStyle_WidthMatch">
-        <item name="android:layout_height">@dimen/dp_50</item>
-        <item name="android:background">@drawable/selector_green_wechat_circle</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="ListItemGroup" parent="AbsItemGroup">
-        <item name="android:paddingLeft">@dimen/dp_10</item>
-        <item name="android:paddingRight">@dimen/dp_10</item>
-    </style>
-
-    <style name="GridItemGroup" parent="AbsItemGroup">
-        <item name="android:gravity">center</item>
-    </style>
-
-    <!-- AbsListView风格 -->
-    <style name="AbsListViewStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:listSelector">@android:color/transparent</item>
-        <item name="android:gravity">top</item>
-        <item name="android:overScrollMode">never</item>
-        <item name="android:cacheColorHint">@android:color/transparent</item>
-        <item name="android:divider">@color/transparent</item>
-    </style>
-
-    <!-- 通用GridView风格 -->
-    <style name="GridViewList" parent="AbsListViewStyle">
-        <item name="android:verticalSpacing">@dimen/dp_20</item>
-        <item name="android:horizontalSpacing">@dimen/dp_20</item>
-        <item name="android:numColumns">3</item>
-    </style>
-
-    <!-- 通用ListView风格 -->
-    <style name="ListViewStyle" parent="AbsListViewStyle">
-        <item name="android:dividerHeight">@dimen/dp_20</item>
-    </style>
-
-    <!-- 通用ListView风格 -->
-    <style name="ScrollViewStyle">
+    <style name="ProgressBar.WrapContentHeight">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="ScrollViewStyle_Padding20" parent="ScrollViewStyle">
-        <item name="android:padding">@dimen/dp_20</item>
+    <style name="ButtonWrapContent.WidthMatch">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="EditTextMd" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="EditTextMd.WidthMatch">
+        <item name="android:layout_width">match_parent</item>
     </style>
 
 </resources>

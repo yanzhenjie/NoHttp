@@ -1,5 +1,5 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,54 @@
  */
 package com.yolanda.nohttp;
 
-import java.lang.reflect.Field;
-import java.util.Locale;
-
 import android.os.Build;
 import android.text.TextUtils;
+
+import java.lang.reflect.Field;
+import java.util.Locale;
 
 /**
  * Created in Oct 15, 2015 12:39:06 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie.
  */
 public class UserAgent {
+
+    /**
+     * Get the singleton UA.
+     *
+     * @return String.
+     * @see #newInstance()
+     * @deprecated use {@link #instance()} instead.
+     */
+    @Deprecated
+    public static String getUserAgent() {
+        return instance();
+    }
+
+    /**
+     * UserAgent.
+     */
+    private static String userAgent;
+
+    /**
+     * Get the singleton UA.
+     *
+     * @return String.
+     * @see #newInstance()
+     */
+    public static String instance() {
+        if (TextUtils.isEmpty(userAgent))
+            userAgent = newInstance();
+        return userAgent;
+    }
 
     /**
      * Get User-Agent of System.
      *
      * @return UA.
      */
-    public static String getUserAgent() {
+    public static String newInstance() {
         String webUserAgent = null;
         try {
             Class<?> sysResCls = Class.forName("com.android.internal.R$string");

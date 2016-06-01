@@ -1,5 +1,5 @@
-/**
- * Copyright © YOLANDA. All Rights Reserved
+/*
+ * Copyright © Yan Zhenjie. All Rights Reserved
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,19 @@ package com.yolanda.nohttp.able;
  * <p>Finish interface.</p>
  * Created in Jan 13, 2016 10:34:48 PM.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
  */
-public interface FinishAble {
+public interface Finishable {
 
     /**
-     * Change finish state.
-     *
-     * @param finish true or false.
+     * Finish handle.
      */
-    void finish(boolean finish);
+    void finish();
 
     /**
-     * Has it been finished ?
+     * Whether they have been completed.
      *
      * @return true: finished, false: unfinished.
      */
     boolean isFinished();
-
-    /**
-     * Change the current completion status as contrary to the current status.
-     */
-    void toggleFinish();
 }

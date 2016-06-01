@@ -1,11 +1,11 @@
 /*
- * Copyright © YOLANDA. All Rights Reserved
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,14 @@
  */
 package com.yolanda.nohttp;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
- * <p>JsonObject is returned by the server data, using the request object.</p>
- * Created in Jan 19, 2016 3:27:35 PM.
+ * Created on 2016/6/1.
  *
- * @author YOLANDA;
+ * @author Yan Zhenjie;
+ * @deprecated use {@link com.yolanda.nohttp.rest.JsonObjectRequest}
  */
-public class JsonObjectRequest extends RestRequest<JSONObject> {
-
-    public static final String ACCEPT = "application/json;q=1";
+@Deprecated
+public class JsonObjectRequest extends com.yolanda.nohttp.rest.JsonObjectRequest {
 
     public JsonObjectRequest(String url) {
         super(url);
@@ -35,24 +31,4 @@ public class JsonObjectRequest extends RestRequest<JSONObject> {
     public JsonObjectRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
     }
-
-    @Override
-    public String getAccept() {
-        return ACCEPT;
-    }
-
-    @Override
-    public JSONObject parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        String jsonStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
-        try {
-            return new JSONObject(jsonStr);
-        } catch (Exception e) {
-            try {
-                return new JSONObject("{}");
-            } catch (JSONException exception) {
-            }
-        }
-        return null;
-    }
-
 }

@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ScrollViewStyle_Padding20" >
-
-    <LinearLayout
-        style="@style/LayoutStyle_WidthMatch"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/tv_status"
-            style="@style/ImageViewStyle" />
-
-        <ImageView
-            android:id="@+id/iv_result"
-            style="@style/ImageViewStyle_WidthMatch_Original"
-            android:contentDescription="@string/app_name" />
-
-        <include layout="@layout/gv" />
-    </LinearLayout>
-
-</ScrollView>
+<com.perfoct.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv_image_activity"
+    style="@style/WrapContent.WidthMatchParent" />
