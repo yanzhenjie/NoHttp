@@ -715,6 +715,9 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
             if (hasDefineRequestBody())
                 IOUtils.closeQuietly(getDefineRequestBody());
 
+            if(blockingQueue != null)
+                blockingQueue.remove(this);
+
             // cancel file upload
             Set<String> keys = mParamKeyValues.keySet();
             for (String key : keys) {
