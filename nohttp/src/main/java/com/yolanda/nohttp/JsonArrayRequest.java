@@ -15,6 +15,14 @@
  */
 package com.yolanda.nohttp;
 
+import android.text.TextUtils;
+
+import com.yolanda.nohttp.rest.JsonObjectRequest;
+import com.yolanda.nohttp.rest.StringRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 /**
  * Created on 2016/6/1.
  *
@@ -22,14 +30,38 @@ package com.yolanda.nohttp;
  * @deprecated use {com.yolanda.nohttp.rest.JsonArrayRequest} instead.
  */
 @Deprecated
-public class JsonArrayRequest extends com.yolanda.nohttp.rest.JsonArrayRequest {
+public class JsonArrayRequest extends com.yolanda.nohttp.rest.RestRequest<JSONArray> {
 
     public JsonArrayRequest(String url) {
-        super(url);
+        this(url, RequestMethod.POST);
     }
 
     public JsonArrayRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
+    }
+
+    @Override
+    public String getAccept() {
+        return JsonObjectRequest.ACCEPT;
+    }
+
+    @Override
+    public JSONArray parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+        JSONArray jsonArray = null;
+        String jsonStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
+
+        if (!TextUtils.isEmpty(jsonStr))
+            try {
+                jsonArray = new JSONArray(jsonStr);
+            } catch (JSONException e) {
+                Logger.e(e);
+            }
+        if (jsonArray == null)
+            try {
+                jsonArray = new JSONArray("[]");
+            } catch (JSONException e) {
+            }
+        return jsonArray;
     }
 
 }

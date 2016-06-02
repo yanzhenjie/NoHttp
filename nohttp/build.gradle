@@ -6,6 +6,7 @@ android {
     resourcePrefix "nohttp_res_"
 
     defaultConfig {
+        //applicationId "com.yolanda.nohttp"
         minSdkVersion 9
         targetSdkVersion 23
         versionCode 1

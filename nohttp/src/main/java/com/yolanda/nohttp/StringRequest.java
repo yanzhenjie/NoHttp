@@ -15,6 +15,9 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.tools.HeaderParser;
+import com.yolanda.nohttp.tools.IOUtils;
+
 /**
  * Created on 2016/6/1.
  *
@@ -22,13 +25,29 @@ package com.yolanda.nohttp;
  * @deprecated use {@link com.yolanda.nohttp.rest.StringRequest} instead.
  */
 @Deprecated
-public class StringRequest extends com.yolanda.nohttp.rest.StringRequest {
+public class StringRequest extends com.yolanda.nohttp.rest.RestRequest<String> {
 
     public StringRequest(String url) {
-        super(url);
+        this(url, RequestMethod.GET);
     }
 
     public StringRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
+    }
+
+    @Override
+    public String getAccept() {
+        return "application/json,application/xml,text/html,application/xhtml+xml";
+    }
+
+    @Override
+    public String parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+        return parseResponseString(url, responseHeaders, responseBody);
+    }
+
+    public static String parseResponseString(String url, Headers responseHeaders, byte[] responseBody) {
+        if (responseBody == null)
+            return "";
+        return IOUtils.toString(responseBody, HeaderParser.parseHeadValue(responseHeaders.getContentType(), Headers.HEAD_KEY_CONTENT_TYPE, ""));
     }
 }

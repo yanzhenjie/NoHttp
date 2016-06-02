@@ -10,10 +10,7 @@
  */
 package com.yolanda.nohttp.rest;
 
-import com.yolanda.nohttp.BasicRequest;
 import com.yolanda.nohttp.RequestMethod;
-
-import android.text.TextUtils;
 
 /**
  * <p>
@@ -24,92 +21,14 @@ import android.text.TextUtils;
  * @param <T> a generics, regulated the analytic results of the Request.It should be with the {@link Response}, {@link OnResponseListener}.
  * @author Yan Zhenjie.
  */
-public abstract class RestRequest<T> extends BasicRequest implements com.yolanda.nohttp.Request<T> {
+public abstract class RestRequest<T> extends com.yolanda.nohttp.RestRequest<T> {
 
-    /**
-     * The callback mark.
-     */
-    private int what;
-    /**
-     * The request of the listener.
-     */
-    private OnResponseListener<T> responseListener;
-    /**
-     * Cache key.
-     */
-    private String mCacheKey;
-    /**
-     * If just read from cache.
-     */
-    private CacheMode mCacheMode = CacheMode.DEFAULT;
-
-    /**
-     * After the failure of retries.
-     */
-    private int mRetryCount;
-
-    /**
-     * Create a request, RequestMethod is {@link RequestMethod#GET}.
-     *
-     * @param url request address, like: http://www.google.com.
-     */
     public RestRequest(String url) {
         super(url);
     }
 
-    /**
-     * Create a request
-     *
-     * @param url           request address, like: http://www.google.com.
-     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
-     */
     public RestRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
     }
 
-    @Override
-    public void setCacheKey(String key) {
-        this.mCacheKey = key;
-    }
-
-    @Override
-    public String getCacheKey() {
-        return TextUtils.isEmpty(mCacheKey) ? url() : mCacheKey;
-    }
-
-    @Override
-    public void setCacheMode(CacheMode cacheMode) {
-        this.mCacheMode = cacheMode;
-    }
-
-    @Override
-    public CacheMode getCacheMode() {
-        return mCacheMode;
-    }
-
-    @Override
-    public void setRetryCount(int count) {
-        this.mRetryCount = count;
-    }
-
-    @Override
-    public int getRetryCount() {
-        return mRetryCount;
-    }
-
-    @Override
-    public void onPreResponse(int what, OnResponseListener<T> responseListener) {
-        this.what = what;
-        this.responseListener = responseListener;
-    }
-
-    @Override
-    public int what() {
-        return what;
-    }
-
-    @Override
-    public OnResponseListener<T> responseListener() {
-        return responseListener;
-    }
 }

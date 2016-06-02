@@ -15,39 +15,20 @@
  */
 package com.yolanda.nohttp.rest;
 
-import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
-import com.yolanda.nohttp.tools.HeaderParser;
-import com.yolanda.nohttp.tools.IOUtils;
 
 /**
  * Created in Jul 28, 2015 7:33:52 PM.
  *
  * @author Yan Zhenjie.
  */
-public class StringRequest extends RestRequest<String> {
+public class StringRequest extends com.yolanda.nohttp.StringRequest {
 
     public StringRequest(String url) {
-        this(url, RequestMethod.GET);
+        super(url);
     }
 
     public StringRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
-    }
-
-    @Override
-    public String getAccept() {
-        return "application/json,application/xml,text/html,application/xhtml+xml";
-    }
-
-    @Override
-    public String parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        return parseResponseString(url, responseHeaders, responseBody);
-    }
-
-    public static String parseResponseString(String url, Headers responseHeaders, byte[] responseBody) {
-        if (responseBody == null)
-            return "";
-        return IOUtils.toString(responseBody, HeaderParser.parseHeadValue(responseHeaders.getContentType(), Headers.HEAD_KEY_CONTENT_TYPE, ""));
     }
 }

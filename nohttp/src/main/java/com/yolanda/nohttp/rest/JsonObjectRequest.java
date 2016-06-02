@@ -15,14 +15,7 @@
  */
 package com.yolanda.nohttp.rest;
 
-import android.text.TextUtils;
-
-import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.RequestMethod;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * <p>JsonObject is returned by the server data, using the request object.</p>
@@ -30,9 +23,7 @@ import org.json.JSONObject;
  *
  * @author Yan Zhenjie.
  */
-public class JsonObjectRequest extends RestRequest<JSONObject> {
-
-    public static final String ACCEPT = "application/json";
+public class JsonObjectRequest extends com.yolanda.nohttp.JsonObjectRequest {
 
     public JsonObjectRequest(String url) {
         super(url);
@@ -41,29 +32,4 @@ public class JsonObjectRequest extends RestRequest<JSONObject> {
     public JsonObjectRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
     }
-
-    @Override
-    public String getAccept() {
-        return ACCEPT;
-    }
-
-    @Override
-    public JSONObject parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        JSONObject jsonObject = null;
-        String jsonStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
-
-        if (!TextUtils.isEmpty(jsonStr))
-            try {
-                jsonObject = new JSONObject(jsonStr);
-            } catch (JSONException e) {
-                Logger.e(e);
-            }
-        if (jsonObject == null)
-            try {
-                jsonObject = new JSONObject("{}");
-            } catch (JSONException e) {
-            }
-        return jsonObject;
-    }
-
 }

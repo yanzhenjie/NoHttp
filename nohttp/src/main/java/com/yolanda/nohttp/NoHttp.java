@@ -31,6 +31,7 @@ import com.yolanda.nohttp.rest.ImplRestParser;
 import com.yolanda.nohttp.rest.JsonArrayRequest;
 import com.yolanda.nohttp.rest.JsonObjectRequest;
 import com.yolanda.nohttp.rest.Request;
+import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
 import com.yolanda.nohttp.rest.StringRequest;
 

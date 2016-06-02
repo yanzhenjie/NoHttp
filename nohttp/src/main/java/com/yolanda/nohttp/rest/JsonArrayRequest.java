@@ -30,38 +30,14 @@ import org.json.JSONException;
  *
  * @author Yan Zhenjie.
  */
-public class JsonArrayRequest extends RestRequest<JSONArray> {
+public class JsonArrayRequest extends com.yolanda.nohttp.JsonArrayRequest {
 
     public JsonArrayRequest(String url) {
-        this(url, RequestMethod.POST);
+        super(url);
     }
 
     public JsonArrayRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
-    }
-
-    @Override
-    public String getAccept() {
-        return JsonObjectRequest.ACCEPT;
-    }
-
-    @Override
-    public JSONArray parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        JSONArray jsonArray = null;
-        String jsonStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
-
-        if (!TextUtils.isEmpty(jsonStr))
-            try {
-                jsonArray = new JSONArray(jsonStr);
-            } catch (JSONException e) {
-                Logger.e(e);
-            }
-        if (jsonArray == null)
-            try {
-                jsonArray = new JSONArray("[]");
-            } catch (JSONException e) {
-            }
-        return jsonArray;
     }
 
 }
