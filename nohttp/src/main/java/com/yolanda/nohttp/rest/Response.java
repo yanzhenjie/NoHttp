@@ -23,6 +23,12 @@ package com.yolanda.nohttp.rest;
  * @author Yan Zhenjie.
  */
 
+import com.yolanda.nohttp.Headers;
+import com.yolanda.nohttp.RequestMethod;
+
+import java.net.HttpCookie;
+import java.util.List;
+
 /**
  * <p>Http response, Including header information and response packets.</p>
  * Created in Oct 15, 2015 8:55:37 PM.
@@ -30,6 +36,82 @@ package com.yolanda.nohttp.rest;
  * @param <T> a generic, on behalf of you can accept the result type,.It should be with the {@link com.yolanda.nohttp.rest.Request}, {@link OnResponseListener}.
  * @author Yan Zhenjie.
  */
-public interface Response<T> extends com.yolanda.nohttp.Response<T> {
+public interface Response<T> {
 
+    /**
+     * Get the url of requested.
+     *
+     * @return URL.
+     */
+    String url();
+
+    /**
+     * Get the method of request.
+     *
+     * @return {@link RequestMethod}.
+     */
+    RequestMethod getRequestMethod();
+
+    /**
+     * Request is executed successfully.
+     *
+     * @return True: Succeed, false: failed.
+     */
+    boolean isSucceed();
+
+    /**
+     * Whether the data returned from the cache.
+     *
+     * @return True: the data from cache, false: the data from server.
+     */
+    boolean isFromCache();
+
+    /**
+     * Get http response headers.
+     *
+     * @return {@link Headers}.
+     */
+    Headers getHeaders();
+
+    /**
+     * Get http response Cookie.
+     *
+     * @return {@code List<HttpCookie>}.
+     */
+    List<HttpCookie> getCookies();
+
+    /**
+     * Get raw data.To obtain the response data.
+     *
+     * @return {@code byte[]}.
+     */
+    byte[] getByteArray();
+
+    /**
+     * Get request results.
+     *
+     * @return {@link T}.
+     */
+    T get();
+
+    /**
+     * When the request fail to get the exception type.
+     *
+     * @return The exception.
+     */
+    Exception getException();
+
+    /**
+     * Gets the tag of request.
+     *
+     * @return {@link Object}.
+     */
+    Object getTag();
+
+    /**
+     * Gets the millisecond of request.
+     *
+     * @return {@link Long}.
+     */
+    long getNetworkMillis();
 }

@@ -109,13 +109,14 @@ public class RequestDispatcher extends Thread {
             // request
             Response<?> response = mImplRestParser.parserRequest(request);
 
+            // remove it from queue
+            mUnFinishQueue.remove(request);
+
             // finish
             final ThreadPoster finishThread = new ThreadPoster(what, responseListener);
             finishThread.onFinished();
             getPosterHandler().post(finishThread);
             request.finish();
-
-            mUnFinishQueue.remove(request);
 
             // response
             if (request.isCanceled())
