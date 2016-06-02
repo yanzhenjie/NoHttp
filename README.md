@@ -122,9 +122,9 @@ request.add("time", 16346468473154); // long类型
 
 ###添加到队列
 ```java
-RequestQueue requestQueue = NoHttp.createRequestQueue();
+RequestQueue requestQueue = NoHttp.newRequestQueue();
 // 或者传一个并发值，允许三个请求同时并发
-// RequestQueue requestQueue = NoHttp.createRequestQueue(3);
+// RequestQueue requestQueue = NoHttp.newRequestQueue(3);
 
 // 发起请求
 requestQueue.add(what, request, responseListener);
@@ -363,6 +363,6 @@ queue.add(what, mRequest, responseListener);
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.1.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.0.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
-[10]: https://github.com/yanzhenjie/NoHttp/blob/master/image/nohttp_logo.png
+[10]: https://github.com/yanzhenjie/NoHttp/blob/master/image/nohttp_logo.png?raw=true
