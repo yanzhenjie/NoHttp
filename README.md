@@ -192,7 +192,7 @@ downloadRequest = NoHttp.createDownloadRequest...
 // what 区分下载
 // downloadRequest 下载请求对象
 // downloadListener 下载监听
-CallServer.getDownloadInstance().add(0, downloadRequest, downloadListener);
+downloadQueue.add(0, downloadRequest, downloadListener);
 ```
 
 ###暂停或者停止下载
