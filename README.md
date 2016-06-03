@@ -362,6 +362,6 @@ queue.add(what, mRequest, responseListener);
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.0.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.1.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
-[10]: https://github.com/yanzhenjie/NoHttp/blob/master/image/nohttp_logo.svg?raw=true
+[10]: https://github.com/yanzhenjie/NoHttp/blob/master/image/nohttp_logo.svg
