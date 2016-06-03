@@ -13,12 +13,12 @@
 
             <TextView
                 style="@style/WrapContent"
-                android:text="@string/file_status" />
+                android:text="@string/upload_file_status" />
 
             <TextView
                 android:id="@+id/tv_result"
                 style="@style/WrapContent"
-                android:text="@string/file_status_wait" />
+                android:text="@string/upload_file_status_wait" />
         </LinearLayout>
 
         <ProgressBar

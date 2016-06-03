@@ -6,6 +6,7 @@
     <string name="cancel">取消</string>
     <string name="know">知道了</string>
     <string name="tip">提示</string>
+    <string name="wait_dialog_title">正在请求，请稍后…</string>
 
     <!-- title field -->
 
@@ -26,6 +27,7 @@
     <string name="title_upload_single_activity">单个文件上传</string>
     <string name="title_upload_multi_activity">多个文件上传</string>
     <string name="title_upload_file_list_activity">文件List上传</string>
+    <string name="title_upload_album">选择相册图片上传</string>
     <string name="title_download_activity">文件下载</string>
     <string name="title_download_single_activity">单个文件下载</string>
     <string name="title_download_list_activity">多个文件下载</string>
@@ -39,7 +41,6 @@
 
     <!-- Common -->
 
-    <string name="wait_dialog_title">正在请求，请稍后…</string>
     <string name="request_start">发起请求</string>
 
     <string name="request_original_result">响应码：%1$d\n花费时间：%2$d毫秒。</string>
@@ -78,13 +79,16 @@
     <!-- Upload and download -->
 
     <string name="upload_start">开始上传</string>
-    <string name="upload_succeed">上传成功</string>
+    <string name="upload_succeed">上传完毕</string>
     <string name="upload_failed">上传失败</string>
     <string name="upload_cancel">上传被取消</string>
     <string name="upload_error">上传发生错误</string>
 
-    <string name="file_status">文件状态：</string>
-    <string name="file_status_wait">等待操作…</string>
+    <string name="upload_file_status">文件状态：</string>
+    <string name="upload_file_status_wait">等待操作…</string>
+    <string name="upload_file_select_album">选择图片</string>
+    <string name="upload_file_select_album_null">请选择图片</string>
+    <string name="upload_file_select_album_null_again">文件不存在，请重新选择图片</string>
 
     <string name="download_mobile_data_tip">多任务下载四个文件，最好用WIFI测试喔。</string>
     <string name="download_start">开始下载</string>

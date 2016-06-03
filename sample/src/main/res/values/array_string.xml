@@ -103,6 +103,7 @@
         <item>上传单个文件</item>
         <item>上传多个文件</item>
         <item>上传文件List</item>
+        <item>从相册选择图片（事例）</item>
     </string-array>
 
     <string-array name="activity_download_item">

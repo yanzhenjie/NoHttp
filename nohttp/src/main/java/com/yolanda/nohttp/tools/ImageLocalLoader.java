@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -43,10 +44,6 @@ import java.util.concurrent.Executors;
  * @author Yan Zhenjie.
  */
 public class ImageLocalLoader {
-    /**
-     * Single lock.
-     */
-    private static final Object SINGLE_OBJECT = new Object();
     /**
      * Handler lock.
      */
@@ -78,7 +75,7 @@ public class ImageLocalLoader {
      * @return {@link ImageLocalLoader}.
      */
     public static ImageLocalLoader getInstance() {
-        synchronized (SINGLE_OBJECT) {
+        synchronized (ImageLocalLoader.class) {
             if (mInstance == null) {
                 mInstance = new ImageLocalLoader();
             }
@@ -161,11 +158,12 @@ public class ImageLocalLoader {
             viewSizes[1] = displayMetrics.heightPixels;
         } else {
             viewSizes[0] = params.width == LayoutParams.WRAP_CONTENT ? 0 : imageView.getWidth(); // Get actual image width
-            if (viewSizes[0] <= 0)
-                viewSizes[0] = params.width; // Get layout width parameter
             viewSizes[1] = params.height == LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
+
+            if (viewSizes[0] <= 0)
+                viewSizes[0] = displayMetrics.widthPixels; // Get layout width parameter
             if (viewSizes[1] <= 0)
-                viewSizes[1] = params.height; // Get layout height parameter
+                viewSizes[1] = displayMetrics.heightPixels; // Get layout height parameter
         }
     }
 
@@ -234,16 +232,16 @@ public class ImageLocalLoader {
         if (imageLoadListener == null)
             imageView.setTag(imagePath);
         Bitmap bitmap = getImageFromCache(imagePath + width + height);
-        if (bitmap != null) {
+        if (bitmap == null) {
+            imageView.setImageDrawable(mDefaultDrawable);
+            mExecutorService.execute(new TaskThread(imageView, imagePath, width, height, imageLoadListener));
+        } else {
             ImgBeanHolder holder = new ImgBeanHolder();
             holder.imageView = imageView;
             holder.imagePath = imagePath;
             holder.bitmap = bitmap;
             holder.imageLoadListener = imageLoadListener;
             getPostHandler().post(holder);
-        } else {
-            imageView.setImageDrawable(mDefaultDrawable);
-            mExecutorService.execute(new TaskThread(imageView, imagePath, width, height, imageLoadListener));
         }
     }
 
@@ -273,21 +271,25 @@ public class ImageLocalLoader {
 
         @Override
         public void run() {
-            Bitmap bitmap;
-            if (width != 0 && height != 0)
-                bitmap = readImage(mImagePath, width, height);
+            if (TextUtils.isEmpty(mImagePath))
+                Logger.e("The image path is null");
             else {
-                int[] viewSizes = new int[2];
-                measureSize(mImageView, viewSizes);
-                bitmap = readImage(mImagePath, viewSizes[0], viewSizes[1]);
+                Bitmap bitmap;
+                if (width != 0 && height != 0)
+                    bitmap = readImage(mImagePath, width, height);
+                else {
+                    int[] viewSizes = new int[2];
+                    measureSize(mImageView, viewSizes);
+                    bitmap = readImage(mImagePath, viewSizes[0], viewSizes[1]);
+                }
+                addImageToCache(mImagePath + width + height, bitmap);
+                ImgBeanHolder holder = new ImgBeanHolder();
+                holder.bitmap = getImageFromCache(mImagePath + width + height);
+                holder.imageView = mImageView;
+                holder.imagePath = mImagePath;
+                holder.imageLoadListener = imageLoadListener;
+                getPostHandler().post(holder);
             }
-            addImageToCache(mImagePath + width + height, bitmap);
-            ImgBeanHolder holder = new ImgBeanHolder();
-            holder.bitmap = getImageFromCache(mImagePath + width + height);
-            holder.imageView = mImageView;
-            holder.imagePath = mImagePath;
-            holder.imageLoadListener = imageLoadListener;
-            getPostHandler().post(holder);
         }
     }
 
@@ -301,11 +303,13 @@ public class ImageLocalLoader {
 
         @Override
         public void run() {
-            if (imageLoadListener == null) {
-                if (imagePath.equals(imageView.getTag())) {
+            if (imagePath.equals(imageView.getTag())) {
+                if (bitmap == null)
+                    imageView.setImageDrawable(mDefaultDrawable);
+                else
                     imageView.setImageBitmap(bitmap);
-                }
-            } else {
+            }
+            if (imageLoadListener != null) {
                 if (bitmap != null)
                     imageLoadListener.onLoadSucceed(imageView, bitmap, imagePath);
                 else

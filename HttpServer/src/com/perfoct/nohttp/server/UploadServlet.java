@@ -1,6 +1,9 @@
 package com.perfoct.nohttp.server;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,16 +53,16 @@ public class UploadServlet extends BaseJsonServlet {
 						request.setAttribute(name, filename);
 
 						// 写到磁盘
-//						OutputStream outputStream = new FileOutputStream(new File(path, filename));
-//						InputStream in = fileItem.getInputStream();
-//						int length = 0;
-//						byte[] buf = new byte[1024];
-//						while ((length = in.read(buf)) != -1) {
-//							outputStream.write(buf, 0, length);
-//						}
-//						in.close();
-//						outputStream.flush();
-//						outputStream.close();
+						OutputStream outputStream = new FileOutputStream(new File(path, filename));
+						InputStream in = fileItem.getInputStream();
+						int length = 0;
+						byte[] buf = new byte[1024];
+						while ((length = in.read(buf)) != -1) {
+							outputStream.write(buf, 0, length);
+						}
+						in.close();
+						outputStream.flush();
+						outputStream.close();
 					}
 				}
 			}

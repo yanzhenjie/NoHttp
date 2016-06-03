@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.perfoct.nohttp.sample">
+    package="com.yanzhenjie.nohttp.sample">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -96,6 +96,10 @@
         <activity
             android:name=".activity.upload.UploadFileListActivity"
             android:label="@string/title_upload_file_list_activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.upload.UploadAlbumActivity"
+            android:label="@string/title_upload_album"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.download.DownloadActivity"

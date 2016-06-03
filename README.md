@@ -1,30 +1,29 @@
 #NoHttp
+> NoHttp，一个有情怀的框架。
+
 ![NoHttp Logo][10]
 
 技术交流1群：46523908  
 技术交流2群：46505645  
-NoHttp E-mail：nohttp@foxmail.com
+[群行为规范][2]  
 
-群行为规范：[https://github.com/yanzhenjie/SkillGroupRule][2]  
 严振杰的博客：[http://blog.csdn.net/yanzhenjie1003][3]  
 严振杰的Android直播视频下载：[http://pan.baidu.com/s/1miEOtwG][4]  
-
-> NoHttp，一个有情怀的框架。
 
 ----
 
 ##NoHttp主页和文档地址
 NoHttp主页：[http://www.nohttp.net][5]  
 NoHttp文档：[http://doc.nohttp.net][6]  
+NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]  
 文档还在继续完善，有问题可以加上面的群，或者发[issues][7]，或者直接发邮件给我：smallajax@foxmail.com。
 
 ##使用方法
+* Eclipse使用Jar包：[下载Jar包][8]
 * AndroidStudio使用Gradle构建添加依赖（推荐）
 ```groovy
 compile 'com.yolanda.nohttp:nohttp:1.0.1'
 ```
-* Eclipse使用Jar包：[下载Jar包][8]
-* 依赖源码，请下载源码，Eclipse作为Library，AndroiStudio作为Module。
 
 ##下载Demo
 [下载演示Demo][9]
@@ -180,7 +179,7 @@ fileList.add(new FileBinary(File));
 fileList.add(new InputStreamBinary(InputStream));
 fileList.add(new ByteArrayBinary(byte[]));
 fileList.add(new BitmapStreamBinary(Bitmap));
-request.add("file1", fileList);
+request.add("file_list", fileList);
 ```
 
 ##三. 下载文件
@@ -365,4 +364,4 @@ queue.add(what, mRequest, responseListener);
 [7]: https://github.com/yanzhenjie/NoHttp/issues
 [8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.0.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
-[10]: https://github.com/yanzhenjie/NoHttp/blob/master/image/nohttp_logo.png?raw=true
+[10]: https://github.com/yanzhenjie/NoHttp/blob/master/image/nohttp_logo.svg?raw=true

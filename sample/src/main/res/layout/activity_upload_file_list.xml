@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.perfoct.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.yanzhenjie.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
 android:id="@+id/rv_upload_file_list_activity"
 style="@style/WrapContent.WidthMatchParent" />
