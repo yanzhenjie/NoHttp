@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Yan Zhenjie
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.perfoct.nohttp.server;
 
 import java.io.BufferedInputStream;
@@ -12,30 +27,30 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/image")
 public class ImageServlet extends BaseServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public ImageServlet() {
-		super();
-	}
+    public ImageServlet() {
+        super();
+    }
 
-	@Override
-	protected void doHandler(HttpServletRequest request, HttpServletResponse response, boolean isZh) throws IOException {
-		response.setContentType("image/jpg");
-		String method = request.getMethod().toLowerCase();
-		if (!"head".equalsIgnoreCase(method)) {
-			String imagePath = getServletContext().getRealPath("image") + File.separator + method + ".jpg";
-			File file = new File(imagePath);
-			BufferedOutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
-			BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-			int len = 0;
-			byte[] buffer = new byte[1024];
-			while ((len = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, len);
-			}
-			inputStream.close();
-			outputStream.flush();
-			outputStream.close();
-		}
-	}
+    @Override
+    protected void doHandler(HttpServletRequest request, HttpServletResponse response, boolean isZh) throws IOException {
+        response.setContentType("image/jpg");
+        String method = request.getMethod().toLowerCase();
+        if (!"head".equalsIgnoreCase(method)) {
+            String imagePath = getServletContext().getRealPath("image") + File.separator + method + ".jpg";
+            File file = new File(imagePath);
+            BufferedOutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            int len = 0;
+            byte[] buffer = new byte[1024];
+            while ((len = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, len);
+            }
+            inputStream.close();
+            outputStream.flush();
+            outputStream.close();
+        }
+    }
 
 }
