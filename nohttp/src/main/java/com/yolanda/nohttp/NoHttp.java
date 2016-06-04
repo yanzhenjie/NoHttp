@@ -12,6 +12,7 @@ package com.yolanda.nohttp;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.widget.ImageView;
 
 import com.yolanda.nohttp.cache.Cache;
@@ -34,13 +35,16 @@ import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
 import com.yolanda.nohttp.rest.StringRequest;
+import com.yolanda.nohttp.tools.AndroidVersion;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.PasswordAuthentication;
 
 /**
  * <p>
@@ -139,6 +143,10 @@ public class NoHttp {
         if (sApplication == null) {
             sApplication = application;
             sCookieHandler = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
+
+            if (Build.VERSION.SDK_INT < AndroidVersion.FROYO) {
+                System.setProperty("http.keepAlive", "false");
+            }
         }
     }
 
@@ -486,6 +494,20 @@ public class NoHttp {
         if (cookieHandler == null)
             throw new IllegalArgumentException("cookieHandler == null");
         sCookieHandler = cookieHandler;
+    }
+
+    /**
+     * It will be called whenever the realm that the URL is pointing to requires authorization.
+     *
+     * @param passwordAuthentication passwordAuthentication which has to be set as default.
+     */
+    public static void setDefaultAuthenticator(final PasswordAuthentication passwordAuthentication) {
+        Authenticator.setDefault(new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return passwordAuthentication;
+            }
+        });
     }
 
     private NoHttp() {

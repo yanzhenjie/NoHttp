@@ -458,7 +458,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         if (!TextUtils.isEmpty(requestBody)) {
             try {
                 mRequestBody = IOUtils.toInputStream(requestBody, getParamsEncoding());
-                if (!TextUtils.isEmpty(mContentType))
+                if (!TextUtils.isEmpty(contentType))
                     mContentType = contentType + "; charset=" + getParamsEncoding();
             } catch (UnsupportedEncodingException e) {
                 setDefineRequestBody(IOUtils.toInputStream(requestBody), contentType);
