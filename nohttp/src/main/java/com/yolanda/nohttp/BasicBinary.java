@@ -55,9 +55,9 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
 
     private String mimeType;
 
-    public BasicBinary(String mimeType, String fileName) {
-        this.mimeType = mimeType;
+    public BasicBinary(String fileName, String mimeType) {
         this.fileName = fileName;
+        this.mimeType = mimeType;
     }
 
     /**
