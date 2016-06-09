@@ -195,7 +195,7 @@ public class UploadAlbumActivity extends BaseActivity {
     }
 
     public void getRealPathFromURI(Uri contentUri) {
-        String[] filePathColumns = {MediaStore.MediaColumns.DATA, MediaStore.Images.ImageColumns.ORIENTATION};
+        String[] filePathColumns = {MediaStore.MediaColumns.DATA};
         ContentResolver contentResolver = getContentResolver();
         Cursor c = contentResolver.query(contentUri, filePathColumns, null, null, null);
         if (c != null) {

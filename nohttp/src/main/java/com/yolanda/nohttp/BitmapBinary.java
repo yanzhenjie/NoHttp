@@ -35,44 +35,54 @@ import java.io.InputStream;
  */
 public class BitmapBinary extends BasicBinary {
 
-    protected Bitmap bitmap;
+    private InputStream inputStream;
 
-    public BitmapBinary(Bitmap bitmap) {
-        this(bitmap, null);
-    }
-
+    /**
+     * An input stream {@link Binary}.
+     *
+     * @param bitmap   image.
+     * @param fileName file name. Had better pass this value, unless the server tube don't care about the file name.
+     */
     public BitmapBinary(Bitmap bitmap, String fileName) {
         this(bitmap, fileName, null);
     }
 
+    /**
+     * An input stream {@link Binary}.
+     *
+     * @param bitmap   image.
+     * @param fileName file name. Had better pass this value, unless the server tube don't care about the file name.
+     * @param mimeType such as: image/png.
+     */
     public BitmapBinary(Bitmap bitmap, String fileName, String mimeType) {
         super(fileName, mimeType);
-        this.bitmap = bitmap;
-    }
 
-    @Override
-    public void cancel() {
-        if (bitmap != null && !bitmap.isRecycled())
-            bitmap.recycle();
-        super.cancel();
-    }
-
-    @Override
-    protected InputStream getInputStream() throws IOException {
         if (bitmap != null && !bitmap.isRecycled()) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             bitmap.recycle();
             IOUtils.closeQuietly(outputStream);
-            return new ByteArrayInputStream(outputStream.toByteArray());
+            inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         }
-        return null;
+    }
+
+    @Override
+    public void cancel() {
+        IOUtils.closeQuietly(inputStream);
+        super.cancel();
+    }
+
+    @Override
+    protected InputStream getInputStream() throws IOException {
+        return inputStream;
     }
 
     @Override
     public long getBinaryLength() {
-        if (bitmap != null && !bitmap.isRecycled())
-            return bitmap.getRowBytes() * bitmap.getHeight();
-        return 0;
+        try {
+            return inputStream == null ? 0 : inputStream.available();
+        } catch (IOException e) {
+            return 0;
+        }
     }
 }

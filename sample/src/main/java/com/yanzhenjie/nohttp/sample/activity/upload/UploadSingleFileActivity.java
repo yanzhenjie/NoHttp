@@ -28,6 +28,7 @@ import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
+import com.yolanda.nohttp.BasicBinary;
 import com.yolanda.nohttp.FileBinary;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.OnUploadListener;
@@ -82,15 +83,19 @@ public class UploadSingleFileActivity extends BaseActivity {
         request.add("user", "yolanda");
 
         // 上传文件需要实现NoHttp的Binary接口，NoHttp默认实现了FileBinary、InputStreamBinary、ByteArrayBitnary、BitmapBinary。
-        FileBinary fileBinary0 = new FileBinary(new File(AppConfig.getInstance().APP_PATH_ROOT + "/image1.jpg"));
+
+        // FileBinary用法
+        String filePath = AppConfig.getInstance().APP_PATH_ROOT + "/image1.jpg";
+        BasicBinary binary = new FileBinary(new File(filePath));
+
         /**
          * 监听上传过程，如果不需要监听就不用设置。
          * 第一个参数：what，what和handler的what一样，会在回调被调用的回调你开发者，作用是一个Listener可以监听多个文件的上传状态。
          * 第二个参数： 监听器。
          */
-        fileBinary0.setUploadListener(WHAT_UPLOAD_SINGLE, mOnUploadListener);
+        binary.setUploadListener(WHAT_UPLOAD_SINGLE, mOnUploadListener);
 
-        request.add("image0", fileBinary0);// 添加1个文件
+        request.add("image0", binary);// 添加1个文件
 //            request.add("image1", fileBinary1);// 添加2个文件
 
         CallServer.getRequestInstance().add(this, 0, request, new HttpListener<String>() {

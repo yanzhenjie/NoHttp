@@ -15,12 +15,11 @@
  */
 package com.yolanda.nohttp.download;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Process;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.PosterHandler;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -34,15 +33,6 @@ import java.util.concurrent.BlockingQueue;
  */
 class DownloadDispatcher extends Thread {
 
-    /**
-     * Handler lock.
-     */
-    private static final Object HANDLER_LOCK = new Object();
-
-    /**
-     * Send download status.
-     */
-    private static Handler sDownloadHandler;
     /**
      * Un finish task queue.
      */
@@ -106,48 +96,40 @@ class DownloadDispatcher extends Thread {
                 public void onStart(int what, boolean isResume, long beforeLength, Headers headers, long allCount) {
                     ThreadPoster threadPoster = new ThreadPoster(request.what(), request.downloadListener());
                     threadPoster.onStart(isResume, beforeLength, headers, allCount);
-                    getPosterHandler().post(threadPoster);
+                    PosterHandler.getInstance().post(threadPoster);
                 }
 
                 @Override
                 public void onDownloadError(int what, Exception exception) {
                     ThreadPoster threadPoster = new ThreadPoster(request.what(), request.downloadListener());
                     threadPoster.onError(exception);
-                    getPosterHandler().post(threadPoster);
+                    PosterHandler.getInstance().post(threadPoster);
                 }
 
                 @Override
                 public void onProgress(int what, int progress, long fileCount) {
                     ThreadPoster threadPoster = new ThreadPoster(request.what(), request.downloadListener());
                     threadPoster.onProgress(progress, fileCount);
-                    getPosterHandler().post(threadPoster);
+                    PosterHandler.getInstance().post(threadPoster);
                 }
 
                 @Override
                 public void onFinish(int what, String filePath) {
                     ThreadPoster threadPoster = new ThreadPoster(request.what(), request.downloadListener());
                     threadPoster.onFinish(filePath);
-                    getPosterHandler().post(threadPoster);
+                    PosterHandler.getInstance().post(threadPoster);
                 }
 
                 @Override
                 public void onCancel(int what) {
                     ThreadPoster threadPoster = new ThreadPoster(request.what(), request.downloadListener());
                     threadPoster.onCancel();
-                    getPosterHandler().post(threadPoster);
+                    PosterHandler.getInstance().post(threadPoster);
                 }
             });
             request.finish();
             mUnFinishQueue.remove(request);
         }
-    }
-
-    private Handler getPosterHandler() {
-        synchronized (HANDLER_LOCK) {
-            if (sDownloadHandler == null)
-                sDownloadHandler = new Handler(Looper.getMainLooper());
-        }
-        return sDownloadHandler;
     }
 
     private class ThreadPoster implements Runnable {

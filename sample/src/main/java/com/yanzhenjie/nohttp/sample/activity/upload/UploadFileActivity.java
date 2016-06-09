@@ -29,6 +29,7 @@ import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.dialog.WaitDialog;
 import com.yanzhenjie.nohttp.sample.util.FileUtil;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
+import com.yolanda.nohttp.tools.IOUtils;
 
 import java.io.File;
 import java.io.InputStream;
@@ -66,7 +67,7 @@ public class UploadFileActivity extends BaseActivity {
                 startActivity(new Intent(UploadFileActivity.this, UploadMultiFileActivity.class));
             } else if (position == 2) {
                 startActivity(new Intent(UploadFileActivity.this, UploadFileListActivity.class));
-            } else if(position == 3) {
+            } else if (position == 3) {
                 startActivity(new Intent(UploadFileActivity.this, UploadAlbumActivity.class));
             }
         }
@@ -96,11 +97,15 @@ public class UploadFileActivity extends BaseActivity {
             try {
                 InputStream inputStream = getAssets().open("123.jpg");
                 FileUtil.saveFile(inputStream, AppConfig.getInstance().APP_PATH_ROOT + File.separator + "image1.jpg");
-                inputStream.close();
+                IOUtils.closeQuietly(inputStream);
 
                 inputStream = getAssets().open("234.jpg");
                 FileUtil.saveFile(inputStream, AppConfig.getInstance().APP_PATH_ROOT + File.separator + "image2.jpg");
-                inputStream.close();
+                IOUtils.closeQuietly(inputStream);
+
+                inputStream = getAssets().open("456.png");
+                FileUtil.saveFile(inputStream, AppConfig.getInstance().APP_PATH_ROOT + File.separator + "image3.png");
+                IOUtils.closeQuietly(inputStream);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -22,9 +22,12 @@ import com.yolanda.nohttp.RequestMethod;
 import com.yolanda.nohttp.rest.JsonObjectRequest;
 import com.yolanda.nohttp.rest.RestRequest;
 import com.yolanda.nohttp.rest.StringRequest;
+import com.yolanda.nohttp.tools.MultiValueMap;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>自定义请求对象.</p>
@@ -40,6 +43,20 @@ public class FastJsonRequest extends RestRequest<JSONObject> {
 
     public FastJsonRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
+    }
+
+    @Override
+    public void onPreExecute() {
+        // TODO 这个方法会在真正请求前被调用，在这里可以做一些加密之类的工作。这个方法在子线程被调用。
+        // 比如，我们做个模拟加密：
+        MultiValueMap<String, Object> multiValueMap = getParamKeyValues();
+        Set<String> keySet = multiValueMap.keySet();
+        for (String key : keySet) {
+            List<Object> values = multiValueMap.getValues(key);// POST, PUT, DELETE, PATCH请求方法传文件的时候，一个Key下允许有多个值。
+            for (Object value : values) {
+                // 这里就拿到所有的参数值了，你可以做加密啦。
+            }
+        }
     }
 
     @Override

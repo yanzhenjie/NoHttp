@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="activity_start_items">
+        <item>0. 最原始使用方法</item>
+        <item>1. 请求协议演示</item>
+        <item>2. 请求图片</item>
+        <item>3. 请求Json(JsonObject, Array…)</item>
+        <item>4. 提交Json、XML包体…</item>
+        <item>5. 自定义请求对象(FastJson)</item>
+        <item>6. 五种缓存策略</item>
+        <item>7. 响应码302/303重定向</item>
+        <item>8. 文件上传演示</item>
+        <item>9. 文件下载演示</item>
+        <item>10. 如何取消请求</item>
+        <item>11. 同步请求</item>
+        <item>12. 通过代理服务器请求</item>
+        <item>13. Https请求</item>
+    </string-array>
+
+    <string-array name="activity_start_items_des">
+        <item>NoHttp最基本的使用方法，如果不想用我Demo的封装，想自己封装的开发者看这里的最原始用法…</item>
+        <item>Http请求协议，11种谓词：\nGET、POST、PUT、MOVE、COPY…</item>
+        <item>ImageRequest的使用，支持多种请求协议，可以携带Cookie、请求头、参数、传文件等…</item>
+        <item>用Android自带的JSONObject解析，如果需要FastJson、Gson、XML等请看自定请求对象。</item>
+        <item>提交Json、XMl、ByteArray、InputStream、自定义包体等，自定义ContentType。</item>
+        <item>用FastJson自定义的Request，用法和NoHttp自带的Request等一样，但更快更简单。</item>
+        <item>没有缓存才请求网络、请求网络失败返回缓存、只请求网络、只读取缓存、Http标准协议。</item>
+        <item>响应码301/302/303/307重定向，支持单个重定向、多级重定向嵌套，通过接口禁用重定向等。</item>
+        <item>支持大文件、多文件、图片、二进制流等的上传，通过Binary接口，支持进度通知，取消上传等。</item>
+        <item>文件下载演示，多文件下载，断点续传下载，暂停下载等，有错误、进度等通知开发者。</item>
+        <item>支持Activity、Fragment生命周期联动，支持同时取消多个请求，支持根据sign取消指定请求。</item>
+        <item>在子线程直接用NoHttp访问网络，同步拿到结果，开发者可以结合RxJava封装自己的请求框架。</item>
+        <item>给请求设置代理服务器地址和端口通过代理服务器访问网络，比如可以通过自己电脑抓包等。</item>
+        <item>SSL证书、自签名证书、免证书Https访问等，使用Java通用API SocketFactory设置即可。</item>
+    </string-array>
+
+    <string-array name="activity_method_item">
+        <item>请求失败？</item>
+        <item>1 GET</item>
+        <item>2 POST</item>
+        <item>3 PUT</item>
+        <item>4 MOVE</item>
+        <item>5 COPY</item>
+        <item>6 DELETE</item>
+        <item>7 HEAD</item>
+        <item>8 PATCH</item>
+        <item>9 OPTIONS</item>
+        <item>10 TRACE</item>
+        <item>11 CONNECT</item>
+    </string-array>
+
+    <string-array name="activity_method_item_des">
+        <item>为什么COPY、MOVE、PATCH、CONNECTION等方法请求失败了？</item>
+        <item>GET请求方法，提交参数，请求指定的页面/接口信息，并返回实体主体。</item>
+        <item>POST请求方法，向指定资源提交数据（提交表单、上传文件）。数据被包含在请求体中。</item>
+        <item>PUT请求方法，从客户端向服务器传送的数据取代指定的文档的内容。</item>
+        <item>MOVE请求方法，移动资源、重命名，请求服务器将指定的资源移至另一个网络地址。</item>
+        <item>COPY请求方法，拷贝资源，请求服务器将指定的资源拷贝至另一个网络地址。</item>
+        <item>DELETE请求方法，删除资源，请求服务器删除指定的资源、数据。</item>
+        <item>HEAD请求方法，类似于get请求，只不过返回的响应中没有具体的内容，用于获取报头。</item>
+        <item>PATCH请求方法，实体中包含一个表，表中说明与该URI所表示的原内容的区别。</item>
+        <item>OPTIONS请求方法，获取服务器支持的HTTP请求方法，检查服务器的性能。</item>
+        <item>TRACE请求方法，回显服务器收到的请求，主要用于测试或诊断。</item>
+        <item>CONNECTION请求方法，HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器。</item>
+    </string-array>
+
+    <string-array name="activity_image_item">
+        <item>GET</item>
+        <item>POST</item>
+        <item>PUT</item>
+        <item>DELETE</item>
+        <item>OPTIONS</item>
+    </string-array>
+
+    <string-array name="activity_cache_entrance">
+        <item>DEFAULT.</item>
+        <item>REQUEST_NETWORK_FAILED_READ_CACHE.</item>
+        <item>NONE_CACHE_REQUEST_NETWORK</item>
+        <item>ONLY_READ_CACHE</item>
+        <item>ONLY_REQUEST_NETWORK</item>
+    </string-array>
+
+    <string-array name="activity_cache_entrance_des">
+        <item>NoHttp默认的缓存模式，严格遵守RFC2616协议。比如响应是Http304时，返回可用缓存。</item>
+        <item>请求网络失败后返回上次成功的数据，如果一次都没有请求成功过，则请求失败。</item>
+        <item>优先读取缓存，如果没有缓存才请求网络，请求回来后数据被缓存，下次可直接读取。</item>
+        <item>仅仅读取缓存，不去请求网络。没有缓存认为失败，异常类型为：NotFoundCacheError。</item>
+        <item>仅仅请求网络，请求网络时不会添加缓存头，请求回来的数据跟Http协议是否缓存。</item>
+    </string-array>
+
+    <string-array name="activity_cache_item">
+        <item>请求String</item>
+        <item>请求Image</item>
+    </string-array>
+
+    <string-array name="activity_redirect_item">
+        <item>发起请求，允许重定向</item>
+        <item>发起请求，不允许重定向</item>
+    </string-array>
+
+    <string-array name="activity_upload_item">
+        <item>上传单个文件</item>
+        <item>上传多个文件</item>
+        <item>上传文件List</item>
+        <item>从相册选择图片（事例）</item>
+    </string-array>
+
+    <string-array name="activity_download_item">
+        <item>下载单个文件</item>
+        <item>下载多个文件</item>
+    </string-array>
+
+    <string-array name="activity_cancel_item">
+        <item>与Activity/Fragment声明周期联动</item>
+        <item>取消队列中指定的某几个请求</item>
+        <item>取消队列中所有请求\n（包括已经在执行的）</item>
+    </string-array>
+
+    <string-array name="activity_https_item">
+        <item>Https证书请求</item>
+        <item>免Https证书请求</item>
+    </string-array>
+
+</resources>

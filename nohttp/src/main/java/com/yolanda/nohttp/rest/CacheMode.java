@@ -40,6 +40,11 @@ public enum CacheMode {
     REQUEST_NETWORK_FAILED_READ_CACHE,
 
     /**
+     * If there is no cache request, it returns the cache cache exists.
+     */
+    NONE_CACHE_REQUEST_NETWORK,
+
+    /**
      * <p>
      * If the cache exists invoke {@link OnResponseListener#onSucceed(int, Response)}, otherwise invoke {@link OnResponseListener#onFailed(int, String, Object, Exception, int, long)}.
      * </p>
@@ -49,12 +54,7 @@ public enum CacheMode {
     /**
      * It does not deal with anything related to the cache, only to get the data from the network.
      */
-    ONLY_REQUEST_NETWORK,
-
-    /**
-     * If there is no cache request, it returns the cache cache exists.
-     */
-    NONE_CACHE_REQUEST_NETWORK;
+    ONLY_REQUEST_NETWORK;
 
     /**
      * Whether caching pattern is in compliance with the Http protocol.

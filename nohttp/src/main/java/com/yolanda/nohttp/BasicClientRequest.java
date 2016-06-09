@@ -20,6 +20,7 @@ import com.yolanda.nohttp.able.Finishable;
 import com.yolanda.nohttp.able.Queueable;
 import com.yolanda.nohttp.able.SignCancelable;
 import com.yolanda.nohttp.able.Startable;
+import com.yolanda.nohttp.tools.MultiValueMap;
 
 import org.json.JSONObject;
 
@@ -255,6 +256,13 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
      * Remove all request param.
      */
     void removeAll();
+
+    /**
+     * Get the parameters of key-value pairs.
+     *
+     * @return Not empty Map.
+     */
+    MultiValueMap<String, Object> getParamKeyValues();
 
     /**
      * Settings you want to push data and contentType. Can only accept {@link java.io.ByteArrayInputStream} and {@link java.io.FileInputStream} type.

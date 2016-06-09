@@ -66,7 +66,7 @@ class CookieEntity implements DBId, Serializable {
         this.discard = cookie.getDiscard();
         this.domain = cookie.getDomain();
         long maxAge = cookie.getMaxAge();
-        if (maxAge > 0) {
+        if (maxAge != -1 && maxAge > 0) {
             this.expiry = (maxAge * 1000L) + System.currentTimeMillis();
             if (this.expiry < 0L) // 溢出
                 this.expiry = HttpDateTime.getMaxExpiryMillis();
@@ -93,7 +93,10 @@ class CookieEntity implements DBId, Serializable {
         cookie.setCommentURL(commentURL);
         cookie.setDiscard(discard);
         cookie.setDomain(domain);
-        cookie.setMaxAge((expiry - System.currentTimeMillis()) / 1000L);
+        if (expiry == -1L)
+            cookie.setMaxAge(-1L);
+        else
+            cookie.setMaxAge((expiry - System.currentTimeMillis()) / 1000L);
         cookie.setPath(path);
         cookie.setPortlist(portList);
         cookie.setSecure(secure);
@@ -282,6 +285,15 @@ class CookieEntity implements DBId, Serializable {
      */
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    /**
+     * Cookie is expired ?
+     *
+     * @return expired return true, other wise false.
+     */
+    public boolean isExpired() {
+        return expiry != -1L && expiry < System.currentTimeMillis();
     }
 
 }

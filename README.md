@@ -11,18 +11,17 @@
 严振杰的Android直播视频下载：[http://pan.baidu.com/s/1miEOtwG][4]  
 
 ----
-
 #NoHttp主页和文档地址
-NoHttp主页：[http://www.nohttp.net][5]
-NoHttp文档：[http://doc.nohttp.net][6]
-NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]
+NoHttp主页：[http://www.nohttp.net][5]  
+NoHttp文档：[http://doc.nohttp.net][6]  
+NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]  
 文档还在继续完善，有问题可以加上面的群，或者发[issues][7]，或者直接发邮件给我：smallajax@foxmail.com。
 
 #使用方法
 * Eclipse使用Jar包：[下载Jar包][8]
 * AndroidStudio使用Gradle构建添加依赖（推荐）
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.1'
+compile 'com.yolanda.nohttp:nohttp:1.0.2'
 ```
 
 #下载Demo
@@ -32,12 +31,12 @@ compile 'com.yolanda.nohttp:nohttp:1.0.1'
 　　NoHttp实现了Http1.1（RFC2616），一个标准的Http框架。
 
 * 请求和下载都是队列，平均分配每个线程的资源，支持多个请求并发。
-* 支持GET、POST、PUT、PATCH、HEAD、DELETE、OPTIONS、TRACE等全部（11种）Http请求协议。
+* 支持GET、POST、PUT、PATCH、HEAD、DELETE、OPTIONS、TRACE等请求协议。
 * 支持基于POST、PUT、PATCH、DELETE的文件上传（Html表单原理）。
-* 文件下载、上传下载、上传和下载的进度回调、错误回调等友好接口。
-* 提供了五种数据缓存模式（详细看下文）。
+* 文件下载、上传下载、上传和下载的进度回调、错误回调。
+* 提供了五种数据缓存策略供开发者选择使用（详细看下文）。
 * 支持取消某个请求、取消指定多个请求、取消所有请求。
-* 支持自定义Request，利用NoHttp发型可以解析成你想要的任何数据格式（String、Json、JavaBean等）。
+* 支持自定义Request，利用NoHttp泛型可以解析成你想要的任何数据格式（String、Json、JavaBean等）。
 * 支持Session、Cookie的自动维持，App重启、关开机后还持续维持。
 * 支持Https、自签名网站Https的访问、支持双向验证。
 
@@ -347,6 +346,7 @@ queue.add(what, mRequest, responseListener);
     NoHttp全部的类都可以混淆。
 　　NoHttp1.0.0使用了leve23的api，所以打包的时候要用leve23才行。
 　　NoHttp1.0.1使用了反射调用了高级或者低级的api，所以只要是leve9以上的sdk都可以编译。
+　　NoHttp1.0.2同NoHttp1.0.1一样，在NoHttp1.0.1的基础上进行了优化和bug修复。是目前功能最全，最稳定的一个版本，暂时未发现bug。
 
 ##如果你非要keep
 ```text
@@ -379,6 +379,6 @@ limitations under the License.
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.1.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.2.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
 [10]: http://www.nohttp.net/image/nohttp_logo.svg

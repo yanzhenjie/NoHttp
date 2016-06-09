@@ -30,7 +30,7 @@ import com.yolanda.nohttp.db.Field;
 class CookieDisk extends SQLiteOpenHelper implements Field {
 
     public static final String DB_COOKIE_NAME = "_nohttp_cookies_db.db";
-    public static final int DB_COOKIE_VERSION = 1;
+    public static final int DB_COOKIE_VERSION = 2;
 
     public static final String TABLE_NAME = "cookies_table";
     public static final String URI = "uri";
@@ -48,8 +48,8 @@ class CookieDisk extends SQLiteOpenHelper implements Field {
 
     private static final String SQL_CREATE_TABLE = "CREATE TABLE cookies_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, uri TEXT, name TEXT, value TEXT, comment TEXT, comment_url TEXT, discard TEXT, domain TEXT, expiry INTEGER, path TEXT, port_list TEXT, secure TEXT, version INTEGER)";
     private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cookie_unique_index ON cookies_table(\"name\", \"domain\", \"path\")";
-    private static final String SQL_DELETE_TABLE = "DROP TABLE cookies_table";
-    private static final String SQL_DELETE_UNIQUE_INDEX = "DROP UNIQUE INDEX cookie_unique_index";
+    private static final String SQL_DELETE_TABLE = "DROP TABLE  IF EXISTS cookies_table";
+    private static final String SQL_DELETE_UNIQUE_INDEX = "DROP INDEX IF EXISTS cookie_unique_index";
 
     public CookieDisk() {
         super(NoHttp.getContext(), DB_COOKIE_NAME, null, DB_COOKIE_VERSION);
@@ -81,5 +81,9 @@ class CookieDisk extends SQLiteOpenHelper implements Field {
                 db.endTransaction();
             }
         }
+    }
+
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db, oldVersion, newVersion);
     }
 }

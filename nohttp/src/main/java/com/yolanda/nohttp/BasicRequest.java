@@ -326,15 +326,6 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         return UserAgent.instance();
     }
 
-    /**
-     * Get the parameters of key-value pairs.
-     *
-     * @return Not empty Map.
-     */
-    protected final MultiValueMap<String, Object> getParamKeyValues() {
-        return mParamKeyValues;
-    }
-
     @Override
     public void add(String key, String value) {
         if (value != null) {
@@ -442,6 +433,11 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
+    public MultiValueMap<String, Object> getParamKeyValues() {
+        return mParamKeyValues;
+    }
+
+    @Override
     public void setDefineRequestBody(InputStream requestBody, String contentType) {
         if (requestBody == null || contentType == null)
             throw new IllegalArgumentException("The requestBody and contentType must be can't be null");
@@ -510,10 +506,6 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
             this.mRequestBody = new ByteArrayInputStream(body);
     }
 
-    @Override
-    public void onPreExecute() {
-    }
-
     /**
      * Is there a custom request inclusions.
      *
@@ -530,6 +522,10 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
      */
     protected InputStream getDefineRequestBody() {
         return mRequestBody;
+    }
+
+    @Override
+    public void onPreExecute() {
     }
 
     @Override
@@ -715,7 +711,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
             if (hasDefineRequestBody())
                 IOUtils.closeQuietly(getDefineRequestBody());
 
-            if(blockingQueue != null)
+            if (blockingQueue != null)
                 blockingQueue.remove(this);
 
             // cancel file upload

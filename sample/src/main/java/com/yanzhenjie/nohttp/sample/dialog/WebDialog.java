@@ -17,7 +17,9 @@ package com.yanzhenjie.nohttp.sample.dialog;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 /**
  * Created on 2016/5/28.
@@ -33,6 +35,18 @@ public class WebDialog extends AlertDialog.Builder {
     public WebDialog(Context context) {
         super(context);
         webView = new WebView(context);
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                try {
+                    view.loadUrl(url);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
         setView(webView);
     }
 

@@ -15,6 +15,14 @@
  */
 package com.yolanda.nohttp.cookie;
 
+import android.text.TextUtils;
+
+import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.db.DBManager;
+import com.yolanda.nohttp.db.Field;
+import com.yolanda.nohttp.db.Where;
+import com.yolanda.nohttp.db.Where.Options;
+
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -24,13 +32,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.yolanda.nohttp.db.DBManager;
-import com.yolanda.nohttp.db.Field;
-import com.yolanda.nohttp.db.Where;
-import com.yolanda.nohttp.db.Where.Options;
-
-import android.text.TextUtils;
 
 /**
  * Created in Dec 17, 2015 7:20:52 PM.
@@ -54,10 +55,6 @@ public enum DiskCookieStore implements CookieStore {
      */
     private DBManager<CookieEntity> mManager;
     /**
-     * When delete expired cookies for the first time to delete temporary cookies.
-     */
-    private volatile boolean firstDeleteExpiry = true;
-    /**
      * When Add and remove cookie notify.
      */
     private CookieStoreListener mCookieStoreListener;
@@ -65,6 +62,10 @@ public enum DiskCookieStore implements CookieStore {
     DiskCookieStore() {
         mLock = new ReentrantLock();
         mManager = CookieDiskManager.getInstance();
+
+        // Delete temp cookie.
+        Where where = new Where(CookieDisk.EXPIRY, Options.EQUAL, -1L);
+        mManager.delete(where.get());
     }
 
     /**
@@ -98,19 +99,20 @@ public enum DiskCookieStore implements CookieStore {
         try {
             if (uri == null)
                 return Collections.emptyList();
+
             uri = getEffectiveURI(uri);
-            deleteExpiryCookies();
             Where where = new Where();
+
             String host = uri.getHost();
             if (!TextUtils.isEmpty(host)) {
-                Where subWhere = new Where(CookieDisk.DOMAIN, Options.EQUAL, host);
+                Where subWhere = new Where(CookieDisk.DOMAIN, Options.EQUAL, host).or(CookieDisk.DOMAIN, Options.EQUAL, "." + host);
+
+                int firstDot = host.indexOf(".");
                 int lastDot = host.lastIndexOf(".");
-                if (lastDot > 1) {
-                    lastDot = host.lastIndexOf(".", lastDot - 1);
-                    if (lastDot > 0) {
-                        String domain = host.substring(lastDot, host.length());
-                        if (!TextUtils.isEmpty(domain))
-                            subWhere.or(CookieDisk.DOMAIN, Options.EQUAL, domain).bracket();
+                if (firstDot > 0 && lastDot > firstDot) {
+                    String domain = host.substring(firstDot, host.length());
+                    if (!TextUtils.isEmpty(domain)) {
+                        subWhere.or(CookieDisk.DOMAIN, Options.EQUAL, domain);
                     }
                 }
                 where.set(subWhere.get());
@@ -134,7 +136,8 @@ public enum DiskCookieStore implements CookieStore {
             List<CookieEntity> cookieList = mManager.get(Field.ALL, where.get(), null, null, null);
             List<HttpCookie> returnedCookies = new ArrayList<HttpCookie>();
             for (CookieEntity cookieEntity : cookieList)
-                returnedCookies.add(cookieEntity.toHttpCookie());
+                if (!cookieEntity.isExpired())
+                    returnedCookies.add(cookieEntity.toHttpCookie());
             return returnedCookies;
         } finally {
             mLock.unlock();
@@ -146,10 +149,10 @@ public enum DiskCookieStore implements CookieStore {
         mLock.lock();
         try {
             List<HttpCookie> rt = new ArrayList<HttpCookie>();
-            deleteExpiryCookies();
             List<CookieEntity> cookieEntityList = mManager.getAll();
             for (CookieEntity cookieEntity : cookieEntityList)
-                rt.add(cookieEntity.toHttpCookie());
+                if (!cookieEntity.isExpired())
+                    rt.add(cookieEntity.toHttpCookie());
             return rt;
         } finally {
             mLock.unlock();
@@ -168,7 +171,7 @@ public enum DiskCookieStore implements CookieStore {
                     try {
                         uris.add(new URI(uri));
                     } catch (Throwable e) {
-                        e.printStackTrace();
+                        Logger.w(e);
                         StringBuilder where = new StringBuilder(CookieDisk.URI).append('=').append(uri);
                         mManager.delete(where.toString());
                     }
@@ -214,26 +217,6 @@ public enum DiskCookieStore implements CookieStore {
         } finally {
             mLock.unlock();
         }
-    }
-
-    /**
-     * Delete all expired cookies.
-     */
-    private void deleteExpiryCookies() {
-        if (firstDeleteExpiry) {
-            firstDeleteExpiry = false;
-            deleteTempCookie();
-        }
-        Where where = new Where(CookieDisk.EXPIRY, Options.THAN_SMALL, System.currentTimeMillis()).and(CookieDisk.EXPIRY, Options.NO_EQUAL, -1L);
-        mManager.delete(where.get());
-    }
-
-    /**
-     * Delete all temp cookie.
-     */
-    private void deleteTempCookie() {
-        Where where = new Where(CookieDisk.EXPIRY, Options.EQUAL, -1L);
-        mManager.delete(where.get());
     }
 
     /**

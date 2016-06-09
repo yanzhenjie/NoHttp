@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">NoHttp Demo</string>
+    <string name="confirm">Sure</string>
+    <string name="cancel">Cancel</string>
+    <string name="know">I know</string>
+    <string name="tip">Tip</string>
+    <string name="wait_dialog_title">Please wait for a while…</string>
+
+    <!-- title field -->
+
+    <string name="title_original_activity">NoHttp native usage</string>
+    <string name="title_method_activity">Demo request agreement</string>
+    <string name="title_image_activity">NoHttp request image</string>
+    <string name="title_post_body_activity">Post json, custom inclusions</string>
+    <string name="title_fast_json_activity">The custom request</string>
+    <string name="title_json_activity">JsonObject、JsonArray demo</string>
+    <string name="title_cache_activity">Five caching strategies</string>
+    <string name="title_cache_http_activity">The HTTP standard protocol of the cache</string>
+    <string name="title_cache_request_failed_read_cache_activity">Returns the cache request network failure</string>
+    <string name="title_cache_none_request_network_activity">No cache to request network</string>
+    <string name="title_cache_only_read_cache">Just read the cache</string>
+    <string name="title_cache_only_request_network">Only request network</string>
+    <string name="title_redirect_activity">Redirect requests</string>
+    <string name="title_upload_activity">File upload</string>
+    <string name="title_upload_single_activity">Single file upload</string>
+    <string name="title_upload_multi_activity">Multi file upload</string>
+    <string name="title_upload_file_list_activity">File list upload</string>
+    <string name="title_upload_album">Select the image upload photo album</string>
+    <string name="title_download_activity">File download</string>
+    <string name="title_download_single_activity">Single file download</string>
+    <string name="title_download_list_activity">Multi file download</string>
+    <string name="title_cancel_activity">How cancel request</string>
+    <string name="title_cancel_linkage_activity">Linkage and the Activity of the life cycle</string>
+    <string name="title_cancel_sign_activity">Cancel the specified several requests</string>
+    <string name="title_cancel_all_activity">Cancel all requests in the queue</string>
+    <string name="title_sync_activity">A synchronous request</string>
+    <string name="title_proxy_activity">Through a proxy server requests</string>
+    <string name="title_https_activity">https demo</string>
+
+    <!-- Common -->
+
+    <string name="request_start">Start Request</string>
+
+    <string name="request_original_result">Response code: %1$d\n Time consuming: %2$dms.</string>
+
+    <string name="method_request_failed">Why some methods attempt failed?</string>
+    <string name="method_request_failed_reason">Provisions in the RFC2616 Http1.1 support request method, some of the server and the client (Android) does not support some request method, so the request failed is normal, but we still need to abide by the agreement, recommend the server and client support, this is a very good design and experience.</string>
+
+    <string name="request_succeed">Request is succeed</string>
+    <string name="request_failed">Request is failed</string>
+
+    <!-- RequestMethod -->
+
+    <string name="request_json_result">Request method: %1$s\nRequest Address: %2$s\nResponse data: %3$s\nBusiness status code：%4$s.</string>
+    <string name="request_succeed_head">Request succeed, request method is HEAD, no response body.</string>
+    <string name="request_method_not_allow">The request method was not server allows.</string>
+    <string name="request_method_head">Request method for HEAD, no response content.</string>
+
+    <!-- Json -->
+
+    <string name="request_json_object">JsonObject Object</string>
+    <string name="request_json_array">JsonArray Object</string>
+    <string name="request_json_body_input_tip">Json request input please.</string>
+    <string name="request_fast_json">Define Request For FastJson</string>
+
+    <!-- Cache -->
+
+    <string name="request_from_cache">Result come from cache.</string>
+    <string name="request_from_network">Result come from network.</string>
+    <string name="request_cache_request_failed_read_cache_tip">Can see the specific code, only one word set cache mode, testing of friends, you can request a successful first, and then broken network request, would return to the cache!</string>
+    <string name="request_cache_only_read_cache_failed">Caching pattern is Only_Read_Cache, but found no cache.</string>
+
+    <!-- Redirect -->
+
+    <string name="request_redirect_location">Be redirected to the url：%1$s。</string>
+
+    <!-- Upload and download -->
+
+    <string name="upload_start">Start upload</string>
+    <string name="upload_succeed">Upload finish.</string>
+    <string name="upload_failed">Upload failed.</string>
+    <string name="upload_cancel">Upload is cancelled.</string>
+    <string name="upload_error">There was an error uploading.</string>
+
+    <string name="upload_file_status">File status：</string>
+    <string name="upload_file_status_wait">Wait for the operating…</string>
+    <string name="upload_file_select_album">Select image</string>
+    <string name="upload_file_select_album_null">Please select image.</string>
+    <string name="upload_file_select_album_null_again">File does not exist, please choose photos again.</string>
+
+    <string name="download_mobile_data_tip">Multi-tasking download four files, had better use WIFI test.</string>
+    <string name="download_start">Start download</string>
+    <string name="download_delete">Delete file</string>
+    <string name="delete_succeed">Delte succeed</string>
+    <!-- Download status -->
+    <string name="download_progress">Have downloaded: %1$d</string>
+    <string name="download_status_pause">Pause</string>
+    <string name="download_status_be_pause">Download is suspended</string>
+    <string name="download_status_re_download">To download</string>
+    <string name="download_status_again_download">Try it again</string>
+    <string name="download_status_resume">Continue to download</string>
+    <string name="download_status_finish">The download is complete!</string>
+    <!-- Download error -->
+    <string name="download_error">Download the wrong:%1$s</string>
+    <string name="download_error_server">Server data error!</string>
+    <string name="download_error_network">The network is not available, please check the network!</string>
+    <string name="download_error_storage">Memory error, please check the memory card!</string>
+    <string name="download_error_space">There is insufficient space on the memory card!</string>
+    <string name="download_error_timeout">Download the timeout!</string>
+    <string name="download_error_un_know_host">Can not find a server.</string>
+    <string name="download_error_url">URL address errors.</string>
+    <string name="download_error_argument">Download the parameter error.</string>
+    <string name="download_error_un">Unknown error.</string>
+
+    <!-- Cancel -->
+    <string name="no_operation_des">Please look at the code and comments of the Activity.</string>
+</resources>

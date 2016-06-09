@@ -15,8 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 
 import com.yolanda.nohttp.able.Finishable;
@@ -38,8 +36,6 @@ import java.net.URLConnection;
  * @author Yan Zhenjie.
  */
 public abstract class BasicBinary implements Binary, Startable, Finishable {
-
-    private static Handler sPosterHandler;
 
     private boolean isStarted = false;
 
@@ -142,7 +138,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     protected void postStart() {
         UploadPoster start = new UploadPoster(what, mUploadListener);
         start.start();
-        getPosterHandler().post(start);
+        PosterHandler.getInstance().post(start);
     }
 
     /**
@@ -153,7 +149,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     protected void postProgress(int progress) {
         UploadPoster progressPoster = new UploadPoster(what, mUploadListener);
         progressPoster.progress(progress);
-        getPosterHandler().post(progressPoster);
+        PosterHandler.getInstance().post(progressPoster);
     }
 
     /**
@@ -162,7 +158,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     protected void postCancel() {
         UploadPoster cancelPoster = new UploadPoster(what, mUploadListener);
         cancelPoster.cancel();
-        getPosterHandler().post(cancelPoster);
+        PosterHandler.getInstance().post(cancelPoster);
     }
 
     /**
@@ -173,7 +169,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     protected void postError(Exception e) {
         UploadPoster error = new UploadPoster(what, mUploadListener);
         error.error(e);
-        getPosterHandler().post(error);
+        PosterHandler.getInstance().post(error);
     }
 
     /**
@@ -182,7 +178,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     protected void postFinish() {
         UploadPoster finish = new UploadPoster(what, mUploadListener);
         finish.finish();
-        getPosterHandler().post(finish);
+        PosterHandler.getInstance().post(finish);
     }
 
     @Override
@@ -290,13 +286,5 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
             }
         }
 
-    }
-
-    private Handler getPosterHandler() {
-        synchronized (BasicBinary.class) {
-            if (sPosterHandler == null)
-                sPosterHandler = new Handler(Looper.getMainLooper());
-        }
-        return sPosterHandler;
     }
 }

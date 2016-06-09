@@ -53,6 +53,7 @@ class CacheDiskManager extends DBManager<CacheEntity> {
         values.put(CacheDisk.KEY, cacheEntity.getKey());
         values.put(CacheDisk.HEAD, cacheEntity.getResponseHeadersJson());
         values.put(CacheDisk.DATA, cacheEntity.getData());
+        values.put(CacheDisk.LOCAL_EXPIRES, cacheEntity.getLocalExpire());
         long id = -1;
         try {
             id = execute.replace(getTableName(), null, values);
@@ -89,6 +90,10 @@ class CacheDiskManager extends DBManager<CacheEntity> {
                     int dataIndex = cursor.getColumnIndex(CacheDisk.DATA);
                     if (dataIndex >= 0)
                         cacheEntity.setData(cursor.getBlob(dataIndex));
+
+                    int expiresIndex = cursor.getColumnIndex(CacheDisk.LOCAL_EXPIRES);
+                    if (expiresIndex >= 0)
+                        cacheEntity.setLocalExpire(cursor.getLong(expiresIndex));
 
                     cacheEntities.add(cacheEntity);
                 } catch (Throwable e) {

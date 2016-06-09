@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="activity_start_items">
+        <item>0. The use of the most primitive</item>
+        <item>1. Demo request agreement</item>
+        <item>2. Request images</item>
+        <item>3. Request Json(JsonObject, Array…)</item>
+        <item>4. Push Json、XML body…</item>
+        <item>5. Define request object(FastJson)</item>
+        <item>6. Five caching strategies</item>
+        <item>7. The response code 302/303 redirection</item>
+        <item>8. File upload demo</item>
+        <item>9. File download demo</item>
+        <item>10. How to cancel the request</item>
+        <item>11. A synchronous request</item>
+        <item>12. Through a proxy server requests</item>
+        <item>13. Https request</item>
+    </string-array>
+
+    <string-array name="activity_start_items_des">
+        <item>The most basic method of use, if I don\'t want to use the Demo of encapsulation, want to encapsulate the original use of developers look here.</item>
+        <item>Http request protocol, 11 kinds of predicates: GET, POST, PUT, HEAD, DELTE, PATCH, TRANCE, MOVE, COPY…</item>
+        <item>The use of ImageRequest, Supports multiple request protocol, can carry cookies, request header, parameters, file transfer, etc…</item>
+        <item>With Android\'s built-in JSONObject parsing. FastJson, Gson, XML etc and if necessary. Please see the request object.</item>
+        <item>Submit a Json, XMl, ByteArray containing, InputStream, custom inclusions, etc., custom ContentType.</item>
+        <item>Use FastJson custom Request, usage and NoHttp own Request, but faster and easier.</item>
+        <item>No cache request network, network failure only returning to cache, only request network, read only the cache, the Http standard protocol.</item>
+        <item>The response code /303/307/301/302 redirection, supporting a single redirects, multistage nested redirection, disable redirection through interfaces, etc.</item>
+        <item>Support large files, documents, pictures, such as Binary stream of upload, through the Binary interface, support schedule notice, cancel the upload, etc.</item>
+        <item>Download demo file, file downloads, download breakpoint continuingly, pause downloads, etc., such as errors, progress to inform developers.</item>
+        <item>Support Activity, linkage, Fragment lifecycle support to cancel multiple requests at the same time, support according to the sign to cancel specified request.</item>
+        <item>In child threads with NoHttp directly access to the network, synchronous get as a result, developers can combine RxJava encapsulation own request frame.</item>
+        <item>To the request set up proxy server address and port through a proxy server to access the network, such as through their computer bag and so on.</item>
+        <item>SSL certificate, a self-signed certificate, certificate of exemption Https access, etc., using Java generic API SocketFactory Settings.</item>
+    </string-array>
+
+    <string-array name="activity_method_item">
+        <item>Request failed?</item>
+        <item>1 GET</item>
+        <item>2 POST</item>
+        <item>3 PUT</item>
+        <item>4 MOVE</item>
+        <item>5 COPY</item>
+        <item>6 DELETE</item>
+        <item>7 HEAD</item>
+        <item>8 PATCH</item>
+        <item>9 OPTIONS</item>
+        <item>10 TRACE</item>
+        <item>11 CONNECT</item>
+    </string-array>
+
+    <string-array name="activity_method_item_des">
+        <item>Why do the COPY, MOVE, PATCH, such as the CONNECTION method request failed?</item>
+        <item>The GET request method, parameters, request the specified page/interface information, and returns the entity body.</item>
+        <item>The POST request method, submit the data to the specified resource (submission form, upload files).Data is included in the request body.</item>
+        <item>The PUT request method, from the client send the data to the server to replace the specified content of the document.</item>
+        <item>The MOVE request method, mobile resources, rename, request the server to the specified resource moved to another network address.</item>
+        <item>The COPY request method, COPY resources, copied to the specified resource request server to another network address.</item>
+        <item>The DELETE request method, DELETE resources, request to the server, data, DELETE the specified resource.</item>
+        <item>The HEAD request method, similar to a get request, but no specific content in the response returned, used to get the header.</item>
+        <item>The PATCH request method, entity contains a table, the table shows that represented the URI of the difference between the original content.</item>
+        <item>The OPTIONS request method, for server support HTTP request method, to check the performance of the server.</item>
+        <item>The TRACE request method, the echo server receives the request, it is mainly used for testing or diagnosis.</item>
+        <item>The CONNECTION request method, HTTP / 1.1 protocol can be reserved for CONNECTION pipe way in the proxy server.</item>
+    </string-array>
+
+    <string-array name="activity_image_item">
+        <item>GET</item>
+        <item>POST</item>
+        <item>PUT</item>
+        <item>DELETE</item>
+        <item>OPTIONS</item>
+    </string-array>
+
+    <string-array name="activity_cache_entrance">
+        <item>DEFAULT.</item>
+        <item>REQUEST_NETWORK_FAILED_READ_CACHE.</item>
+        <item>NONE_CACHE_REQUEST_NETWORK</item>
+        <item>ONLY_READ_CACHE</item>
+        <item>ONLY_REQUEST_NETWORK</item>
+    </string-array>
+
+    <string-array name="activity_cache_entrance_des">
+        <item>NoHttp default cache mode, strictly abide by the RFC2616 agreement.Such as response Http304, returns available cache.</item>
+        <item>Request network after failing to return to the last successful data, if one had no request is successful, the request fails.</item>
+        <item>First read the cache, if there is no cache to request network, request data cached after come back, can be directly read next time.</item>
+        <item>Just read the cache, not to request network.No cache that failures, exception types: NotFoundCacheError.</item>
+        <item>When only request network, the network will not add cache first, request return whether cache data with the Http protocol.</item>
+    </string-array>
+
+    <string-array name="activity_cache_item">
+        <item>Request String</item>
+        <item>Request Image</item>
+    </string-array>
+
+    <string-array name="activity_redirect_item">
+        <item>Initiate the request, allowing the redirection</item>
+        <item>Initiate the request, does not allow the redirection</item>
+    </string-array>
+
+    <string-array name="activity_upload_item">
+        <item>Upload a single file</item>
+        <item>Upload multiple files</item>
+        <item>Upload a file List</item>
+        <item>From the picture album to choose (case)</item>
+    </string-array>
+
+    <string-array name="activity_download_item">
+        <item>Downloading a single file</item>
+        <item>To download multiple files</item>
+    </string-array>
+
+    <string-array name="activity_cancel_item">
+        <item>With the Activity/fragments joint statement cycle.</item>
+        <item>Specify a few requests to cancel the queue.</item>
+        <item>Cancel all requests in the queue \ n (including) has been in the implementation.</item>
+    </string-array>
+
+    <string-array name="activity_https_item">
+        <item>The Https certificate request</item>
+        <item>Avoid the Https certificate request</item>
+    </string-array>
+
+</resources>

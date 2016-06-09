@@ -15,12 +15,11 @@
  */
 package com.yolanda.nohttp.rest;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Process;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.PosterHandler;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -33,14 +32,6 @@ import java.util.concurrent.BlockingQueue;
  * @author Yan Zhenjie.
  */
 public class RequestDispatcher extends Thread {
-    /**
-     * Gets the lock for Handler to prevent the request result from confusing.
-     */
-    private static final Object HANDLER_LOCK = new Object();
-    /**
-     * Poster of send request result.
-     */
-    private static Handler sRequestHandler;
     /**
      * Request queue.
      */
@@ -104,7 +95,7 @@ public class RequestDispatcher extends Thread {
             // start
             final ThreadPoster startThread = new ThreadPoster(what, responseListener);
             startThread.onStart();
-            getPosterHandler().post(startThread);
+            PosterHandler.getInstance().post(startThread);
 
             // request
             Response<?> response = mImplRestParser.parserRequest(request);
@@ -115,7 +106,7 @@ public class RequestDispatcher extends Thread {
             // finish
             final ThreadPoster finishThread = new ThreadPoster(what, responseListener);
             finishThread.onFinished();
-            getPosterHandler().post(finishThread);
+            PosterHandler.getInstance().post(finishThread);
             request.finish();
 
             // response
@@ -124,17 +115,9 @@ public class RequestDispatcher extends Thread {
             else {
                 final ThreadPoster responseThread = new ThreadPoster(what, responseListener);
                 responseThread.onResponse(response);
-                getPosterHandler().post(responseThread);
+                PosterHandler.getInstance().post(responseThread);
             }
         }
-    }
-
-    private Handler getPosterHandler() {
-        synchronized (HANDLER_LOCK) {
-            if (sRequestHandler == null)
-                sRequestHandler = new Handler(Looper.getMainLooper());
-        }
-        return sRequestHandler;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
