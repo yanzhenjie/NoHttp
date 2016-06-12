@@ -360,7 +360,6 @@ queue.add(what, mRequest, responseListener);
 
 ##如果你非要keep
 ```text
-#okhttputils
 -dontwarn com.yolanda.nohttp.**
 -keep class com.yolanda.nohttp.**{*;}
 ```
