@@ -33,7 +33,7 @@ import java.util.List;
  * <p>Http response, Including header information and response packets.</p>
  * Created in Oct 15, 2015 8:55:37 PM.
  *
- * @param <T> a generic, on behalf of you can accept the result type,.It should be with the {@link com.yolanda.nohttp.rest.Request}, {@link OnResponseListener}.
+ * @param <T> a generic, on behalf of you can accept the result type,.It should be with the {@link Request}, {@link OnResponseListener}.
  * @author Yan Zhenjie.
  */
 public interface Response<T> {

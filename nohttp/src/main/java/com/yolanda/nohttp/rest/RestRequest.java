@@ -38,7 +38,7 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
     /**
      * The request of the listener.
      */
-    private com.yolanda.nohttp.rest.OnResponseListener<T> responseListener;
+    private OnResponseListener<T> responseListener;
     /**
      * Cache key.
      */
@@ -103,7 +103,7 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
     }
 
     @Override
-    public void onPreResponse(int what, com.yolanda.nohttp.rest.OnResponseListener<T> responseListener) {
+    public void onPreResponse(int what, OnResponseListener<T> responseListener) {
         this.what = what;
         this.responseListener = responseListener;
     }
@@ -114,7 +114,7 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
     }
 
     @Override
-    public com.yolanda.nohttp.rest.OnResponseListener<T> responseListener() {
+    public OnResponseListener<T> responseListener() {
         return responseListener;
     }
 }

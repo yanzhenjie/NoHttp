@@ -19,13 +19,23 @@ NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]
 
 #使用方法
 * Eclipse使用Jar包：[下载Jar包][8]
-* AndroidStudio使用Gradle构建添加依赖（推荐）
+* AndroidStudio使用Gradle构建添加依赖（推荐）  
 ```groovy
 compile 'com.yolanda.nohttp:nohttp:1.0.2'
 ```
 
 #下载Demo
 [下载演示Demo][9]
+
+#权限
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+```
 
 #NoHttp特性
 　　NoHttp实现了Http1.1（RFC2616），一个标准的Http框架。

@@ -44,23 +44,23 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
      * Prepare the callback parameter, while waiting for the response callback with thread.
      *
      * @param what             the callback mark.
-     * @param responseListener {@link com.yolanda.nohttp.rest.OnResponseListener}.
+     * @param responseListener {@link OnResponseListener}.
      */
-    void onPreResponse(int what, com.yolanda.nohttp.rest.OnResponseListener<T> responseListener);
+    void onPreResponse(int what, OnResponseListener<T> responseListener);
 
     /**
      * The callback mark.
      *
-     * @return Return when {@link #onPreResponse(int, com.yolanda.nohttp.rest.OnResponseListener)} incoming credit.
-     * @see #onPreResponse(int, com.yolanda.nohttp.rest.OnResponseListener)
+     * @return Return when {@link #onPreResponse(int, OnResponseListener)} incoming credit.
+     * @see #onPreResponse(int, OnResponseListener)
      */
     int what();
 
     /**
      * The request of the listener.
      *
-     * @return Return when {@link #onPreResponse(int, com.yolanda.nohttp.rest.OnResponseListener)} incoming credit.
-     * @see #onPreResponse(int, com.yolanda.nohttp.rest.OnResponseListener)
+     * @return Return when {@link #onPreResponse(int, OnResponseListener)} incoming credit.
+     * @see #onPreResponse(int, OnResponseListener)
      */
-    com.yolanda.nohttp.rest.OnResponseListener<T> responseListener();
+    OnResponseListener<T> responseListener();
 }

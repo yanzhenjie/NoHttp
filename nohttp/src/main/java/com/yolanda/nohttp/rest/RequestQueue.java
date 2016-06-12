@@ -40,7 +40,7 @@ public class RequestQueue {
     /**
      * Save request task.
      */
-    private final BlockingQueue<com.yolanda.nohttp.rest.Request<?>> mRequestQueue = new PriorityBlockingQueue<Request<?>>();
+    private final BlockingQueue<Request<?>> mRequestQueue = new PriorityBlockingQueue<Request<?>>();
     /**
      * HTTP request actuator interface.
      */
@@ -78,13 +78,13 @@ public class RequestQueue {
     /**
      * Add a request task to download queue, waiting for execution, if there is no task in the queue or the number of tasks is less than the number of thread pool, will be executed immediately.
      *
-     * @param what             the "what" will be the response is returned to you, so you can introduce multiple {@link com.yolanda.nohttp.rest.Request} results in an A with what, please distinguish which is the result of the
-     *                         {@link com.yolanda.nohttp.rest.Request}.
-     * @param request          {@link com.yolanda.nohttp.rest.Request}
-     * @param responseListener {@link com.yolanda.nohttp.rest.OnResponseListener}
+     * @param what             the "what" will be the response is returned to you, so you can introduce multiple {@link Request} results in an A with what, please distinguish which is the result of the
+     *                         {@link Request}.
+     * @param request          {@link Request}
+     * @param responseListener {@link OnResponseListener}
      * @param <T>              {@link T}
      */
-    public <T> void add(int what, com.yolanda.nohttp.rest.Request<T> request, com.yolanda.nohttp.rest.OnResponseListener<T> responseListener) {
+    public <T> void add(int what, Request<T> request, OnResponseListener<T> responseListener) {
         if (request.inQueue())
             Logger.w("This request has been in the queue");
         else {
@@ -112,7 +112,7 @@ public class RequestQueue {
      */
     public void cancelBySign(Object sign) {
         synchronized (mUnFinishQueue) {
-            for (com.yolanda.nohttp.rest.Request<?> request : mUnFinishQueue)
+            for (Request<?> request : mUnFinishQueue)
                 request.cancelBySign(sign);
         }
     }
