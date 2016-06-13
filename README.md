@@ -18,8 +18,11 @@ NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]
 文档还在继续完善，有问题可以加上面的群，或者发[issues][7]，或者直接发邮件给我：smallajax@foxmail.com。
 
 #使用方法
-* Eclipse使用Jar包：[下载Jar包][8]
-* AndroidStudio使用Gradle构建添加依赖（推荐）  
+* Eclipse使用Jar包，如果需要依赖源码，请自行下载。
+> [下载Jar包 [含源码，274k]][11]
+> [下载Jar包 [不含源码，147k]][8]
+
+* AndroidStudio使用Gradle构建添加依赖（推荐）
 ```groovy
 compile 'com.yolanda.nohttp:nohttp:1.0.2'
 ```
@@ -391,3 +394,4 @@ limitations under the License.
 [8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.2.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
 [10]: http://www.nohttp.net/image/nohttp_logo.svg
+[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.2-include-source.jar?raw=true
