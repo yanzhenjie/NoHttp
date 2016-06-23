@@ -27,9 +27,11 @@ import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.entity.LoadFile;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.util.Constants;
+import com.yanzhenjie.nohttp.sample.util.FileUtil;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.db.Field;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.error.ArgumentError;
@@ -212,7 +214,8 @@ public class DownloadFileListActivity extends BaseActivity {
     private void delete() {
         for (int i = 0; i < 4; i++) {
             File file = new File(AppConfig.getInstance().APP_PATH_ROOT, "nohttp_list" + i + ".apk");
-            file.deleteOnExit();
+            if(file.exists())
+                file.delete();
         }
     }
 

@@ -214,7 +214,8 @@ public class DownloadSignleFileActivity extends BaseActivity implements View.OnC
     protected boolean onOptionsItemSelectedCompat(MenuItem item) {
         if (item.getItemId() == R.id.menu_download_file_delete) {
             File file = new File(AppConfig.getInstance().APP_PATH_ROOT, "nohttp.apk");
-            file.deleteOnExit();
+            if(file.exists())
+                file.delete();
             Toast.show(this, R.string.delete_succeed);
         }
         return true;

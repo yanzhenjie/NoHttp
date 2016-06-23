@@ -127,7 +127,7 @@ public class NoHttp {
      * @return {@link String}.
      */
     public static String versionName() {
-        return "1.0.1";
+        return "1.0.2";
     }
 
     /**
@@ -136,7 +136,7 @@ public class NoHttp {
      * @return {@link Integer}.
      */
     public static int versionCode() {
-        return 101;
+        return 102;
     }
 
     /**

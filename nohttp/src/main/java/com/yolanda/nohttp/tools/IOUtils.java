@@ -365,21 +365,26 @@ public class IOUtils {
      */
     public static long getDirSize(String path) {
         StatFs stat = new StatFs(path);
-        Class<?> statFsClass = stat.getClass();
         if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN_MR2)
-            return getStatFsSize(stat, statFsClass, "getBlockSizeLong", "getAvailableBlocksLong");
+            return getStatFsSize(stat, "getBlockSizeLong", "getAvailableBlocksLong");
         else
-            return getStatFsSize(stat, statFsClass, "getBlockSize", "getAvailableBlocks");
+            return getStatFsSize(stat, "getBlockSize", "getAvailableBlocks");
     }
 
-    private static long getStatFsSize(StatFs statFs, Class<?> statFsClass, String blockSizeMethod, String availableBlocksMethod) {
+    private static long getStatFsSize(StatFs statFs, String blockSizeMethod, String availableBlocksMethod) {
         try {
-            Method getBlockSizeMethod = statFsClass.getMethod(blockSizeMethod);
+            Method getBlockSizeMethod = statFs.getClass().getMethod(blockSizeMethod);
             getBlockSizeMethod.setAccessible(true);
-            long blockSize = (Long) getBlockSizeMethod.invoke(statFs);
-            Method getAvailableBlocksMethod = statFsClass.getMethod(availableBlocksMethod);
+            Method getAvailableBlocksMethod = statFs.getClass().getMethod(availableBlocksMethod);
             getAvailableBlocksMethod.setAccessible(true);
-            long availableBlocks = (Long) getAvailableBlocksMethod.invoke(statFs);
+            long blockSize, availableBlocks;
+            if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN_MR2) {
+                blockSize = (Long) getBlockSizeMethod.invoke(statFs);
+                availableBlocks = (Long) getAvailableBlocksMethod.invoke(statFs);
+            } else {
+                blockSize = (Integer) getBlockSizeMethod.invoke(statFs);
+                availableBlocks = (Integer) getAvailableBlocksMethod.invoke(statFs);
+            }
             return blockSize * availableBlocks;
         } catch (Throwable e) {
         }
