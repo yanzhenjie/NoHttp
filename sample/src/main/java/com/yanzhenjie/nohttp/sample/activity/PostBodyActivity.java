@@ -16,7 +16,6 @@
 package com.yanzhenjie.nohttp.sample.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -25,6 +24,7 @@ import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
+import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
@@ -100,7 +100,7 @@ public class PostBodyActivity extends BaseActivity implements View.OnClickListen
         // 这里我们用json多例子
         String jsonBody = mEdtPostBody.getText().toString();
         if (TextUtils.isEmpty(jsonBody)) {
-            Snackbar.make(mEdtPostBody, R.string.request_json_body_input_tip, Snackbar.LENGTH_LONG).show();
+            Snackbar.show(this, R.string.request_json_body_input_tip);
         } else {
             Logger.i("提交的数据：" + jsonBody);
             request.setDefineRequestBodyForJson(jsonBody);

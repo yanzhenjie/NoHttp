@@ -28,6 +28,9 @@ import android.view.ViewGroup;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.dialog.ImageDialog;
 import com.yanzhenjie.nohttp.sample.dialog.WebDialog;
+import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
+import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
+import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.Response;
 import com.yolanda.nohttp.rest.StringRequest;
 import com.yolanda.nohttp.tools.HeaderParser;
@@ -201,5 +204,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         String contentType = response.getHeaders().getContentType();
         webDialog.loadUrl(result, contentType, HeaderParser.parseHeadValue(contentType, "charset", "utf-8"));
         webDialog.show();
+    }
+
+    public <T> void request(int what, Request<T> request, HttpListener<T> callback, boolean canCancel, boolean isLoading) {
+        request.setmCancelSign(this);
+        CallServer.getRequestInstance().add(this, what, request, callback, canCancel, isLoading);
+    }
+
+    @Override
+    protected void onDestroy() {
+        CallServer.getRequestInstance().cancelBySign(this);
+        super.onDestroy();
     }
 }

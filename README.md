@@ -7,6 +7,7 @@
 技术交流2群：46505645  
 [群行为规范][2]  
 
+严振杰的主页：[http://www.yanzhenjie.com][12]
 严振杰的博客：[http://blog.csdn.net/yanzhenjie1003][3]  
 严振杰的Android直播视频下载：[http://pan.baidu.com/s/1miEOtwG][4]  
 
@@ -19,12 +20,12 @@ NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]
 
 #使用方法
 * Eclipse使用Jar包，如果需要依赖源码，请自行下载。
-> [下载Jar包 [含源码，274k]][11]
-> [下载Jar包 [不含源码，147k]][8]
+> [下载Jar包 [含源码，274k]][11]  
+> [下载Jar包 [不含源码，147k]][8]  
 
 * AndroidStudio使用Gradle构建添加依赖（推荐）
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.2'
+compile 'com.yolanda.nohttp:nohttp:1.0.3'
 ```
 
 #下载Demo
@@ -34,7 +35,6 @@ compile 'com.yolanda.nohttp:nohttp:1.0.2'
 ```xml
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -391,7 +391,8 @@ limitations under the License.
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.2.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.3.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
 [10]: http://www.nohttp.net/image/nohttp_logo.svg
-[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.2-include-source.jar?raw=true
+[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.3-include-source.jar?raw=true
+[12]: http://www.yanzhenjie.com

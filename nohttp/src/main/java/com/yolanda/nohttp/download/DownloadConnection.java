@@ -30,6 +30,7 @@ import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
+import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
 import com.yolanda.nohttp.tools.NetUtil;
 
@@ -39,6 +40,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 
 /**
@@ -64,9 +66,14 @@ public class DownloadConnection extends BasicConnection implements Downloader {
 
         RandomAccessFile randomAccessFile = null;
         String savePathDir = downloadRequest.getFileDir();
+        String fileName = downloadRequest.getFileName();
         try {
             if (TextUtils.isEmpty(savePathDir))
                 throw new ArgumentError("Error saving the location of the target file, please check whether fileFolder parameter is empty.");
+
+            File file = new File(savePathDir);
+            if (file.exists() && file.isFile())
+                IOUtils.delFileOrFolder(file);
 
             if (!IOUtils.createFolder(savePathDir))
                 throw new StorageReadWriteError("Failed to create the folder " + savePathDir + ", please check storage devices.");
@@ -74,20 +81,30 @@ public class DownloadConnection extends BasicConnection implements Downloader {
             if (!NetUtil.isNetworkAvailable())
                 throw new NetworkError("Network is not available.");
 
-            File tempFile = new File(savePathDir, downloadRequest.getFileName() + ".nohttp");
-            // 根据临时文件处理断点头
-            long rangeSize = 0L;// 断点开始处
+            if (TextUtils.isEmpty(fileName))// aotu named.
+                fileName = Long.toString(System.currentTimeMillis());
+
+            File tempFile = new File(savePathDir, fileName + ".nohttp");
+            // 根据临时文件处理断点头。
+            long rangeSize = 0L;// 断点开始处。
             if (tempFile.exists()) {
+                if (tempFile.isDirectory())
+                    try {
+                        IOUtils.createNewFile(tempFile);
+                    } catch (Throwable e) {
+                        throw new StorageReadWriteError("Failed to create the file, please check storage devices.");
+                    }
+
                 if (downloadRequest.isRange()) {
                     rangeSize = tempFile.length();
-                    // 例如：从1024开始下载：Range:bytes=1024-
+                    // 例如：从1024开始下载：Range:bytes=1024-。
                     downloadRequest.setHeader("Range", "bytes=" + rangeSize + "-");
                 } else {
                     tempFile.delete();
                 }
             }
 
-            // 连接服务器
+            // 连接服务器。
             connection = getConnection(downloadRequest);
             Exception exception = connection.exception();
             if (exception != null)
@@ -96,6 +113,33 @@ public class DownloadConnection extends BasicConnection implements Downloader {
             Logger.i("----------Response Start----------");
             Headers responseHeaders = connection.responseHeaders();
             int responseCode = responseHeaders.getResponseCode();
+
+            // get filename from server.
+            if (downloadRequest.autoNameByHead()) {
+                String contentDisposition = responseHeaders.getContentDisposition();
+                if (!TextUtils.isEmpty(contentDisposition)) {
+                    fileName = HeaderUtil.parseHeadValue(contentDisposition, "filename", null);
+                    if (!TextUtils.isEmpty(fileName)) {
+                        fileName = URLDecoder.decode(fileName, downloadRequest.getParamsEncoding());
+                        if (fileName.startsWith("\"") && fileName.endsWith("\"")) {
+                            fileName = fileName.substring(1, fileName.length() - 1);
+                        }
+                    }
+                }
+
+                if (TextUtils.isEmpty(fileName)) {
+                    // handle redirect url.
+                    String tempUrl = connection.getURL().toString();
+                    if (TextUtils.isEmpty(tempUrl))
+                        tempUrl = downloadRequest.url();
+                    String[] slashs = tempUrl.split("/");
+                    fileName = slashs[slashs.length - 1];
+                    int paramIndex = fileName.indexOf("?");
+                    if (paramIndex > 0) {
+                        fileName = fileName.substring(0, paramIndex);
+                    }
+                }
+            }
 
             InputStream serverStream = connection.serverStream();
             if (responseCode >= 400) {
@@ -106,42 +150,41 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                 long contentLength = 0;
                 // 文件总大小
                 if (responseCode == 206) {
-                    // Content-Range: bytes [文件块的开始字节]-[文件的总大小 - 1]/[文件的总大小]
-                    String range = responseHeaders.getValue(Headers.HEAD_KEY_CONTENT_RANGE, 0);// 事例：Content-Range:bytes 1024-2047/2048
+                    // Content-Range: bytes [文件块的开始字节]-[文件的总大小 - 1]/[文件的总大小]。
+                    String range = responseHeaders.getContentRange(); // 事例：Accept-Range:bytes 1024-2047/2048。
                     try {
-                        contentLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小
-                    } catch (Exception e) {
+                        contentLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小。
+                    } catch (Throwable e) {
                         throw new ServerError("ResponseCode is 206, but content-Range error in Server HTTP header information: " + range + ".");
                     }
                 } else if (responseCode == 200) {
-                    contentLength = responseHeaders.getContentLength();// 直接下载
-                    rangeSize = 0L; // 没有contentLength时断点移动到头部
+                    contentLength = responseHeaders.getContentLength();// 直接下载。
+                    rangeSize = 0L; // 没有contentLength时断点移动到头部。
                 } else if (responseCode == 304) {
                     int httpContentLength = responseHeaders.getContentLength();
                     downloadListener.onStart(what, true, httpContentLength, responseHeaders, httpContentLength);
                     downloadListener.onProgress(what, 100, httpContentLength);
                     Logger.d("-------Download finish-------");
-                    downloadListener.onFinish(what, savePathDir + File.separator + downloadRequest.getFileName());
+                    downloadListener.onFinish(what, savePathDir + File.separator + fileName);
                     return;
                 }
 
-                // 验证文件已经存在
-                File lastFile = new File(savePathDir, downloadRequest.getFileName());
+                // 验证文件已经存在。
+                File lastFile = new File(savePathDir, fileName);
                 if (lastFile.exists()) {
                     if (downloadRequest.isDeleteOld())
                         lastFile.delete();
-                    else if ((responseCode == 200 || responseCode == 206) && (lastFile.length() == contentLength || contentLength == 0)) {
+                    else {
                         downloadListener.onStart(what, true, lastFile.length(), responseHeaders, lastFile.length());
                         downloadListener.onProgress(what, 100, lastFile.length());
                         Logger.d("-------Download finish-------");
                         downloadListener.onFinish(what, lastFile.getAbsolutePath());
                         return;
-                    } else
-                        lastFile.delete();
+                    }
                 }
 
-                // 需要重新下载，生成临时文件
-                if (responseCode == 200 && !IOUtils.createNewFile(tempFile))
+                // 需要重新下载，生成临时文件。
+                if ((responseCode == 200 || responseCode >= 400) && !IOUtils.createNewFile(tempFile))
                     throw new StorageReadWriteError("Failed to create the file, please check storage devices.");
 
                 if (IOUtils.getDirSize(savePathDir) < contentLength)
@@ -153,18 +196,18 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                     return;
                 }
 
-                // 通知开始下载了
+                // 通知开始下载了。
                 Logger.d("-------Download start-------");
                 downloadListener.onStart(what, rangeSize > 0, rangeSize, responseHeaders, contentLength);
 
-                randomAccessFile = new RandomAccessFile(tempFile, "rw");
+                randomAccessFile = new RandomAccessFile(tempFile, "rws");
                 randomAccessFile.seek(rangeSize);
 
                 byte[] buffer = new byte[4096];
                 int len;
 
-                int oldProgress = 0;// 旧的进度记录，防止重复通知
-                long count = rangeSize;// 追加目前已经下载的进度
+                int oldProgress = 0;// 旧的进度记录，防止重复通知。
+                long count = rangeSize;// 追加目前已经下载的进度。
 
                 while (((len = serverStream.read(buffer)) != -1)) {
                     if (downloadRequest.isCanceled()) {
@@ -178,7 +221,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                             int progress = (int) (count * 100 / contentLength);
                             if ((0 == progress % 2 || 0 == progress % 3 || 0 == progress % 5 || 0 == progress % 7) && oldProgress != progress) {
                                 oldProgress = progress;
-                                downloadListener.onProgress(what, oldProgress, count);// 进度通知
+                                downloadListener.onProgress(what, oldProgress, count);// 进度通知。
                             }
                         }
                     }
@@ -199,13 +242,14 @@ public class DownloadConnection extends BasicConnection implements Downloader {
             Logger.e(e);
             downloadListener.onDownloadError(what, new TimeoutError(e.getMessage()));
         } catch (IOException e) {
+            Exception newException = e;
             if (!IOUtils.canWrite(savePathDir))
-                downloadListener.onDownloadError(what, new StorageReadWriteError("This folder cannot be written to the file: " + savePathDir + "."));
+                newException = new StorageReadWriteError("This folder cannot be written to the file: " + savePathDir + ".");
             else if (IOUtils.getDirSize(savePathDir) < 1024)
-                downloadListener.onDownloadError(what, new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir + "."));
-            else
-                downloadListener.onDownloadError(what, e);
-        } catch (Exception e) {// NetworkError | ClientError | ServerError | StorageCantWriteError | StorageSpaceNotEnoughError
+                newException = new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir + ".");
+            Logger.e(newException);
+            downloadListener.onDownloadError(what, newException);
+        } catch (Exception e) {// NetworkError | ServerError | StorageCantWriteError | StorageSpaceNotEnoughError
             if (!NetUtil.isNetworkAvailable())
                 e = new NetworkError("The network is not available.");
             Logger.e(e);

@@ -17,7 +17,7 @@ package com.yolanda.nohttp.rest;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
-import com.yolanda.nohttp.tools.HeaderParser;
+import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
 
 /**
@@ -26,6 +26,8 @@ import com.yolanda.nohttp.tools.IOUtils;
  * @author Yan Zhenjie.
  */
 public class StringRequest extends com.yolanda.nohttp.rest.RestRequest<String> {
+
+    public static final String ACCEPT = "text/html,application/xhtml+xml,application/xml";
 
     public StringRequest(String url) {
         this(url, RequestMethod.GET);
@@ -37,7 +39,7 @@ public class StringRequest extends com.yolanda.nohttp.rest.RestRequest<String> {
 
     @Override
     public String getAccept() {
-        return "application/json,application/xml,text/html,application/xhtml+xml";
+        return ACCEPT;
     }
 
     @Override
@@ -48,6 +50,6 @@ public class StringRequest extends com.yolanda.nohttp.rest.RestRequest<String> {
     public static String parseResponseString(String url, Headers responseHeaders, byte[] responseBody) {
         if (responseBody == null)
             return "";
-        return IOUtils.toString(responseBody, HeaderParser.parseHeadValue(responseHeaders.getContentType(), Headers.HEAD_KEY_CONTENT_TYPE, ""));
+        return IOUtils.toString(responseBody, HeaderUtil.parseHeadValue(responseHeaders.getContentType(), Headers.HEAD_KEY_CONTENT_TYPE, ""));
     }
 }

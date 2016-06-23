@@ -21,8 +21,7 @@ import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
 import com.yolanda.nohttp.error.NotFoundCacheError;
-import com.yolanda.nohttp.tools.HeaderParser;
-import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
 
 import java.io.IOException;
@@ -115,7 +114,7 @@ public class HttpRestConnection extends BasicConnection implements ImplRestConne
 
             long lastModified = headers.getLastModified();
             if (lastModified > 0) {
-                request.headers().set(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HttpDateTime.formatMillisToGMT(lastModified));
+                request.headers().set(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HeaderUtil.formatMillisToGMT(lastModified));
             }
         }
     }
@@ -179,19 +178,19 @@ public class HttpRestConnection extends BasicConnection implements ImplRestConne
                     responseHeaders = localCacheEntity.getResponseHeaders();
 
                     // Update localExpires.
-                    localCacheEntity.setLocalExpire(HeaderParser.getLocalExpires(responseHeaders));
+                    localCacheEntity.setLocalExpire(HeaderUtil.getLocalExpires(responseHeaders));
 
                     responseBody = localCacheEntity.getData();
                 }
             } else if (responseBody != null) {// Redirect data need cache ?
                 if (localCacheEntity == null) {
-                    localCacheEntity = HeaderParser.parseCacheHeaders(responseHeaders, responseBody, cacheMode.isStandardHttpProtocol());// Standard protocol not force.
+                    localCacheEntity = HeaderUtil.parseCacheHeaders(responseHeaders, responseBody, cacheMode.isStandardHttpProtocol());// Standard protocol not force.
                     // Maybe null: Http CacheControl: (no-cache || no-store) && !cacheMode.isStandardHttpProtocol().
                 } else {
                     localCacheEntity.getResponseHeaders().setAll(responseHeaders);
 
                     // Update localExpires.
-                    localCacheEntity.setLocalExpire(HeaderParser.getLocalExpires(responseHeaders));
+                    localCacheEntity.setLocalExpire(HeaderUtil.getLocalExpires(responseHeaders));
 
                     localCacheEntity.setData(responseBody);
                 }

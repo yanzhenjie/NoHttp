@@ -24,7 +24,9 @@ import com.yolanda.nohttp.tools.MultiValueMap;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.InputStream;
+import java.net.HttpCookie;
 import java.net.Proxy;
 import java.util.List;
 import java.util.Map;
@@ -40,21 +42,7 @@ import javax.net.ssl.SSLSocketFactory;
  *
  * @author Yan Zhenjie.
  */
-public interface BasicClientRequest extends Queueable, Startable, Cancelable, SignCancelable, Finishable {
-
-    /**
-     * Set the priority of the request object. The default priority is {@link Priority#DEFAULT}.
-     *
-     * @param priority {@link Priority}.
-     */
-    void setPriority(Priority priority);
-
-    /**
-     * Set the sequence in the queue, under the condition of two requests as priority, {@code left.sequence-right.sequence} decision to order.
-     *
-     * @param sequence sequence code.
-     */
-    void setSequence(int sequence);
+public interface BasicClientRequest extends IPriority, Queueable, Startable, Cancelable, SignCancelable, Finishable, Comparable<BasicClientRequest> {
 
     /**
      * Set proxy server.
@@ -92,13 +80,6 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void setReadTimeout(int readTimeout);
 
     /**
-     * Set the contentType.
-     *
-     * @param contentType such as: "{@value NoHttp#APPLICATION_JSON}", "{@value NoHttp#APPLICATION_XML}" or "{@value NoHttp#MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
-     */
-    void setContentType(String contentType);
-
-    /**
      * Add a new key-value header.
      *
      * @param key   key.
@@ -107,12 +88,40 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void addHeader(String key, String value);
 
     /**
+     * <p>Add a {@link HttpCookie}.</p>
+     * Just like the:
+     * <pre>
+     *     HttpCookie httpCookie = getHttpCookie();
+     *     if(httpCookie != null)
+     *          request.addHeader("Cookie", cookie.getName() + "=" + cookie.getValue());
+     *     ...
+     * </pre>
+     *
+     * @param cookie {@link HttpCookie}.
+     */
+    void addHeader(HttpCookie cookie);
+
+    /**
      * If there is a key to delete, and then add a new key-value header.
      *
      * @param key   key.
      * @param value value.
      */
     void setHeader(String key, String value);
+
+    /**
+     * <p>Add a {@link HttpCookie}.</p>
+     * Just like the:
+     * <pre>
+     *     HttpCookie httpCookie = getHttpCookie();
+     *     if(httpCookie != null)
+     *          request.setHeader("Cookie", cookie.getName() + "=" + cookie.getValue());
+     *     ...
+     * </pre>
+     *
+     * @param cookie {@link HttpCookie}.
+     */
+    void setHeader(HttpCookie cookie);
 
     /**
      * Remove the key from the information.
@@ -127,23 +136,42 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void removeAllHeader();
 
     /**
-     * Add {@link String} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Set the accept for head.
      *
-     * @param key   param name.
-     * @param value param value.
+     * @param accept such as: "{@value Headers#APPLICATION_JSON}", "{@value Headers#APPLICATION_XML}.
      */
-    void add(String key, String value);
+    void setAccept(String accept);
 
     /**
-     * Add {@link String} param. If the key/value pair does not exist, key/value pair is added, if not, key/value pair will be replaced.
+     * Set the acceptLanguage for head.
      *
-     * @param key   param name.
-     * @param value param value.
+     * @param acceptLanguage such as "zh-CN,zh", "en-US,us".
      */
-    void set(String key, String value);
+    void setAcceptLanguage(String acceptLanguage);
 
     /**
-     * Add {@link Integer} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Set the contentType for head.
+     *
+     * @param contentType such as: "{@value Headers#APPLICATION_JSON}", "{@value Headers#APPLICATION_XML}" or "{@value Headers#MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
+     */
+    void setContentType(String contentType);
+
+    /**
+     * Set the userAgent for head.
+     *
+     * @param userAgent such as: {@code Mozilla/5.0 (Android U; Android 5.0) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 Safari/533.1}.
+     */
+    void setUserAgent(String userAgent);
+
+    /**
+     * Set the params encoding.
+     *
+     * @param encoding such as {@code utf-8, gbk, gb2312}.
+     */
+    void setParamsEncoding(String encoding);
+
+    /**
+     * Add {@link Integer} param.
      *
      * @param key   param name.
      * @param value param value.
@@ -151,7 +179,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, int value);
 
     /**
-     * Add {@link Long} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@link Long} param.
      *
      * @param key   param name.
      * @param value param value.
@@ -159,7 +187,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, long value);
 
     /**
-     * Add {@link Boolean} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@link Boolean} param.
      *
      * @param key   param name.
      * @param value param value.
@@ -167,7 +195,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, boolean value);
 
     /**
-     * Add {@code char} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@code char} param.
      *
      * @param key   param name.
      * @param value param value.
@@ -175,7 +203,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, char value);
 
     /**
-     * Add {@link Double} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@link Double} param.
      *
      * @param key   param name.
      * @param value param value.
@@ -183,7 +211,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, double value);
 
     /**
-     * Add {@link Float} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@link Float} param.
      *
      * @param key   param name.
      * @param value param value.
@@ -191,7 +219,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, float value);
 
     /**
-     * Add {@link Short} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@link Short} param.
      *
      * @param key   param name.
      * @param value param value.
@@ -199,7 +227,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, short value);
 
     /**
-     * Add {@link Byte} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@link Byte} param.
      *
      * @param key   param name.
      * @param value param value, for example, the result is {@code 1} of {@code 0x01}.
@@ -207,26 +235,50 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, byte value);
 
     /**
-     * Add all param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
+     * Add {@link String} param.
+     *
+     * @param key   param name.
+     * @param value param value.
+     */
+    void add(String key, String value);
+
+    /**
+     * Add {@link String} param.
+     *
+     * @param key   param name.
+     * @param value param value.
+     */
+    void set(String key, String value);
+
+    /**
+     * Add {@link Binary} param.
+     *
+     * @param key    param name.
+     * @param binary param value.
+     */
+    void add(String key, Binary binary);
+
+    /**
+     * Add {@link File} param.  Inside {@link FileBinary} to upload will be used.
+     *
+     * @param key  param name.
+     * @param file param value, for example, the result is {@code 1} of {@code 0x01}.
+     */
+    void add(String key, File file);
+
+    /**
+     * Add all param.
      *
      * @param params params {@link Map}.
      */
     void add(Map<String, String> params);
 
     /**
-     * Add all param. If the key/value pair does not exist, key/value pair is added, if not, key/value pair will be replaced.
+     * Add all param.
      *
      * @param params params {@link Map}.
      */
     void set(Map<String, String> params);
-
-    /**
-     * Add {@link Binary} param. If {@link RequestMethod#allowRequestBody()} method returns true, key/value pair is added, if not, key/value pair will be replaced.
-     *
-     * @param key    param name.
-     * @param binary param value.
-     */
-    void add(String key, Binary binary);
 
     /**
      * Add {@link Binary} param;
@@ -237,7 +289,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     void add(String key, List<Binary> binaries);
 
     /**
-     * Set {@link Binary} param. If the key/value pair does not exist, key/value pair is added, if not, key/value pair will be replaced.
+     * Set {@link Binary} param.
      *
      * @param key      param name.
      * @param binaries param value.
@@ -269,7 +321,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
      *
      * @param requestBody There can be a file, pictures, any other data flow.You don't need to close it, NoHttp when complete request will be automatically closed.
-     * @param contentType such as: "{@value NoHttp#APPLICATION_XML}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}", "{@value NoHttp#APPLICATION_JSON}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}" or "{@value NoHttp#MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
+     * @param contentType such as: "{@value Headers#APPLICATION_XML}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}", "{@value Headers#APPLICATION_JSON}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}" or "{@value Headers#MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
      * @see #setDefineRequestBody(String, String)
      * @see #setDefineRequestBodyForJson(JSONObject)
      * @see #setDefineRequestBodyForJson(String)
@@ -283,8 +335,8 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
      *
      * @param requestBody string body.
-     * @param contentType such as: "{@value NoHttp#APPLICATION_JSON}" or "{@value NoHttp#APPLICATION_XML}". Note, does not need to include quotation marks.
-     *                    <p>If ContentType parameter into "" or null, the default for the {@value NoHttp#APPLICATION_JSON}.</p>
+     * @param contentType such as: "{@value Headers#APPLICATION_JSON}" or "{@value Headers#APPLICATION_XML}". Note, does not need to include quotation marks.
+     *                    <p>If ContentType parameter into "" or null, the default for the {@value Headers#APPLICATION_JSON}.</p>
      * @see #setDefineRequestBody(InputStream, String)
      * @see #setDefineRequestBodyForJson(JSONObject)
      * @see #setDefineRequestBodyForJson(String)
@@ -295,7 +347,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     /**
      * Set the request json body.
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
-     * <p>The content type is {@value NoHttp#APPLICATION_JSON}</p>
+     * <p>The content type is {@value Headers#APPLICATION_JSON}</p>
      *
      * @param jsonBody json body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -308,7 +360,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     /**
      * Set the request json body.
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
-     * <p>The content type is {@value NoHttp#APPLICATION_JSON}</p>
+     * <p>The content type is {@value Headers#APPLICATION_JSON}</p>
      *
      * @param jsonBody json body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -321,7 +373,7 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
     /**
      * Set the request XML body.
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
-     * <p>The content type is {@value NoHttp#APPLICATION_XML}</p>
+     * <p>The content type is {@value Headers#APPLICATION_XML}</p>
      *
      * @param xmlBody xml body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -330,20 +382,6 @@ public interface BasicClientRequest extends Queueable, Startable, Cancelable, Si
      * @see #setDefineRequestBodyForJson(String)
      */
     void setDefineRequestBodyForXML(String xmlBody);
-
-    /**
-     * @param body string of request body.
-     * @deprecated use {@link #setDefineRequestBody(String, String)} instead.
-     */
-    @Deprecated
-    void setRequestBody(String body);
-
-    /**
-     * @param body byte array of request body.
-     * @deprecated use {@link #setDefineRequestBody(String, String)} instead.
-     */
-    @Deprecated
-    void setRequestBody(byte[] body);
 
     /**
      * Sets redirect interface.

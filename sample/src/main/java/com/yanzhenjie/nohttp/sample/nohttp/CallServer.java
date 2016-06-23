@@ -58,7 +58,7 @@ public class CallServer {
      */
     public static DownloadQueue getDownloadInstance() {
         if (downloadQueue == null)
-            downloadQueue = NoHttp.newDownloadQueue();
+            downloadQueue = NoHttp.newDownloadQueue(2);
         return downloadQueue;
     }
 

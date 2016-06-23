@@ -15,13 +15,11 @@
  */
 package com.yolanda.nohttp.tools;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.PosterHandler;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,8 +38,8 @@ import java.util.concurrent.Executors;
 public class ImageDownloader {
 
     private static ImageDownloader instance;
-    private Poster mPoster;
     private ExecutorService mExecutorService;
+
     /**
      * Cache path.
      */
@@ -49,7 +47,6 @@ public class ImageDownloader {
 
     private ImageDownloader() {
         setCachePath(NoHttp.getContext().getCacheDir().getAbsolutePath());
-        mPoster = new Poster();
         mExecutorService = Executors.newFixedThreadPool(3);
     }
 
@@ -146,7 +143,7 @@ public class ImageDownloader {
             holder.imagePath = path;
             holder.downListener = downListener;
             holder.tag = tag;
-            mPoster.obtainMessage(0, holder).sendToTarget();
+            PosterHandler.getInstance().post(holder);
         } else
             mExecutorService.execute(new DownImageThread(imageUrl, path, downListener, tag, timeOut));
     }
@@ -199,6 +196,8 @@ public class ImageDownloader {
                         outputStream.write(buffer, 0, len);
                     }
                     holder.isSucceed = true;
+                    IOUtils.flushQuietly(outputStream);
+
                     Logger.d(mImageUrl + " download finished; path: " + mImagePath + ".");
                 } else {
                     Logger.d(mImageUrl + " responseCode: " + responseCode + ".");
@@ -206,35 +205,23 @@ public class ImageDownloader {
             } catch (Exception e) {
                 Logger.w(e);
             } finally {
-                IOUtils.flushQuietly(outputStream);
                 IOUtils.closeQuietly(outputStream);
                 IOUtils.closeQuietly(inputStream);
                 IOUtils.closeQuietly(urlConnection);
             }
-            mPoster.obtainMessage(0, holder).sendToTarget();
+            PosterHandler.getInstance().post(holder);
         }
     }
 
-    private static class Poster extends Handler {
-        Poster() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            ImageHolder holder = (ImageHolder) msg.obj;
-            holder.post();
-        }
-    }
-
-    private class ImageHolder {
+    private class ImageHolder implements Runnable {
         String imageUrl;
         String imagePath;
         OnImageDownListener downListener;
         boolean isSucceed;
         Object tag;
 
-        void post() {
+        @Override
+        public void run() {
             if (downListener != null)
                 downListener.onDownFinish(imageUrl, imagePath, isSucceed, tag);
         }

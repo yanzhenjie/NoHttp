@@ -15,11 +15,11 @@
  */
 package com.yolanda.nohttp.download;
 
-import java.io.File;
-
 import com.yolanda.nohttp.BasicRequest;
 import com.yolanda.nohttp.RedirectHandler;
 import com.yolanda.nohttp.RequestMethod;
+
+import java.io.File;
 
 /**
  * <p>
@@ -48,6 +48,10 @@ public class RestDownloadRequest extends BasicRequest implements DownloadRequest
      */
     private final String mFileName;
     /**
+     * According to the Http header named files automatically.
+     */
+    private final boolean mAutoNameByHead;
+    /**
      * If is to download a file, whether the breakpoint continuing.
      */
     private final boolean isRange;
@@ -56,21 +60,52 @@ public class RestDownloadRequest extends BasicRequest implements DownloadRequest
      */
     private final boolean isDeleteOld;
 
-    public RestDownloadRequest(String url, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
-        this(url, RequestMethod.GET, fileFolder, filename, isRange, isDeleteOld);
+    /**
+     * Create download request.
+     *
+     * @param url           url.
+     * @param requestMethod {@link RequestMethod}.
+     * @param fileFolder    file save folder.
+     * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is complete, not to request the network.
+     * @see #RestDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
+     */
+    public RestDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, boolean isDeleteOld) {
+        this(url, requestMethod, fileFolder, null, true, false, isDeleteOld);
     }
 
+    /**
+     * Create a download object.
+     *
+     * @param url           download address.
+     * @param requestMethod {@link RequestMethod}.
+     * @param fileFolder    folder to save file.
+     * @param filename      filename.
+     * @param isRange       whether the breakpoint continuing.
+     * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is complete, not to request the network.
+     * @see #RestDownloadRequest(String, RequestMethod, String, boolean)
+     */
     public RestDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
+        this(url, requestMethod, fileFolder, filename, false, isRange, isDeleteOld);
+    }
+
+    /**
+     * Create a download object.
+     *
+     * @param url            download address.
+     * @param requestMethod  {@link RequestMethod}.
+     * @param fileFolder     folder to save file.
+     * @param filename       filename.
+     * @param autoNameByHead according to the Http header named files automatically.
+     * @param isRange        whether the breakpoint continuing.
+     * @param isDeleteOld    find the same when the file is deleted after download, or on behalf of the download is complete, not to request the network.
+     */
+    private RestDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean autoNameByHead, boolean isRange, boolean isDeleteOld) {
         super(url, requestMethod);
         this.mFileDir = fileFolder;
         this.mFileName = filename;
+        this.mAutoNameByHead = autoNameByHead;
         this.isRange = isRange;
         this.isDeleteOld = isDeleteOld;
-    }
-
-    @Override
-    public String getAccept() {
-        return "*/*";
     }
 
     @Override
@@ -81,6 +116,11 @@ public class RestDownloadRequest extends BasicRequest implements DownloadRequest
     @Override
     public String getFileName() {
         return this.mFileName;
+    }
+
+    @Override
+    public boolean autoNameByHead() {
+        return mAutoNameByHead;
     }
 
     @Override

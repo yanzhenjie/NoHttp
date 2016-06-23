@@ -30,21 +30,7 @@ import javax.net.ssl.SSLSocketFactory;
  *
  * @author Yan Zhenjie.
  */
-public interface BasicServerRequest extends Comparable<BasicServerRequest> {
-
-    /**
-     * Get the priority of the request object.
-     *
-     * @return {@link Priority}.
-     */
-    Priority getPriority();
-
-    /**
-     * Get the sequence in the queue, under the condition of two requests as priority, {@code left.sequence-right.sequence} decision to order.
-     *
-     * @return sequence code.
-     */
-    int getSequence();
+public interface BasicServerRequest {
 
     /**
      * Return url of request.
@@ -110,13 +96,6 @@ public interface BasicServerRequest extends Comparable<BasicServerRequest> {
     String getAccept();
 
     /**
-     * The client wants to accept data language types.
-     *
-     * @return Such as {@code zh-CN,zh,q=0.8}.
-     */
-    String getAcceptLanguage();
-
-    /**
      * The length of the request body.
      *
      * @return Such as: {@code 94949}.
@@ -124,9 +103,16 @@ public interface BasicServerRequest extends Comparable<BasicServerRequest> {
     long getContentLength();
 
     /**
+     * The client wants to accept data language types.
+     *
+     * @return Such as {@code zh-CN,zh,q=0.8}.
+     */
+    String getAcceptLanguage();
+
+    /**
      * The type of the request body.
      *
-     * @return such as: {@value NoHttp#APPLICATION_JSON}, {@value NoHttp#APPLICATION_XML}, {@value NoHttp#APPLICATION_X_WWW_FORM_URLENCODED}.
+     * @return such as: {@value Headers#APPLICATION_JSON}, {@value Headers#APPLICATION_XML}, {@value Headers#APPLICATION_X_WWW_FORM_URLENCODED}.
      */
     String getContentType();
 
@@ -136,6 +122,13 @@ public interface BasicServerRequest extends Comparable<BasicServerRequest> {
      * @return such as: {@code Mozilla/5.0 (Android U; Android 5.0) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 Safari/533.1}.
      */
     String getUserAgent();
+
+    /**
+     * Get the params encoding.
+     *
+     * @return such as {@code "utf-8, gbk, bg2312"}.
+     */
+    String getParamsEncoding();
 
     /**
      * Call before carry out the request, you can do some preparation work.

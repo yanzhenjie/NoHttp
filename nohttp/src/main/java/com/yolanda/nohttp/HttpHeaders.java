@@ -15,27 +15,28 @@
  */
 package com.yolanda.nohttp;
 
+import android.text.TextUtils;
+
+import com.yolanda.nohttp.tools.HeaderUtil;
+import com.yolanda.nohttp.tools.TreeMultiValueMap;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.yolanda.nohttp.tools.HttpDateTime;
-import com.yolanda.nohttp.tools.LinkedMultiValueMap;
-
-import android.text.TextUtils;
 
 /**
  * <p>
@@ -45,9 +46,15 @@ import android.text.TextUtils;
  *
  * @author Yan Zhenjie.
  */
-public class HttpHeaders extends LinkedMultiValueMap<String, String> implements Headers {
+public class HttpHeaders extends TreeMultiValueMap<String, String> implements Headers {
 
     public HttpHeaders() {
+        super(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
     }
 
     @Override
@@ -88,7 +95,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
 
     @Override
     public void setJSONString(String jsonString) throws JSONException {
-        mSource.clear();
+        clear();
         JSONObject jsonObject = new JSONObject(jsonString);
         Iterator<String> keySet = jsonObject.keys();
         while (keySet.hasNext()) {
@@ -104,7 +111,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
     @Override
     public final String toJSONString() {
         JSONObject jsonObject = new JSONObject();
-        Set<Map.Entry<String, List<String>>> entrySet = mSource.entrySet();
+        Set<Map.Entry<String, List<String>>> entrySet = entrySet();
         for (Map.Entry<String, List<String>> entry : entrySet) {
             String key = entry.getKey();
             List<String> values = entry.getValue();
@@ -122,7 +129,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
     @Override
     public Map<String, String> toRequestHeaders() {
         Map<String, String> singleMap = new LinkedHashMap<String, String>();
-        for (Map.Entry<String, List<String>> entry : mSource.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : entrySet()) {
             String key = entry.getKey();
             List<String> value = entry.getValue();
             String trueValue = TextUtils.join("; ", value);
@@ -133,7 +140,7 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
 
     @Override
     public Map<String, List<String>> toResponseHeaders() {
-        return mSource;
+        return getSource();
     }
 
     @Override
@@ -163,6 +170,11 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
     }
 
     @Override
+    public String getContentDisposition() {
+        return getValue(HEAD_KEY_CONTENT_DISPOSITION, 0);
+    }
+
+    @Override
     public String getContentEncoding() {
         return getValue(HEAD_KEY_CONTENT_ENCODING, 0);
     }
@@ -172,9 +184,17 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
         String contentLength = getValue(HEAD_KEY_CONTENT_LENGTH, 0);
         try {
             return Integer.parseInt(contentLength);
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
         return 0;
+    }
+
+    @Override
+    public String getContentRange() {
+        String contentRange = getValue(HEAD_KEY_CONTENT_RANGE, 0);
+        if (contentRange == null)
+            contentRange = getValue(HEAD_KEY_ACCEPT_RANGE, 0);
+        return contentRange;
     }
 
     @Override
@@ -234,9 +254,9 @@ public class HttpHeaders extends LinkedMultiValueMap<String, String> implements 
      */
     private long getDateField(String key) {
         String value = getValue(key, 0);
-        if (value != null)
+        if (!TextUtils.isEmpty(value))
             try {
-                return HttpDateTime.parseGMTToMillis(value);
+                return HeaderUtil.parseGMTToMillis(value);
             } catch (ParseException e) {
                 Logger.w(e);
             }

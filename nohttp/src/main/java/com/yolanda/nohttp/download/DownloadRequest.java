@@ -56,6 +56,13 @@ public interface DownloadRequest extends BasicClientRequest, BasicServerRequest 
     String getFileName();
 
     /**
+     * According to the Http header named files automatically.
+     *
+     * @return true need, false not need.
+     */
+    boolean autoNameByHead();
+
+    /**
      * Return the isRange.
      *
      * @return true: breakpoint continuing, false: don't need a breakpoint continuing.

@@ -16,7 +16,6 @@
 package com.yanzhenjie.nohttp.sample.activity.download;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +27,7 @@ import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.Toast;
+import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
@@ -42,8 +41,8 @@ import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
+import com.yolanda.nohttp.tools.IOUtils;
 
-import java.io.File;
 import java.util.Locale;
 
 /**
@@ -98,12 +97,24 @@ public class DownloadSignleFileActivity extends BaseActivity implements View.OnC
             // 暂停下载。
             mDownloadRequest.cancel();
         } else if (mDownloadRequest == null || mDownloadRequest.isFinished()) {// 没有开始或者下载完成了，就重新下载。
+
+            /**
+             * 这里不传文件名称、不断点续传，则会从响应头中读取文件名自动命名，如果响应头中没有则会从url中截取。
+             */
+            // url 下载地址。
+            // fileFolder 文件保存的文件夹。
+            // isDeleteOld 发现文件已经存在是否要删除重新下载。
+//            mDownloadRequest = NoHttp.createDownloadRequest(Constants.URL_DOWNLOADS[0], AppConfig.getInstance().APP_PATH_ROOT, true);
+
+            /**
+             * 如果使用断点续传的话，一定要指定文件名喔。
+             */
             // url 下载地址。
             // fileFolder 保存的文件夹。
             // fileName 文件名。
             // isRange 是否断点续传下载。
             // isDeleteOld 如果发现存在同名文件，是否删除后重新下载，如果不删除，则直接下载成功。
-            mDownloadRequest = NoHttp.createDownloadRequest(Constants.URL_DOWNLOADS[0], AppConfig.getInstance().APP_PATH_ROOT, "nohttp.apk", true, false);
+            mDownloadRequest = NoHttp.createDownloadRequest(Constants.URL_DOWNLOADS[0], AppConfig.getInstance().APP_PATH_ROOT, "nohttp.apk", true, true);
 
             // what 区分下载。
             // downloadRequest 下载请求对象。
@@ -135,6 +146,7 @@ public class DownloadSignleFileActivity extends BaseActivity implements View.OnC
 
         @Override
         public void onDownloadError(int what, Exception exception) {
+            Logger.e(exception);
             mBtnStart.setText(R.string.download_status_again_download);
             mBtnStart.setEnabled(true);
 
@@ -172,9 +184,8 @@ public class DownloadSignleFileActivity extends BaseActivity implements View.OnC
 
         @Override
         public void onFinish(int what, String filePath) {
-            Logger.d("Download finish");
-            showSnackBar(getText(R.string.download_status_finish));// 提示下载完成
-            Logger.i("文件路径：" + filePath);
+            Logger.d("Download finish, file path: " + filePath);
+            Snackbar.show(DownloadSignleFileActivity.this, getText(R.string.download_status_finish));// 提示下载完成
             mTvResult.setText(R.string.download_status_finish);
 
             mBtnStart.setText(R.string.download_status_re_download);
@@ -213,26 +224,10 @@ public class DownloadSignleFileActivity extends BaseActivity implements View.OnC
     @Override
     protected boolean onOptionsItemSelectedCompat(MenuItem item) {
         if (item.getItemId() == R.id.menu_download_file_delete) {
-            File file = new File(AppConfig.getInstance().APP_PATH_ROOT, "nohttp.apk");
-            if(file.exists())
-                file.delete();
-            Toast.show(this, R.string.delete_succeed);
+            IOUtils.delFileOrFolder(AppConfig.getInstance().APP_PATH_ROOT + "/nohttp.apk");
+            Snackbar.show(this, R.string.delete_succeed);
         }
         return true;
     }
 
-    //////////// Download finish tip //////////////
-
-    private Snackbar snackbar;
-
-    private void showSnackBar(CharSequence message) {
-        if (snackbar == null) {
-            snackbar = Snackbar.make(mBtnStart, message, Snackbar.LENGTH_SHORT);
-        } else {
-            snackbar.setText(message);
-        }
-        if (!snackbar.isShown()) {
-            snackbar.show();
-        }
-    }
 }

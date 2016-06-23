@@ -128,7 +128,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
         if (TextUtils.isEmpty(mimeType) && !TextUtils.isEmpty(fileName))
             mimeType = URLConnection.guessContentTypeFromName(getFileName());
         if (TextUtils.isEmpty(mimeType))
-            mimeType = NoHttp.APPLICATION_OCTET_STREAM;
+            mimeType = Headers.APPLICATION_OCTET_STREAM;
         return mimeType;
     }
 

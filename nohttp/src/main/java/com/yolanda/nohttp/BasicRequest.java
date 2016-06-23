@@ -15,9 +15,12 @@
  */
 package com.yolanda.nohttp;
 
+import android.os.Build;
 import android.text.TextUtils;
 
+import com.yolanda.nohttp.tools.AndroidVersion;
 import com.yolanda.nohttp.tools.CounterOutputStream;
+import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
 import com.yolanda.nohttp.tools.LinkedMultiValueMap;
 import com.yolanda.nohttp.tools.MultiValueMap;
@@ -25,15 +28,16 @@ import com.yolanda.nohttp.tools.MultiValueMap;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.Proxy;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -43,14 +47,12 @@ import javax.net.ssl.SSLSocketFactory;
 
 /**
  * <p>
- * Implement all the methods of the base class {@link ImplServerRequest} and {@link ImplClientRequest}.
+ * Implement all the methods of the base class {@link BasicClientRequest} and {@link BasicServerRequest}.
  * </p>
  * Created in Nov 4, 2015 8:28:50 AM.
  *
  * @author Yan Zhenjie.
  */
-;
-
 public abstract class BasicRequest implements BasicClientRequest, BasicServerRequest {
 
     private final String boundary = createBoundary();
@@ -92,19 +94,19 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     /**
      * Connect timeout of request.
      */
-    private int mConnectTimeout = NoHttp.TIMEOUT_8S;
+    private int mConnectTimeout = NoHttp.getDefaultConnectTimeout();
     /**
      * Read data timeout.
      */
-    private int mReadTimeout = NoHttp.TIMEOUT_8S;
-    /**
-     * ContentType
-     */
-    private String mContentType;
+    private int mReadTimeout = NoHttp.getDefaultReadTimeout();
     /**
      * Request heads.
      */
     private Headers mHeaders;
+    /**
+     * The params encoding.
+     */
+    private String mParamEncoding;
     /**
      * Param collection.
      */
@@ -136,7 +138,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     /**
      * Cancel sign.
      */
-    private Object cancelSign;
+    private Object mCancelSign;
     /**
      * Tag of request.
      */
@@ -154,13 +156,21 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     /**
      * Create a request.
      *
-     * @param url           request adress, like: http://www.google.com.
+     * @param url           request adress, like: http://www.yanzhenjie.com.
      * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public BasicRequest(String url, RequestMethod requestMethod) {
         this.url = url;
         mRequestMethod = requestMethod;
+
         mHeaders = new HttpHeaders();
+        mHeaders.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_ALL);
+        mHeaders.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
+        mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, HeaderUtil.systemAcceptLanguage());
+        // To fix bug: accidental EOFException before API 19
+        mHeaders.set(Headers.HEAD_KEY_CONNECTION, Build.VERSION.SDK_INT > AndroidVersion.KITKAT ? Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE : Headers.HEAD_VALUE_CONNECTION_CLOSE);
+        mHeaders.set(Headers.HEAD_KEY_USER_AGENT, UserAgent.instance());
+
         mParamKeyValues = new LinkedMultiValueMap<String, Object>();
     }
 
@@ -185,7 +195,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
-    public final int compareTo(BasicServerRequest another) {
+    public final int compareTo(BasicClientRequest another) {
         final Priority me = getPriority();
         final Priority it = another.getPriority();
         return me == it ? getSequence() - another.getSequence() : it.ordinal() - me.ordinal();
@@ -199,7 +209,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
                 StringBuffer paramBuffer = buildCommonParams(getParamKeyValues(), getParamsEncoding());
                 if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
                     urlBuilder.append("&");
-                else if (paramBuffer.length() > 0)
+                else if (paramBuffer.length() > 0 && !url.endsWith("?")) // end with '?', not append '?'.
                     urlBuilder.append("?");
                 urlBuilder.append(paramBuffer);
             }
@@ -264,18 +274,25 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
-    public void setContentType(String contentType) {
-        this.mContentType = contentType;
-    }
-
-    @Override
     public void addHeader(String key, String value) {
         mHeaders.add(key, value);
     }
 
     @Override
+    public void addHeader(HttpCookie cookie) {
+        if (cookie != null)
+            mHeaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
+    }
+
+    @Override
     public void setHeader(String key, String value) {
         mHeaders.set(key, value);
+    }
+
+    @Override
+    public void setHeader(HttpCookie cookie) {
+        if (cookie != null)
+            mHeaders.set(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
     }
 
     @Override
@@ -294,8 +311,23 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
+    public void setAccept(String accept) {
+        mHeaders.set(Headers.HEAD_KEY_ACCEPT, accept);
+    }
+
+    @Override
+    public String getAccept() {
+        return mHeaders.getValue(Headers.HEAD_KEY_ACCEPT, 0);
+    }
+
+    @Override
+    public void setAcceptLanguage(String acceptLanguage) {
+        mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
+    }
+
+    @Override
     public String getAcceptLanguage() {
-        return defaultAcceptLanguage();
+        return mHeaders.getValue(Headers.HEAD_KEY_ACCEPT_LANGUAGE, 0);
     }
 
     @Override
@@ -310,36 +342,44 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
+    public void setContentType(String contentType) {
+        mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
+    }
+
+    @Override
     public String getContentType() {
+        String contentType = mHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0);
+
         StringBuilder contentTypeBuild = new StringBuilder();
         if (getRequestMethod().allowRequestBody() && hasBinary())
-            contentTypeBuild.append(NoHttp.MULTIPART_FORM_DATA).append("; boundary=").append(boundary);
-        else if (TextUtils.isEmpty(mContentType))
-            contentTypeBuild.append(NoHttp.APPLICATION_X_WWW_FORM_URLENCODED).append("; charset=").append(getParamsEncoding());
+            contentTypeBuild.append(Headers.MULTIPART_FORM_DATA).append("; boundary=").append(boundary);
+        else if (TextUtils.isEmpty(contentType))
+            contentTypeBuild.append(Headers.APPLICATION_X_WWW_FORM_URLENCODED).append("; charset=").append(getParamsEncoding());
         else
-            contentTypeBuild.append(mContentType);
+            contentTypeBuild.append(contentType);
         return contentTypeBuild.toString();
     }
 
     @Override
+    public void setUserAgent(String userAgent) {
+        mHeaders.set(Headers.HEAD_KEY_USER_AGENT, userAgent);
+    }
+
+    @Override
     public String getUserAgent() {
-        return UserAgent.instance();
+        return mHeaders.getValue(Headers.HEAD_KEY_USER_AGENT, 0);
     }
 
     @Override
-    public void add(String key, String value) {
-        if (value != null) {
-            if (getRequestMethod().allowRequestBody())
-                mParamKeyValues.add(key, value);
-            else
-                mParamKeyValues.set(key, value);
-        }
+    public void setParamsEncoding(String encoding) {
+        this.mParamEncoding = encoding;
     }
 
     @Override
-    public void set(String key, String value) {
-        if (value != null)
-            mParamKeyValues.set(key, value);
+    public String getParamsEncoding() {
+        if (TextUtils.isEmpty(mParamEncoding))
+            mParamEncoding = NoHttp.CHARSET_UTF8;
+        return mParamEncoding;
     }
 
     @Override
@@ -383,8 +423,20 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
+    public void add(String key, String value) {
+        if (value != null) {
+            mParamKeyValues.set(key, value);
+        }
+    }
+
+    @Override
     public void add(String key, Binary binary) {
         mParamKeyValues.add(key, binary);
+    }
+
+    @Override
+    public void add(String key, File file) {
+        add(key, new FileBinary(file));
     }
 
     @Override
@@ -394,6 +446,12 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
                 mParamKeyValues.add(key, binary);
         else
             Logger.e("The binaries is null.");
+    }
+
+    @Override
+    public void set(String key, String value) {
+        if (value != null)
+            mParamKeyValues.set(key, value);
     }
 
     @Override
@@ -443,7 +501,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
             throw new IllegalArgumentException("The requestBody and contentType must be can't be null");
         if (requestBody instanceof ByteArrayInputStream || requestBody instanceof FileInputStream) {
             this.mRequestBody = requestBody;
-            this.mContentType = contentType;
+            mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
         } else {
             throw new IllegalArgumentException("Can only accept ByteArrayInputStream and FileInputStream type of stream");
         }
@@ -455,7 +513,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
             try {
                 mRequestBody = IOUtils.toInputStream(requestBody, getParamsEncoding());
                 if (!TextUtils.isEmpty(contentType))
-                    mContentType = contentType + "; charset=" + getParamsEncoding();
+                    mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType + "; charset=" + getParamsEncoding());
             } catch (UnsupportedEncodingException e) {
                 setDefineRequestBody(IOUtils.toInputStream(requestBody), contentType);
             }
@@ -465,45 +523,19 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     @Override
     public void setDefineRequestBodyForJson(String jsonBody) {
         if (!TextUtils.isEmpty(jsonBody))
-            setDefineRequestBody(jsonBody, NoHttp.APPLICATION_JSON);
+            setDefineRequestBody(jsonBody, Headers.APPLICATION_JSON);
     }
 
     @Override
     public void setDefineRequestBodyForJson(JSONObject jsonBody) {
         if (jsonBody != null)
-            setDefineRequestBody(jsonBody.toString(), NoHttp.APPLICATION_JSON);
+            setDefineRequestBody(jsonBody.toString(), Headers.APPLICATION_JSON);
     }
 
     @Override
     public void setDefineRequestBodyForXML(String xmlBody) {
         if (!TextUtils.isEmpty(xmlBody))
-            setDefineRequestBody(xmlBody, NoHttp.APPLICATION_XML);
-    }
-
-    /**
-     * @param body string of request body.
-     * @deprecated use {@link #setDefineRequestBody(String, String)} instead.
-     */
-    @Deprecated
-    @Override
-    public void setRequestBody(String body) {
-        if (body != null)
-            try {
-                setRequestBody(body.getBytes(getParamsEncoding()));
-            } catch (UnsupportedEncodingException e) {
-                Logger.e("From getParamsEncoding() returns the charset not supported by the system, the requestBody is invalid, please check the method returns getParamsEncoding() value");
-            }
-    }
-
-    /**
-     * @param body byte array of request body.
-     * @deprecated use {@link #setDefineRequestBody(String, String)} instead.
-     */
-    @Deprecated
-    @Override
-    public void setRequestBody(byte[] body) {
-        if (body != null)
-            this.mRequestBody = new ByteArrayInputStream(body);
+            setDefineRequestBody(xmlBody, Headers.APPLICATION_XML);
     }
 
     /**
@@ -730,24 +762,14 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         return isCanceled;
     }
 
-    @Override
-    public void setCancelSign(Object sign) {
-        this.cancelSign = sign;
+    public void setmCancelSign(Object sign) {
+        this.mCancelSign = sign;
     }
 
     @Override
     public void cancelBySign(Object sign) {
-        if (cancelSign == sign)
+        if (mCancelSign == sign)
             cancel();
-    }
-
-    /**
-     * Returns the data "Charset".
-     *
-     * @return Such as: {@code UTF-8}.
-     */
-    public String getParamsEncoding() {
-        return NoHttp.CHARSET_UTF8;
     }
 
     /**
@@ -803,26 +825,14 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     /**
-     * Accept-Language.
-     */
-    private static String acceptLanguage;
-
-    /**
      * Create acceptLanguage.
      *
      * @return Returns the client can accept the language types. Such as:zh-CN,zh.
+     * @deprecated use {@link HeaderUtil#systemAcceptLanguage()} instead.
      */
+    @Deprecated
     public static String defaultAcceptLanguage() {
-        if (TextUtils.isEmpty(acceptLanguage)) {
-            Locale locale = Locale.getDefault();
-            String language = locale.getLanguage();
-            String country = locale.getCountry();
-            StringBuilder acceptLanguageBuilder = new StringBuilder(language);
-            if (!TextUtils.isEmpty(country))
-                acceptLanguageBuilder.append('-').append(country).append(',').append(language);
-            acceptLanguage = acceptLanguageBuilder.toString();
-        }
-        return acceptLanguage;
+        return HeaderUtil.systemAcceptLanguage();
     }
 
     /**

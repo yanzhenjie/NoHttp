@@ -44,15 +44,15 @@ public class CancelSignActivity extends BaseActivity {
 
         // 请求1。
         Request<String> request1 = NoHttp.createStringRequest(Constants.URL_NOHTTP_TEST, RequestMethod.GET);
-        request1.setCancelSign(cancelSign);
+        request1.setmCancelSign(cancelSign);
 
         // 请求2。
         Request<String> request2 = NoHttp.createStringRequest(Constants.URL_NOHTTP_TEST, RequestMethod.GET);
-        request2.setCancelSign(cancelSign);
+        request2.setmCancelSign(cancelSign);
 
         // 请求3。
         Request<String> request3 = NoHttp.createStringRequest(Constants.URL_NOHTTP_TEST, RequestMethod.GET);
-        request3.setCancelSign(cancelSign);
+        request3.setmCancelSign(cancelSign);
 
         /**
          * 1. 第一步：

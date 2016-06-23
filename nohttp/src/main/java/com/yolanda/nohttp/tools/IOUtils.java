@@ -361,7 +361,7 @@ public class IOUtils {
      * Access to a directory available size.
      *
      * @param path path.
-     * @return Long size.
+     * @return space size.
      */
     public static long getDirSize(String path) {
         StatFs stat = new StatFs(path);
@@ -375,8 +375,10 @@ public class IOUtils {
         try {
             Method getBlockSizeMethod = statFs.getClass().getMethod(blockSizeMethod);
             getBlockSizeMethod.setAccessible(true);
+
             Method getAvailableBlocksMethod = statFs.getClass().getMethod(availableBlocksMethod);
             getAvailableBlocksMethod.setAccessible(true);
+
             long blockSize, availableBlocks;
             if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN_MR2) {
                 blockSize = (Long) getBlockSizeMethod.invoke(statFs);
@@ -523,11 +525,49 @@ public class IOUtils {
         }
     }
 
+    /**
+     * Delete file or folder.
+     *
+     * @param path path.
+     * @return is succeed.
+     * @deprecated use {@link #delFileOrFolder(String)} instead.
+     */
+    @Deprecated
     public static boolean deleteFolder(String path) {
-        return deleteFolder(new File(path));
+        return delFileOrFolder(new File(path));
     }
 
+    /**
+     * Delete file or folder.
+     *
+     * @param file file.
+     * @return is succeed.
+     * @deprecated use {@link #delFileOrFolder(File)} instead.
+     */
+    @Deprecated
     public static boolean deleteFolder(File file) {
+        return delFileOrFolder(file);
+    }
+
+    /**
+     * Delete file or folder.
+     *
+     * @param path path.
+     * @return is succeed.
+     * @see #deleteFolder(File)
+     */
+    public static boolean delFileOrFolder(String path) {
+        return delFileOrFolder(new File(path));
+    }
+
+    /**
+     * Delete file or folder.
+     *
+     * @param file file.
+     * @return is succeed.
+     * @see #delFileOrFolder(String)
+     */
+    public static boolean delFileOrFolder(File file) {
         if (file == null || !file.exists()) {
             // do nothing
         } else if (file.isFile())
@@ -536,7 +576,7 @@ public class IOUtils {
             File[] files = file.listFiles();
             if (files != null)
                 for (File sonFile : files)
-                    deleteFolder(sonFile);
+                    delFileOrFolder(sonFile);
             file.delete();
         }
         return true;

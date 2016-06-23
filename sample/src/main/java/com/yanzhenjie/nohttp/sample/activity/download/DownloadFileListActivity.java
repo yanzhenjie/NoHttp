@@ -27,11 +27,9 @@ import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.entity.LoadFile;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.FileUtil;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
-import com.yolanda.nohttp.db.Field;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.error.ArgumentError;
@@ -42,6 +40,7 @@ import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
+import com.yolanda.nohttp.tools.IOUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -138,6 +137,7 @@ public class DownloadFileListActivity extends BaseActivity {
 
         @Override
         public void onDownloadError(int what, Exception exception) {
+            Logger.e(exception);
             String message = getString(R.string.download_error);
             String messageContent;
             if (exception instanceof ServerError) {
@@ -214,8 +214,13 @@ public class DownloadFileListActivity extends BaseActivity {
     private void delete() {
         for (int i = 0; i < 4; i++) {
             File file = new File(AppConfig.getInstance().APP_PATH_ROOT, "nohttp_list" + i + ".apk");
-            if(file.exists())
-                file.delete();
+            IOUtils.delFileOrFolder(file);
+
+            // 还原页面状态。
+            AppConfig.getInstance().putInt(PROGRESS_KEY + i, 0);
+            mFileList.get(i).setProgress(0);
+            mFileList.get(i).setTitle(getString(R.string.upload_file_status_wait));
+            mLoadFileAdapter.notifyItemChanged(i);
         }
     }
 

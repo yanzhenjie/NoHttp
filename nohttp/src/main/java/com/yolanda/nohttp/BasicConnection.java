@@ -27,16 +27,18 @@ import com.yolanda.nohttp.rest.ImplServerRequest;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.StringRequest;
 import com.yolanda.nohttp.tools.AndroidVersion;
-import com.yolanda.nohttp.tools.HeaderParser;
+import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
 import com.yolanda.nohttp.tools.NetUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -160,6 +162,10 @@ public class BasicConnection {
         else
             connection = (HttpURLConnection) url.openConnection(proxy);
 
+        connection.setConnectTimeout(request.getConnectTimeout());
+        connection.setReadTimeout(request.getReadTimeout());
+        connection.setInstanceFollowRedirects(false);
+
         if (connection instanceof HttpsURLConnection) {
             SSLSocketFactory sslSocketFactory = request.getSSLSocketFactory();
             if (sslSocketFactory != null)
@@ -172,12 +178,21 @@ public class BasicConnection {
         // 3. Base attribute
         RequestMethod requestMethod = request.getRequestMethod();
         Logger.i("Request method: " + requestMethod.toString());
-        connection.setRequestMethod(requestMethod.toString());
+        // Fix delete patch error.
+        try {
+            connection.setRequestMethod(requestMethod.toString());
+        } catch (ProtocolException protocol) {
+            try {
+                Field methodField = connection.getClass().getDeclaredField("method");
+                methodField.setAccessible(true);
+                methodField.set(connection, requestMethod.toString());
+            } catch (Exception noSuchFieldIllegalAccess) {
+                throw protocol;
+            }
+        }
+
         connection.setDoInput(true);
         connection.setDoOutput(requestMethod.allowRequestBody());
-        connection.setConnectTimeout(request.getConnectTimeout());
-        connection.setReadTimeout(request.getReadTimeout());
-        connection.setInstanceFollowRedirects(false);
 
         // 4.Set request headers
         URI uri = null;
@@ -209,25 +224,7 @@ public class BasicConnection {
      */
     private void setHeaders(URI uri, HttpURLConnection connection, BasicServerRequest request) {
         Headers headers = request.headers();
-
-        // Accept
-        String accept = request.getAccept();
-        if (!TextUtils.isEmpty(accept))
-            headers.set(Headers.HEAD_KEY_ACCEPT, accept);
-        // AcceptEncoding
-        headers.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
-
-        // Accept-Language
-        String acceptLanguage = request.getAcceptLanguage();
-        if (!TextUtils.isEmpty(acceptLanguage))
-            headers.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
-
-        // Connection
-        // To fix bug: accidental EOFException before API 19
-        if (Build.VERSION.SDK_INT > AndroidVersion.KITKAT)
-            headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);
-        else
-            headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_CLOSE);
+        headers.set(Headers.HEAD_KEY_CONTENT_TYPE, request.getContentType());
 
         // Content-Length
         RequestMethod requestMethod = request.getRequestMethod();
@@ -249,23 +246,13 @@ public class BasicConnection {
             headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
         }
 
-        // Content-Type
-        String contentType = request.getContentType();
-        if (!TextUtils.isEmpty(contentType))
-            headers.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
-
         // Cookie
-        if (uri != null)
+        if (NoHttp.isEnableCookie() && uri != null)
             headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
-
-        // UserAgent
-        String userAgent = request.getUserAgent();
-        if (!TextUtils.isEmpty(userAgent))
-            headers.set(Headers.HEAD_KEY_USER_AGENT, userAgent);
 
         Map<String, String> requestHeaders = headers.toRequestHeaders();
 
-        // 4.Adds all request header to httpConnection
+        // Adds all request header to httpConnection.
         for (Map.Entry<String, String> headerEntry : requestHeaders.entrySet()) {
             String headKey = headerEntry.getKey();
             String headValue = headerEntry.getValue();
@@ -326,7 +313,7 @@ public class BasicConnection {
      * @throws IOException if an {@code IOException} occurs.
      */
     protected InputStream gzipInputStream(String contentEncoding, InputStream inputStream) throws IOException {
-        if (HeaderParser.isGzipContent(contentEncoding)) {
+        if (HeaderUtil.isGzipContent(contentEncoding)) {
             inputStream = new GZIPInputStream(inputStream);
         }
         return inputStream;
@@ -343,11 +330,12 @@ public class BasicConnection {
      */
     protected Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> responseHeaders) {
         // handle cookie
-        try {
-            NoHttp.getDefaultCookieHandler().put(uri, responseHeaders);
-        } catch (IOException e) {
-            Logger.e(e, "Save cookie filed: " + uri.toString() + ".");
-        }
+        if (NoHttp.isEnableCookie())
+            try {
+                NoHttp.getDefaultCookieHandler().put(uri, responseHeaders);
+            } catch (IOException e) {
+                Logger.e(e, "Save cookie filed: " + uri.toString() + ".");
+            }
 
         // handle headers
         Headers headers = new HttpHeaders();

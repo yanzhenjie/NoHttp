@@ -15,6 +15,10 @@
  */
 package com.yolanda.nohttp;
 
+import android.os.Build;
+
+import com.yolanda.nohttp.tools.AndroidVersion;
+
 /**
  * <p>
  * HTTP request method.
@@ -59,7 +63,10 @@ public enum RequestMethod {
     }
 
     public boolean allowRequestBody() {
-        return this == POST || this == PUT || this == PATCH || this == DELETE;
+        boolean allowRequestBody = this == POST || this == PUT || this == PATCH || this == DELETE;
+        if (Build.VERSION.SDK_INT < AndroidVersion.LOLLIPOP)
+            allowRequestBody = allowRequestBody && this != DELETE;
+        return allowRequestBody;
     }
 
 }

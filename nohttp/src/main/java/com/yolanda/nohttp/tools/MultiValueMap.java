@@ -93,6 +93,13 @@ public interface MultiValueMap<K, V> {
     List<V> values();
 
     /**
+     * EntrySet.
+     *
+     * @return {@link Set}.
+     */
+    Set<Map.Entry<K, List<V>>> entrySet();
+
+    /**
      * To get the key of the at index value.
      *
      * @param key   key.

@@ -76,6 +76,9 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         request.add("userPass", 1);
         request.add("userAge", 1.25);
 
+        request.setConnectTimeout(NoHttp.getDefaultConnectTimeout());
+        request.setReadTimeout(NoHttp.getDefaultReadTimeout());
+
         /**
          * 上传文件；上传文件支持File、Bitmap、ByteArrayBinary、InputStream四种，这里推荐File、InputStream。
          * 其他两种小的可以，大的话容易内存溢出(OOM)。
@@ -89,7 +92,10 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         request.addHeader("Author", "sample");
 
         // 设置一个tag, 在请求完(失败/成功)时原封不动返回; 多数情况下不需要。
-        request.setTag(new Object());
+        request.setTag(this);
+
+        // 设置取消标志。
+        request.setmCancelSign(this);
 
 		/*
          * what: 当多个请求同时使用同一个OnResponseListener时用来区分请求, 类似handler的what一样。
@@ -147,4 +153,11 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         }
     };
 
+    @Override
+    protected void onDestroy() {
+        if (requestQueue != null)
+            // 根据取消标志取消队列中的请求。
+            requestQueue.cancelBySign(this);
+        super.onDestroy();
+    }
 }

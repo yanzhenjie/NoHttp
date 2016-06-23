@@ -15,6 +15,13 @@
  */
 package com.yanzhenjie.nohttp.sample.util;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,13 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.StatFs;
 
 /**
  * Created in Sep 10, 2015 4:22:18 PM.
@@ -68,6 +68,15 @@ public class FileUtil {
     public static boolean fileExists(String filePath) {
         File file = new File(filePath);
         return file.exists();
+    }
+
+    public static void deleleFile(String path) {
+        deleteFile(new File(path));
+    }
+
+    public static void deleteFile(File file) {
+        if (file != null && file.exists())
+            file.delete();
     }
 
     /**

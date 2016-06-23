@@ -15,12 +15,13 @@
  */
 package com.yolanda.nohttp;
 
+import com.yolanda.nohttp.tools.IOUtils;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-
-import com.yolanda.nohttp.tools.IOUtils;
+import java.net.URL;
 
 /**
  * Created in May 3, 2016 11:05:03 PM.
@@ -58,6 +59,15 @@ public class Connection implements Closeable {
         this.mResponseHeaders = responseHeaders;
         this.mInputStream = inputStream;
         this.mException = exception;
+    }
+
+    /**
+     * Get the {@link URL} of connection.
+     *
+     * @return {@link URL}.
+     */
+    public URL getURL() {
+        return connection.getURL();
     }
 
     /**

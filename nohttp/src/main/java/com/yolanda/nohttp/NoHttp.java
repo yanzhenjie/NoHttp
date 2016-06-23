@@ -62,43 +62,69 @@ import java.net.PasswordAuthentication;
 public class NoHttp {
 
     /**
-     * The value is {@value #APPLICATION_X_WWW_FORM_URLENCODED}.
+     * The value is {@value}.
+     *
+     * @deprecated use {@link Headers#APPLICATION_X_WWW_FORM_URLENCODED} instead.
      */
-    public static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+    @Deprecated
+    public static final String APPLICATION_X_WWW_FORM_URLENCODED = Headers.APPLICATION_X_WWW_FORM_URLENCODED;
 
     /**
-     * The value is {@value #MULTIPART_FORM_DATA}.
+     * The value is {@value}.
+     *
+     * @deprecated use {@link Headers#MULTIPART_FORM_DATA} instead.
      */
-    public static final String MULTIPART_FORM_DATA = "multipart/form-data";
+    @Deprecated
+    public static final String MULTIPART_FORM_DATA = Headers.MULTIPART_FORM_DATA;
 
     /**
-     * The value is {@value #APPLICATION_OCTET_STREAM}.
+     * The value is {@value}.
+     *
+     * @deprecated use {@link Headers#APPLICATION_OCTET_STREAM} instead.
      */
-    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+    @Deprecated
+    public static final String APPLICATION_OCTET_STREAM = Headers.APPLICATION_OCTET_STREAM;
 
     /**
-     * The value is {@value #APPLICATION_JSON}.
+     * The value is {@value}.
+     *
+     * @deprecated use {@link Headers#APPLICATION_JSON} instead.
      */
-    public static final String APPLICATION_JSON = "application/json";
+    @Deprecated
+    public static final String APPLICATION_JSON = Headers.APPLICATION_JSON;
 
     /**
-     * The value is {@value #APPLICATION_XML}.
+     * The value is {@value}.
+     *
+     * @deprecated use {@link Headers#APPLICATION_XML} instead.
      */
+    @Deprecated
     public static final String APPLICATION_XML = "application/xml";
 
     /**
-     * Default charset of request body, value is {@value}.
+     * The value is {@value}.
      */
     public static final String CHARSET_UTF8 = "UTF-8";
 
     /**
-     * Default timeout, value is {@value} ms.
-     */
-    public static final int TIMEOUT_8S = 8 * 1000;
-    /**
      * RequestQueue default thread size, value is {@value}.
      */
     public static final int DEFAULT_THREAD_SIZE = 3;
+
+    /**
+     * The value is {@value}.
+     */
+    public static final int TIMEOUT_8S = 8 * 1000;
+
+    /**
+     * Default connect timeout. The value is {@value}.
+     */
+    private static Integer sDefaultConnectTimeout = TIMEOUT_8S;
+
+    /**
+     * Default read timeout. The value is {@value}.
+     */
+    private static Integer sDefaultReadTimeout = TIMEOUT_8S;
 
     /**
      * Context.
@@ -109,6 +135,28 @@ public class NoHttp {
      * Cookie.
      */
     private static CookieHandler sCookieHandler;
+    /**
+     * Is enable cookies.
+     */
+    private static boolean isEnableCookie = true;
+
+    /**
+     * Get version name of NoHttp.
+     *
+     * @return {@link String}.
+     */
+    public static String versionName() {
+        return "1.0.3";
+    }
+
+    /**
+     * Get version code of NoHttp.
+     *
+     * @return {@link Integer}.
+     */
+    public static int versionCode() {
+        return 103;
+    }
 
     /**
      * Initialization NoHttp, Should invoke on {@link Application#onCreate()}.
@@ -119,24 +167,6 @@ public class NoHttp {
     @Deprecated
     public static void init(Application application) {
         initialize(application);
-    }
-
-    /**
-     * Get version name of NoHttp.
-     *
-     * @return {@link String}.
-     */
-    public static String versionName() {
-        return "1.0.2";
-    }
-
-    /**
-     * Get version code of NoHttp.
-     *
-     * @return {@link Integer}.
-     */
-    public static int versionCode() {
-        return 102;
     }
 
     /**
@@ -449,6 +479,33 @@ public class NoHttp {
     }
 
     /**
+     * Create a download object, auto named file. The request method is {@link RequestMethod#GET}.
+     *
+     * @param url         download address.
+     * @param fileFolder  folder to save file.
+     * @param isDeleteOld find the same when the file is deleted after download, or on behalf of the download is complete, not to request the network.
+     * @return {@link DownloadRequest}.
+     * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
+     */
+    public static DownloadRequest createDownloadRequest(String url, String fileFolder, boolean isDeleteOld) {
+        return createDownloadRequest(url, RequestMethod.GET, fileFolder, isDeleteOld);
+    }
+
+    /**
+     * Create a download object, auto named file.
+     *
+     * @param url           download address.
+     * @param requestMethod {@link RequestMethod}.
+     * @param fileFolder    folder to save file.
+     * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is complete, not to request the network.
+     * @return {@link DownloadRequest}.
+     * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
+     */
+    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, boolean isDeleteOld) {
+        return new RestDownloadRequest(url, requestMethod, fileFolder, isDeleteOld);
+    }
+
+    /**
      * Create a download object. The request method is {@link RequestMethod#GET}.
      *
      * @param url         download address.
@@ -499,6 +556,60 @@ public class NoHttp {
         if (cookieHandler == null)
             throw new IllegalArgumentException("cookieHandler == null");
         sCookieHandler = cookieHandler;
+    }
+
+    /**
+     * Set to enable cookies.
+     *
+     * @param enableCookie ture enable, false disenable.
+     */
+    public static void setEnableCookie(boolean enableCookie) {
+        isEnableCookie = enableCookie;
+    }
+
+    /**
+     * Is enable cookie.
+     *
+     * @return true enable, false disenable.
+     */
+    public static boolean isEnableCookie() {
+        return isEnableCookie;
+    }
+
+    /**
+     * Set default connect timeout.
+     *
+     * @param timeout ms.
+     */
+    public static void setDefaultConnectTimeout(int timeout) {
+        sDefaultConnectTimeout = timeout;
+    }
+
+    /**
+     * Get default connect timeout.
+     *
+     * @return ms.
+     */
+    public static int getDefaultConnectTimeout() {
+        return sDefaultConnectTimeout;
+    }
+
+    /**
+     * Set default read timeout.
+     *
+     * @param timeout ms.
+     */
+    public static void setDefaultReadTimeout(int timeout) {
+        sDefaultReadTimeout = timeout;
+    }
+
+    /**
+     * Get default read timeout.
+     *
+     * @return ms.
+     */
+    public static int getDefaultReadTimeout() {
+        return sDefaultReadTimeout;
     }
 
     /**

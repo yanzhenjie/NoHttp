@@ -93,10 +93,10 @@ public class Constants {
      * 下载文件。
      */
     public static final String[] URL_DOWNLOADS = {
-            "http://113.215.11.15/dd.myapp.com/16891/13013C32CB10B7F79B214DEB8A804C3C.apk?mkey=576b637f0d884a2f&f=d410&c=0&fsname=com.tencent.mobileqq_6.3.7_374.apk&p=.apk",
-            "http://113.215.11.15/dd.myapp.com/16891/C4CA59F711A7B48C77B3C6F8FF01672D.apk?mkey=576b636a0d884a2f&f=d410&c=0&fsname=com.tencent.mm_6.3.18_800.apk&p=.apk",
-            "http://113.215.11.15/dd.myapp.com/16891/BE185B235A16A461D6F95FB3F566CE9E.apk?mkey=576b635e0d884a2f&f=1b0c&c=0&fsname=com.snda.wifilocating_4.1.25_3055.apk&p=.apk",
-            "http://113.215.11.15/dd.myapp.com/16891/CB01E400A639F1F3A1C8663A6130F36F.apk?mkey=576b63400d884a2f&f=b110&c=0&fsname=com.tencent.news_5.0.0_500.apk&p=.apk"
+            "http://gdown.baidu.com/data/wisegame/4f45d1baacb6ee7f/baidushoujizhushouyuan91zhu_16789458.apk",
+            "http://gdown.baidu.com/data/wisegame/2eeee3831c9dbc42/QQ_374.apk",
+            "http://gdown.baidu.com/data/wisegame/8d5889f722f640c8/weixin_800.apk",
+            "http://gdown.baidu.com/data/wisegame/4c77c9e0020562ca/baidushipin_1072201074.apk"
     };
 
 }

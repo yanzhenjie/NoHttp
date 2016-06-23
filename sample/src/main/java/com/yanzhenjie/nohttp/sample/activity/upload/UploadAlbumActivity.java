@@ -32,7 +32,7 @@ import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.Toast;
+import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yolanda.nohttp.FileBinary;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.OnUploadListener;
@@ -111,13 +111,13 @@ public class UploadAlbumActivity extends BaseActivity {
      */
     private void upload() {
         if (TextUtils.isEmpty(mImagePath))
-            Toast.show(this, R.string.upload_file_select_album_null);
+            Snackbar.show(this, R.string.upload_file_select_album_null);
         else {
             File file = new File(mImagePath);
             if (file.exists())
                 executeUpload(file);
             else
-                Toast.show(this, R.string.upload_file_select_album_null_again);
+                Snackbar.show(this, R.string.upload_file_select_album_null_again);
         }
     }
 

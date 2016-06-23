@@ -21,8 +21,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
@@ -30,6 +28,7 @@ import android.widget.ImageView;
 
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
+import com.yolanda.nohttp.PosterHandler;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -44,10 +43,6 @@ import java.util.concurrent.Executors;
  * @author Yan Zhenjie.
  */
 public class ImageLocalLoader {
-    /**
-     * Handler lock.
-     */
-    private static final Object HANDLER_OBJECT = new Object();
     /**
      * Single module.
      */
@@ -64,10 +59,6 @@ public class ImageLocalLoader {
      * Thread pool.
      */
     private ExecutorService mExecutorService;
-    /**
-     * Update poster.
-     */
-    private Handler mPosterHandler;
 
     /**
      * Get single object.
@@ -89,20 +80,11 @@ public class ImageLocalLoader {
 
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 8);
         mLruCache = new LruCache<String, Bitmap>(maxMemory) {
-            @SuppressLint("NewApi")
             @Override
             protected int sizeOf(String key, Bitmap value) {
                 return value.getRowBytes() * value.getHeight();
             }
         };
-    }
-
-    private Handler getPostHandler() {
-        synchronized (HANDLER_OBJECT) {
-            if (mPosterHandler == null)
-                mPosterHandler = new Handler(Looper.getMainLooper());
-        }
-        return mPosterHandler;
     }
 
     /**
@@ -241,7 +223,7 @@ public class ImageLocalLoader {
             holder.imagePath = imagePath;
             holder.bitmap = bitmap;
             holder.imageLoadListener = imageLoadListener;
-            getPostHandler().post(holder);
+            PosterHandler.getInstance().post(holder);
         }
     }
 
@@ -288,7 +270,7 @@ public class ImageLocalLoader {
                 holder.imageView = mImageView;
                 holder.imagePath = mImagePath;
                 holder.imageLoadListener = imageLoadListener;
-                getPostHandler().post(holder);
+                PosterHandler.getInstance().post(holder);
             }
         }
     }

@@ -18,7 +18,7 @@ package com.yolanda.nohttp.cookie;
 import android.text.TextUtils;
 
 import com.yolanda.nohttp.db.DBId;
-import com.yolanda.nohttp.tools.HttpDateTime;
+import com.yolanda.nohttp.tools.HeaderUtil;
 
 import java.io.Serializable;
 import java.net.HttpCookie;
@@ -69,7 +69,7 @@ class CookieEntity implements DBId, Serializable {
         if (maxAge != -1 && maxAge > 0) {
             this.expiry = (maxAge * 1000L) + System.currentTimeMillis();
             if (this.expiry < 0L) // 溢出
-                this.expiry = HttpDateTime.getMaxExpiryMillis();
+                this.expiry = HeaderUtil.getMaxExpiryMillis();
         } else
             this.expiry = -1L;
 
