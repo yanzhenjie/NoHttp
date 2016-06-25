@@ -271,7 +271,7 @@ public class BasicConnection {
      * @throws IOException if no InputStream could be created.
      */
     protected InputStream getServerStream(int responseCode, String contentEncoding, HttpURLConnection urlConnection) throws IOException {
-        if (responseCode > 400)
+        if (responseCode >= 400)
             return getErrorStream(contentEncoding, urlConnection);
         else {
             return getInputStream(contentEncoding, urlConnection);
