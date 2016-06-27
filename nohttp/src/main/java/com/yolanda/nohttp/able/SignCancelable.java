@@ -35,6 +35,6 @@ public interface SignCancelable {
      *
      * @param object a object.
      */
-    void setmCancelSign(Object object);
+    void setCancelSign(Object object);
 
 }

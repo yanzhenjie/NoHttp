@@ -95,7 +95,7 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         request.setTag(this);
 
         // 设置取消标志。
-        request.setmCancelSign(this);
+        request.setCancelSign(this);
 
 		/*
          * what: 当多个请求同时使用同一个OnResponseListener时用来区分请求, 类似handler的what一样。

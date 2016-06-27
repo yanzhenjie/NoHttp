@@ -207,7 +207,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public <T> void request(int what, Request<T> request, HttpListener<T> callback, boolean canCancel, boolean isLoading) {
-        request.setmCancelSign(this);
+        request.setCancelSign(this);
         CallServer.getRequestInstance().add(this, what, request, callback, canCancel, isLoading);
     }
 

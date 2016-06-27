@@ -762,7 +762,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         return isCanceled;
     }
 
-    public void setmCancelSign(Object sign) {
+    public void setCancelSign(Object sign) {
         this.mCancelSign = sign;
     }
 

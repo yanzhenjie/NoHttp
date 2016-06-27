@@ -7,7 +7,7 @@
 技术交流2群：46505645  
 [群行为规范][2]  
 
-严振杰的主页：[http://www.yanzhenjie.com][12]
+严振杰的主页：[http://www.yanzhenjie.com][12]  
 严振杰的博客：[http://blog.csdn.net/yanzhenjie1003][3]  
 严振杰的Android直播视频下载：[http://pan.baidu.com/s/1miEOtwG][4]  
 
