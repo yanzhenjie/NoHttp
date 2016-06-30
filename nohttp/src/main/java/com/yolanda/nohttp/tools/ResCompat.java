@@ -15,10 +15,6 @@
  */
 package com.yolanda.nohttp.tools;
 
-import java.lang.reflect.Method;
-
-import com.yolanda.nohttp.NoHttp;
-
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
@@ -33,6 +29,10 @@ import android.text.style.ImageSpan;
 import android.text.style.StrikethroughSpan;
 import android.view.View;
 import android.widget.TextView;
+
+import com.yolanda.nohttp.NoHttp;
+
+import java.lang.reflect.Method;
 
 /**
  * Created in Nov 27, 2015 6:20:48 PM.
@@ -148,7 +148,7 @@ public class ResCompat {
             try {
                 Method getColorMethod = resourcesClass.getMethod("getColor", int.class);
                 getColorMethod.setAccessible(true);
-                return (Integer) getColorMethod.invoke(resources, colorId, theme);
+                return (Integer) getColorMethod.invoke(resources, colorId);
             } catch (Throwable e) {
             }
         return Color.BLACK;
@@ -163,16 +163,16 @@ public class ResCompat {
         Class<?> resourcesClass = resources.getClass();
         if (Build.VERSION.SDK_INT >= AndroidVersion.M)
             try {
-                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class);
+                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class, Theme.class);
                 getColorStateListMethod.setAccessible(true);
-                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId);
+                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId, theme);
             } catch (Throwable e) {
             }
         else
             try {
-                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class, Theme.class);
+                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class);
                 getColorStateListMethod.setAccessible(true);
-                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId, theme);
+                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId);
             } catch (Throwable e) {
             }
         return null;

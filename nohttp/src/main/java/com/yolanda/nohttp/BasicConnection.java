@@ -226,7 +226,13 @@ public class BasicConnection {
         Headers headers = request.headers();
         headers.set(Headers.HEAD_KEY_CONTENT_TYPE, request.getContentType());
 
-        // Content-Length
+        // try fix EOF Exception.
+        if (Build.VERSION.SDK_INT > AndroidVersion.KITKAT)
+            headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);
+        else
+            headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_CLOSE);
+
+        // Content-Length.
         RequestMethod requestMethod = request.getRequestMethod();
         if (requestMethod.allowRequestBody()) {
             long contentLength = request.getContentLength();
@@ -246,7 +252,7 @@ public class BasicConnection {
             headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
         }
 
-        // Cookie
+        // Cookie.
         if (NoHttp.isEnableCookie() && uri != null)
             headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
 

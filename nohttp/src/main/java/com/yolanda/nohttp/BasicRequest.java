@@ -581,14 +581,16 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         for (String key : keys) {
             List<Object> values = mParamKeyValues.getValues(key);
             for (Object value : values) {
-                if (value != null && value instanceof String) {
-                    if (!(writer instanceof CounterOutputStream))
-                        Logger.i(key + "=" + value);
-                    writeFormString(writer, key, value.toString());
-                } else if (value != null && value instanceof Binary) {
-                    if (!(writer instanceof CounterOutputStream))
-                        Logger.i(key + " is Binary");
-                    writeFormBinary(writer, key, (Binary) value);
+                if (!isCanceled()) {
+                    if (value != null && value instanceof String) {
+                        if (!(writer instanceof CounterOutputStream))
+                            Logger.i(key + "=" + value);
+                        writeFormString(writer, key, value.toString());
+                    } else if (value != null && value instanceof Binary) {
+                        if (!(writer instanceof CounterOutputStream))
+                            Logger.i(key + " is Binary");
+                        writeFormBinary(writer, key, (Binary) value);
+                    }
                 }
             }
         }
@@ -664,11 +666,10 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     protected void writeRequestBody(OutputStream writer) throws IOException {
         if (hasDefineRequestBody()) {
             if (writer instanceof CounterOutputStream) {
-                writer.write(mRequestBody.available());
+                writer.write(getDefineRequestBody().available());
             } else {
-                IOUtils.write(mRequestBody, writer);
-                IOUtils.closeQuietly(mRequestBody);
-                mRequestBody = null;
+                IOUtils.write(getDefineRequestBody(), writer);
+                IOUtils.closeQuietly(getDefineRequestBody());
             }
         }
     }

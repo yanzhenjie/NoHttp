@@ -179,8 +179,9 @@ public class NoHttp {
             sApplication = application;
             sCookieHandler = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
 
-            if (Build.VERSION.SDK_INT < AndroidVersion.FROYO) {
+            if (Build.VERSION.SDK_INT < AndroidVersion.KITKAT) {
                 System.setProperty("http.keepAlive", "false");
+                System.setProperty("http.maxConnections", String.valueOf(5));
             }
         }
     }
