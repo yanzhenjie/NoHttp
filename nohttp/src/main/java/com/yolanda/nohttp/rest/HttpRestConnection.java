@@ -184,7 +184,7 @@ public class HttpRestConnection extends BasicConnection implements ImplRestConne
                 }
             } else if (responseBody != null) {// Redirect data need cache ?
                 if (localCacheEntity == null) {
-                    localCacheEntity = HeaderUtil.parseCacheHeaders(responseHeaders, responseBody, cacheMode.isStandardHttpProtocol());// Standard protocol not force.
+                    localCacheEntity = HeaderUtil.parseCacheHeaders(responseHeaders, responseBody, !cacheMode.isStandardHttpProtocol());// Standard protocol not force.
                     // Maybe null: Http CacheControl: (no-cache || no-store) && !cacheMode.isStandardHttpProtocol().
                 } else {
                     localCacheEntity.getResponseHeaders().setAll(responseHeaders);

@@ -29,7 +29,8 @@ compile 'com.yolanda.nohttp:nohttp:1.0.3'
 ```
 
 #下载Demo
-[下载演示Demo][9]
+[下载NoHttp源码 Demo源码][9]  
+[下载演示Demo APK][9]  
 
 #权限
 ```xml
@@ -396,3 +397,4 @@ limitations under the License.
 [10]: http://www.nohttp.net/image/nohttp_logo.svg
 [11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.3-include-source.jar?raw=true
 [12]: http://www.yanzhenjie.com
+[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.3
