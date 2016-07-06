@@ -1,38 +1,35 @@
-#NoHttp
-> NoHttp，一个有情怀的框架。
+# NoHttp
+> NoHttp，a have feelings of framework.
 
 ![NoHttp Logo][10]
 
-技术交流1群：46523908  
-技术交流2群：46505645  
-[群行为规范][2]  
+[**中文版文档**][14]  
 
-严振杰的主页：[http://www.yanzhenjie.com][12]  
-严振杰的博客：[http://blog.csdn.net/yanzhenjie1003][3]  
-严振杰的Android直播视频下载：[http://pan.baidu.com/s/1miEOtwG][4]  
+The author's url: [http://www.yanzhenjie.com][12]  
+The author's blog: [http://blog.csdn.net/yanzhenjie1003][3]  
 
 ----
-#NoHttp主页和文档地址
-NoHttp主页：[http://www.nohttp.net][5]  
-NoHttp文档：[http://doc.nohttp.net][6]  
-NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]  
-文档还在继续完善，有问题可以加上面的群，或者发[issues][7]，或者直接发邮件给我：smallajax@foxmail.com。
+# NoHttp home page and doc url
+NoHttp home page: [http://www.nohttp.net][5]  
+NoHttp document: [http://doc.nohttp.net][6]  
+NoHttp source code: [https://github.com/yanzhenjie/NoHttp][1]  
+Document also continues to improve, there is a problem can send [issues][7], or send an email to me directly: smallajax@foxmail.com.
 
-#使用方法
-* Eclipse使用Jar包，如果需要依赖源码，请自行下载。
-> [下载Jar包 [含源码，274k]][11]  
-> [下载Jar包 [不含源码，147k]][8]  
+# How to use
+* Eclipse USES ajr package, if need to rely on the source code, [download][13].
+> [download jar [include source code，274k]][11]  
+> [download jar [not include source code，147k]][8]  
 
-* AndroidStudio使用Gradle构建添加依赖（推荐）
+* AndroidStudio using Gradle build add dependent (recommended)
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.3'
+compile 'com.yolanda.nohttp:nohttp:1.0.4'
 ```
 
-#下载Demo
-[下载NoHttp源码 Demo源码][13]  
-[下载演示Demo APK][9]  
+# Download Demo
+[Downloa source code of NoHttp, Demo][13]  
+[Download Demo APK][9]  
 
-#权限
+# Permission
 ```xml
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -41,74 +38,76 @@ compile 'com.yolanda.nohttp:nohttp:1.0.3'
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
-#NoHttp特性
-　　NoHttp实现了Http1.1（RFC2616），一个标准的Http框架。
+# NoHttp features
+NoHttp implements Http1.1 ([RFC2616][15]), a standard Http framework.
 
-* 请求和下载都是队列，平均分配每个线程的资源，支持多个请求并发。
-* 支持GET、POST、PUT、PATCH、HEAD、DELETE、OPTIONS、TRACE等请求协议。
-* 支持基于POST、PUT、PATCH、DELETE的文件上传（Html表单原理）。
-* 文件下载、上传下载、上传和下载的进度回调、错误回调。
-* 提供了五种数据缓存策略供开发者选择使用（详细看下文）。
-* 支持取消某个请求、取消指定多个请求、取消所有请求。
-* 支持自定义Request，利用NoHttp泛型可以解析成你想要的任何数据格式（String、Json、JavaBean等）。
-* 支持Session、Cookie的自动维持，App重启、关开机后还持续维持。
-* 支持Https、自签名网站Https的访问、支持双向验证。
+* Request and download queue, average distribution of each thread resources, support for multiple requests concurrently.
+* Support the GET, POST, PUT, PATCH, HEAD, DELETE, OPTIONS, such as TRACE request protocol.
+* Support for POST, PUT, PATCH, DELETE the file upload (Html form principle).
+* File download, upload, download, upload and download the progress of the callback, error correction.
+* Provides five kinds of data caching policy for developers to choose to use (see below) in detail.
+* Support to cancel a request, specify multiple request cancel, cancel all requests.
+* Support custom Request, using NoHttp generics can be parsed into any data you want to format (String, Json, JavaBean, etc.).
+* Automatic maintenance of support Session, cookies, restart the App, turn off the boot after also continue to maintain.
+* Support Https, self-signed website Https access, support two-way authentication.
 
-##友好的调试模式
-　　NoHttp提供了调试模式，打开后可以清晰的看到请求过程、怎么传递数据等，基本不用抓包。可以看到请求头、请求数据、响应头、Cookie等的过程。你也不用担心Log太多会让你眼花缭乱，想象不到的整洁。
+## Friendly debug mode
+NoHttp provides a debug mode, after open the can see clear request process, such as how to transfer data, basic need not caught.Can see that the request headers, request data, the process of response headers, cookies, etc.You don't have to worry about too many Log will dazzle you, clean and tidy.
 
-##请求
->* 支持请求String、Json、FastJson、Gson、Bitmap、JavaBean、XML等扩展。
->* 异步请求，拿到结果直接更新UI，支持同步请求。
+## Request
+>* Support the request String, Json, FastJson, Gson, Bitmap, javabeans and XML extensions.
+>* An asynchronous request, get the results directly to update the UI, support synchronous request.
 
-##多文件上传
-　　所有下载均有进度回调、错误回调等友好的接口。
->* 大文件上传，不会发生OOM。
->* 多文件上传，多个key多个文件，一个key多个文件（`List<File>`）。
->* 支持File、InputStream、ByteArray、Bitmap，实现NoHttp的Binary接口，理论上任何东西都可以传。
->* 支持取消上传。
+## Multiple file upload
+All download progress callback, error correction and other friendly interface.
 
-##文件下载
->* 文件下载，支持多个文件同时下载，并且有进度回调、错误回调等。
->* 支持暂停继续下载，支持取消下载，支持断点续传。
->* 利用NoHttp的多文件下载可以做一个下载管理器。
+>* Large file upload, OOM will not occur.
+>* File upload more, multiple key file, a key multiple files（`List<File>`）.
+>* Support File, InputStream, ByteArray containing, Bitmap, realize NoHttp Binary interface, anything can theoretically.
+>* Support to cancel the upload.
 
-##缓存模式
->* 仅仅请求网络。
->* 仅仅读取缓存。
->* 标准Http协议缓存(比如响应码是304的情况)，需要服务器支持，如果服务器不支持就和普通请求一样。
->* 先请求网络，请求失败后返回缓存。
->* 先读取缓存，缓存不存在再请求网络。
+## File download
+>* File to download, support for multiple files to download at the same time, and a progress callback, error correction and so on.
+>* Support for a moratorium on continue to download, support to cancel the download, support breakpoint continuingly.
+>* To make use of much NoHttp file download can do a download manager.
 
-##取消请求
-　　所有取消都支持正在执行的请求。
->* 支持取消某个请求。
->* 支持取消用sign指定的几个请求。
->* 支持取消所有的请求。
+## Cache mode
+>* Only request network.
+>* Only read cache.
+>* The standard Http protocol cache (such as in the case of the response code is 304), need server support, if the server does not support the same way as a common request.
+>* First request network, after failing to return to the cache.
+>* First read the cache, the cache request network again.
 
-##请求自动维持Cookie
->* 支持Session、Cookie、临时Cookie的位置。
->* 支持App重启、关机开机后继续持久化维持。
->* 提供了接口，允许开发者监听Cookie的变化，也可以改变某个Cookie的值。
+## Cancel Request
+All cancelled all support requests are being executed.
 
-##重定向
->* 对于Http301、302、303、307等重定向的支持。
->* 支持多级重定向嵌套。
->* 支持禁用重定向、NoHttp提供了操作重定向的接口。
+>* Support cancel a request。
+>* Support to cancel with sign to specify several requests。
+>* Support cancel all request。
 
-##代理
->* 标准的Java的Api，ProXy：指定代理的IP和Port。
->* 比如调试时代理到自己电脑进行抓包，比如用代理访问Google。
+## Automatically maintain Cookie
+>* Maintain support Session, cookies, temporary cookies.
+>* Support the App after the restart, shutdown boot continue to persistent.
+>* Provides the interface that allows developers to monitor the change of the cookies, can also change the value of a Cookie.
 
-#一. 请求
-##String请求
+## Redirect
+>* For Http301, 302, 303, 307 redirect support.
+>* Support multiple redirection nesting.
+>* Support disable redirection, NoHttp provides redirection interface operation.
+
+## Proxy
+>* The standard Java Api, the ProXy: the designated agent of IP and Port.
+>* Such as agent to your computer for caught when debugging, such as use proxy to access Google.
+
+# 一. Request
+## String request
 ```java
-// String 请求对象
+// String request object
 Request<String> request = NoHttp.createStringRequest(url, requestMethod);
 
 ```
 
-##Json请求
+## Json request
 ```java
 // JsonObject
 Request<JSONObject> request = NoHttp.createJsonObjectRequest(url, reqeustMethod);
@@ -117,54 +116,55 @@ Request<JSONObject> request = NoHttp.createJsonObjectRequest(url, reqeustMethod)
 Request<JSONArray> request = NoHttp.createJsonArrayRequest(url, reqeustMethod);
 ```
 
-##Bitmap请求
+## Bitmap request
 ```	java
 Request<Bitmap> request = NoHttp.createImageRequest(url, requestMethod);
 ```
 
-##添加参数
+## Add params
 ```java
 Request<JSONObject> request = ...
-request.add("name", "yoldada");// String类型
-request.add("age", 18);// int类型
-request.add("sex", '0')// char类型
-request.add("time", 16346468473154); // long类型
+request.add("name", "yoldada");// String type
+request.add("age", 18);// int type
+request.add("sex", '0')// char type
+request.add("time", 16346468473154); // long type
 ...
 ```
 
-##添加到队列
+## Add to queue
 ```java
 RequestQueue requestQueue = NoHttp.newRequestQueue();
-// 或者传一个并发值，允许三个请求同时并发
+// Or a concurrent value, allowing three concurrent requests at the same time
 // RequestQueue requestQueue = NoHttp.newRequestQueue(3);
 
-// 发起请求
+// start request
 requestQueue.add(what, request, responseListener);
 ```
-　　上面添加到队列时有一个what，这个what会在`responseLisetener`响应时回调给开发者，所以我们可以用一个`responseLisetener`接受多个请求的响应，用what来区分结果。而不用像有的框架一样，每一个请求都要new一个回调。
+　　Added to the queue above there is a credit, the credit will be `responseLisetener` response callback to developers，so we can use a `responseLisetener` accept multiple requests the response，with what to distinguish results. Instead, like some framework, each request to the new a callback.
 
-## 同步请求
-　　在当前线程发起请求，在线程这么使用。
+## Synchronous request
+　　In request, the current thread by the thread so used.
 ```java
 Request<String> request = ...
 Response<String> response = NoHttp.startRequestSync(request);
 if (response.isSucceed()) {
-    // 请求成功
+    // succeed
 } else {
-    // 请求失败
+    // failed
 }
 ```
 
-#二. 文件上传
-　　支持多文件上传，多个key多个文件，一个key多个文件（`List<File>`）。支持File、InputStream、ByteArray、Bitmap，实现NoHttp的Binary接口，理论上任何东西都可以传。
-##单个文件
+# 二. File upload
+　　Support for multiple File upload, multiple key multiple files, a key multiple files (`List < File >`). Support File, InputStream, ByteArray containing, Bitmap, realize NoHttp Binary interface, anything can theoretically.
+
+## A single file
 ```java
 Request<String> request = ...
 request.add("file", new FileBinary(file));
 ```
 
-##上传多个文件、多个Key多个文件形式
-　　这里可以添加各种形式的文件，File、Bitmap、InputStream、ByteArray：
+## Upload multiple files, multiple Key file form
+　　Here you can add all kinds of files，File、Bitmap、InputStream、ByteArray：
 ```java
 Request<String> request = ...
 request.add("file1", new FileBinary(File));
@@ -174,8 +174,8 @@ request.add("file4", new ByteArrayBinary(byte[]));
 request.add("file5", new BitmapStreamBinary(Bitmap));
 ```
 
-##上传多个文件、一个Key多个文件形式
-　　用同一个key添加，如果请求方法是POST、PUT、PATCH、DELETE，同一个key不会被覆盖。
+## Upload multiple files, a Key form of multiple files
+　　With the same key to add,  the same key will not be covered.
 ```java
 Request<String> request = ...
 fileList.add("image", new FileBinary(File));
@@ -183,7 +183,7 @@ fileList.add("image", new InputStreamBinary(InputStream));
 fileList.add("image", new ByteArrayBinary(byte[]));
 fileList.add("image", new BitmapStreamBinary(Bitmap));
 ```
-　　或者：
+　Or: 
 ```java
 Request<String> request = ...
 
@@ -195,127 +195,127 @@ fileList.add(new BitmapStreamBinary(Bitmap));
 request.add("file_list", fileList);
 ```
 
-#三. 下载文件
-　　因为下载文件代码比较多，这里贴关键部分，具体的请参考sample。
-##发起下载请求
+# 三. Download file
+　　Because the downloaded file code is more, post key part, specific please refer to the sample.
+## Request a download
 ```java
-//下载文件
+// download file
 downloadRequest = NoHttp.createDownloadRequest...
-// what 区分下载
-// downloadRequest 下载请求对象
-// downloadListener 下载监听
+// what To distinguish the download.
+// downloadRequest To download the request object.
+// downloadListener Listeningof download.
 downloadQueue.add(0, downloadRequest, downloadListener);
 ```
 
-##暂停或者停止下载
+## Pause or stop the download
 ```java
 downloadRequest.cancel();
 ```
 
-##监听下载过程
+## Listening to the download process
 ```java
 private DownloadListener downloadListener = new DownloadListener() {
 	@Override
 	public void onStart(int what, boolean resume, long preLenght, Headers header, long count) {
-	    // 下载开始
+	    // download start.
 	}
 
 	@Override
 	public void onProgress(int what, int progress, long downCount) {
-		// 更新下载进度
+		// update download progress.
 	}
 
  	@Override
 	public void onFinish(int what, String filePath) {
-	    // 下载完成
+	    // download finish.
  	}
 
 	@Override
 	public void onDownloadError(int what, StatusCode code, CharSequence message) {
-	    // 下载发生错误
+	    // download have a error.
 	}
 
 	@Override
 	public void onCancel(int what) {
-	    // 下载被取消或者暂停
+	    // Download has been cancelled or suspended.
 	}
 };
 ```
-
-#四. 缓存模式
-##1. Http标准协议的缓存，比如响应码是304时
-　　NoHttp本身是实现了RFC2616，所以这里不用设置或者设置为DEFAULT。
+;
+# 四. Cache mode
+## 1. Cache Http standard protocols, such as when the response code is 304(redirect)
+　　Is realized RFC2616 NoHttp itself, so there need not set or set to DEFAULT.
 ```java
 Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
 request.setCacheMode(CacheMode.DEFAULT);
 ```
 
-##2. 当请求服务器失败的时候，读取缓存
-　　请求服务器成功则返回服务器数据，如果请求服务器失败，读取缓存数据返回。
+## 2. When the request network failure, and then read the cache
+　　Request to the server success is returned data server, if the request to the server fails, read the cache data to return.
 ```java
 Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
 request.setCacheMode(CacheMode.REQUEST_NETWORK_FAILED_READ_CACHE);
 ```
 
-##3. 如果发现有缓存直接成功，没有缓存才请求服务器
-　　我们知道ImageLoader的核心除了内存优化外，剩下一个就是发现把内地有图片则直接使用，没有则请求服务器，所以NoHttp这一点非常使用做一个ImageLoader。
-　　如果没有缓存才去请求服务器，否则使用缓存：
+## 3. To read the first cache, there is no cache request to the server again
+　　We know that the core of the ImageLoader besides memory optimization, one is found that the mainland has left image is used directly, without the request to the server, so do a ImageLoader NoHttp this very use.
+　　If there is no cache request to the server, or use the cache:
 ```java
 Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
-// 非标准Http协议，改变缓存模式为IF_NONE_CACHE_REQUEST_NETWORK
+// Change the caching pattern to IF_NONE_CACHE_REQUEST_NETWORK.
 request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST_NETWORK);
 ```
-　　请求图片，缓存图片：
+　　Request pictures, cache the image:
 ```java
 Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
 request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST_NETWORK);
 ```
 
-##4. 仅仅请求网络
-　　这里不会读取缓存，也不会使用Http304：
+## 4. Only request network
+　　Here can't read the cache, can't use Http304:
 ```java
 Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
 request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
 ...
 ```
 
-##5. 仅仅读取缓存
-　　如果没有缓存才去请求服务器，否则使用缓存，缓存图片演示：
+## 5. Only read cache
+　　Just read the cache, not request network and other operation:
 ```java
 Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
 request.setCacheMode(CacheMode.ONLY_READ_CACHE);
 ```
 
-#五. 取消请求
-##取消单个请求
-　　直接调用请求对象的cancel方法。
+# 五. Cancel request
+## Cancel a single request
+　　User method `cancel()` of request.
 ```java
 request.cancel();
 ```
 
-##从队列中取消指定的请求
-　　给请求set一个sign，取消的时候调用队列的cancelBySign就可以取消掉所有指定这个sign的请求。
+## Cancel the specified request from the queue
+　　To the request set a sign, to cancel the call queue cancelBySign can cancel all specify the sign of the request.
 ```java
 request.setCancelSign(sign);
 ...
 queue.cancelBySign(sign);
 ```
 
-##取消队列中所有请求
+## Cancel all requests in the queue
 ```java
 queue.cancelAll();
 ```
 
-##停止队列
-　　队列停止后再添加请求到队列后，请求不会被执行。
+## Stop queue
+　　After add the request to the queue in the queue to stop, the request will not be executed.
 ```java
 RequestQueue queue = NoHttp.newRequestQueue();
 ...
 queue.stop();
 ```
 
-#六. 自定义请求类型: FastJsonRequest
-## 定义请求对象
+#六. The custom request type: FastJsonRequest
+## Define the request object
 ```java
 public class FastJsonRequest extends RestRequestor<JSONObject> {
 
@@ -334,7 +334,6 @@ public class FastJsonRequest extends RestRequestor<JSONObject> {
 	    if (!TextUtils.isEmpty(result)) {
 		    jsonObject = JSON.parseObject(result);
 	    } else {
-		    // 这里默认的错误可以定义为你们自己的数据格式
 		    jsonObject = JSON.toJSON("{}");
 	    }
 	    return jsonObject;
@@ -342,33 +341,31 @@ public class FastJsonRequest extends RestRequestor<JSONObject> {
 
     @Override
     public String getAccept() {
-	    // 告诉服务器你接受什么类型的数据
 	    return "application/json";
     }
 }
 ```
 
-##b. 使用自定义请求-和NoHttp默认请求没有区别的哦
+## Using a custom request and NoHttp default no difference
 ```java
 Request<JSONObject> mRequest = new FastJsonRequest(url, requestMethod);
 queue.add(what, mRequest, responseListener);
 ```
 
-#七. 混淆
+# 七. Proguard
 
-##需要知道的
-    NoHttp全部的类都可以混淆。
-　　NoHttp1.0.0使用了leve23的api，所以打包的时候要用leve23才行。
-　　NoHttp1.0.1使用了反射调用了高级或者低级的api，所以只要是leve9以上的sdk都可以编译。
-　　NoHttp1.0.2同NoHttp1.0.1一样，在NoHttp1.0.1的基础上进行了优化和bug修复。是目前功能最全，最稳定的一个版本，暂时未发现bug。
+## Need to know
+    NoHttp All classes can be confusing.
+　　NoHttp1.0.0 Using the leve23 API, so have to use leve23 packaging.
+　　NoHttp1.0.1 and higher using the reflection calls the high-level or low-level apis, so as long as it is more than leve9 SDK can be compiled.
 
-##如果你非要keep
+## If you don't want to keep
 ```text
 -dontwarn com.yolanda.nohttp.**
 -keep class com.yolanda.nohttp.**{*;}
 ```
 
-##License
+#License
 ```text
 Copyright 2016 Yan Zhenjie
 
@@ -392,9 +389,11 @@ limitations under the License.
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.3.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.4.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
 [10]: http://www.nohttp.net/image/nohttp_logo.svg
-[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.3-include-source.jar?raw=true
+[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.4-include-source.jar?raw=true
 [12]: http://www.yanzhenjie.com
-[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.3
+[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.4
+[14]: https://github.com/yanzhenjie/NoHttp/blob/master/README-cn.md
+[15]: http://www.ietf.org/rfc/rfc2616.txt

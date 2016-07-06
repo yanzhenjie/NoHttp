@@ -18,12 +18,15 @@ package com.yanzhenjie.nohttp.sample.activity;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.dialog.ImageDialog;
@@ -42,55 +45,72 @@ import com.yolanda.nohttp.tools.HeaderParser;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private ViewGroup viewGroup;
+    private CoordinatorLayout mCoordinatorLayout;
+    private AppBarLayout mAppBarLayout;
+    private Toolbar mToolbar;
+    private FrameLayout mContentLayout;
 
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getDelegate().setContentView(R.layout.activity_base);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        viewGroup = (ViewGroup) findViewById(R.id.content);
-        setBackBar(true);
 
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mContentLayout = (FrameLayout) findViewById(R.id.content);
+
+        setSupportActionBar(mToolbar);
+        setBackBar(true);
         onActivityCreate(savedInstanceState);
     }
 
     protected abstract void onActivityCreate(Bundle savedInstanceState);
 
     public <T extends View> T findView(int viewId) {
-        return (T) viewGroup.findViewById(viewId);
+        return (T) mContentLayout.findViewById(viewId);
     }
 
-    public Toolbar getToolbar() {
-        return toolbar;
+    public CoordinatorLayout getCoordinatorLayout() {
+        return mCoordinatorLayout;
+    }
+
+    public FrameLayout getContentLayout() {
+        return mContentLayout;
+    }
+
+    public AppBarLayout getAppBarLayout() {
+        return mAppBarLayout;
+    }
+
+    public Toolbar getmToolbar() {
+        return mToolbar;
     }
 
     @Override
     public void setTitle(CharSequence title) {
-        toolbar.setSubtitle(title);
+        mToolbar.setTitle(title);
     }
 
     @Override
     public void setTitle(int titleId) {
-        toolbar.setTitle(titleId);
+        mToolbar.setTitle(titleId);
     }
 
     public void setSubtitle(CharSequence title) {
-        toolbar.setSubtitle(title);
+        mToolbar.setSubtitle(title);
     }
 
     public void setSubtitle(int titleId) {
-        toolbar.setSubtitle(titleId);
+        mToolbar.setSubtitle(titleId);
     }
 
     public void setSubtitleTextColor(int color) {
-        toolbar.setSubtitleTextColor(color);
+        mToolbar.setSubtitleTextColor(color);
     }
 
     public void setTitleTextColor(int color) {
-        toolbar.setTitleTextColor(color);
+        mToolbar.setTitleTextColor(color);
     }
 
     public void setBackBar(boolean isShow) {
@@ -98,24 +118,24 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void setContentBackground(int color) {
-        viewGroup.setBackgroundResource(color);
+        mContentLayout.setBackgroundResource(color);
     }
 
     @Override
     public void setContentView(int layoutResID) {
-        viewGroup.removeAllViews();
-        getLayoutInflater().inflate(layoutResID, viewGroup, true);
+        mContentLayout.removeAllViews();
+        getLayoutInflater().inflate(layoutResID, mContentLayout, true);
     }
 
     @Override
     public void setContentView(View view) {
-        viewGroup.removeAllViews();
-        viewGroup.addView(view);
+        mContentLayout.removeAllViews();
+        mContentLayout.addView(view);
     }
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
-        viewGroup.addView(view, params);
+        mContentLayout.addView(view, params);
     }
 
     @Override
@@ -129,6 +149,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected boolean onOptionsItemSelectedCompat(MenuItem item) {
         return false;
+    }
+
+    public ViewGroup getContentRoot() {
+        return mContentLayout;
     }
 
     /**
@@ -199,7 +223,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param response 响应。
      */
     public void showWebDialog(Response<?> response) {
-        String result = StringRequest.parseResponseString(response.url(), response.getHeaders(), response.getByteArray());
+        String result = StringRequest.parseResponseString(response.getHeaders(), response.getByteArray());
         WebDialog webDialog = new WebDialog(this);
         String contentType = response.getHeaders().getContentType();
         webDialog.loadUrl(result, contentType, HeaderParser.parseHeadValue(contentType, "charset", "utf-8"));

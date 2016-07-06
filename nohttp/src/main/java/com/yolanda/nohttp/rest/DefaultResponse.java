@@ -73,7 +73,21 @@ public class DefaultResponse<T> implements Response<T> {
      */
     private Exception mException;
 
-    public DefaultResponse(String url, RequestMethod requestMethod, boolean isFromCache, Headers headers, byte[] byteArray, Object tag, T result, long millis, Exception exception) {
+    /**
+     * Create succeed response.
+     *
+     * @param url           url.
+     * @param requestMethod request method.
+     * @param isFromCache   data is come from cache.
+     * @param headers       response header.
+     * @param byteArray     data.
+     * @param tag           tag.
+     * @param result        result.
+     * @param millis        request time.
+     * @param e             exception.
+     * @return {@link com.yolanda.nohttp.rest.Response}.
+     */
+    DefaultResponse(String url, RequestMethod requestMethod, boolean isFromCache, Headers headers, byte[] byteArray, Object tag, T result, long millis, Exception e) {
         this.url = url;
         this.method = requestMethod;
         this.isFromCache = isFromCache;
@@ -82,12 +96,22 @@ public class DefaultResponse<T> implements Response<T> {
         this.tag = tag;
         this.result = result;
         this.mNetworkMillis = millis;
-        this.mException = exception;
+        this.mException = e;
     }
 
     @Override
     public String url() {
         return url;
+    }
+
+    @Override
+    public int responseCode() {
+        return headers.getResponseCode();
+    }
+
+    @Override
+    public String responseMesage() {
+        return headers.getResponseMessage();
     }
 
     @Override

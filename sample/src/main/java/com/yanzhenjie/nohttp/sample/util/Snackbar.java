@@ -15,8 +15,9 @@
  */
 package com.yanzhenjie.nohttp.sample.util;
 
-import android.app.Activity;
 import android.support.annotation.StringRes;
+
+import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 
 /**
  * Created in Jan 31, 2016 4:15:36 PM.
@@ -25,12 +26,12 @@ import android.support.annotation.StringRes;
  */
 public class Snackbar {
 
-    public static void show(Activity context, CharSequence msg) {
-        android.support.design.widget.Snackbar.make(context.getWindow().getDecorView(), msg, android.support.design.widget.Snackbar.LENGTH_LONG).show();
+    public static void show(BaseActivity context, CharSequence msg) {
+        android.support.design.widget.Snackbar.make(context.getContentRoot(), msg, android.support.design.widget.Snackbar.LENGTH_LONG).show();
     }
 
-    public static void show(Activity context, @StringRes int stringId) {
-        android.support.design.widget.Snackbar.make(context.getWindow().getDecorView(), stringId, android.support.design.widget.Snackbar.LENGTH_LONG).show();
+    public static void show(BaseActivity context, @StringRes int stringId) {
+        android.support.design.widget.Snackbar.make(context.getContentRoot(), stringId, android.support.design.widget.Snackbar.LENGTH_LONG).show();
     }
 
 }

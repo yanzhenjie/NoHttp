@@ -138,7 +138,7 @@ public interface BasicClientRequest extends IPriority, Queueable, Startable, Can
     /**
      * Set the accept for head.
      *
-     * @param accept such as: "{@value Headers#APPLICATION_JSON}", "{@value Headers#APPLICATION_XML}.
+     * @param accept such as: "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}", "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML}.
      */
     void setAccept(String accept);
 
@@ -152,7 +152,7 @@ public interface BasicClientRequest extends IPriority, Queueable, Startable, Can
     /**
      * Set the contentType for head.
      *
-     * @param contentType such as: "{@value Headers#APPLICATION_JSON}", "{@value Headers#APPLICATION_XML}" or "{@value Headers#MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
+     * @param contentType such as: "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}", "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML}" or "{@value Headers#HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
      */
     void setContentType(String contentType);
 
@@ -321,7 +321,7 @@ public interface BasicClientRequest extends IPriority, Queueable, Startable, Can
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
      *
      * @param requestBody There can be a file, pictures, any other data flow.You don't need to close it, NoHttp when complete request will be automatically closed.
-     * @param contentType such as: "{@value Headers#APPLICATION_XML}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}", "{@value Headers#APPLICATION_JSON}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}" or "{@value Headers#MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
+     * @param contentType such as: "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}", "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}{@code ; charset=}{@value NoHttp#CHARSET_UTF8}" or "{@value Headers#HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA}". Note, does not need to include quotation marks.
      * @see #setDefineRequestBody(String, String)
      * @see #setDefineRequestBodyForJson(JSONObject)
      * @see #setDefineRequestBodyForJson(String)
@@ -335,8 +335,8 @@ public interface BasicClientRequest extends IPriority, Queueable, Startable, Can
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
      *
      * @param requestBody string body.
-     * @param contentType such as: "{@value Headers#APPLICATION_JSON}" or "{@value Headers#APPLICATION_XML}". Note, does not need to include quotation marks.
-     *                    <p>If ContentType parameter into "" or null, the default for the {@value Headers#APPLICATION_JSON}.</p>
+     * @param contentType such as: "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}" or "{@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML}". Note, does not need to include quotation marks.
+     *                    <p>If ContentType parameter into "" or null, the default for the {@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}.</p>
      * @see #setDefineRequestBody(InputStream, String)
      * @see #setDefineRequestBodyForJson(JSONObject)
      * @see #setDefineRequestBodyForJson(String)
@@ -347,7 +347,7 @@ public interface BasicClientRequest extends IPriority, Queueable, Startable, Can
     /**
      * Set the request json body.
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
-     * <p>The content type is {@value Headers#APPLICATION_JSON}</p>
+     * <p>The content type is {@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}</p>
      *
      * @param jsonBody json body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -360,7 +360,7 @@ public interface BasicClientRequest extends IPriority, Queueable, Startable, Can
     /**
      * Set the request json body.
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
-     * <p>The content type is {@value Headers#APPLICATION_JSON}</p>
+     * <p>The content type is {@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}</p>
      *
      * @param jsonBody json body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -373,7 +373,7 @@ public interface BasicClientRequest extends IPriority, Queueable, Startable, Can
     /**
      * Set the request XML body.
      * <p>It is important to note that the request method must be {@link RequestMethod#PUT}, {@link RequestMethod#POST}, {@link RequestMethod#PATCH} in one of them.</p>
-     * <p>The content type is {@value Headers#APPLICATION_XML}</p>
+     * <p>The content type is {@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML}</p>
      *
      * @param xmlBody xml body.
      * @see #setDefineRequestBody(InputStream, String)

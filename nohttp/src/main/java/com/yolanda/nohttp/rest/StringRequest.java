@@ -27,8 +27,6 @@ import com.yolanda.nohttp.tools.IOUtils;
  */
 public class StringRequest extends com.yolanda.nohttp.rest.RestRequest<String> {
 
-    public static final String ACCEPT = "text/html,application/xhtml+xml,application/xml";
-
     public StringRequest(String url) {
         this(url, RequestMethod.GET);
     }
@@ -38,17 +36,33 @@ public class StringRequest extends com.yolanda.nohttp.rest.RestRequest<String> {
     }
 
     @Override
-    public String getAccept() {
-        return ACCEPT;
+    public String parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
+        return parseResponseString(responseHeaders, responseBody);
     }
 
-    @Override
-    public String parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        return parseResponseString(url, responseHeaders, responseBody);
-    }
-
+    /**
+     * Parse http response to string.
+     *
+     * @param url             nothing.
+     * @param responseHeaders header from http reaponse.
+     * @param responseBody    byteArray from http response.
+     * @return result fro response.
+     * @deprecated use {@link #parseResponse(Headers, byte[])} instead.
+     */
+    @Deprecated
     public static String parseResponseString(String url, Headers responseHeaders, byte[] responseBody) {
-        if (responseBody == null)
+        return parseResponseString(responseHeaders, responseBody);
+    }
+
+    /**
+     * Parse http response to string.
+     *
+     * @param responseHeaders header from http reaponse.
+     * @param responseBody    byteArray from http response.
+     * @return result fro response.
+     */
+    public static String parseResponseString(Headers responseHeaders, byte[] responseBody) {
+        if (responseBody == null && responseBody.length == 0)
             return "";
         return IOUtils.toString(responseBody, HeaderUtil.parseHeadValue(responseHeaders.getContentType(), Headers.HEAD_KEY_CONTENT_TYPE, ""));
     }

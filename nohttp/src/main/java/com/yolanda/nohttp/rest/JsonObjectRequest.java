@@ -32,7 +32,12 @@ import org.json.JSONObject;
  */
 public class JsonObjectRequest extends RestRequest<JSONObject> {
 
-    public static final String ACCEPT = "application/json";
+    /**
+     * The value is {@value}.
+     *
+     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}.
+     */
+    public static final String ACCEPT = Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
 
     public JsonObjectRequest(String url) {
         super(url);
@@ -44,13 +49,13 @@ public class JsonObjectRequest extends RestRequest<JSONObject> {
 
     @Override
     public String getAccept() {
-        return ACCEPT;
+        return Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
     }
 
     @Override
-    public JSONObject parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+    public JSONObject parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
         JSONObject jsonObject = null;
-        String jsonStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
+        String jsonStr = StringRequest.parseResponseString(responseHeaders, responseBody);
 
         if (!TextUtils.isEmpty(jsonStr))
             try {

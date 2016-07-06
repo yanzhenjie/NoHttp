@@ -116,4 +116,14 @@
 
     <!-- Cancel -->
     <string name="no_operation_des">Please look at the code and comments of the Activity.</string>
+
+    <!-- error -->
+    <string name="error_please_check_network">Please check network.</string>
+    <string name="error_timeout">Timeout.</string>
+    <string name="error_not_found_server">Not found server in the network.</string>
+    <string name="error_url_error">URL error.</string>
+    <string name="error_not_found_cache">Not found cache.</string>
+    <string name="error_system_unsupport_method">The system unsupport request method.</string>
+    <string name="error_parse_data_error">Parse data error.</string>
+    <string name="error_unknow">Unknow error.</string>
 </resources>

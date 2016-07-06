@@ -116,4 +116,14 @@
 
     <!-- Cancel -->
     <string name="no_operation_des">请看本Activity的代码和注释</string>
+
+    <!-- error -->
+    <string name="error_please_check_network">请检查网络。</string>
+    <string name="error_timeout">请求超时，网络不好或者服务器不稳定。</string>
+    <string name="error_not_found_server">未发现指定服务器，清切换网络后重试。</string>
+    <string name="error_url_error">URL错误。</string>
+    <string name="error_not_found_cache">没有找到缓存.</string>
+    <string name="error_system_unsupport_method">系统不支持的请求方法。</string>
+    <string name="error_parse_data_error">解析数据时发生错误。</string>
+    <string name="error_unknow">位置错误。</string>
 </resources>

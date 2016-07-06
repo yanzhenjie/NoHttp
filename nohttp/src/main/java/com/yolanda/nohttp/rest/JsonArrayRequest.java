@@ -42,13 +42,13 @@ public class JsonArrayRequest extends RestRequest<JSONArray> {
 
     @Override
     public String getAccept() {
-        return JsonObjectRequest.ACCEPT;
+        return Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
     }
 
     @Override
-    public JSONArray parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+    public JSONArray parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
         JSONArray jsonArray = null;
-        String jsonStr = StringRequest.parseResponseString(url, responseHeaders, responseBody);
+        String jsonStr = StringRequest.parseResponseString(responseHeaders, responseBody);
 
         if (!TextUtils.isEmpty(jsonStr))
             try {

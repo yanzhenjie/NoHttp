@@ -128,7 +128,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
         if (TextUtils.isEmpty(mimeType) && !TextUtils.isEmpty(fileName))
             mimeType = URLConnection.guessContentTypeFromName(getFileName());
         if (TextUtils.isEmpty(mimeType))
-            mimeType = Headers.APPLICATION_OCTET_STREAM;
+            mimeType = Headers.HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM;
         return mimeType;
     }
 
@@ -189,19 +189,6 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     @Override
     public boolean isStarted() {
         return isStarted;
-    }
-
-    /**
-     * Cancel handle.
-     *
-     * @param cancel true or false.
-     * @deprecated {@link #cancel()} instead.
-     */
-    @Deprecated
-    @Override
-    public void cancel(boolean cancel) {
-        if (cancel)
-            cancel();
     }
 
     @Override

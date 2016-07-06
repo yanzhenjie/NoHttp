@@ -18,6 +18,7 @@ package com.yolanda.nohttp.rest;
 import android.text.TextUtils;
 
 import com.yolanda.nohttp.BasicRequest;
+import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
 
 /**
@@ -116,5 +117,25 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
     @Override
     public OnResponseListener<T> responseListener() {
         return responseListener;
+    }
+
+    @Override
+    public T parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
+        return parseResponse(url(), responseHeaders, responseBody);
+    }
+
+    /**
+     * Parse response.
+     *
+     * @param url             url.
+     * @param responseHeaders response {@link Headers} of server.
+     * @param responseBody    response data of server.
+     * @return your response result.
+     * @deprecated use {@link #parseResponse(Headers, byte[])} instead.
+     */
+    @Deprecated
+    @Override
+    public T parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+        return null;
     }
 }

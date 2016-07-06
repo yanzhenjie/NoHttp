@@ -46,6 +46,20 @@ public interface Response<T> {
     String url();
 
     /**
+     * Get the response code of request.
+     *
+     * @return response code.
+     */
+    int responseCode();
+
+    /**
+     * Get the response message of request.
+     *
+     * @return response message.
+     */
+    String responseMesage();
+
+    /**
      * Get the method of request.
      *
      * @return {@link RequestMethod}.

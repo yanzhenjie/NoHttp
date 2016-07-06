@@ -24,15 +24,6 @@ package com.yolanda.nohttp.able;
 public interface Cancelable {
 
     /**
-     * Change cancel state.
-     *
-     * @param cancel true or false.
-     * @deprecated use {@link #cancel()} instead.
-     */
-    @Deprecated
-    void cancel(boolean cancel);
-
-    /**
      * Cancel handle.
      */
     void cancel();

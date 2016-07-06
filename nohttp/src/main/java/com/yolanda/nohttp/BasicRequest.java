@@ -165,7 +165,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
 
         mHeaders = new HttpHeaders();
         mHeaders.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_ALL);
-        mHeaders.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING);
+        mHeaders.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING_GZIP_DEFLATE);
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, HeaderUtil.systemAcceptLanguage());
         // To fix bug: accidental EOFException before API 19
         mHeaders.set(Headers.HEAD_KEY_CONNECTION, Build.VERSION.SDK_INT > AndroidVersion.KITKAT ? Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE : Headers.HEAD_VALUE_CONNECTION_CLOSE);
@@ -352,9 +352,9 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
 
         StringBuilder contentTypeBuild = new StringBuilder();
         if (getRequestMethod().allowRequestBody() && hasBinary())
-            contentTypeBuild.append(Headers.MULTIPART_FORM_DATA).append("; boundary=").append(boundary);
+            contentTypeBuild.append(Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA).append("; boundary=").append(boundary);
         else if (TextUtils.isEmpty(contentType))
-            contentTypeBuild.append(Headers.APPLICATION_X_WWW_FORM_URLENCODED).append("; charset=").append(getParamsEncoding());
+            contentTypeBuild.append(Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED).append("; charset=").append(getParamsEncoding());
         else
             contentTypeBuild.append(contentType);
         return contentTypeBuild.toString();
@@ -523,19 +523,19 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     @Override
     public void setDefineRequestBodyForJson(String jsonBody) {
         if (!TextUtils.isEmpty(jsonBody))
-            setDefineRequestBody(jsonBody, Headers.APPLICATION_JSON);
+            setDefineRequestBody(jsonBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
     }
 
     @Override
     public void setDefineRequestBodyForJson(JSONObject jsonBody) {
         if (jsonBody != null)
-            setDefineRequestBody(jsonBody.toString(), Headers.APPLICATION_JSON);
+            setDefineRequestBody(jsonBody.toString(), Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
     }
 
     @Override
     public void setDefineRequestBodyForXML(String xmlBody) {
         if (!TextUtils.isEmpty(xmlBody))
-            setDefineRequestBody(xmlBody, Headers.APPLICATION_XML);
+            setDefineRequestBody(xmlBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_XML);
     }
 
     /**
@@ -666,10 +666,11 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     protected void writeRequestBody(OutputStream writer) throws IOException {
         if (hasDefineRequestBody()) {
             if (writer instanceof CounterOutputStream) {
-                writer.write(getDefineRequestBody().available());
+                writer.write(mRequestBody.available());
             } else {
-                IOUtils.write(getDefineRequestBody(), writer);
-                IOUtils.closeQuietly(getDefineRequestBody());
+                IOUtils.write(mRequestBody, writer);
+                IOUtils.closeQuietly(mRequestBody);
+                mRequestBody = null;
             }
         }
     }
@@ -724,25 +725,12 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         return isFinished;
     }
 
-    /**
-     * Cancel handle.
-     *
-     * @param cancel true or false.
-     * @deprecated use {@link #cancel()} instead.
-     */
-    @Deprecated
-    @Override
-    public void cancel(boolean cancel) {
-        if (cancel)
-            cancel();
-    }
-
     @Override
     public void cancel() {
         if (!isCanceled) {
             isCanceled = true;
             if (hasDefineRequestBody())
-                IOUtils.closeQuietly(getDefineRequestBody());
+                IOUtils.closeQuietly(mRequestBody);
 
             if (blockingQueue != null)
                 blockingQueue.remove(this);

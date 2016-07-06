@@ -15,9 +15,10 @@
  */
 package com.yolanda.nohttp.rest;
 
-import com.yolanda.nohttp.Headers;
-
 import android.os.SystemClock;
+
+import com.yolanda.nohttp.Headers;
+import com.yolanda.nohttp.error.ParseError;
 
 /**
  * <p>
@@ -53,12 +54,16 @@ public class HttpRestParser implements ImplRestParser {
         boolean isFromCache = httpResponse.isFromCache();
         Headers responseHeaders = httpResponse.responseHeaders();
         Exception exception = httpResponse.exception();
+        T result = null;
         byte[] responseBody = httpResponse.responseBody();
         if (exception == null) {
-            T result = request.parseResponse(url, responseHeaders, responseBody);
-            return new DefaultResponse<T>(url, request.getRequestMethod(), isFromCache, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - startTime, exception);
+            try {
+                result = request.parseResponse(responseHeaders, responseBody);
+            } catch (Throwable e) {
+                exception = new ParseError("Parse data error: " + e.getMessage());
+            }
         }
-        return new DefaultResponse<T>(url, request.getRequestMethod(), isFromCache, responseHeaders, responseBody, request.getTag(), null, SystemClock.elapsedRealtime() - startTime, exception);
+        return new DefaultResponse<T>(url, request.getRequestMethod(), isFromCache, responseHeaders, responseBody, request.getTag(), result, SystemClock.elapsedRealtime() - startTime, exception);
     }
 
 }

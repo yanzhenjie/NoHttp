@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.yanzhenjie.nohttp.sample.view.ListRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rv_start_activity"
-    style="@style/WrapContent.WidthMatchParent" />
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorlayout"
+    style="@style/MatchParent"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarlayout"
+        style="@style/WrapContent.WidthMatchParent"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsingtoolbarlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginEnd="65dp"
+            app:expandedTitleMarginStart="45dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <com.yanzhenjie.nohttp.sample.view.AutoPlayViewPager
+                android:id="@+id/vp_main_banner"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.6" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <com.yanzhenjie.nohttp.sample.view.ListRecyclerView
+        android:id="@+id/rv_start_activity"
+        style="@style/WrapContent.WidthMatchParent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</android.support.design.widget.CoordinatorLayout>

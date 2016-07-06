@@ -24,6 +24,7 @@ import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.error.NetworkError;
 import com.yolanda.nohttp.error.NotFoundCacheError;
+import com.yolanda.nohttp.error.ParseError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
@@ -119,20 +120,22 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
     @Override
     public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
         if (exception instanceof NetworkError) {// 网络不好
-            Snackbar.show(mActivity, "请检查网络。");
+            Snackbar.show(mActivity, R.string.error_please_check_network);
         } else if (exception instanceof TimeoutError) {// 请求超时
-            Snackbar.show(mActivity, "请求超时，网络不好或者服务器不稳定。");
+            Snackbar.show(mActivity, R.string.error_timeout);
         } else if (exception instanceof UnKnownHostError) {// 找不到服务器
-            Snackbar.show(mActivity, "未发现指定服务器。");
+            Snackbar.show(mActivity, R.string.error_not_found_server);
         } else if (exception instanceof URLError) {// URL是错的
-            Snackbar.show(mActivity, "URL错误。");
+            Snackbar.show(mActivity, R.string.error_url_error);
         } else if (exception instanceof NotFoundCacheError) {
             // 这个异常只会在仅仅查找缓存时没有找到缓存时返回
-            Snackbar.show(mActivity, "没有发现缓存。");
+            Snackbar.show(mActivity, R.string.error_not_found_cache);
         } else if (exception instanceof ProtocolException) {
-            Snackbar.show(mActivity, "系统不支持的请求方式。");
+            Snackbar.show(mActivity, R.string.error_system_unsupport_method);
+        } else if (exception instanceof ParseError) {
+            Snackbar.show(mActivity, R.string.error_parse_data_error);
         } else {
-            Snackbar.show(mActivity, "未知错误。");
+            Snackbar.show(mActivity, R.string.error_unknow);
         }
         Logger.e("错误：" + exception.getMessage());
         if (callback != null)

@@ -17,7 +17,10 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
@@ -27,10 +30,13 @@ import com.yanzhenjie.nohttp.sample.activity.download.DownloadActivity;
 import com.yanzhenjie.nohttp.sample.activity.json.FastJsonActivity;
 import com.yanzhenjie.nohttp.sample.activity.json.JsonActivity;
 import com.yanzhenjie.nohttp.sample.activity.upload.UploadFileActivity;
+import com.yanzhenjie.nohttp.sample.adapter.MainBannerAdapter;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListMultiAdapter;
 import com.yanzhenjie.nohttp.sample.entity.ListItem;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
+import com.yanzhenjie.nohttp.sample.view.AutoPlayViewPager;
+import com.yolanda.nohttp.tools.ResCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +47,25 @@ import java.util.List;
  *
  * @author Yan Zhenjie.
  */
-public class StartActivity extends BaseActivity {
+public class StartActivity extends AppCompatActivity {
+
+    private AutoPlayViewPager autoPlayViewPager;
 
     @Override
-    protected void onActivityCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_start);
-        setBackBar(false);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getDelegate().setContentView(R.layout.activity_start);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+
+        CollapsingToolbarLayout collapsingtoolbarlayout = (CollapsingToolbarLayout) findViewById(R.id.collapsingtoolbarlayout);
+        collapsingtoolbarlayout.setCollapsedTitleTextColor(ResCompat.getColor(R.color.white));
+        collapsingtoolbarlayout.setExpandedTitleColor(ResCompat.getColor(R.color.white));
+
+        autoPlayViewPager = (AutoPlayViewPager) findViewById(R.id.vp_main_banner);
+        autoPlayViewPager.setAdapter(new MainBannerAdapter());
+
+        autoPlayViewPager.setCurrentItem(MainBannerAdapter.IMAGES.length * 5);
+        autoPlayViewPager.start();
 
         List<ListItem> listItems = new ArrayList<>();
         String[] titles = getResources().getStringArray(R.array.activity_start_items);
@@ -56,7 +75,7 @@ public class StartActivity extends BaseActivity {
         }
 
         RecyclerListMultiAdapter listAdapter = new RecyclerListMultiAdapter(listItems, mItemClickListener);
-        RecyclerView recyclerView = findView(R.id.rv_start_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_start_activity);
         recyclerView.setAdapter(listAdapter);
     }
 
@@ -124,6 +143,8 @@ public class StartActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        autoPlayViewPager.stop();
+
         // 程序退出时取消所有请求
         CallServer.getRequestInstance().cancelAll();
 

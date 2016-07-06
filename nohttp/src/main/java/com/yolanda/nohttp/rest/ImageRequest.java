@@ -57,14 +57,14 @@ public class ImageRequest extends RestRequest<Bitmap> {
     }
 
     @Override
-    public Bitmap parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+    public Bitmap parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
         synchronized (DECODE_LOCK) {
             Bitmap bitmap = null;
             if (responseBody != null) {
                 try {
                     bitmap = doResponse(responseBody);
                 } catch (OutOfMemoryError e) {
-                    String errorMessage = String.format(Locale.getDefault(), "Caught OOM for %d byte image, url=%s", responseBody.length, url);
+                    String errorMessage = String.format(Locale.US, "Caught OOM for %d byte image, url=%s", responseBody.length, url());
                     Logger.e(e, errorMessage);
                 }
             }

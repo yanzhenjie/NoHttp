@@ -15,7 +15,7 @@
  */
 package com.yolanda.nohttp;
 
-import android.util.Log;
+import java.lang.reflect.Method;
 
 /**
  * Created in Jul 28, 2015 7:32:05 PM.
@@ -24,112 +24,226 @@ import android.util.Log;
  */
 public class Logger {
 
+    public static final String V = "v";
+    public static final String I = "i";
+    public static final String D = "d";
+    public static final String W = "w";
+    public static final String E = "e";
+    public static final String WTF = "wtf";
+
     /**
      * Library debug tag.
      */
     private static String STag = "NoHttp";
-
     /**
      * Library debug sign.
      */
     private static boolean SDebug = false;
+    /**
+     * Default length.
+     */
+    private static final int MAX_LENGTH = 4000;
+    /**
+     * Length of message.
+     */
+    private static int maxLength = MAX_LENGTH;
 
+    /**
+     * Set tag of log.
+     *
+     * @param tag tag.
+     */
     public static void setTag(String tag) {
         STag = tag;
     }
 
+    /**
+     * Open debug mode of {@code NoHttp}.
+     *
+     * @param debug true open, false close.
+     */
     public static void setDebug(boolean debug) {
         SDebug = debug;
     }
 
+    /**
+     * Set the length of the line of the Log, value is {@value MAX_LENGTH}.
+     *
+     * @param length length.
+     */
+    public static void setMessageMaxLength(int length) {
+        maxLength = length;
+    }
+
     public static void i(String msg) {
-        if (SDebug)
-            Log.i(STag, msg);
+        print(I, msg);
     }
 
     public static void i(Throwable e) {
-        if (SDebug)
-            Log.i(STag, "", e);
+        i(e, "");
     }
 
     public static void i(Throwable e, String msg) {
-        if (SDebug)
-            Log.i(STag, msg, e);
+        print(I, msg, e);
     }
 
     public static void v(String msg) {
-        if (SDebug)
-            Log.v(STag, msg);
+        print(V, msg);
     }
 
     public static void v(Throwable e) {
-        if (SDebug)
-            Log.v(STag, "", e);
+        v(e, "");
     }
 
     public static void v(Throwable e, String msg) {
-        if (SDebug)
-            Log.v(STag, msg, e);
+        print(V, msg, e);
     }
 
     public static void d(String msg) {
-        if (SDebug)
-            Log.d(STag, msg);
+        print(D, msg);
     }
 
     public static void d(Throwable e) {
-        if (SDebug)
-            Log.d(STag, "", e);
+        d(e, "");
     }
 
     public static void d(Throwable e, String msg) {
-        if (SDebug)
-            Log.d(STag, msg, e);
+        print(D, msg, e);
     }
 
     public static void e(String msg) {
-        if (SDebug)
-            Log.e(STag, msg);
+        print(E, msg);
     }
 
     public static void e(Throwable e) {
-        if (SDebug)
-            Log.e(STag, "", e);
+        e(e, "");
     }
 
     public static void e(Throwable e, String msg) {
-        if (SDebug)
-            Log.e(STag, msg, e);
+        print(E, msg, e);
     }
 
     public static void w(String msg) {
-        if (SDebug)
-            Log.w(STag, msg);
+        print(W, msg);
     }
 
     public static void w(Throwable e) {
-        if (SDebug)
-            Log.w(STag, "", e);
+        w(e, "");
     }
 
     public static void w(Throwable e, String msg) {
-        if (SDebug)
-            Log.w(STag, msg, e);
+        print(W, msg, e);
     }
 
     public static void wtf(String msg) {
-        if (SDebug)
-            Log.wtf(STag, msg);
+        print(WTF, msg);
     }
 
     public static void wtf(Throwable e) {
-        if (SDebug)
-            Log.wtf(STag, "", e);
+        wtf(e, "");
     }
 
     public static void wtf(Throwable e, String msg) {
-        if (SDebug)
-            Log.wtf(STag, msg, e);
+        print(WTF, msg, e);
+    }
+
+    /**
+     * Print log for define method. When information is too long, the Logger can also complete printing. The equivalent of "{@code android.util.Log.i("Tag", "Message")}" "{@code com.yolanda.nohttp.Logger.print("i", "Tag", "Message")}".
+     *
+     * @param method  such as "{@code v, i, d, w, e, wtf}".
+     * @param message message.
+     */
+    public static void print(String method, String message) {
+        print(method, STag, message);
+    }
+
+    /**
+     * Print log for define method. When information is too long, the Logger can also complete printing. The equivalent of "{@code android.util.Log.i("Tag", "Message")}" "{@code com.yolanda.nohttp.Logger.print("i", "Tag", "Message")}".
+     *
+     * @param method  such as "{@code v, i, d, w, e, wtf}".
+     * @param tag     tag.
+     * @param message message.
+     */
+    public static void print(String method, String tag, String message) {
+        if (SDebug) {
+            if (message == null)
+                message = "null";
+            int strLength = message.length();
+            if (strLength == 0)
+                invokePrint(method, tag, message);
+            else {
+                for (int i = 0; i < strLength / maxLength + (strLength % maxLength > 0 ? 1 : 0); i++) {
+                    int end = (i + 1) * maxLength;
+                    if (strLength >= end) {
+                        invokePrint(method, tag, message.substring(end - maxLength, end));
+                    } else {
+                        invokePrint(method, tag, message.substring(end - maxLength));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Through the reflection to call the print method.
+     *
+     * @param method  such as "{@code v, i, d, w, e, wtf}".
+     * @param tag     tag.
+     * @param message message.
+     */
+    public static void invokePrint(String method, String tag, String message) {
+        try {
+            Class<android.util.Log> logClass = android.util.Log.class;
+            Method logMethod = logClass.getMethod(method, String.class, String.class);
+            logMethod.setAccessible(true);
+            logMethod.invoke(null, tag, message);
+        } catch (Exception e) {
+            System.out.println(tag + ": " + message);
+        }
+    }
+
+    /**
+     * Print log for define method. When information is too long, the Logger can also complete printing. The equivalent of "{@code android.util.Log.i("Tag", "Message")}" "{@code com.yolanda.nohttp.Logger.print("i", "Tag", "Message")}".
+     *
+     * @param method  such as "{@code v, i, d, w, e, wtf}".
+     * @param message message.
+     * @param e       error.
+     */
+    public static void print(String method, String message, Throwable e) {
+        print(method, STag, message, e);
+    }
+
+    /**
+     * Print log for define method. When information is too long, the Logger can also complete printing. The equivalent of "{@code android.util.Log.i("Tag", "Message")}" "{@code com.yolanda.nohttp.Logger.print("i", "Tag", "Message")}".
+     *
+     * @param method  such as "{@code v, i, d, w, e, wtf}".
+     * @param tag     tag.
+     * @param message message.
+     * @param e       error.
+     */
+    public static void print(String method, String tag, String message, Throwable e) {
+        if (SDebug) {
+            invokePrint(method, tag, message, e);
+        }
+    }
+
+    /**
+     * Through the reflection to call the print method.
+     *
+     * @param method  such as "{@code v, i, d, w, e, wtf}".
+     * @param tag     tag.
+     * @param message message.
+     * @param e       error.
+     */
+    public static void invokePrint(String method, String tag, String message, Throwable e) {
+        try {
+            Class<android.util.Log> logClass = android.util.Log.class;
+            Method logMethod = logClass.getMethod(method, String.class, String.class, Throwable.class);
+            logMethod.setAccessible(true);
+            logMethod.invoke(null, tag, message, e);
+        } catch (Exception e1) {
+            System.out.println(tag + ": " + message);
+        }
     }
 
 }

@@ -112,7 +112,7 @@ public interface BasicServerRequest {
     /**
      * The type of the request body.
      *
-     * @return such as: {@value Headers#APPLICATION_JSON}, {@value Headers#APPLICATION_XML}, {@value Headers#APPLICATION_X_WWW_FORM_URLENCODED}.
+     * @return such as: {@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}, {@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML}, {@value Headers#HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED}.
      */
     String getContentType();
 

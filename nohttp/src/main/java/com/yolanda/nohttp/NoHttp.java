@@ -64,39 +64,39 @@ public class NoHttp {
     /**
      * The value is {@value}.
      *
-     * @deprecated use {@link Headers#APPLICATION_X_WWW_FORM_URLENCODED} instead.
+     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED} instead.
      */
     @Deprecated
-    public static final String APPLICATION_X_WWW_FORM_URLENCODED = Headers.APPLICATION_X_WWW_FORM_URLENCODED;
+    public static final String APPLICATION_X_WWW_FORM_URLENCODED = Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED;
 
     /**
      * The value is {@value}.
      *
-     * @deprecated use {@link Headers#MULTIPART_FORM_DATA} instead.
+     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA} instead.
      */
     @Deprecated
-    public static final String MULTIPART_FORM_DATA = Headers.MULTIPART_FORM_DATA;
+    public static final String MULTIPART_FORM_DATA = Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA;
 
     /**
      * The value is {@value}.
      *
-     * @deprecated use {@link Headers#APPLICATION_OCTET_STREAM} instead.
+     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM} instead.
      */
     @Deprecated
-    public static final String APPLICATION_OCTET_STREAM = Headers.APPLICATION_OCTET_STREAM;
+    public static final String APPLICATION_OCTET_STREAM = Headers.HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM;
 
     /**
      * The value is {@value}.
      *
-     * @deprecated use {@link Headers#APPLICATION_JSON} instead.
+     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON} instead.
      */
     @Deprecated
-    public static final String APPLICATION_JSON = Headers.APPLICATION_JSON;
+    public static final String APPLICATION_JSON = Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
 
     /**
      * The value is {@value}.
      *
-     * @deprecated use {@link Headers#APPLICATION_XML} instead.
+     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML} instead.
      */
     @Deprecated
     public static final String APPLICATION_XML = "application/xml";
@@ -107,24 +107,36 @@ public class NoHttp {
     public static final String CHARSET_UTF8 = "UTF-8";
 
     /**
-     * RequestQueue default thread size, value is {@value}.
+     * Default thread pool size.
      */
-    public static final int DEFAULT_THREAD_SIZE = 3;
+    private static final int DEFAULT_THREAD_SIZE = 3;
+    /**
+     * RequestQueue default thread size, value is {@value DEFAULT_THREAD_SIZE}.
+     */
+    private static int DEFAULT_REQUEST_THREAD_SIZE = DEFAULT_THREAD_SIZE;
+
+    /**
+     * DownloadQueue default thread size, value is {@value DEFAULT_THREAD_SIZE}.
+     */
+    private static int DEFAULT_DOWNLOAD_THREAD_SIZE = DEFAULT_THREAD_SIZE;
 
     /**
      * The value is {@value}.
+     *
+     * @deprecated use {@link #getDefaultConnectTimeout()} or {@link #getDefaultReadTimeout()} instead.
      */
+    @Deprecated
     public static final int TIMEOUT_8S = 8 * 1000;
 
     /**
      * Default connect timeout. The value is {@value}.
      */
-    private static Integer sDefaultConnectTimeout = TIMEOUT_8S;
+    private static int sDefaultConnectTimeout = 8 * 1000;
 
     /**
      * Default read timeout. The value is {@value}.
      */
-    private static Integer sDefaultReadTimeout = TIMEOUT_8S;
+    private static int sDefaultReadTimeout = 8 * 1000;
 
     /**
      * Context.
@@ -141,64 +153,7 @@ public class NoHttp {
     private static boolean isEnableCookie = true;
 
     /**
-     * Get version name of NoHttp.
-     *
-     * @return {@link String}.
-     */
-    public static String versionName() {
-        return "1.0.3";
-    }
-
-    /**
-     * Get version code of NoHttp.
-     *
-     * @return {@link Integer}.
-     */
-    public static int versionCode() {
-        return 103;
-    }
-
-    /**
-     * Initialization NoHttp, Should invoke on {@link Application#onCreate()}.
-     *
-     * @param application {@link Application}.
-     * @deprecated use {@link #initialize(Application)} instead.
-     */
-    @Deprecated
-    public static void init(Application application) {
-        initialize(application);
-    }
-
-    /**
-     * Initialization NoHttp, Should invoke on {@link Application#onCreate()}.
-     *
-     * @param application {@link Application}.
-     */
-    public static void initialize(Application application) {
-        if (sApplication == null) {
-            sApplication = application;
-            sCookieHandler = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
-
-            if (Build.VERSION.SDK_INT < AndroidVersion.KITKAT) {
-                System.setProperty("http.keepAlive", "false");
-                System.setProperty("http.maxConnections", String.valueOf(5));
-            }
-        }
-    }
-
-    /**
-     * Get application of app.
-     *
-     * @return {@link Application}.
-     */
-    public static Application getContext() {
-        if (sApplication == null)
-            throw new ExceptionInInitializerError("Please invoke NoHttp.initialize(Application) on Application#onCreate()");
-        return sApplication;
-    }
-
-    /**
-     * Create a new request queue, using NoHttp default configuration. And number of concurrent requests is {@value #DEFAULT_THREAD_SIZE}.
+     * Create a new request queue, using NoHttp default configuration. And number of concurrent requests is {@value DEFAULT_THREAD_SIZE}.
      *
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue(int)
@@ -207,7 +162,7 @@ public class NoHttp {
      * @see #newRequestQueue(ImplRestParser, int)
      */
     public static RequestQueue newRequestQueue() {
-        return newRequestQueue(DEFAULT_THREAD_SIZE);
+        return newRequestQueue(DEFAULT_REQUEST_THREAD_SIZE);
     }
 
     /**
@@ -442,14 +397,14 @@ public class NoHttp {
     }
 
     /**
-     * Create a new download queue, the default thread pool number is {@value NoHttp#DEFAULT_THREAD_SIZE}.
+     * Create a new download queue, the default thread pool number is {@value DEFAULT_THREAD_SIZE}.
      *
      * @return {@link DownloadQueue}.
      * @see #newDownloadQueue(int)
      * @see #newDownloadQueue(Downloader, int)
      */
     public static DownloadQueue newDownloadQueue() {
-        return newDownloadQueue(DEFAULT_THREAD_SIZE);
+        return newDownloadQueue(DEFAULT_DOWNLOAD_THREAD_SIZE);
     }
 
     /**
@@ -538,43 +493,74 @@ public class NoHttp {
     }
 
     /**
-     * Get NoHttp Cookie manager by default.
+     * Get version name of NoHttp.
      *
-     * @return {@link CookieHandler}.
-     * @see #setDefaultCookieHandler(CookieHandler)
+     * @return {@link String}.
      */
-    public static CookieHandler getDefaultCookieHandler() {
-        return sCookieHandler;
+    public static String versionName() {
+        return "1.0.4";
     }
 
     /**
-     * Sets the system-wide cookie handler.
+     * Get version code of NoHttp.
      *
-     * @param cookieHandler {@link CookieHandler}.
-     * @see #getDefaultCookieHandler()
+     * @return {@link Integer}.
      */
-    public static void setDefaultCookieHandler(CookieHandler cookieHandler) {
-        if (cookieHandler == null)
-            throw new IllegalArgumentException("cookieHandler == null");
-        sCookieHandler = cookieHandler;
+    public static int versionCode() {
+        return 104;
     }
 
     /**
-     * Set to enable cookies.
+     * Initialization NoHttp, Should invoke on {@link Application#onCreate()}.
      *
-     * @param enableCookie ture enable, false disenable.
+     * @param application {@link Application}.
+     * @deprecated use {@link #initialize(Application)} instead.
      */
-    public static void setEnableCookie(boolean enableCookie) {
-        isEnableCookie = enableCookie;
+    @Deprecated
+    public static void init(Application application) {
+        initialize(application);
     }
 
     /**
-     * Is enable cookie.
+     * Initialization NoHttp, Should invoke on {@link Application#onCreate()}.
      *
-     * @return true enable, false disenable.
+     * @param application {@link Application}.
      */
-    public static boolean isEnableCookie() {
-        return isEnableCookie;
+    public static void initialize(Application application) {
+        if (sApplication == null) {
+            sApplication = application;
+            sCookieHandler = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
+
+            if (Build.VERSION.SDK_INT < AndroidVersion.KITKAT) {
+                System.setProperty("http.keepAlive", "false");
+                System.setProperty("http.maxConnections", String.valueOf(5));
+            }
+        }
+    }
+
+    /**
+     * Get application of app.
+     *
+     * @return {@link Application}.
+     */
+    public static Application getContext() {
+        if (sApplication == null)
+            throw new ExceptionInInitializerError("Please invoke NoHttp.initialize(Application) on Application#onCreate()");
+        return sApplication;
+    }
+
+    /**
+     * It will be called whenever the realm that the URL is pointing to requires authorization.
+     *
+     * @param passwordAuthentication passwordAuthentication which has to be set as default.
+     */
+    public static void setDefaultAuthenticator(final PasswordAuthentication passwordAuthentication) {
+        Authenticator.setDefault(new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return passwordAuthentication;
+            }
+        });
     }
 
     /**
@@ -614,17 +600,79 @@ public class NoHttp {
     }
 
     /**
-     * It will be called whenever the realm that the URL is pointing to requires authorization.
+     * Set default request thread pool size.
      *
-     * @param passwordAuthentication passwordAuthentication which has to be set as default.
+     * @param size count.
      */
-    public static void setDefaultAuthenticator(final PasswordAuthentication passwordAuthentication) {
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return passwordAuthentication;
-            }
-        });
+    public static void setDefaultRequestThreadSize(int size) {
+        DEFAULT_REQUEST_THREAD_SIZE = size;
+    }
+
+    /**
+     * Get default request thread pool size.
+     *
+     * @return count.
+     */
+    public static int getDefaultRequestThreadSize() {
+        return DEFAULT_REQUEST_THREAD_SIZE;
+    }
+
+    /**
+     * Set default download thread pool size.
+     *
+     * @param size count.
+     */
+    public static void setDefaultDownloadThreadSize(int size) {
+        DEFAULT_DOWNLOAD_THREAD_SIZE = size;
+    }
+
+    /**
+     * Get default donwload thread pool size.
+     *
+     * @return count.
+     */
+    public static int getDefaultDownloadThreadSize() {
+        return DEFAULT_DOWNLOAD_THREAD_SIZE;
+    }
+
+    /**
+     * Set to enable cookies.
+     *
+     * @param enableCookie ture enable, false disenable.
+     */
+    public static void setEnableCookie(boolean enableCookie) {
+        isEnableCookie = enableCookie;
+    }
+
+    /**
+     * Get NoHttp Cookie manager by default.
+     *
+     * @return {@link CookieHandler}.
+     * @see #setDefaultCookieHandler(CookieHandler)
+     */
+    public static CookieHandler getDefaultCookieHandler() {
+        return sCookieHandler;
+    }
+
+    /**
+     * Sets the system-wide cookie handler.
+     *
+     * @param cookieHandler {@link CookieHandler}.
+     * @see #getDefaultCookieHandler()
+     */
+    public static void setDefaultCookieHandler(CookieHandler cookieHandler) {
+        if (cookieHandler == null)
+            throw new IllegalArgumentException("cookieHandler == null");
+        sCookieHandler = cookieHandler;
+    }
+
+    /**
+     * Is enable cookie.
+     *
+     * @return true enable, false disenable.
+     */
+    public static boolean isEnableCookie() {
+        return isEnableCookie;
     }
 
     private NoHttp() {

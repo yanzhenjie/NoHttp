@@ -53,32 +53,32 @@ public interface Headers extends MultiValueMap<String, String> {
     /**
      * The value is {@value}.
      */
-    String HEAD_VALUE_ACCEPT_ALL = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+    String HEAD_VALUE_ACCEPT_ALL = "application/json,application/xml,application/xhtml+xml,text/html";
 
     /**
      * The value is {@value}.
      */
-    String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+    String HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
     /**
      * The value is {@value}.
      */
-    String MULTIPART_FORM_DATA = "multipart/form-data";
+    String HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA = "multipart/form-data";
 
     /**
      * The value is {@value}.
      */
-    String APPLICATION_OCTET_STREAM = "application/octet-stream";
+    String HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM = "application/octet-stream";
 
     /**
      * The value is {@value}.
      */
-    String APPLICATION_JSON = "application/json";
+    String HEAD_VALUE_ACCEPT_APPLICATION_JSON = "application/json";
 
     /**
      * The value is {@value}.
      */
-    String APPLICATION_XML = "application/xml";
+    String HEAD_VALUE_ACCEPT_APPLICATION_XML = "application/xml";
 
     /**
      * The value is {@value}.
@@ -88,7 +88,7 @@ public interface Headers extends MultiValueMap<String, String> {
     /**
      * The value is {@value}.
      */
-    String HEAD_VALUE_ACCEPT_ENCODING = "gzip, deflate";// no sdch
+    String HEAD_VALUE_ACCEPT_ENCODING_GZIP_DEFLATE = "gzip, deflate";// no sdch
 
     /**
      * The value is {@value}.

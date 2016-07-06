@@ -97,13 +97,13 @@ public class RequestDispatcher extends Thread {
             startThread.onStart();
             PosterHandler.getInstance().post(startThread);
 
-            // request
+            // request.
             Response<?> response = mImplRestParser.parserRequest(request);
 
-            // remove it from queue
+            // remove it from queue.
             mUnFinishQueue.remove(request);
 
-            // finish
+            // finish.
             final ThreadPoster finishThread = new ThreadPoster(what, responseListener);
             finishThread.onFinished();
             PosterHandler.getInstance().post(finishThread);
@@ -159,15 +159,11 @@ public class RequestDispatcher extends Thread {
                 else if (command == COMMAND_FINISH)
                     responseListener.onFinish(what);
                 else if (command == COMMAND_RESPONSE) {
-                    if (response == null) {
-                        responseListener.onFailed(what, null, null, new Exception("Unknown abnormal."), 0, 0);
+                    if (response.isSucceed()) {
+                        responseListener.onSucceed(what, response);
                     } else {
-                        if (response.isSucceed()) {
-                            responseListener.onSucceed(what, response);
-                        } else {
-                            Headers headers = response.getHeaders();
-                            responseListener.onFailed(what, response.url(), response.getTag(), response.getException(), headers == null ? -1 : headers.getResponseCode(), response.getNetworkMillis());
-                        }
+                        Headers headers = response.getHeaders();
+                        responseListener.onFailed(what, response.url(), response.getTag(), response.getException(), headers == null ? -1 : headers.getResponseCode(), response.getNetworkMillis());
                     }
                 }
             }

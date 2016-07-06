@@ -33,11 +33,23 @@ public interface Request<T> extends ImplClientRequest, ImplServerRequest {
     /**
      * Parse response.
      *
+     * @param responseHeaders response {@link Headers} of server.
+     * @param responseBody    response data of server.
+     * @return your response result.
+     * @throws Throwable parse error.
+     */
+    T parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable;
+
+    /**
+     * Parse response.
+     *
      * @param url             url.
      * @param responseHeaders response {@link Headers} of server.
      * @param responseBody    response data of server.
      * @return your response result.
+     * @deprecated use {@link #parseResponse(Headers, byte[])} instead.
      */
+    @Deprecated
     T parseResponse(String url, Headers responseHeaders, byte[] responseBody);
 
     /**
