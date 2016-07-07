@@ -1,5 +1,5 @@
 # NoHttp
-> NoHttp，a have feelings of framework.
+> NoHttp, feeling spill（NoHttp，情怀四溢）.
 
 ![NoHttp Logo][10]
 
@@ -16,7 +16,7 @@ NoHttp source code: [https://github.com/yanzhenjie/NoHttp][1]
 Document also continues to improve, there is a problem can send [issues][7], or send an email to me directly: smallajax@foxmail.com.
 
 # How to use
-* Eclipse USES ajr package, if need to rely on the source code, [download][13].
+* Eclipse use [NoHttp Jar][8], if need to rely on the source code, [download][13].
 > [download jar [include source code，274k]][11]  
 > [download jar [not include source code，147k]][8]  
 
@@ -52,7 +52,7 @@ NoHttp implements Http1.1 ([RFC2616][15]), a standard Http framework.
 * Support Https, self-signed website Https access, support two-way authentication.
 
 ## Friendly debug mode
-NoHttp provides a debug mode, after open the can see clear request process, such as how to transfer data, basic need not caught.Can see that the request headers, request data, the process of response headers, cookies, etc.You don't have to worry about too many Log will dazzle you, clean and tidy.
+NoHttp provides a debug mode, after open the can see clear request process, such as how to transfer data, basic need not caught. Can see that the request headers, request data, the process of response headers, cookies, etc. You don't have to worry about too many Log will dazzle you, clean and tidy.
 
 ## Request
 >* Support the request String, Json, FastJson, Gson, Bitmap, javabeans and XML extensions.
@@ -99,7 +99,7 @@ All cancelled all support requests are being executed.
 >* The standard Java Api, the ProXy: the designated agent of IP and Port.
 >* Such as agent to your computer for caught when debugging, such as use proxy to access Google.
 
-# 一. Request
+# 1. Request
 ## String request
 ```java
 // String request object
@@ -154,7 +154,7 @@ if (response.isSucceed()) {
 }
 ```
 
-# 二. File upload
+# 2. File upload
 　　Support for multiple File upload, multiple key multiple files, a key multiple files (`List < File >`). Support File, InputStream, ByteArray containing, Bitmap, realize NoHttp Binary interface, anything can theoretically.
 
 ## A single file
@@ -195,7 +195,7 @@ fileList.add(new BitmapStreamBinary(Bitmap));
 request.add("file_list", fileList);
 ```
 
-# 三. Download file
+# 3. Download file
 　　Because the downloaded file code is more, post key part, specific please refer to the sample.
 ## Request a download
 ```java
@@ -242,7 +242,7 @@ private DownloadListener downloadListener = new DownloadListener() {
 };
 ```
 ;
-# 四. Cache mode
+# 4. Cache mode
 ## 1. Cache Http standard protocols, such as when the response code is 304(redirect)
 　　Is realized RFC2616 NoHttp itself, so there need not set or set to DEFAULT.
 ```java
@@ -286,7 +286,7 @@ Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
 request.setCacheMode(CacheMode.ONLY_READ_CACHE);
 ```
 
-# 五. Cancel request
+# 5. Cancel request
 ## Cancel a single request
 　　User method `cancel()` of request.
 ```java
@@ -314,7 +314,7 @@ RequestQueue queue = NoHttp.newRequestQueue();
 queue.stop();
 ```
 
-#六. The custom request type: FastJsonRequest
+#6. The custom request type: FastJsonRequest
 ## Define the request object
 ```java
 public class FastJsonRequest extends RestRequestor<JSONObject> {
@@ -352,7 +352,7 @@ Request<JSONObject> mRequest = new FastJsonRequest(url, requestMethod);
 queue.add(what, mRequest, responseListener);
 ```
 
-# 七. Proguard
+# 7. Proguard
 
 ## Need to know
     NoHttp All classes can be confusing.
