@@ -18,7 +18,7 @@
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="65dp"
             app:expandedTitleMarginStart="45dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <com.yanzhenjie.nohttp.sample.view.AutoPlayViewPager
                 android:id="@+id/vp_main_banner"

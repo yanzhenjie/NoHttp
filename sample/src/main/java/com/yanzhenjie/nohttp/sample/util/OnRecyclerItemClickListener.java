@@ -18,7 +18,7 @@ package com.yanzhenjie.nohttp.sample.util;
 /**
  * Created by Yolanda on 2016/5/20.
  *
-  * @author Yan Zhenjie. QQ: 757699476
+ * @author Yan Zhenjie.
  */
 public interface OnRecyclerItemClickListener {
 
