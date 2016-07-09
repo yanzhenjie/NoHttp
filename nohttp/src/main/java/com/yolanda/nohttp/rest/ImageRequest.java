@@ -49,11 +49,7 @@ public class ImageRequest extends RestRequest<Bitmap> {
         this.mMaxHeight = maxHeight;
         this.mDecodeConfig = decodeConfig;
         this.mScaleType = scaleType;
-    }
-
-    @Override
-    public String getAccept() {
-        return "image/*";
+        setAccept("image/*");
     }
 
     @Override

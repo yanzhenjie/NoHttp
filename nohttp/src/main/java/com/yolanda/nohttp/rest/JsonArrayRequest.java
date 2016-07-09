@@ -15,14 +15,10 @@
  */
 package com.yolanda.nohttp.rest;
 
-import android.text.TextUtils;
-
 import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.RequestMethod;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 /**
  * <p>JsonArray is returned by the server data, using the request object.</p>
@@ -38,30 +34,13 @@ public class JsonArrayRequest extends RestRequest<JSONArray> {
 
     public JsonArrayRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
-    }
-
-    @Override
-    public String getAccept() {
-        return Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
+        setAccept(Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
     }
 
     @Override
     public JSONArray parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
-        JSONArray jsonArray = null;
         String jsonStr = StringRequest.parseResponseString(responseHeaders, responseBody);
-
-        if (!TextUtils.isEmpty(jsonStr))
-            try {
-                jsonArray = new JSONArray(jsonStr);
-            } catch (JSONException e) {
-                Logger.e(e);
-            }
-        if (jsonArray == null)
-            try {
-                jsonArray = new JSONArray("[]");
-            } catch (JSONException e) {
-            }
-        return jsonArray;
+        return new JSONArray(jsonStr);
     }
 
 }

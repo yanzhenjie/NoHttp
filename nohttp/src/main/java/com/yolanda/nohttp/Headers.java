@@ -53,7 +53,7 @@ public interface Headers extends MultiValueMap<String, String> {
     /**
      * The value is {@value}.
      */
-    String HEAD_VALUE_ACCEPT_ALL = "application/json,application/xml,application/xhtml+xml,text/html";
+    String HEAD_VALUE_ACCEPT_ALL = "application/json,application/xml,application/xhtml+xml,text/html;q=0.9,image/webp,*/*;q=0.8";
 
     /**
      * The value is {@value}.

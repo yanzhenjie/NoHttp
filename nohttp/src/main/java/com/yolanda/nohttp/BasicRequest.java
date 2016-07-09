@@ -72,7 +72,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
      */
     private String url;
     /**
-     * The real .
+     * The real.
      */
     private String buildUrl;
     /**

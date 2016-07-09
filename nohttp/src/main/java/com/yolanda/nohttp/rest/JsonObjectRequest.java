@@ -15,13 +15,9 @@
  */
 package com.yolanda.nohttp.rest;
 
-import android.text.TextUtils;
-
 import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.RequestMethod;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -40,34 +36,17 @@ public class JsonObjectRequest extends RestRequest<JSONObject> {
     public static final String ACCEPT = Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
 
     public JsonObjectRequest(String url) {
-        super(url);
+        this(url, RequestMethod.GET);
     }
 
     public JsonObjectRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
-    }
-
-    @Override
-    public String getAccept() {
-        return Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
+        setAccept(Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
     }
 
     @Override
     public JSONObject parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
-        JSONObject jsonObject = null;
         String jsonStr = StringRequest.parseResponseString(responseHeaders, responseBody);
-
-        if (!TextUtils.isEmpty(jsonStr))
-            try {
-                jsonObject = new JSONObject(jsonStr);
-            } catch (JSONException e) {
-                Logger.e(e);
-            }
-        if (jsonObject == null)
-            try {
-                jsonObject = new JSONObject("{}");
-            } catch (JSONException e) {
-            }
-        return jsonObject;
+        return new JSONObject(jsonStr);
     }
 }
