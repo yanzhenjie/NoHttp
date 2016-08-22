@@ -15,6 +15,8 @@
  */
 package com.yolanda.nohttp;
 
+import android.util.Log;
+
 import com.yolanda.nohttp.tools.IOUtils;
 
 import java.io.File;
@@ -67,7 +69,8 @@ public class FileBinary extends BasicBinary {
         try {
             this.inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            Logger.e(e);
+            Log.e("Binary", "Binary was cancelled, because the file does not exist.");
+            super.cancel();
         }
     }
 

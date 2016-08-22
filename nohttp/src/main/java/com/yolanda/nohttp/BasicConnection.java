@@ -22,8 +22,7 @@ import com.yolanda.nohttp.error.NetworkError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
-import com.yolanda.nohttp.rest.HttpResponse;
-import com.yolanda.nohttp.rest.ImplServerRequest;
+import com.yolanda.nohttp.rest.ProtocolResult;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.StringRequest;
 import com.yolanda.nohttp.tools.AndroidVersion;
@@ -42,7 +41,6 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -66,10 +64,10 @@ public class BasicConnection {
     /**
      * Send the request, send only head, parameters, such as file information.
      *
-     * @param request {@link ImplServerRequest}.
-     * @return {@link HttpResponse}.
+     * @param request {@link IBasicRequest}.
+     * @return {@link ProtocolResult}.
      */
-    protected Connection getConnection(BasicServerRequest request) {
+    protected Connection getConnection(IBasicRequest request) {
         Logger.d("--------------Request start--------------");
 
         Headers responseHeaders = new HttpHeaders();
@@ -83,17 +81,17 @@ public class BasicConnection {
                 throw new NetworkError("The network is not available, please check the network. The requested url is: " + url);
 
             // MalformedURLException, IOException, ProtocolException, UnknownHostException, SocketTimeoutException
-            urlConnection = createHttpURLConnection(request);
+            urlConnection = createConnectionAndWriteData(request);
             Logger.d("-------Response start-------");
             int responseCode = urlConnection.getResponseCode();
             responseHeaders = parseResponseHeaders(new URI(request.url()), responseCode, urlConnection.getResponseMessage(), urlConnection.getHeaderFields());
 
             // handle body
             if (responseCode == 301 || responseCode == 302 || responseCode == 303 || responseCode == 307) {
-                Connection redirectConnectiont = handleRedirect(request, responseHeaders);
-                responseHeaders = redirectConnectiont.responseHeaders();
-                inputStream = redirectConnectiont.serverStream();
-                exception = redirectConnectiont.exception();
+                Connection redirectConnection = handleRedirect(request, responseHeaders);
+                responseHeaders = redirectConnection.responseHeaders();
+                inputStream = redirectConnection.serverStream();
+                exception = redirectConnection.exception();
             } else if (hasResponseBody(request.getRequestMethod(), responseCode)) {
                 inputStream = getServerStream(responseCode, responseHeaders.getContentEncoding(), urlConnection);
             }
@@ -115,39 +113,42 @@ public class BasicConnection {
     }
 
     /**
-     * The redirection process any response.
+     * Handle retries, and complete the request network here.
      *
-     * @param oldRequest      need to redirect the {@link Request}.
-     * @param responseHeaders need to redirect the request of the responding head.
-     * @return {@link HttpResponse}.
+     * @param request {@link IBasicRequest}.
+     * @return {@link ProtocolResult}.
+     * @throws Exception {@link #createHttpURLConnection(IBasicRequest)}.
      */
-    private Connection handleRedirect(BasicServerRequest oldRequest, Headers responseHeaders) {
-        // redirect request
-        Request<?> redirectRequest = null;
-        RedirectHandler redirectHandler = oldRequest.getRedirectHandler();
-        if (redirectHandler != null) {
-            if (redirectHandler.isDisallowedRedirect(responseHeaders))
-                return new Connection(null, responseHeaders, null, null);
-            else
-                redirectRequest = redirectHandler.onRedirect(responseHeaders);
+    private HttpURLConnection createConnectionAndWriteData(IBasicRequest request) throws Exception {
+        HttpURLConnection connection = null;
+        Exception exception = null;
+        int retryCount = request.getRetryCount() + 1;
+        boolean failed = true;
+        for (; failed && retryCount > 0; retryCount--) {
+            try {
+                connection = createHttpURLConnection(request);
+                exception = null;
+                failed = false;
+            } catch (Exception e) {
+                exception = e;
+            }
         }
-        if (redirectRequest == null) {
-            redirectRequest = new StringRequest(responseHeaders.getLocation(), oldRequest.getRequestMethod());
-            redirectRequest.setSSLSocketFactory(oldRequest.getSSLSocketFactory());
-            redirectRequest.setProxy(oldRequest.getProxy());
+        if (failed) {
+            throw exception;
+        } else if (request.getRequestMethod().allowRequestBody()) {
+            writeRequestBody(request, connection.getOutputStream());
         }
-        return getConnection(redirectRequest);
+        return connection;
     }
 
     /**
      * The connection is established, including the head and send the request body.
      *
-     * @param request {@link BasicServerRequest}.
+     * @param request {@link IBasicRequest}.
      * @return {@link HttpURLConnection} Have been established and the server connection, and send the complete data, you can directly determine the response code and read the data.
-     * @throws IOException        can happen when the connection is established and send data.
-     * @throws URISyntaxException url error.
+     * @throws Exception can happen when the connection is established and send data.
      */
-    protected HttpURLConnection createHttpURLConnection(BasicServerRequest request) throws IOException, URISyntaxException {
+    private HttpURLConnection createHttpURLConnection(IBasicRequest request) throws Exception {
         // 1.Pre operation notice
         request.onPreExecute();
 
@@ -177,15 +178,16 @@ public class BasicConnection {
 
         // 3. Base attribute
         RequestMethod requestMethod = request.getRequestMethod();
-        Logger.i("Request method: " + requestMethod.toString());
+        String requestMethodStr = requestMethod.toString();
+        Logger.i("Request method: " + requestMethodStr);
         // Fix delete patch error.
         try {
-            connection.setRequestMethod(requestMethod.toString());
+            connection.setRequestMethod(requestMethodStr);
         } catch (ProtocolException protocol) {
             try {
                 Field methodField = connection.getClass().getDeclaredField("method");
                 methodField.setAccessible(true);
-                methodField.set(connection, requestMethod.toString());
+                methodField.set(connection, requestMethodStr);
             } catch (Exception noSuchFieldIllegalAccess) {
                 throw protocol;
             }
@@ -195,42 +197,29 @@ public class BasicConnection {
         connection.setDoOutput(requestMethod.allowRequestBody());
 
         // 4.Set request headers
-        URI uri = null;
-        try {
-            uri = url.toURI();
-        } catch (URISyntaxException e) {
-            Logger.w(e);
-        }
-        setHeaders(uri, connection, request);
+        setHeaders(url.toURI(), connection, request);
 
         // 5. Connect
         connection.connect();
-
-        // 6. Write request body
-        if (requestMethod.allowRequestBody()) {
-            Logger.i("-------Send request data start-------");
-            OutputStream outputStream = IOUtils.toBufferedOutputStream(connection.getOutputStream());
-            request.onWriteRequestBody(outputStream);
-            IOUtils.flushQuietly(outputStream);
-            IOUtils.closeQuietly(outputStream);
-            Logger.i("-------Send request data end-------");
-        }
-
         return connection;
     }
 
     /**
      * Set request headers, here will add cookies.
+     *
+     * @param uri        uri.
+     * @param connection {@link HttpURLConnection}.
+     * @param request    {@link IBasicRequest}.
      */
-    private void setHeaders(URI uri, HttpURLConnection connection, BasicServerRequest request) {
+    private void setHeaders(URI uri, HttpURLConnection connection, IBasicRequest request) {
         Headers headers = request.headers();
         headers.set(Headers.HEAD_KEY_CONTENT_TYPE, request.getContentType());
 
-        // try fix EOF Exception.
-        if (Build.VERSION.SDK_INT > AndroidVersion.KITKAT)
-            headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);
-        else
-            headers.set(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_CLOSE);
+        // To fix bug: accidental EOFException before API 19
+        List<String> values = headers.getValues(Headers.HEAD_KEY_CONNECTION);
+        if (values == null || values.size() == 0) {
+            headers.set(Headers.HEAD_KEY_CONNECTION, Build.VERSION.SDK_INT > AndroidVersion.KITKAT ? Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE : Headers.HEAD_VALUE_CONNECTION_CLOSE);
+        }
 
         // Content-Length.
         RequestMethod requestMethod = request.getRequestMethod();
@@ -254,7 +243,7 @@ public class BasicConnection {
 
         // Cookie.
         if (NoHttp.isEnableCookie() && uri != null)
-            headers.addCookie(uri, NoHttp.getDefaultCookieHandler());
+            headers.addCookie(uri, NoHttp.getDefaultCookieManager());
 
         Map<String, String> requestHeaders = headers.toRequestHeaders();
 
@@ -265,6 +254,47 @@ public class BasicConnection {
             Logger.i(headKey + ": " + headValue);
             connection.setRequestProperty(headKey, headValue);
         }
+    }
+
+    /**
+     * Write request params.
+     *
+     * @param request      {@link IBasicRequest}.
+     * @param outputStream {@link OutputStream}.
+     * @throws IOException io exception.
+     */
+    private void writeRequestBody(IBasicRequest request, OutputStream outputStream) throws IOException {
+        // 6. Write request body
+        Logger.i("-------Send request data start-------");
+        OutputStream realOutputStream = IOUtils.toBufferedOutputStream(outputStream);
+        request.onWriteRequestBody(realOutputStream);
+        IOUtils.closeQuietly(realOutputStream);
+        Logger.i("-------Send request data end-------");
+    }
+
+    /**
+     * The redirection process any response.
+     *
+     * @param oldRequest      need to redirect the {@link Request}.
+     * @param responseHeaders need to redirect the request of the responding head.
+     * @return {@link ProtocolResult}.
+     */
+    private Connection handleRedirect(IBasicRequest oldRequest, Headers responseHeaders) {
+        // redirect request
+        IBasicRequest redirectRequest = null;
+        RedirectHandler redirectHandler = oldRequest.getRedirectHandler();
+        if (redirectHandler != null) {
+            if (redirectHandler.isDisallowedRedirect(responseHeaders))
+                return new Connection(null, responseHeaders, null, null);
+            else
+                redirectRequest = redirectHandler.onRedirect(responseHeaders);
+        }
+        if (redirectRequest == null) {
+            redirectRequest = new StringRequest(responseHeaders.getLocation(), oldRequest.getRequestMethod());
+            redirectRequest.setSSLSocketFactory(oldRequest.getSSLSocketFactory());
+            redirectRequest.setProxy(oldRequest.getProxy());
+        }
+        return getConnection(redirectRequest);
     }
 
     /**
@@ -338,7 +368,7 @@ public class BasicConnection {
         // handle cookie
         if (NoHttp.isEnableCookie())
             try {
-                NoHttp.getDefaultCookieHandler().put(uri, responseHeaders);
+                NoHttp.getDefaultCookieManager().put(uri, responseHeaders);
             } catch (IOException e) {
                 Logger.e(e, "Save cookie filed: " + uri.toString() + ".");
             }

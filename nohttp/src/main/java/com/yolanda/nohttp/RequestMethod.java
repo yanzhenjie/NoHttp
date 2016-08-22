@@ -63,9 +63,17 @@ public enum RequestMethod {
     }
 
     public boolean allowRequestBody() {
-        boolean allowRequestBody = this == POST || this == PUT || this == PATCH || this == DELETE;
+        boolean allowRequestBody = false;
+        switch (this) {
+            case POST:
+            case PUT:
+            case PATCH:
+            case DELETE:
+                allowRequestBody = true;
+                break;
+        }
         if (Build.VERSION.SDK_INT < AndroidVersion.LOLLIPOP)
-            allowRequestBody = allowRequestBody && this != DELETE;
+            return allowRequestBody && this != DELETE;
         return allowRequestBody;
     }
 

@@ -44,7 +44,7 @@ public class RequestQueue {
     /**
      * HTTP request actuator interface.
      */
-    private final ImplRestParser mImplRestParser;
+    private final IRestParser mImplRestParser;
 
     /**
      * Request queue polling thread array.
@@ -57,7 +57,7 @@ public class RequestQueue {
      * @param implRestParser download the network task execution interface, where you need to implement the download tasks that have been implemented.
      * @param threadPoolSize number of thread pool.
      */
-    public RequestQueue(ImplRestParser implRestParser, int threadPoolSize) {
+    public RequestQueue(IRestParser implRestParser, int threadPoolSize) {
         mImplRestParser = implRestParser;
         mDispatchers = new RequestDispatcher[threadPoolSize];
     }
@@ -94,6 +94,24 @@ public class RequestQueue {
             mUnFinishQueue.add(request);
             mRequestQueue.add(request);
         }
+    }
+
+    /**
+     * Don't start return request queue size.
+     *
+     * @return size.
+     */
+    public int unStartSize() {
+        return mRequestQueue.size();
+    }
+
+    /**
+     * Returns have started but not the end of the request queue size.
+     *
+     * @return size.
+     */
+    public int unFinishSize() {
+        return mUnFinishQueue.size();
     }
 
     /**

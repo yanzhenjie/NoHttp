@@ -24,10 +24,6 @@ package com.yolanda.nohttp.rest;
  */
 
 import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.RequestMethod;
-
-import java.net.HttpCookie;
-import java.util.List;
 
 /**
  * <p>Http response, Including header information and response packets.</p>
@@ -39,11 +35,11 @@ import java.util.List;
 public interface Response<T> {
 
     /**
-     * Get the url of requested.
+     * Get the {@code IParserRequest} object.
      *
-     * @return URL.
+     * @return {@link IParserRequest}.
      */
-    String url();
+    IParserRequest<T> request();
 
     /**
      * Get the response code of request.
@@ -57,14 +53,7 @@ public interface Response<T> {
      *
      * @return response message.
      */
-    String responseMesage();
-
-    /**
-     * Get the method of request.
-     *
-     * @return {@link RequestMethod}.
-     */
-    RequestMethod getRequestMethod();
+    String responseMessage();
 
     /**
      * Request is executed successfully.
@@ -86,20 +75,6 @@ public interface Response<T> {
      * @return {@link Headers}.
      */
     Headers getHeaders();
-
-    /**
-     * Get http response Cookie.
-     *
-     * @return {@code List<HttpCookie>}.
-     */
-    List<HttpCookie> getCookies();
-
-    /**
-     * Get raw data.To obtain the response data.
-     *
-     * @return {@code byte[]}.
-     */
-    byte[] getByteArray();
 
     /**
      * Get request results.

@@ -15,42 +15,16 @@
  */
 package com.yolanda.nohttp.rest;
 
-import com.yolanda.nohttp.BasicClientRequest;
-import com.yolanda.nohttp.BasicServerRequest;
-import com.yolanda.nohttp.Headers;
-
 /**
  * <p>
- * Achieve {@link BasicClientRequest} and {@link BasicServerRequest}, and can add parameters of the interface.
+ * Extended {@link IParserRequest} class, to increase the method of recording response.
  * </p>
  * Created in Oct 16, 2015 8:22:06 PM.
  *
  * @param <T> a generic, on behalf of you can accept the result type, .It should be with the {@link OnResponseListener}, {@link Response}.
  * @author Yan Zhenjie.
  */
-public interface Request<T> extends ImplClientRequest, ImplServerRequest {
-
-    /**
-     * Parse response.
-     *
-     * @param responseHeaders response {@link Headers} of server.
-     * @param responseBody    response data of server.
-     * @return your response result.
-     * @throws Throwable parse error.
-     */
-    T parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable;
-
-    /**
-     * Parse response.
-     *
-     * @param url             url.
-     * @param responseHeaders response {@link Headers} of server.
-     * @param responseBody    response data of server.
-     * @return your response result.
-     * @deprecated use {@link #parseResponse(Headers, byte[])} instead.
-     */
-    @Deprecated
-    T parseResponse(String url, Headers responseHeaders, byte[] responseBody);
+public interface Request<T> extends IParserRequest<T> {
 
     /**
      * Prepare the callback parameter, while waiting for the response callback with thread.

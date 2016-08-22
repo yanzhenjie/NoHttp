@@ -33,6 +33,7 @@ import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.Response;
 
 import java.net.ProtocolException;
+import java.util.Locale;
 
 /**
  * Created in Nov 4, 2015 12:02:55 PM.
@@ -106,7 +107,9 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
             if (responseCode == 405) {// 405表示服务器不支持这种请求方法，比如GET、POST、TRACE中的TRACE就很少有服务器支持。
                 mActivity.showMessageDialog(R.string.request_succeed, R.string.request_method_not_allow);
             } else {// 但是其它400+的响应码服务器一般会有流输出。
-                mActivity.showWebDialog(response);
+                String title = String.format(Locale.getDefault(), mActivity.getString(R.string.error_response_code), responseCode);
+                String content = String.format(Locale.getDefault(), mActivity.getString(R.string.error_response_code_dex), responseCode);
+                mActivity.showMessageDialog(title, content);
             }
         }
         if (callback != null) {
@@ -118,7 +121,8 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
      * 失败回调.
      */
     @Override
-    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+    public void onFailed(int what, Response<T> response) {
+        Exception exception = response.getException();
         if (exception instanceof NetworkError) {// 网络不好
             Snackbar.show(mActivity, R.string.error_please_check_network);
         } else if (exception instanceof TimeoutError) {// 请求超时
@@ -139,7 +143,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
         }
         Logger.e("错误：" + exception.getMessage());
         if (callback != null)
-            callback.onFailed(what, url, tag, exception, responseCode, networkMillis);
+            callback.onFailed(what, response);
     }
 
 }

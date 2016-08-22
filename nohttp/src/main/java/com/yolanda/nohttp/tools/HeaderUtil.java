@@ -19,7 +19,7 @@ import android.text.TextUtils;
 
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.cache.CacheEntity;
-import com.yolanda.nohttp.rest.HttpResponse;
+import com.yolanda.nohttp.rest.ProtocolResult;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -141,7 +141,7 @@ public class HeaderUtil {
     }
 
     /**
-     * Extracts a {@link CacheEntity} from a {@link HttpResponse}.
+     * Extracts a {@link CacheEntity} from a {@link ProtocolResult}.
      *
      * @param responseHeaders response headers.
      * @param responseBody    response data.

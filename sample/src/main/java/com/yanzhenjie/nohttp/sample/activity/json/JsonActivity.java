@@ -68,14 +68,14 @@ public class JsonActivity extends BaseActivity implements View.OnClickListener {
             JSONObject jsonObject = response.get();
             if (0 == jsonObject.optInt("error", -1)) {
                 String result = getString(R.string.request_json_result);
-                result = String.format(Locale.getDefault(), result, response.getRequestMethod().toString(), jsonObject.optString("url"), jsonObject.optString("data"), jsonObject.optString("error"));
+                result = String.format(Locale.getDefault(), result, response.request().getRequestMethod().toString(), jsonObject.optString("url"), jsonObject.optString("data"), jsonObject.optString("error"));
                 mTvResult.setText(result);
             }
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-            showMessageDialog(R.string.request_failed, exception.getMessage());
+        public void onFailed(int what, Response<JSONObject> response) {
+            showMessageDialog(R.string.request_failed, response.getException().getMessage());
         }
     };
 
@@ -93,8 +93,8 @@ public class JsonActivity extends BaseActivity implements View.OnClickListener {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-            showMessageDialog(R.string.request_failed, exception.getMessage());
+        public void onFailed(int what, Response<JSONArray> response) {
+            showMessageDialog(R.string.request_failed, response.getException().getMessage());
         }
     };
 

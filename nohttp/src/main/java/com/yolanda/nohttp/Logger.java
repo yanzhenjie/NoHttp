@@ -24,12 +24,12 @@ import java.lang.reflect.Method;
  */
 public class Logger {
 
-    public static final String V = "v";
-    public static final String I = "i";
-    public static final String D = "d";
-    public static final String W = "w";
-    public static final String E = "e";
-    public static final String WTF = "wtf";
+    private static final String V = "v";
+    private static final String I = "i";
+    private static final String D = "d";
+    private static final String W = "w";
+    private static final String E = "e";
+    private static final String WTF = "wtf";
 
     /**
      * Library debug tag.
@@ -153,7 +153,7 @@ public class Logger {
      * @param method  such as "{@code v, i, d, w, e, wtf}".
      * @param message message.
      */
-    public static void print(String method, String message) {
+    private static void print(String method, String message) {
         print(method, STag, message);
     }
 
@@ -191,7 +191,7 @@ public class Logger {
      * @param tag     tag.
      * @param message message.
      */
-    public static void invokePrint(String method, String tag, String message) {
+    private static void invokePrint(String method, String tag, String message) {
         try {
             Class<android.util.Log> logClass = android.util.Log.class;
             Method logMethod = logClass.getMethod(method, String.class, String.class);
@@ -209,7 +209,7 @@ public class Logger {
      * @param message message.
      * @param e       error.
      */
-    public static void print(String method, String message, Throwable e) {
+    private static void print(String method, String message, Throwable e) {
         print(method, STag, message, e);
     }
 
@@ -221,8 +221,10 @@ public class Logger {
      * @param message message.
      * @param e       error.
      */
-    public static void print(String method, String tag, String message, Throwable e) {
+    private static void print(String method, String tag, String message, Throwable e) {
         if (SDebug) {
+            if (message == null)
+                message = "null";
             invokePrint(method, tag, message, e);
         }
     }
@@ -235,7 +237,7 @@ public class Logger {
      * @param message message.
      * @param e       error.
      */
-    public static void invokePrint(String method, String tag, String message, Throwable e) {
+    private static void invokePrint(String method, String tag, String message, Throwable e) {
         try {
             Class<android.util.Log> logClass = android.util.Log.class;
             Method logMethod = logClass.getMethod(method, String.class, String.class, Throwable.class);

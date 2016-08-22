@@ -119,6 +119,8 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
 
     @Override
     public String getFileName() {
+        if (TextUtils.isEmpty(fileName))
+            fileName = Long.toString(System.currentTimeMillis());
         return fileName;
     }
 

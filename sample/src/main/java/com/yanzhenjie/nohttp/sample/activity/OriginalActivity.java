@@ -22,14 +22,23 @@ import android.widget.TextView;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.dialog.WaitDialog;
 import com.yanzhenjie.nohttp.sample.util.Constants;
+import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yolanda.nohttp.Headers;
+import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RequestMethod;
+import com.yolanda.nohttp.error.NetworkError;
+import com.yolanda.nohttp.error.NotFoundCacheError;
+import com.yolanda.nohttp.error.ParseError;
+import com.yolanda.nohttp.error.TimeoutError;
+import com.yolanda.nohttp.error.URLError;
+import com.yolanda.nohttp.error.UnKnownHostError;
 import com.yolanda.nohttp.rest.OnResponseListener;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
 
+import java.net.ProtocolException;
 import java.util.Locale;
 
 /**
@@ -63,6 +72,7 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         mWaitDialog = new WaitDialog(this);
 
         // 创建请求队列, 默认并发3个请求,传入你想要的数字可以改变默认并发数, 例如NoHttp.newRequestQueue(1)。
+        // 不过正式的项目中不要每次请求时都创建队列，应该把队列封装成单例模式，这样才能把队列的优点发挥出来。
         requestQueue = NoHttp.newRequestQueue();
     }
 
@@ -72,16 +82,16 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_TEST, RequestMethod.POST);
 
         // 添加请求参数。
-        request.add("userName", "yolanda");
-        request.add("userPass", 1);
-        request.add("userAge", 1.25);
+        request.add("userName", "yolanda"); // String型。
+        request.add("userPass", 1); // int型。
+        request.add("userAge", 1.25); // double型。
+        request.add("nooxxx", 1.2F); // flocat型。
 
-        request.setConnectTimeout(NoHttp.getDefaultConnectTimeout());
-        request.setReadTimeout(NoHttp.getDefaultReadTimeout());
+        request.setConnectTimeout(10 * 1000); // 设置连接超时。
+        request.setReadTimeout(20 * 1000); // 设置读取超时时间，也就是服务器的响应超时。
 
         /**
          * 上传文件；上传文件支持File、Bitmap、ByteArrayBinary、InputStream四种，这里推荐File、InputStream。
-         * 其他两种小的可以，大的话容易内存溢出(OOM)。
          */
         // request.add("userHead", new FileBinary());
         // request.add("userHead", new BitmapBinary());
@@ -121,7 +131,6 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
                     ((TextView) findView(R.id.tv_result)).setText(result);
 
                     Object tag = response.getTag();// 拿到请求时设置的tag。
-                    byte[] responseBody = response.getByteArray();// 如果需要byteArray自己解析的话。
 
                     // 响应头
                     Headers headers = response.getHeaders();
@@ -147,9 +156,30 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        public void onFailed(int what, Response<String> response) {
+            //TODO 特别注意：这里可能有人会想到是不是每个地方都要这么判断，其实不用，请参考HttpResponseListener类的封装，你也可以这么封装。
+
             // 请求失败
-            ((TextView) findView(R.id.tv_result)).setText("请求失败: " + exception.getMessage());
+            Exception exception = response.getException();
+            if (exception instanceof NetworkError) {// 网络不好
+                Snackbar.show(OriginalActivity.this, R.string.error_please_check_network);
+            } else if (exception instanceof TimeoutError) {// 请求超时
+                Snackbar.show(OriginalActivity.this, R.string.error_timeout);
+            } else if (exception instanceof UnKnownHostError) {// 找不到服务器
+                Snackbar.show(OriginalActivity.this, R.string.error_not_found_server);
+            } else if (exception instanceof URLError) {// URL是错的
+                Snackbar.show(OriginalActivity.this, R.string.error_url_error);
+            } else if (exception instanceof NotFoundCacheError) {
+                // 这个异常只会在仅仅查找缓存时没有找到缓存时返回
+                Snackbar.show(OriginalActivity.this, R.string.error_not_found_cache);
+            } else if (exception instanceof ProtocolException) {
+                Snackbar.show(OriginalActivity.this, R.string.error_system_unsupport_method);
+            } else if (exception instanceof ParseError) {
+                Snackbar.show(OriginalActivity.this, R.string.error_parse_data_error);
+            } else {
+                Snackbar.show(OriginalActivity.this, R.string.error_unknow);
+            }
+            Logger.e("错误：" + exception.getMessage());
         }
     };
 

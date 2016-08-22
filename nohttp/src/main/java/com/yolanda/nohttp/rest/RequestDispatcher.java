@@ -17,7 +17,6 @@ package com.yolanda.nohttp.rest;
 
 import android.os.Process;
 
-import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.PosterHandler;
 
@@ -43,7 +42,7 @@ public class RequestDispatcher extends Thread {
     /**
      * HTTP request parse interface.
      */
-    private final ImplRestParser mImplRestParser;
+    private final IRestParser mImplRestParser;
     /**
      * Whether the current request queue polling thread is out of.
      */
@@ -56,7 +55,7 @@ public class RequestDispatcher extends Thread {
      * @param requestQueue   request queue.
      * @param implRestParser network request task actuator.
      */
-    public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue, ImplRestParser implRestParser) {
+    public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue, IRestParser implRestParser) {
         mUnFinishQueue = unFinishQueue;
         mRequestQueue = requestQueue;
         mImplRestParser = implRestParser;
@@ -162,8 +161,7 @@ public class RequestDispatcher extends Thread {
                     if (response.isSucceed()) {
                         responseListener.onSucceed(what, response);
                     } else {
-                        Headers headers = response.getHeaders();
-                        responseListener.onFailed(what, response.url(), response.getTag(), response.getException(), headers == null ? -1 : headers.getResponseCode(), response.getNetworkMillis());
+                        responseListener.onFailed(what, response);
                     }
                 }
             }

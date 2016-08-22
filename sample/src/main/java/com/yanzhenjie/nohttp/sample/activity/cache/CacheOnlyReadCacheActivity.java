@@ -85,7 +85,8 @@ public class CacheOnlyReadCacheActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        public void onFailed(int what, Response<String> response) {
+            Exception exception = response.getException();
             if (exception instanceof NotFoundCacheError)
                 showMessageDialog(R.string.request_failed, R.string.request_cache_only_read_cache_failed);
             else
@@ -111,7 +112,8 @@ public class CacheOnlyReadCacheActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
+        public void onFailed(int what, Response<Bitmap> response) {
+            Exception exception = response.getException();
             if (exception instanceof NotFoundCacheError)
                 showMessageDialog(R.string.request_failed, R.string.request_cache_only_read_cache_failed);
             else

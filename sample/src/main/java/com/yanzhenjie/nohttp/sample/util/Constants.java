@@ -34,7 +34,7 @@ public class Constants {
      */
     static {
         if (AppConfig.DEBUG) {
-            SERVER = "http://192.168.1.116/HttpServer/";
+            SERVER = "http://192.168.1.226/HttpServer/";
         } else {
             SERVER = "http://api.nohttp.net/";
         }

@@ -275,8 +275,6 @@ public class ImageLocalLoader {
         }
     }
 
-    ;
-
     private class ImgBeanHolder implements Runnable {
         Bitmap bitmap;
         ImageView imageView;

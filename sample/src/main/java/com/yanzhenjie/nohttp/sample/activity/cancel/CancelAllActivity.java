@@ -52,9 +52,13 @@ public class CancelAllActivity extends BaseActivity {
 //        CallServer.getRequestInstance().add(this, 0, request1, this, true, false);
 //        CallServer.getRequestInstance().add(this, 1, request2, this, true, false);
 //        CallServer.getRequestInstance().add(this, 2, request3, this, true, false);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         /**
-         * 调用队列的cancelAll就会取消所有的请求，包括正在执行的。
+         * 在一个合适的时机，调用队列的cancelAll就会取消所有的请求，包括正在执行的。
          */
         CallServer.getRequestInstance().cancelAll();
     }

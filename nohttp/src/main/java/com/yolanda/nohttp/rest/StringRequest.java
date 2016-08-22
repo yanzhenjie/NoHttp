@@ -43,26 +43,12 @@ public class StringRequest extends com.yolanda.nohttp.rest.RestRequest<String> {
     /**
      * Parse http response to string.
      *
-     * @param url             nothing.
-     * @param responseHeaders header from http reaponse.
-     * @param responseBody    byteArray from http response.
-     * @return result fro response.
-     * @deprecated use {@link #parseResponse(Headers, byte[])} instead.
-     */
-    @Deprecated
-    public static String parseResponseString(String url, Headers responseHeaders, byte[] responseBody) {
-        return parseResponseString(responseHeaders, responseBody);
-    }
-
-    /**
-     * Parse http response to string.
-     *
-     * @param responseHeaders header from http reaponse.
+     * @param responseHeaders header from http response.
      * @param responseBody    byteArray from http response.
      * @return result fro response.
      */
     public static String parseResponseString(Headers responseHeaders, byte[] responseBody) {
-        if (responseBody == null && responseBody.length == 0)
+        if (responseBody == null || responseBody.length == 0)
             return "";
         return IOUtils.toString(responseBody, HeaderUtil.parseHeadValue(responseHeaders.getContentType(), Headers.HEAD_KEY_CONTENT_TYPE, ""));
     }

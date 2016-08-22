@@ -66,14 +66,14 @@ public class FastJsonActivity extends BaseActivity implements View.OnClickListen
         JSONObject jsonObject = response.get();
         if (0 == jsonObject.getIntValue("error")) {
             String result = getString(R.string.request_json_result);
-            result = String.format(Locale.getDefault(), result, response.getRequestMethod().toString(), jsonObject.getString("url"), jsonObject.getString("data"), jsonObject.getString("error"));
+            result = String.format(Locale.getDefault(), result, response.request().getRequestMethod().toString(), jsonObject.getString("url"), jsonObject.getString("data"), jsonObject.getString("error"));
             mTvResult.setText(result);
         }
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-        showMessageDialog(R.string.request_failed, exception.getMessage());
+    public void onFailed(int what, Response<JSONObject> response) {
+        showMessageDialog(R.string.request_failed, response.getException().getMessage());
     }
 
 }

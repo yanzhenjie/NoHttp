@@ -95,8 +95,8 @@ public class CacheHttpActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-            showMessageDialog(R.string.request_failed, exception.getMessage());
+        public void onFailed(int what, Response<String> response) {
+            showMessageDialog(R.string.request_failed, response.getException().getMessage());
         }
     };
 
@@ -118,8 +118,8 @@ public class CacheHttpActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-            showMessageDialog(R.string.request_failed, exception.getMessage());
+        public void onFailed(int what, Response<Bitmap> response) {
+            showMessageDialog(R.string.request_failed, response.getException().getMessage());
         }
     };
 

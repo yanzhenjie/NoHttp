@@ -62,7 +62,11 @@ public class CancelSignActivity extends BaseActivity {
 //        CallServer.getRequestInstance().add(this, 0, request1, this, true, false);
 //        CallServer.getRequestInstance().add(this, 1, request2, this, true, false);
 //        CallServer.getRequestInstance().add(this, 2, request3, this, true, false);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         /**
          * 2. 第二步‘：
          * 通过队列的cancelBySign可以取消上面setSign的所有请求，包括正在执行的请求。

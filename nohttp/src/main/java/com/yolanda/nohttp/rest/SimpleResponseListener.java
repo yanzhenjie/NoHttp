@@ -27,6 +27,14 @@ public abstract class SimpleResponseListener<T> implements OnResponseListener<T>
     }
 
     @Override
+    public void onSucceed(int what, Response<T> response) {
+    }
+
+    @Override
+    public void onFailed(int what, Response<T> response) {
+    }
+
+    @Override
     public void onFinish(int what) {
     }
 }

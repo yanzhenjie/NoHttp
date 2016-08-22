@@ -126,4 +126,6 @@
     <string name="error_system_unsupport_method">The system unsupport request method.</string>
     <string name="error_parse_data_error">Parse data error.</string>
     <string name="error_unknow">Unknow error.</string>
+    <string name="error_response_code">The server response code %1$d</string>
+    <string name="error_response_code_dex">The server response code %1$d，If your server in this case you can also return data processing.</string>
 </resources>

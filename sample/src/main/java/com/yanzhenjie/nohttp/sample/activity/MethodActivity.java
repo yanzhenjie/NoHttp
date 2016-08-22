@@ -128,7 +128,7 @@ public class MethodActivity extends BaseActivity {
         public void onSucceed(int what, Response<String> response) {
             int responseCode = response.getHeaders().getResponseCode();// 服务器响应码
             if (responseCode == 200) {
-                if (RequestMethod.HEAD == response.getRequestMethod())// 请求方法为HEAD时没有响应内容
+                if (RequestMethod.HEAD == response.request().getRequestMethod())// 请求方法为HEAD时没有响应内容
                     showMessageDialog(R.string.request_succeed, R.string.request_method_head);
                 else
                     showMessageDialog(R.string.request_succeed, response.get());
@@ -136,8 +136,8 @@ public class MethodActivity extends BaseActivity {
         }
 
         @Override
-        public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-            showMessageDialog(R.string.request_failed, exception.getMessage());
+        public void onFailed(int what, Response<String> response) {
+            showMessageDialog(R.string.request_failed, response.getException().getMessage());
         }
     };
 

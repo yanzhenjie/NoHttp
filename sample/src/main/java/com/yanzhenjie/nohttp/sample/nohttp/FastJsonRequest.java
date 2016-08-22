@@ -19,7 +19,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
-import com.yolanda.nohttp.rest.JsonObjectRequest;
 import com.yolanda.nohttp.rest.RestRequest;
 import com.yolanda.nohttp.rest.StringRequest;
 import com.yolanda.nohttp.tools.MultiValueMap;
@@ -38,11 +37,12 @@ import java.util.Set;
 public class FastJsonRequest extends RestRequest<JSONObject> {
 
     public FastJsonRequest(String url) {
-        super(url);
+        this(url, RequestMethod.GET);
     }
 
     public FastJsonRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
+        setAccept(Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class FastJsonRequest extends RestRequest<JSONObject> {
     }
 
     @Override
-    public JSONObject parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
+    public JSONObject parseResponse(Headers responseHeaders, byte[] responseBody) {
         String result = StringRequest.parseResponseString(responseHeaders, responseBody);
         JSONObject jsonObject;
         try {
@@ -76,11 +76,4 @@ public class FastJsonRequest extends RestRequest<JSONObject> {
         }
         return jsonObject;
     }
-
-    @Override
-    public String getAccept() {
-        // 告诉服务器你接受什么类型的数据, 会添加到请求头的Accept中
-        return JsonObjectRequest.ACCEPT;
-    }
-
 }

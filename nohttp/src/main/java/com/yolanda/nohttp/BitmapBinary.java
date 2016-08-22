@@ -16,6 +16,7 @@
 package com.yolanda.nohttp;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.yolanda.nohttp.tools.IOUtils;
 
@@ -63,6 +64,9 @@ public class BitmapBinary extends BasicBinary {
             bitmap.recycle();
             IOUtils.closeQuietly(outputStream);
             inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        } else {
+            Log.e("Binary", "Binary was cancelled, because the Bitmap is null or bitmap is recycled.");
+            super.cancel();
         }
     }
 

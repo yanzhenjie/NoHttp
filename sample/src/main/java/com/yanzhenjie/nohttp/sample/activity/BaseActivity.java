@@ -30,13 +30,9 @@ import android.widget.FrameLayout;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.dialog.ImageDialog;
-import com.yanzhenjie.nohttp.sample.dialog.WebDialog;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yolanda.nohttp.rest.Request;
-import com.yolanda.nohttp.rest.Response;
-import com.yolanda.nohttp.rest.StringRequest;
-import com.yolanda.nohttp.tools.HeaderParser;
 
 /**
  * Created in 2016/5/8 18:19.
@@ -215,19 +211,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         imageDialog.setTitle(title);
         imageDialog.setImage(bitmap);
         imageDialog.show();
-    }
-
-    /**
-     * 显示一个WebDialog。
-     *
-     * @param response 响应。
-     */
-    public void showWebDialog(Response<?> response) {
-        String result = StringRequest.parseResponseString(response.getHeaders(), response.getByteArray());
-        WebDialog webDialog = new WebDialog(this);
-        String contentType = response.getHeaders().getContentType();
-        webDialog.loadUrl(result, contentType, HeaderParser.parseHeadValue(contentType, "charset", "utf-8"));
-        webDialog.show();
     }
 
     public <T> void request(int what, Request<T> request, HttpListener<T> callback, boolean canCancel, boolean isLoading) {

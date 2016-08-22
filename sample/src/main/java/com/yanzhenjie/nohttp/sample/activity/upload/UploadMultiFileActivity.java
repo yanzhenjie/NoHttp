@@ -30,7 +30,6 @@ import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yolanda.nohttp.BasicBinary;
-import com.yolanda.nohttp.Binary;
 import com.yolanda.nohttp.BitmapBinary;
 import com.yolanda.nohttp.FileBinary;
 import com.yolanda.nohttp.InputStreamBinary;
@@ -134,8 +133,8 @@ public class UploadMultiFileActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-                showMessageDialog(R.string.request_succeed, exception.getMessage());
+            public void onFailed(int what, Response<String> response) {
+                showMessageDialog(R.string.request_succeed, response.getException().getMessage());
             }
         }, false, true);
     }

@@ -28,13 +28,6 @@ import org.json.JSONObject;
  */
 public class JsonObjectRequest extends RestRequest<JSONObject> {
 
-    /**
-     * The value is {@value}.
-     *
-     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON}.
-     */
-    public static final String ACCEPT = Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
-
     public JsonObjectRequest(String url) {
         this(url, RequestMethod.GET);
     }

@@ -22,7 +22,7 @@ Document also continues to improve, there is a problem can send [issues][7], or 
 
 * AndroidStudio using Gradle build add dependent (recommended)
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.4'
+compile 'com.yolanda.nohttp:nohttp:1.0.5'
 ```
 
 # Download Demo
@@ -171,7 +171,7 @@ request.add("file1", new FileBinary(File));
 request.add("file2", new FileBinary(File));
 request.add("file3", new InputStreamBinary(InputStream));
 request.add("file4", new ByteArrayBinary(byte[]));
-request.add("file5", new BitmapStreamBinary(Bitmap));
+request.add("file5", new BitmapBinary(Bitmap));
 ```
 
 ## Upload multiple files, a Key form of multiple files
@@ -181,7 +181,7 @@ Request<String> request = ...
 fileList.add("image", new FileBinary(File));
 fileList.add("image", new InputStreamBinary(InputStream));
 fileList.add("image", new ByteArrayBinary(byte[]));
-fileList.add("image", new BitmapStreamBinary(Bitmap));
+fileList.add("image", new BitmapBinary(Bitmap));
 ```
 　Or: 
 ```java
@@ -191,7 +191,7 @@ List<Binary> fileList = ...
 fileList.add(new FileBinary(File));
 fileList.add(new InputStreamBinary(InputStream));
 fileList.add(new ByteArrayBinary(byte[]));
-fileList.add(new BitmapStreamBinary(Bitmap));
+fileList.add(new BitmapBinary(Bitmap));
 request.add("file_list", fileList);
 ```
 
@@ -320,11 +320,12 @@ queue.stop();
 public class FastJsonRequest extends RestRequestor<JSONObject> {
 
     public FastJsonRequest(String url) {
-	    super(url);
+	    this(url, RequestMethod.GET);
     }
 
     public FastJsonRequest(String url, RequestMethod requestMethod) {
 	    super(url, requestMethod);
+	    setHeader("application/json");
     }
 
     @Override
@@ -337,11 +338,6 @@ public class FastJsonRequest extends RestRequestor<JSONObject> {
 		    jsonObject = JSON.toJSON("{}");
 	    }
 	    return jsonObject;
-    }
-
-    @Override
-    public String getAccept() {
-	    return "application/json";
     }
 }
 ```
@@ -389,11 +385,11 @@ limitations under the License.
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.4.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
 [10]: http://www.nohttp.net/image/nohttp_logo.svg
-[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.4-include-source.jar?raw=true
+[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5-include-source.jar?raw=true
 [12]: http://www.yanzhenjie.com
-[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.4
+[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.5
 [14]: https://github.com/yanzhenjie/NoHttp/blob/master/README-cn.md
 [15]: http://www.ietf.org/rfc/rfc2616.txt

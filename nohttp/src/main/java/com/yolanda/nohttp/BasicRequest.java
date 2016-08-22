@@ -15,10 +15,8 @@
  */
 package com.yolanda.nohttp;
 
-import android.os.Build;
 import android.text.TextUtils;
 
-import com.yolanda.nohttp.tools.AndroidVersion;
 import com.yolanda.nohttp.tools.CounterOutputStream;
 import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
@@ -47,13 +45,13 @@ import javax.net.ssl.SSLSocketFactory;
 
 /**
  * <p>
- * Implement all the methods of the base class {@link BasicClientRequest} and {@link BasicServerRequest}.
+ * Implement all the methods of the base class {@link IBasicRequest}.
  * </p>
  * Created in Nov 4, 2015 8:28:50 AM.
  *
  * @author Yan Zhenjie.
  */
-public abstract class BasicRequest implements BasicClientRequest, BasicServerRequest {
+public abstract class BasicRequest implements IBasicRequest {
 
     private final String boundary = createBoundary();
     private final String startBoundary = "--" + boundary;
@@ -72,13 +70,13 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
      */
     private String url;
     /**
-     * The real.
-     */
-    private String buildUrl;
-    /**
      * Request method.
      */
     private RequestMethod mRequestMethod;
+    /**
+     * MultipartFormEnable.
+     */
+    private boolean isMultipartFormEnable = false;
     /**
      * Proxy server.
      */
@@ -103,6 +101,10 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
      * Request heads.
      */
     private Headers mHeaders;
+    /**
+     * After the failure of retries.
+     */
+    private int mRetryCount;
     /**
      * The params encoding.
      */
@@ -147,7 +149,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
      *
-     * @param url request address, like: http://www.google.com.
+     * @param url request address, like: http://www.yanzhenjie.com.
      */
     public BasicRequest(String url) {
         this(url, RequestMethod.GET);
@@ -167,8 +169,6 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         mHeaders.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_ALL);
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING_GZIP_DEFLATE);
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, HeaderUtil.systemAcceptLanguage());
-        // To fix bug: accidental EOFException before API 19
-        mHeaders.set(Headers.HEAD_KEY_CONNECTION, Build.VERSION.SDK_INT > AndroidVersion.KITKAT ? Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE : Headers.HEAD_VALUE_CONNECTION_CLOSE);
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, UserAgent.instance());
 
         mParamKeyValues = new LinkedMultiValueMap<String, Object>();
@@ -195,7 +195,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
-    public final int compareTo(BasicClientRequest another) {
+    public final int compareTo(IBasicRequest another) {
         final Priority me = getPriority();
         final Priority it = another.getPriority();
         return me == it ? getSequence() - another.getSequence() : it.ordinal() - me.ordinal();
@@ -203,24 +203,45 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
 
     @Override
     public String url() {
-        if (TextUtils.isEmpty(buildUrl)) {
-            StringBuilder urlBuilder = new StringBuilder(url);
-            if (!getRequestMethod().allowRequestBody() && mParamKeyValues.size() > 0) {
-                StringBuffer paramBuffer = buildCommonParams(getParamKeyValues(), getParamsEncoding());
-                if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
-                    urlBuilder.append("&");
-                else if (paramBuffer.length() > 0 && !url.endsWith("?")) // end with '?', not append '?'.
-                    urlBuilder.append("?");
-                urlBuilder.append(paramBuffer);
-            }
-            buildUrl = urlBuilder.toString();
+        StringBuilder urlBuilder = new StringBuilder(url);
+        if (!getRequestMethod().allowRequestBody() && mParamKeyValues.size() > 0) {
+            StringBuffer paramBuffer = buildCommonParams(getParamKeyValues(), getParamsEncoding());
+            if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
+                urlBuilder.append("&");
+            else if (paramBuffer.length() > 0 && !url.endsWith("?")) // end with '?', not append '?'.
+                urlBuilder.append("?");
+            urlBuilder.append(paramBuffer);
         }
-        return buildUrl;
+        return urlBuilder.toString();
     }
 
     @Override
     public RequestMethod getRequestMethod() {
         return mRequestMethod;
+    }
+
+    @Override
+    public void setMultipartFormEnable(boolean enable) {
+        if (enable && !getRequestMethod().allowRequestBody())
+            throw new IllegalArgumentException("MultipartFormEnable is request method is the premise of the POST/PUT/PATCH/DELETE, but the Android system under API level 19 does not support the DELETE.");
+        isMultipartFormEnable = enable;
+    }
+
+    @Override
+    public boolean isMultipartFormEnable() {
+        if (isMultipartFormEnable) {
+            return true;
+        } else {
+            Set<String> keys = mParamKeyValues.keySet();
+            for (String key : keys) {
+                List<Object> values = mParamKeyValues.getValues(key);
+                for (Object value : values) {
+                    if (value instanceof Binary)
+                        return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -279,20 +300,14 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
-    public void addHeader(HttpCookie cookie) {
-        if (cookie != null)
-            mHeaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
-    }
-
-    @Override
     public void setHeader(String key, String value) {
         mHeaders.set(key, value);
     }
 
     @Override
-    public void setHeader(HttpCookie cookie) {
+    public void addHeader(HttpCookie cookie) {
         if (cookie != null)
-            mHeaders.set(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
+            mHeaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
     }
 
     @Override
@@ -316,18 +331,8 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
-    public String getAccept() {
-        return mHeaders.getValue(Headers.HEAD_KEY_ACCEPT, 0);
-    }
-
-    @Override
     public void setAcceptLanguage(String acceptLanguage) {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
-    }
-
-    @Override
-    public String getAcceptLanguage() {
-        return mHeaders.getValue(Headers.HEAD_KEY_ACCEPT_LANGUAGE, 0);
     }
 
     @Override
@@ -349,15 +354,12 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     @Override
     public String getContentType() {
         String contentType = mHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0);
-
-        StringBuilder contentTypeBuild = new StringBuilder();
-        if (getRequestMethod().allowRequestBody() && hasBinary())
-            contentTypeBuild.append(Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA).append("; boundary=").append(boundary);
-        else if (TextUtils.isEmpty(contentType))
-            contentTypeBuild.append(Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED).append("; charset=").append(getParamsEncoding());
+        if (!TextUtils.isEmpty(contentType))
+            return contentType;
+        if (getRequestMethod().allowRequestBody() && isMultipartFormEnable())
+            return Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA + "; boundary=" + boundary;
         else
-            contentTypeBuild.append(contentType);
-        return contentTypeBuild.toString();
+            return Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED + "; charset=" + getParamsEncoding();
     }
 
     @Override
@@ -366,8 +368,13 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
-    public String getUserAgent() {
-        return mHeaders.getValue(Headers.HEAD_KEY_USER_AGENT, 0);
+    public void setRetryCount(int count) {
+        this.mRetryCount = count;
+    }
+
+    @Override
+    public int getRetryCount() {
+        return mRetryCount;
     }
 
     @Override
@@ -430,8 +437,19 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
+    public void set(String key, String value) {
+        if (value != null)
+            mParamKeyValues.set(key, value);
+    }
+
+    @Override
     public void add(String key, Binary binary) {
         mParamKeyValues.add(key, binary);
+    }
+
+    @Override
+    public void set(String key, Binary binary) {
+        mParamKeyValues.set(key, binary);
     }
 
     @Override
@@ -440,27 +458,22 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     }
 
     @Override
-    public void add(String key, List<Binary> binaries) {
-        if (binaries != null)
-            for (Binary binary : binaries)
-                mParamKeyValues.add(key, binary);
-        else
-            Logger.e("The binaries is null.");
+    public void set(String key, File file) {
+        set(key, new FileBinary(file));
     }
 
     @Override
-    public void set(String key, String value) {
-        if (value != null)
-            mParamKeyValues.set(key, value);
+    public void add(String key, List<Binary> binaries) {
+        if (binaries != null) {
+            for (Binary binary : binaries)
+                mParamKeyValues.add(key, binary);
+        }
     }
 
     @Override
     public void set(String key, List<Binary> binaries) {
         mParamKeyValues.remove(key);
-        if (binaries != null)
-            add(key, binaries);
-        else
-            Logger.e("The binaries is null.");
+        add(key, binaries);
     }
 
     @Override
@@ -474,7 +487,6 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     @Override
     public void set(Map<String, String> params) {
         if (params != null) {
-            mParamKeyValues.clear();
             for (Map.Entry<String, String> stringEntry : params.entrySet())
                 set(stringEntry.getKey(), stringEntry.getValue());
         }
@@ -562,12 +574,13 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
 
     @Override
     public void onWriteRequestBody(OutputStream writer) throws IOException {
-        if (!hasDefineRequestBody() && hasBinary())
-            writeFormStreamData(writer);
-        else if (!hasDefineRequestBody())
-            writeCommonStreamData(writer);
-        else
+        if (mRequestBody != null) {
             writeRequestBody(writer);
+        } else if (isMultipartFormEnable()) {
+            writeFormStreamData(writer);
+        } else {
+            writeCommonStreamData(writer);
+        }
     }
 
     /**
@@ -591,10 +604,11 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
                             Logger.i(key + " is Binary");
                         writeFormBinary(writer, key, (Binary) value);
                     }
+                    writer.write("\r\n".getBytes());
                 }
             }
         }
-        writer.write(("\r\n" + endBoundary).getBytes());
+        writer.write((endBoundary).getBytes());
     }
 
     /**
@@ -614,21 +628,17 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
         writer.write(stringFieldBuilder.toString().getBytes(getParamsEncoding()));
 
         writer.write(value.getBytes(getParamsEncoding()));
-        writer.write("\r\n".getBytes());
     }
 
     /**
      * Send binary data in a form.
      */
     private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
-        long contentLength = value.getLength();
-        if (contentLength > 0) {// Have content to send
+        if (!value.isCanceled()) {
             StringBuilder binaryFieldBuilder = new StringBuilder(startBoundary).append("\r\n");
+
             binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"");
-            String filename = value.getFileName();
-            if (!TextUtils.isEmpty(filename))
-                binaryFieldBuilder.append("; filename=\"").append(filename).append("\"");
-            binaryFieldBuilder.append("\r\n");
+            binaryFieldBuilder.append("; filename=\"").append(value.getFileName()).append("\"\r\n");
 
             binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
             binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
@@ -636,11 +646,10 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
             writer.write(binaryFieldBuilder.toString().getBytes());
 
             if (writer instanceof CounterOutputStream) {
-                ((CounterOutputStream) writer).write(contentLength);
+                ((CounterOutputStream) writer).write(value.getLength());
             } else {
                 value.onWriteBinary(writer);
             }
-            writer.write("\r\n".getBytes());
         }
     }
 
@@ -664,7 +673,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
      * @throws IOException write error.
      */
     protected void writeRequestBody(OutputStream writer) throws IOException {
-        if (hasDefineRequestBody()) {
+        if (mRequestBody != null) {
             if (writer instanceof CounterOutputStream) {
                 writer.write(mRequestBody.available());
             } else {
@@ -729,7 +738,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     public void cancel() {
         if (!isCanceled) {
             isCanceled = true;
-            if (hasDefineRequestBody())
+            if (mRequestBody != null)
                 IOUtils.closeQuietly(mRequestBody);
 
             if (blockingQueue != null)
@@ -759,23 +768,6 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
     public void cancelBySign(Object sign) {
         if (mCancelSign == sign)
             cancel();
-    }
-
-    /**
-     * Is there a Binary data upload ?
-     *
-     * @return Said true, false said no.
-     */
-    protected boolean hasBinary() {
-        Set<String> keys = mParamKeyValues.keySet();
-        for (String key : keys) {
-            List<Object> values = mParamKeyValues.getValues(key);
-            for (Object value : values) {
-                if (value instanceof Binary)
-                    return true;
-            }
-        }
-        return false;
     }
 
     ////////// static module /////////
@@ -830,7 +822,7 @@ public abstract class BasicRequest implements BasicClientRequest, BasicServerReq
      * @return Random code.
      */
     public static String createBoundary() {
-        StringBuffer sb = new StringBuffer("------------------");
+        StringBuffer sb = new StringBuffer("----NoHttpFormBoundary");
         for (int t = 1; t < 12; t++) {
             long time = System.currentTimeMillis() + t;
             if (time % 3L == 0L) {

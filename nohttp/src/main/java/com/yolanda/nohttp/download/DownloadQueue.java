@@ -94,6 +94,24 @@ public class DownloadQueue {
     }
 
     /**
+     * Don't start return request queue size.
+     *
+     * @return size.
+     */
+    public int unStartSize() {
+        return mDownloadQueue.size();
+    }
+
+    /**
+     * Returns have started but not the end of the request queue size.
+     *
+     * @return size.
+     */
+    public int unFinishSize() {
+        return mUnFinishQueue.size();
+    }
+
+    /**
      * Polling the queue will not be executed, and this will not be canceled.
      */
     public void stop() {

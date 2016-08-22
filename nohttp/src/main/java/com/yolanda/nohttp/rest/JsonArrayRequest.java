@@ -29,7 +29,7 @@ import org.json.JSONArray;
 public class JsonArrayRequest extends RestRequest<JSONArray> {
 
     public JsonArrayRequest(String url) {
-        this(url, RequestMethod.POST);
+        this(url, RequestMethod.GET);
     }
 
     public JsonArrayRequest(String url, RequestMethod requestMethod) {

@@ -15,8 +15,7 @@
  */
 package com.yolanda.nohttp.download;
 
-import com.yolanda.nohttp.BasicClientRequest;
-import com.yolanda.nohttp.BasicServerRequest;
+import com.yolanda.nohttp.IBasicRequest;
 
 /**
  * <p>
@@ -26,7 +25,7 @@ import com.yolanda.nohttp.BasicServerRequest;
  *
  * @author Yan Zhenjie.
  */
-public interface DownloadRequest extends BasicClientRequest, BasicServerRequest {
+public interface DownloadRequest extends IBasicRequest {
 
     /**
      * Also didn't download to start download again.

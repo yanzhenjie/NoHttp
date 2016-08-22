@@ -29,16 +29,17 @@ import com.yolanda.nohttp.download.DownloadQueue;
 import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.download.Downloader;
 import com.yolanda.nohttp.download.RestDownloadRequest;
-import com.yolanda.nohttp.rest.HttpRestConnection;
-import com.yolanda.nohttp.rest.HttpRestParser;
+import com.yolanda.nohttp.rest.IParserRequest;
+import com.yolanda.nohttp.rest.IRestParser;
+import com.yolanda.nohttp.rest.IRestProtocol;
 import com.yolanda.nohttp.rest.ImageRequest;
-import com.yolanda.nohttp.rest.ImplRestConnection;
-import com.yolanda.nohttp.rest.ImplRestParser;
 import com.yolanda.nohttp.rest.JsonArrayRequest;
 import com.yolanda.nohttp.rest.JsonObjectRequest;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
+import com.yolanda.nohttp.rest.RestParser;
+import com.yolanda.nohttp.rest.RestProtocol;
 import com.yolanda.nohttp.rest.StringRequest;
 import com.yolanda.nohttp.tools.AndroidVersion;
 
@@ -63,80 +64,28 @@ public class NoHttp {
 
     /**
      * The value is {@value}.
-     *
-     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED} instead.
-     */
-    @Deprecated
-    public static final String APPLICATION_X_WWW_FORM_URLENCODED = Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED;
-
-    /**
-     * The value is {@value}.
-     *
-     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA} instead.
-     */
-    @Deprecated
-    public static final String MULTIPART_FORM_DATA = Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA;
-
-    /**
-     * The value is {@value}.
-     *
-     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM} instead.
-     */
-    @Deprecated
-    public static final String APPLICATION_OCTET_STREAM = Headers.HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM;
-
-    /**
-     * The value is {@value}.
-     *
-     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_JSON} instead.
-     */
-    @Deprecated
-    public static final String APPLICATION_JSON = Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON;
-
-    /**
-     * The value is {@value}.
-     *
-     * @deprecated use {@link Headers#HEAD_VALUE_ACCEPT_APPLICATION_XML} instead.
-     */
-    @Deprecated
-    public static final String APPLICATION_XML = "application/xml";
-
-    /**
-     * The value is {@value}.
      */
     public static final String CHARSET_UTF8 = "UTF-8";
 
     /**
-     * Default thread pool size.
+     * RequestQueue default thread size, value is {@value}.
      */
-    private static final int DEFAULT_THREAD_SIZE = 3;
-    /**
-     * RequestQueue default thread size, value is {@value DEFAULT_THREAD_SIZE}.
-     */
-    private static int DEFAULT_REQUEST_THREAD_SIZE = DEFAULT_THREAD_SIZE;
+    private static int DEFAULT_REQUEST_THREAD_SIZE = 3;
 
     /**
-     * DownloadQueue default thread size, value is {@value DEFAULT_THREAD_SIZE}.
+     * DownloadQueue default thread size, value is {@value}.
      */
-    private static int DEFAULT_DOWNLOAD_THREAD_SIZE = DEFAULT_THREAD_SIZE;
-
-    /**
-     * The value is {@value}.
-     *
-     * @deprecated use {@link #getDefaultConnectTimeout()} or {@link #getDefaultReadTimeout()} instead.
-     */
-    @Deprecated
-    public static final int TIMEOUT_8S = 8 * 1000;
+    private static int DEFAULT_DOWNLOAD_THREAD_SIZE = 3;
 
     /**
      * Default connect timeout. The value is {@value}.
      */
-    private static int sDefaultConnectTimeout = 8 * 1000;
+    private static int sDefaultConnectTimeout = 10 * 1000;
 
     /**
      * Default read timeout. The value is {@value}.
      */
-    private static int sDefaultReadTimeout = 8 * 1000;
+    private static int sDefaultReadTimeout = 10 * 1000;
 
     /**
      * Context.
@@ -146,20 +95,20 @@ public class NoHttp {
     /**
      * Cookie.
      */
-    private static CookieHandler sCookieHandler;
+    private static CookieManager sCookieManager;
     /**
      * Is enable cookies.
      */
     private static boolean isEnableCookie = true;
 
     /**
-     * Create a new request queue, using NoHttp default configuration. And number of concurrent requests is {@value DEFAULT_THREAD_SIZE}.
+     * Create a new request queue, using NoHttp default configuration. And number of concurrent requests is 3.
      *
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue(int)
      * @see #newRequestQueue(Cache, int)
-     * @see #newRequestQueue(ImplRestConnection, int)
-     * @see #newRequestQueue(ImplRestParser, int)
+     * @see #newRequestQueue(IRestProtocol, int)
+     * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue() {
         return newRequestQueue(DEFAULT_REQUEST_THREAD_SIZE);
@@ -172,30 +121,30 @@ public class NoHttp {
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
      * @see #newRequestQueue(Cache, int)
-     * @see #newRequestQueue(ImplRestConnection, int)
-     * @see #newRequestQueue(ImplRestParser, int)
+     * @see #newRequestQueue(IRestProtocol, int)
+     * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue(int threadPoolSize) {
         return newRequestQueue(DiskCacheStore.INSTANCE, threadPoolSize);
     }
 
     /**
-     * Create a new request queue, using NoHttp default request connection {@link HttpRestConnection} and default response parser {@link HttpRestParser}.
+     * Create a new request queue, using NoHttp default request connection {@link RestProtocol} and default response parser {@link RestParser}.
      *
      * @param cache          cache interface, which is used to cache the request results.
      * @param threadPoolSize request the number of concurrent.
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
      * @see #newRequestQueue(int)
-     * @see #newRequestQueue(ImplRestConnection, int)
-     * @see #newRequestQueue(ImplRestParser, int)
+     * @see #newRequestQueue(IRestProtocol, int)
+     * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, int threadPoolSize) {
-        return newRequestQueue(HttpRestConnection.getInstance(cache), threadPoolSize);
+        return newRequestQueue(RestProtocol.getInstance(cache), threadPoolSize);
     }
 
     /**
-     * Create a new request queue, using NoHttp default request executor {@link HttpRestConnection} and default response parser {@link HttpRestParser}.
+     * Create a new request queue, using NoHttp default request executor {@link RestProtocol} and default response parser {@link RestParser}.
      *
      * @param implRestConnection network operating interface, The implementation of the network layer.
      * @param threadPoolSize     request the number of concurrent.
@@ -203,10 +152,10 @@ public class NoHttp {
      * @see #newRequestQueue()
      * @see #newRequestQueue(int)
      * @see #newRequestQueue(Cache, int)
-     * @see #newRequestQueue(ImplRestParser, int)
+     * @see #newRequestQueue(IRestParser, int)
      */
-    public static RequestQueue newRequestQueue(ImplRestConnection implRestConnection, int threadPoolSize) {
-        return newRequestQueue(HttpRestParser.getInstance(implRestConnection), threadPoolSize);
+    public static RequestQueue newRequestQueue(IRestProtocol implRestConnection, int threadPoolSize) {
+        return newRequestQueue(RestParser.getInstance(implRestConnection), threadPoolSize);
     }
 
     /**
@@ -218,9 +167,9 @@ public class NoHttp {
      * @see #newRequestQueue()
      * @see #newRequestQueue(int)
      * @see #newRequestQueue(Cache, int)
-     * @see #newRequestQueue(ImplRestConnection, int)
+     * @see #newRequestQueue(IRestProtocol, int)
      */
-    public static RequestQueue newRequestQueue(ImplRestParser implRestParser, int threadPoolSize) {
+    public static RequestQueue newRequestQueue(IRestParser implRestParser, int threadPoolSize) {
         RequestQueue requestQueue = new RequestQueue(implRestParser, threadPoolSize);
         requestQueue.start();
         return requestQueue;
@@ -343,11 +292,11 @@ public class NoHttp {
      * @param request request object.
      * @param <T>     {@link T}.
      * @return {@link Response}.
-     * @see #startRequestSync(Cache, Request)
-     * @see #startRequestSync(ImplRestConnection, Request)
-     * @see #startRequestSync(ImplRestParser, Request)
+     * @see #startRequestSync(Cache, IParserRequest)
+     * @see #startRequestSync(IRestProtocol, IParserRequest)
+     * @see #startRequestSync(IRestParser, IParserRequest)
      */
-    public static <T> Response<T> startRequestSync(Request<T> request) {
+    public static <T> Response<T> startRequestSync(IParserRequest<T> request) {
         return startRequestSync(DiskCacheStore.INSTANCE, request);
     }
 
@@ -358,46 +307,46 @@ public class NoHttp {
      * @param request tequest object.
      * @param <T>     {@link T}.
      * @return {@link Response}.
-     * @see #startRequestSync(Request)
-     * @see #startRequestSync(ImplRestConnection, Request)
-     * @see #startRequestSync(ImplRestParser, Request)
+     * @see #startRequestSync(IParserRequest)
+     * @see #startRequestSync(IRestProtocol, IParserRequest)
+     * @see #startRequestSync(IRestParser, IParserRequest)
      */
-    public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, Request<T> request) {
-        return startRequestSync(HttpRestConnection.getInstance(cache), request);
+    public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, IParserRequest<T> request) {
+        return startRequestSync(RestProtocol.getInstance(cache), request);
     }
 
     /**
      * Initiate a synchronization request.
      *
-     * @param implRestConnection complete implementation of the {@link ImplRestConnection}.
+     * @param implRestConnection complete implementation of the {@link IRestProtocol}.
      * @param request            request object.
      * @param <T>                {@link T}.
      * @return {@link Response}.
-     * @see #startRequestSync(Request)
-     * @see #startRequestSync(Cache, Request)
-     * @see #startRequestSync(ImplRestParser, Request)
+     * @see #startRequestSync(IParserRequest)
+     * @see #startRequestSync(Cache, IParserRequest)
+     * @see #startRequestSync(IRestParser, IParserRequest)
      */
-    public static <T> Response<T> startRequestSync(ImplRestConnection implRestConnection, Request<T> request) {
-        return startRequestSync(HttpRestParser.getInstance(implRestConnection), request);
+    public static <T> Response<T> startRequestSync(IRestProtocol implRestConnection, IParserRequest<T> request) {
+        return startRequestSync(RestParser.getInstance(implRestConnection), request);
     }
 
     /**
      * Initiate a synchronization request.
      *
-     * @param implRestParser complete implementation of the {@link ImplRestParser}.
+     * @param implRestParser complete implementation of the {@link IRestParser}.
      * @param request        request object.
      * @param <T>            {@link T}.
      * @return {@link Response}.
-     * @see #startRequestSync(Request)
-     * @see #startRequestSync(Cache, Request)
-     * @see #startRequestSync(ImplRestConnection, Request)
+     * @see #startRequestSync(IParserRequest)
+     * @see #startRequestSync(Cache, IParserRequest)
+     * @see #startRequestSync(IRestProtocol, IParserRequest)
      */
-    public static <T> Response<T> startRequestSync(ImplRestParser implRestParser, Request<T> request) {
+    public static <T> Response<T> startRequestSync(IRestParser implRestParser, IParserRequest<T> request) {
         return implRestParser.parserRequest(request);
     }
 
     /**
-     * Create a new download queue, the default thread pool number is {@value DEFAULT_THREAD_SIZE}.
+     * Create a new download queue, the default thread pool number is 3.
      *
      * @return {@link DownloadQueue}.
      * @see #newDownloadQueue(int)
@@ -498,7 +447,7 @@ public class NoHttp {
      * @return {@link String}.
      */
     public static String versionName() {
-        return "1.0.4";
+        return "1.0.5";
     }
 
     /**
@@ -507,7 +456,7 @@ public class NoHttp {
      * @return {@link Integer}.
      */
     public static int versionCode() {
-        return 104;
+        return 105;
     }
 
     /**
@@ -529,7 +478,7 @@ public class NoHttp {
     public static void initialize(Application application) {
         if (sApplication == null) {
             sApplication = application;
-            sCookieHandler = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
+            sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
 
             if (Build.VERSION.SDK_INT < AndroidVersion.KITKAT) {
                 System.setProperty("http.keepAlive", "false");
@@ -648,22 +597,22 @@ public class NoHttp {
      * Get NoHttp Cookie manager by default.
      *
      * @return {@link CookieHandler}.
-     * @see #setDefaultCookieHandler(CookieHandler)
+     * @see #setDefaultCookieManager(CookieManager)
      */
-    public static CookieHandler getDefaultCookieHandler() {
-        return sCookieHandler;
+    public static CookieManager getDefaultCookieManager() {
+        return sCookieManager;
     }
 
     /**
      * Sets the system-wide cookie handler.
      *
      * @param cookieHandler {@link CookieHandler}.
-     * @see #getDefaultCookieHandler()
+     * @see #getDefaultCookieManager()
      */
-    public static void setDefaultCookieHandler(CookieHandler cookieHandler) {
+    public static void setDefaultCookieManager(CookieManager cookieHandler) {
         if (cookieHandler == null)
             throw new IllegalArgumentException("cookieHandler == null");
-        sCookieHandler = cookieHandler;
+        sCookieManager = cookieHandler;
     }
 
     /**
@@ -677,4 +626,49 @@ public class NoHttp {
 
     private NoHttp() {
     }
+
+    /*
+     * =================================================
+     * ||                   Instance                  ||
+     * =================================================
+     */
+
+    /**
+     * Default thread pool size for request queue.
+     */
+    private static RequestQueue sRequestQueueInstance;
+
+    /**
+     * Default thread pool size for request queue.
+     */
+    private static DownloadQueue sDownloadQueueInstance;
+
+    /**
+     * Get default RequestQueue.
+     *
+     * @return {@link RequestQueue}.
+     */
+    public static RequestQueue getRequestQueueInstance() {
+        synchronized (NoHttp.class) {
+            if (sRequestQueueInstance == null) {
+                sRequestQueueInstance = newRequestQueue();
+            }
+        }
+        return sRequestQueueInstance;
+    }
+
+    /**
+     * Get default DownloadQueue.
+     *
+     * @return {@link DownloadQueue}.
+     */
+    public static DownloadQueue getDownloadQueueInstance() {
+        synchronized (NoHttp.class) {
+            if (sDownloadQueueInstance == null) {
+                sDownloadQueueInstance = newDownloadQueue();
+            }
+        }
+        return sDownloadQueueInstance;
+    }
+
 }

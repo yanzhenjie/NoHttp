@@ -34,7 +34,7 @@ public enum CacheMode {
     /**
      * <p>
      * Request fails to read the cache, if the request to the server success or cache exists invoke {@link OnResponseListener#onSucceed(int, Response)}, if the request to the server failure or cache
-     * does not exist invoke {@link OnResponseListener#onFailed(int, String, Object, Exception, int, long)}.
+     * does not exist invoke {@link OnResponseListener#onFailed(int, Response)}.
      * </p>
      */
     REQUEST_NETWORK_FAILED_READ_CACHE,
@@ -46,7 +46,7 @@ public enum CacheMode {
 
     /**
      * <p>
-     * If the cache exists invoke {@link OnResponseListener#onSucceed(int, Response)}, otherwise invoke {@link OnResponseListener#onFailed(int, String, Object, Exception, int, long)}.
+     * If the cache exists invoke {@link OnResponseListener#onSucceed(int, Response)}, otherwise invoke {@link OnResponseListener#onFailed(int, Response)}.
      * </p>
      */
     ONLY_READ_CACHE,

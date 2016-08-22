@@ -29,18 +29,6 @@ import java.util.Locale;
 public class UserAgent {
 
     /**
-     * Get the singleton UA.
-     *
-     * @return String.
-     * @see #newInstance()
-     * @deprecated use {@link #instance()} instead.
-     */
-    @Deprecated
-    public static String getUserAgent() {
-        return instance();
-    }
-
-    /**
      * UserAgent.
      */
     private static String userAgent;

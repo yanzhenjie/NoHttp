@@ -15,6 +15,8 @@
  */
 package com.yolanda.nohttp;
 
+import android.util.Log;
+
 import com.yolanda.nohttp.tools.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -55,6 +57,10 @@ public class InputStreamBinary extends BasicBinary {
     public InputStreamBinary(InputStream inputStream, String fileName, String mimeType) {
         super(fileName, mimeType);
         this.inputStream = inputStream;
+        if (!(inputStream instanceof FileInputStream) && !(inputStream instanceof ByteArrayInputStream)) {
+            Log.e("Binary", "Binary was cancelled, because the InputStream must be FileInputStream or ByteArrayInputStream.");
+            super.cancel();
+        }
     }
 
     @Override
@@ -65,12 +71,10 @@ public class InputStreamBinary extends BasicBinary {
 
     @Override
     public long getBinaryLength() {
-        if (inputStream instanceof FileInputStream || inputStream instanceof ByteArrayInputStream) {
-            try {
-                return inputStream.available();
-            } catch (IOException e) {
-                Logger.e(e);
-            }
+        try {
+            return inputStream.available();
+        } catch (IOException e) {
+            Logger.e(e);
         }
         return 0;
     }

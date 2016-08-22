@@ -15,8 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.rest.Request;
-
 /**
  * Created in Jan 31, 2016 8:45:37 PM.
  *
@@ -28,9 +26,9 @@ public interface RedirectHandler {
      * When the server's response code is 302 or 303 corresponding need to redirect is invoked.
      *
      * @param responseHeaders the service side head accordingly.
-     * @return {@link Request}.
+     * @return {@link IBasicRequest}.
      */
-    Request<?> onRedirect(Headers responseHeaders);
+    IBasicRequest onRedirect(Headers responseHeaders);
 
     /**
      * Whether to allow the redirection, if not redirect will not be {@code #onRedirect(Headers)} callback method, at the same time will ban NoHttp automatic redirection.If allowed to redirect, first

@@ -15,10 +15,6 @@
  */
 package com.yolanda.nohttp.rest;
 
-import android.text.TextUtils;
-
-import com.yolanda.nohttp.BasicRequest;
-import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
 
 /**
@@ -30,7 +26,7 @@ import com.yolanda.nohttp.RequestMethod;
  * @param <T> a generics, regulated the analytic results of the Request.It should be with the {@link Response}, {@link OnResponseListener}.
  * @author Yan Zhenjie.
  */
-public abstract class RestRequest<T> extends BasicRequest implements Request<T> {
+public abstract class RestRequest<T> extends ParseRequest<T> implements Request<T> {
 
     /**
      * The callback mark.
@@ -40,19 +36,6 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
      * The request of the listener.
      */
     private OnResponseListener<T> responseListener;
-    /**
-     * Cache key.
-     */
-    private String mCacheKey;
-    /**
-     * If just read from cache.
-     */
-    private CacheMode mCacheMode = CacheMode.DEFAULT;
-
-    /**
-     * After the failure of retries.
-     */
-    private int mRetryCount;
 
     /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
@@ -60,7 +43,7 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
      * @param url request address, like: http://www.google.com.
      */
     public RestRequest(String url) {
-        super(url);
+        this(url, RequestMethod.GET);
     }
 
     /**
@@ -71,36 +54,6 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
      */
     public RestRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
-    }
-
-    @Override
-    public void setCacheKey(String key) {
-        this.mCacheKey = key;
-    }
-
-    @Override
-    public String getCacheKey() {
-        return TextUtils.isEmpty(mCacheKey) ? url() : mCacheKey;
-    }
-
-    @Override
-    public void setCacheMode(CacheMode cacheMode) {
-        this.mCacheMode = cacheMode;
-    }
-
-    @Override
-    public CacheMode getCacheMode() {
-        return mCacheMode;
-    }
-
-    @Override
-    public void setRetryCount(int count) {
-        this.mRetryCount = count;
-    }
-
-    @Override
-    public int getRetryCount() {
-        return mRetryCount;
     }
 
     @Override
@@ -117,25 +70,5 @@ public abstract class RestRequest<T> extends BasicRequest implements Request<T> 
     @Override
     public OnResponseListener<T> responseListener() {
         return responseListener;
-    }
-
-    @Override
-    public T parseResponse(Headers responseHeaders, byte[] responseBody) throws Throwable {
-        return parseResponse(url(), responseHeaders, responseBody);
-    }
-
-    /**
-     * Parse response.
-     *
-     * @param url             url.
-     * @param responseHeaders response {@link Headers} of server.
-     * @param responseBody    response data of server.
-     * @return your response result.
-     * @deprecated use {@link #parseResponse(Headers, byte[])} instead.
-     */
-    @Deprecated
-    @Override
-    public T parseResponse(String url, Headers responseHeaders, byte[] responseBody) {
-        return null;
     }
 }

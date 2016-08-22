@@ -27,7 +27,7 @@ NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]
 
 * AndroidStudio使用Gradle构建添加依赖（推荐）
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.4'
+compile 'com.yolanda.nohttp:nohttp:1.0.5'
 ```
 
 #下载Demo
@@ -173,7 +173,7 @@ request.add("file1", new FileBinary(File));
 request.add("file2", new FileBinary(File));
 request.add("file3", new InputStreamBinary(InputStream));
 request.add("file4", new ByteArrayBinary(byte[]));
-request.add("file5", new BitmapStreamBinary(Bitmap));
+request.add("file5", new BitmapBinary(Bitmap));
 ```
 
 ##上传多个文件、一个Key多个文件形式
@@ -183,7 +183,7 @@ Request<String> request = ...
 fileList.add("image", new FileBinary(File));
 fileList.add("image", new InputStreamBinary(InputStream));
 fileList.add("image", new ByteArrayBinary(byte[]));
-fileList.add("image", new BitmapStreamBinary(Bitmap));
+fileList.add("image", new BitmapBinary(Bitmap));
 ```
 　　或者：
 ```java
@@ -322,11 +322,12 @@ queue.stop();
 public class FastJsonRequest extends RestRequestor<JSONObject> {
 
     public FastJsonRequest(String url) {
-	    super(url);
+	    this(url, RequestMethod.GET);
     }
 
     public FastJsonRequest(String url, RequestMethod requestMethod) {
 	    super(url, requestMethod);
+	    setAccept("application/json");
     }
 
     @Override
@@ -340,12 +341,6 @@ public class FastJsonRequest extends RestRequestor<JSONObject> {
 		    jsonObject = JSON.toJSON("{}");
 	    }
 	    return jsonObject;
-    }
-
-    @Override
-    public String getAccept() {
-	    // 告诉服务器你接受什么类型的数据
-	    return "application/json";
     }
 }
 ```
@@ -393,9 +388,9 @@ limitations under the License.
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.4.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
 [10]: http://www.nohttp.net/image/nohttp_logo.svg
-[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.4-include-source.jar?raw=true
+[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5-include-source.jar?raw=true
 [12]: http://www.yanzhenjie.com
-[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.4
+[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.5

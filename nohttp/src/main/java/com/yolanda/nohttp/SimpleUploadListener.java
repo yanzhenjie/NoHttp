@@ -26,6 +26,10 @@ public abstract class SimpleUploadListener implements OnUploadListener {
     }
 
     @Override
+    public void onProgress(int what, int progress) {
+    }
+
+    @Override
     public void onCancel(int what) {
     }
 

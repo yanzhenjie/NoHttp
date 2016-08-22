@@ -132,8 +132,8 @@ public class DownloadConnection extends BasicConnection implements Downloader {
                     String tempUrl = connection.getURL().toString();
                     if (TextUtils.isEmpty(tempUrl))
                         tempUrl = downloadRequest.url();
-                    String[] slashs = tempUrl.split("/");
-                    fileName = slashs[slashs.length - 1];
+                    String[] slash = tempUrl.split("/");
+                    fileName = slash[slash.length - 1];
                     int paramIndex = fileName.indexOf("?");
                     if (paramIndex > 0) {
                         fileName = fileName.substring(0, paramIndex);

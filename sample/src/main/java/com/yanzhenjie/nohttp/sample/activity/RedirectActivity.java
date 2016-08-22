@@ -26,6 +26,7 @@ import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 import com.yolanda.nohttp.Headers;
+import com.yolanda.nohttp.IBasicRequest;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.RedirectHandler;
 import com.yolanda.nohttp.rest.Request;
@@ -70,7 +71,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
         final Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_REDIRECT_BAIDU);
         request.setRedirectHandler(new RedirectHandler() {
             @Override
-            public Request<?> onRedirect(Headers responseHeaders) {
+            public IBasicRequest onRedirect(Headers responseHeaders) {
                 // 允许重定向时这个方法会被调用
                 // 1. 返回null，NoHttp会自动拷贝父请求的请求方法和代理自动请求，不会拷贝其他属性。
                 // 2. 返回非null，会把这个新请求的数据交给父请求去解析。
@@ -95,7 +96,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_REDIRECT_BAIDU);
         request.setRedirectHandler(new RedirectHandler() {
             @Override
-            public Request<?> onRedirect(Headers responseHeaders) {
+            public IBasicRequest onRedirect(Headers responseHeaders) {
                 // 不允许重定向时此方法不会被调用。
                 return null;
             }
@@ -122,7 +123,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
     }
 
     @Override
-    public void onFailed(int what, String url, Object tag, Exception exception, int responseCode, long networkMillis) {
-        showMessageDialog(R.string.request_failed, exception.getMessage());
+    public void onFailed(int what, Response<String> response) {
+        showMessageDialog(R.string.request_failed, response.getException().getMessage());
     }
 }
