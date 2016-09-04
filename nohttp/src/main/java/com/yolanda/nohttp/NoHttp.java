@@ -29,6 +29,7 @@ import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.download.Downloader;
 import com.yolanda.nohttp.download.RestDownloadRequest;
 import com.yolanda.nohttp.rest.IParserRequest;
+import com.yolanda.nohttp.rest.IRestConnection;
 import com.yolanda.nohttp.rest.IRestParser;
 import com.yolanda.nohttp.rest.IRestProtocol;
 import com.yolanda.nohttp.rest.ImageRequest;
@@ -105,7 +106,7 @@ public class NoHttp {
      *
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue(int)
-     * @see #newRequestQueue(Cache, int)
+     * @see #newRequestQueue(Cache, IRestConnection, int)
      * @see #newRequestQueue(IRestProtocol, int)
      * @see #newRequestQueue(IRestParser, int)
      */
@@ -119,27 +120,28 @@ public class NoHttp {
      * @param threadPoolSize request the number of concurrent.
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
-     * @see #newRequestQueue(Cache, int)
+     * @see #newRequestQueue(Cache, IRestConnection, int)
      * @see #newRequestQueue(IRestProtocol, int)
      * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue(int threadPoolSize) {
-        return newRequestQueue(DiskCacheStore.INSTANCE, threadPoolSize);
+        return newRequestQueue(DiskCacheStore.INSTANCE, RestConnection.getInstance(), threadPoolSize);
     }
 
     /**
      * Create a new request queue, using NoHttp default request connection {@link RestProtocol} and default response parser {@link RestParser}.
      *
-     * @param cache          cache interface, which is used to cache the request results.
-     * @param threadPoolSize request the number of concurrent.
+     * @param cache           cache interface, which is used to cache the request results.
+     * @param iRestConnection The realization of the network layer.
+     * @param threadPoolSize  request the number of concurrent.
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
      * @see #newRequestQueue(int)
      * @see #newRequestQueue(IRestProtocol, int)
      * @see #newRequestQueue(IRestParser, int)
      */
-    public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, int threadPoolSize) {
-        return newRequestQueue(RestProtocol.getInstance(cache, RestConnection.getInstance()), threadPoolSize);
+    public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, IRestConnection iRestConnection, int threadPoolSize) {
+        return newRequestQueue(RestProtocol.getInstance(cache, iRestConnection), threadPoolSize);
     }
 
     /**
@@ -150,7 +152,7 @@ public class NoHttp {
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
      * @see #newRequestQueue(int)
-     * @see #newRequestQueue(Cache, int)
+     * @see #newRequestQueue(Cache, IRestConnection, int)
      * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue(IRestProtocol iRestProtocol, int threadPoolSize) {
@@ -165,7 +167,7 @@ public class NoHttp {
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
      * @see #newRequestQueue(int)
-     * @see #newRequestQueue(Cache, int)
+     * @see #newRequestQueue(Cache, IRestConnection, int)
      * @see #newRequestQueue(IRestProtocol, int)
      */
     public static RequestQueue newRequestQueue(IRestParser implRestParser, int threadPoolSize) {
