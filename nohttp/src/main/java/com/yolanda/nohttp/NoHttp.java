@@ -370,7 +370,8 @@ public class NoHttp {
     /**
      * Create a new download queue.
      *
-     * @param threadPoolSize thread pool number, here is the number of concurrent tasks.
+     * @param iRestConnection {@link IRestConnection}.
+     * @param threadPoolSize  thread pool number, here is the number of concurrent tasks.
      * @return {@link DownloadQueue}.
      * @see #newDownloadQueue()
      * @see #newDownloadQueue(Downloader, int)

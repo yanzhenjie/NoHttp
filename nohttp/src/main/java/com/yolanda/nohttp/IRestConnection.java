@@ -15,9 +15,6 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.Connection;
-import com.yolanda.nohttp.IBasicRequest;
-
 /**
  * Created by Yan Zhenjie on 2016/9/4.
  */

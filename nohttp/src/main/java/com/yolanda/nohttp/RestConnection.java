@@ -118,7 +118,7 @@ public class RestConnection implements IRestConnection {
                 Logger.e(exception);
         }
         Logger.d("--------------Request finish--------------");
-        return new Connection(urlConnection, responseHeaders, inputStream, exception);
+        return new DefaultConnection(urlConnection, responseHeaders, inputStream, exception);
     }
 
     /**
@@ -294,7 +294,7 @@ public class RestConnection implements IRestConnection {
         RedirectHandler redirectHandler = oldRequest.getRedirectHandler();
         if (redirectHandler != null) {
             if (redirectHandler.isDisallowedRedirect(responseHeaders))
-                return new Connection(null, responseHeaders, null, null);
+                return new DefaultConnection(null, responseHeaders, null, null);
             else
                 redirectRequest = redirectHandler.onRedirect(responseHeaders);
         }

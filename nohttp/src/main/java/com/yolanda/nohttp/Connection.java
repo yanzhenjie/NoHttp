@@ -15,12 +15,8 @@
  */
 package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.tools.IOUtils;
-
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
@@ -28,107 +24,34 @@ import java.net.URL;
  *
  * @author Yan Zhenjie.
  */
-public class Connection implements Closeable {
-
-    /**
-     * HttpURLConnection
-     */
-    private HttpURLConnection connection;
-    /**
-     * Server response header.
-     */
-    private Headers mResponseHeaders;
-    /**
-     * Server data steram.
-     */
-    private InputStream mInputStream;
-    /**
-     * Exception of connection.
-     */
-    private Exception mException;
-
-    /**
-     * Create a response.
-     *
-     * @param connection      {@link HttpURLConnection}.
-     * @param responseHeaders response headers.
-     * @param inputStream     According to the response code, the incoming data stream server.
-     * @param exception       Connection exceptions that occur in the process.
-     */
-    public Connection(HttpURLConnection connection, Headers responseHeaders, InputStream inputStream, Exception exception) {
-        this.connection = connection;
-        this.mResponseHeaders = responseHeaders;
-        this.mInputStream = inputStream;
-        this.mException = exception;
-    }
+public interface Connection extends Closeable {
 
     /**
      * Get the {@link URL} of connection.
      *
      * @return {@link URL}.
      */
-    public URL getURL() {
-        return connection.getURL();
-    }
+    URL getURL();
 
     /**
      * Get response headers.
      *
      * @return the responseHeaders.
      */
-    public Headers responseHeaders() {
-        return mResponseHeaders;
-    }
-
-    /**
-     * Set response headers.
-     *
-     * @param responseHeaders the responseHeaders to set.
-     */
-    void setResponseHeaders(Headers responseHeaders) {
-        this.mResponseHeaders = responseHeaders;
-    }
+    Headers responseHeaders();
 
     /**
      * Get stream from server.
      *
      * @return the inputStream.
      */
-    public InputStream serverStream() {
-        return mInputStream;
-    }
-
-    /**
-     * Set the stream from server.
-     *
-     * @param inputStream the inputStream to set.
-     */
-    void setServerStream(InputStream inputStream) {
-        this.mInputStream = inputStream;
-    }
+    InputStream serverStream();
 
     /**
      * Get exception for execution.
      *
      * @return the exception.
      */
-    public Exception exception() {
-        return mException;
-    }
-
-    /**
-     * Set execetpin for execution.
-     *
-     * @param exception the exception to set.
-     */
-    void setException(Exception exception) {
-        this.mException = exception;
-    }
-
-    @Override
-    public void close() throws IOException {
-        IOUtils.closeQuietly(mInputStream);
-        IOUtils.closeQuietly(connection);
-    }
+    Exception exception();
 
 }
