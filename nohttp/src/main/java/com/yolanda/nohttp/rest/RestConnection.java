@@ -26,9 +26,9 @@ public class RestConnection implements IRestConnection {
 
     private BasicConnection basicConnection;
 
-    private static RestConnection instance;
+    private static IRestConnection instance;
 
-    public static RestConnection getInstance() {
+    public static IRestConnection getInstance() {
         synchronized (RestConnection.class) {
             if (instance == null)
                 instance = new RestConnection();

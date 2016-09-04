@@ -54,7 +54,7 @@ public class Connection implements Closeable {
      * @param inputStream     According to the response code, the incoming data stream server.
      * @param exception       Connection exceptions that occur in the process.
      */
-    Connection(HttpURLConnection connection, Headers responseHeaders, InputStream inputStream, Exception exception) {
+    public Connection(HttpURLConnection connection, Headers responseHeaders, InputStream inputStream, Exception exception) {
         this.connection = connection;
         this.mResponseHeaders = responseHeaders;
         this.mInputStream = inputStream;

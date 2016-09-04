@@ -30,15 +30,15 @@ import com.yolanda.nohttp.error.ParseError;
  */
 public class RestParser implements IRestParser {
 
-    private static RestParser _INSTANCE;
+    private static IRestParser instance;
 
     private final IRestProtocol mIRestProtocol;
 
     public static IRestParser getInstance(IRestProtocol iRestProtocol) {
         synchronized (RestParser.class) {
-            if (_INSTANCE == null)
-                _INSTANCE = new RestParser(iRestProtocol);
-            return _INSTANCE;
+            if (instance == null)
+                instance = new RestParser(iRestProtocol);
+            return instance;
         }
     }
 
