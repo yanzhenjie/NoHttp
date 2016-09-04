@@ -5,6 +5,8 @@
 
 [**中文版文档**](https://github.com/yanzhenjie/NoHttp/blob/master/README-cn.md)  
 
+If you want to use OkHttp to do the bottom of the NoHttp, please see this project: [NoHttp4OkHttp](https://github.com/yanzhenjie/NoHttp4OkHttp).
+
 ----
 # NoHttp home page and doc url
 NoHttp source code: [https://github.com/yanzhenjie/NoHttp](https://github.com/yanzhenjie/NoHttp/)

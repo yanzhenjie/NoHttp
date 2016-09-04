@@ -50,6 +50,7 @@ public class Connection implements Closeable {
     /**
      * Create a response.
      *
+     * @param connection      {@link HttpURLConnection}.
      * @param responseHeaders response headers.
      * @param inputStream     According to the response code, the incoming data stream server.
      * @param exception       Connection exceptions that occur in the process.

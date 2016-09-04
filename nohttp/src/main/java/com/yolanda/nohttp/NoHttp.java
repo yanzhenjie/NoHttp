@@ -29,7 +29,6 @@ import com.yolanda.nohttp.download.DownloadRequest;
 import com.yolanda.nohttp.download.Downloader;
 import com.yolanda.nohttp.download.RestDownloadRequest;
 import com.yolanda.nohttp.rest.IParserRequest;
-import com.yolanda.nohttp.rest.IRestConnection;
 import com.yolanda.nohttp.rest.IRestParser;
 import com.yolanda.nohttp.rest.IRestProtocol;
 import com.yolanda.nohttp.rest.ImageRequest;
@@ -38,7 +37,6 @@ import com.yolanda.nohttp.rest.JsonObjectRequest;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
-import com.yolanda.nohttp.rest.RestConnection;
 import com.yolanda.nohttp.rest.RestParser;
 import com.yolanda.nohttp.rest.RestProtocol;
 import com.yolanda.nohttp.rest.StringRequest;
@@ -366,7 +364,19 @@ public class NoHttp {
      * @see #newDownloadQueue(Downloader, int)
      */
     public static DownloadQueue newDownloadQueue(int threadPoolSize) {
-        return newDownloadQueue(new DownloadConnection(), threadPoolSize);
+        return newDownloadQueue(RestConnection.getInstance(), threadPoolSize);
+    }
+
+    /**
+     * Create a new download queue.
+     *
+     * @param threadPoolSize thread pool number, here is the number of concurrent tasks.
+     * @return {@link DownloadQueue}.
+     * @see #newDownloadQueue()
+     * @see #newDownloadQueue(Downloader, int)
+     */
+    public static DownloadQueue newDownloadQueue(IRestConnection iRestConnection, int threadPoolSize) {
+        return newDownloadQueue(DownloadConnection.getInstance(iRestConnection), threadPoolSize);
     }
 
     /**

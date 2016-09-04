@@ -15,9 +15,10 @@
  */
 package com.yolanda.nohttp.rest;
 
-import com.yolanda.nohttp.BasicConnection;
 import com.yolanda.nohttp.Connection;
 import com.yolanda.nohttp.Headers;
+import com.yolanda.nohttp.IRestConnection;
+import com.yolanda.nohttp.RestConnection;
 import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
 import com.yolanda.nohttp.error.NotFoundCacheError;
@@ -135,7 +136,7 @@ public class RestProtocol implements IRestProtocol {
         Headers responseHeaders = connection.responseHeaders();
         Exception exception = connection.exception();
         if (exception == null) {
-            if (BasicConnection.hasResponseBody(request.getRequestMethod(), responseHeaders.getResponseCode()))
+            if (RestConnection.hasResponseBody(request.getRequestMethod(), responseHeaders.getResponseCode()))
                 try {
                     responseBody = IOUtils.toByteArray(connection.serverStream());
                 } catch (IOException e) {// IOException.

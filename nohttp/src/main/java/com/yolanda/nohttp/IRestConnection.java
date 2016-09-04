@@ -13,36 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yolanda.nohttp.rest;
+package com.yolanda.nohttp;
 
-import com.yolanda.nohttp.BasicConnection;
 import com.yolanda.nohttp.Connection;
 import com.yolanda.nohttp.IBasicRequest;
 
 /**
  * Created by Yan Zhenjie on 2016/9/4.
  */
-public class RestConnection implements IRestConnection {
+public interface IRestConnection {
 
-    private BasicConnection basicConnection;
-
-    private static IRestConnection instance;
-
-    public static IRestConnection getInstance() {
-        synchronized (RestConnection.class) {
-            if (instance == null)
-                instance = new RestConnection();
-            return instance;
-        }
-    }
-
-    private RestConnection() {
-        basicConnection = new BasicConnection();
-    }
-
-    @Override
-    public Connection getConnection(IBasicRequest iBasicRequest) {
-        return basicConnection.getConnection(iBasicRequest);
-    }
+    /**
+     * Get Network connection.
+     *
+     * @param iBasicRequest {@link IBasicRequest}.
+     * @return {@link Connection}.
+     */
+    Connection getConnection(IBasicRequest iBasicRequest);
 
 }

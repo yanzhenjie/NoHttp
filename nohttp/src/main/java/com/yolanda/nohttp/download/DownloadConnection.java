@@ -18,7 +18,6 @@ package com.yolanda.nohttp.download;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.yolanda.nohttp.BasicConnection;
 import com.yolanda.nohttp.Connection;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
@@ -30,6 +29,7 @@ import com.yolanda.nohttp.error.StorageSpaceNotEnoughError;
 import com.yolanda.nohttp.error.TimeoutError;
 import com.yolanda.nohttp.error.URLError;
 import com.yolanda.nohttp.error.UnKnownHostError;
+import com.yolanda.nohttp.IRestConnection;
 import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
 import com.yolanda.nohttp.tools.NetUtil;
@@ -51,9 +51,23 @@ import java.net.UnknownHostException;
  *
  * @author Yan Zhenjie.
  */
-public class DownloadConnection extends BasicConnection implements Downloader {
+public class DownloadConnection implements Downloader {
 
-    public DownloadConnection() {
+    private IRestConnection iRestConnection;
+
+    private static Downloader instance;
+
+    public static Downloader getInstance(IRestConnection iRestConnection) {
+        synchronized (DownloadConnection.class) {
+            if (instance == null) {
+                instance = new DownloadConnection(iRestConnection);
+            }
+            return instance;
+        }
+    }
+
+    private DownloadConnection(IRestConnection iRestConnection) {
+        this.iRestConnection = iRestConnection;
     }
 
     @Override
@@ -105,7 +119,7 @@ public class DownloadConnection extends BasicConnection implements Downloader {
             }
 
             // 连接服务器。
-            connection = getConnection(downloadRequest);
+            connection = iRestConnection.getConnection(downloadRequest);
             Exception exception = connection.exception();
             if (exception != null)
                 throw exception;

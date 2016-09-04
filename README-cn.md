@@ -5,8 +5,9 @@
 
 [**English document**][1]  
 
-技术交流群：547839514  
-加群请一定阅读[群行为规范][2]。  
+如果你想用OkHttp作为NoHttp的底层库，请看这个项目：[NoHttp4OkHttp](https://github.com/yanzhenjie/NoHttp4OkHttp)
+
+技术交流群：547839514，加群请一定阅读[群行为规范][2]。  
 
 严振杰的主页：[http://www.yanzhenjie.com][12]  
 严振杰的博客：[http://blog.yanzhenjie.com](http://blog.yanzhenjie.com) 

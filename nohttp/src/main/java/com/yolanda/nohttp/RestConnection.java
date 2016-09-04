@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Yan Zhenjie
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,22 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * <p>
- * Package good Http implementation class, establish connection, read and write data.
- * </p>
- * Created in Aug 4, 2015 10:12:38 AM.
- *
- * @author Yan Zhenjie.
+ * Created by Yan Zhenjie on 2016/9/4.
  */
-public class BasicConnection {
+public class RestConnection implements IRestConnection {
+
+    private static IRestConnection instance;
+
+    public static IRestConnection getInstance() {
+        synchronized (RestConnection.class) {
+            if (instance == null)
+                instance = new RestConnection();
+            return instance;
+        }
+    }
+
+    private RestConnection() {
+    }
 
     /**
      * Send the request, send only head, parameters, such as file information.
@@ -67,6 +75,7 @@ public class BasicConnection {
      * @param request {@link IBasicRequest}.
      * @return {@link ProtocolResult}.
      */
+    @Override
     public Connection getConnection(IBasicRequest request) {
         Logger.d("--------------Request start--------------");
 
