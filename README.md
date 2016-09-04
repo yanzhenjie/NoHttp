@@ -1,19 +1,14 @@
 # NoHttp
-> NoHttp, feeling spill（NoHttp，情怀四溢）.
+> NoHttp, feeling spill.
 
-![NoHttp Logo][10]
+![NoHttp Logo](http://www.nohttp.net/image/nohttp_logo.svg)
 
-[**中文版文档**][14]  
-
-The author's url: [http://www.yanzhenjie.com][12]  
-The author's blog: [http://blog.csdn.net/yanzhenjie1003][3]  
+[**中文版文档**](https://github.com/yanzhenjie/NoHttp/blob/master/README-cn.md)  
 
 ----
 # NoHttp home page and doc url
-NoHttp home page: [http://www.nohttp.net][5]  
-NoHttp document: [http://doc.nohttp.net][6]  
-NoHttp source code: [https://github.com/yanzhenjie/NoHttp][1]  
-Document also continues to improve, there is a problem can send [issues][7], or send an email to me directly: smallajax@foxmail.com.
+NoHttp source code: [https://github.com/yanzhenjie/NoHttp](https://github.com/yanzhenjie/NoHttp/)
+Document also continues to improve, there is a problem can send [issues](https://github.com/yanzhenjie/NoHttp/issues), or send an email to me directly: smallajax@foxmail.com.
 
 # How to use
 * Eclipse use [NoHttp Jar][8], if need to rely on the source code, [download][13].
@@ -22,7 +17,7 @@ Document also continues to improve, there is a problem can send [issues][7], or 
 
 * AndroidStudio using Gradle build add dependent (recommended)
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.5'
+compile 'com.yolanda.nohttp:nohttp:1.0.6'
 ```
 
 # Download Demo
@@ -378,18 +373,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[1]: https://github.com/yanzhenjie/NoHttp/
 [2]: https://github.com/yanzhenjie/SkillGroupRule
 [3]: http://blog.csdn.net/yanzhenjie1003
 [4]: http://pan.baidu.com/s/1miEOtwG
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
-[7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.6.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
-[10]: http://www.nohttp.net/image/nohttp_logo.svg
-[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5-include-source.jar?raw=true
+[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.6-include-source.jar?raw=true
 [12]: http://www.yanzhenjie.com
-[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.5
-[14]: https://github.com/yanzhenjie/NoHttp/blob/master/README-cn.md
+[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.6
 [15]: http://www.ietf.org/rfc/rfc2616.txt

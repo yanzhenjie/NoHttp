@@ -17,7 +17,6 @@ package com.yolanda.nohttp;
 
 import android.app.Application;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.widget.ImageView;
 
 import com.yolanda.nohttp.cache.Cache;
@@ -38,10 +37,10 @@ import com.yolanda.nohttp.rest.JsonObjectRequest;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
+import com.yolanda.nohttp.rest.RestConnection;
 import com.yolanda.nohttp.rest.RestParser;
 import com.yolanda.nohttp.rest.RestProtocol;
 import com.yolanda.nohttp.rest.StringRequest;
-import com.yolanda.nohttp.tools.AndroidVersion;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -140,7 +139,7 @@ public class NoHttp {
      * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, int threadPoolSize) {
-        return newRequestQueue(RestProtocol.getInstance(cache), threadPoolSize);
+        return newRequestQueue(RestProtocol.getInstance(cache, RestConnection.getInstance()), threadPoolSize);
     }
 
     /**
@@ -312,7 +311,7 @@ public class NoHttp {
      * @see #startRequestSync(IRestParser, IParserRequest)
      */
     public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, IParserRequest<T> request) {
-        return startRequestSync(RestProtocol.getInstance(cache), request);
+        return startRequestSync(RestProtocol.getInstance(cache, RestConnection.getInstance()), request);
     }
 
     /**
@@ -447,7 +446,7 @@ public class NoHttp {
      * @return {@link String}.
      */
     public static String versionName() {
-        return "1.0.5";
+        return "1.0.6";
     }
 
     /**
@@ -456,7 +455,7 @@ public class NoHttp {
      * @return {@link Integer}.
      */
     public static int versionCode() {
-        return 105;
+        return 106;
     }
 
     /**
@@ -479,11 +478,6 @@ public class NoHttp {
         if (sApplication == null) {
             sApplication = application;
             sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
-
-            if (Build.VERSION.SDK_INT < AndroidVersion.KITKAT) {
-                System.setProperty("http.keepAlive", "false");
-                System.setProperty("http.maxConnections", String.valueOf(5));
-            }
         }
     }
 

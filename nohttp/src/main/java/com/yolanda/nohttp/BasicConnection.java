@@ -67,7 +67,7 @@ public class BasicConnection {
      * @param request {@link IBasicRequest}.
      * @return {@link ProtocolResult}.
      */
-    protected Connection getConnection(IBasicRequest request) {
+    public Connection getConnection(IBasicRequest request) {
         Logger.d("--------------Request start--------------");
 
         Headers responseHeaders = new HttpHeaders();
@@ -306,7 +306,7 @@ public class BasicConnection {
      * @return when the normal return the correct input stream, returns the error when the response code is more than 400 input stream.
      * @throws IOException if no InputStream could be created.
      */
-    protected InputStream getServerStream(int responseCode, String contentEncoding, HttpURLConnection urlConnection) throws IOException {
+    private InputStream getServerStream(int responseCode, String contentEncoding, HttpURLConnection urlConnection) throws IOException {
         if (responseCode >= 400)
             return getErrorStream(contentEncoding, urlConnection);
         else {
@@ -322,7 +322,7 @@ public class BasicConnection {
      * @return http input stream.
      * @throws IOException Unpack the stream may be thrown, or if no input stream could be created.
      */
-    protected InputStream getInputStream(String contentEncoding, HttpURLConnection urlConnection) throws IOException {
+    private InputStream getInputStream(String contentEncoding, HttpURLConnection urlConnection) throws IOException {
         InputStream inputStream = urlConnection.getInputStream();
         return gzipInputStream(contentEncoding, inputStream);
     }
@@ -335,7 +335,7 @@ public class BasicConnection {
      * @return http error stream.
      * @throws IOException Unpack the stream may be thrown.
      */
-    protected InputStream getErrorStream(String contentEncoding, HttpURLConnection urlConnection) throws IOException {
+    private InputStream getErrorStream(String contentEncoding, HttpURLConnection urlConnection) throws IOException {
         InputStream inputStream = urlConnection.getErrorStream();
         return gzipInputStream(contentEncoding, inputStream);
     }
@@ -348,7 +348,7 @@ public class BasicConnection {
      * @return It can directly read normal data flow
      * @throws IOException if an {@code IOException} occurs.
      */
-    protected InputStream gzipInputStream(String contentEncoding, InputStream inputStream) throws IOException {
+    private InputStream gzipInputStream(String contentEncoding, InputStream inputStream) throws IOException {
         if (HeaderUtil.isGzipContent(contentEncoding)) {
             inputStream = new GZIPInputStream(inputStream);
         }
@@ -364,7 +364,7 @@ public class BasicConnection {
      * @param responseHeaders responseHeaders of server.
      * @return response headers of server.
      */
-    protected Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> responseHeaders) {
+    private Headers parseResponseHeaders(URI uri, int responseCode, String responseMessage, Map<String, List<String>> responseHeaders) {
         // handle cookie
         if (NoHttp.isEnableCookie())
             try {
@@ -414,17 +414,6 @@ public class BasicConnection {
      */
     public static boolean hasResponseBody(int responseCode) {
         return !(100 <= responseCode && responseCode < 200) && responseCode != 204 && responseCode != 205 && !(300 <= responseCode && responseCode < 400);
-    }
-
-    /**
-     * This requestMethod and responseCode has responseBody ?
-     *
-     * @param requestMethod it's come from {@link RequestMethod}.
-     * @param responseCode  responseCode from server.
-     * @return true: there is data, false: no data.
-     */
-    public static boolean hasDownload(RequestMethod requestMethod, int responseCode) {
-        return requestMethod != RequestMethod.HEAD && hasDownload(responseCode);
     }
 
     /**

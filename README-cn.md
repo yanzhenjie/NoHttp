@@ -5,13 +5,11 @@
 
 [**English document**][1]  
 
-技术交流1群：46523908  
-技术交流2群：46505645  
-[群行为规范][2]  
+技术交流群：547839514  
+加群请一定阅读[群行为规范][2]。  
 
 严振杰的主页：[http://www.yanzhenjie.com][12]  
-严振杰的博客：[http://blog.csdn.net/yanzhenjie1003][3]  
-严振杰的Android直播视频下载：[http://pan.baidu.com/s/1miEOtwG][4]  
+严振杰的博客：[http://blog.yanzhenjie.com](http://blog.yanzhenjie.com) 
 
 ----
 #NoHttp主页和文档地址
@@ -27,7 +25,7 @@ NoHttp源码：[https://github.com/yanzhenjie/NoHttp][1]
 
 * AndroidStudio使用Gradle构建添加依赖（推荐）
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.5'
+compile 'com.yolanda.nohttp:nohttp:1.0.6'
 ```
 
 #下载Demo
@@ -388,9 +386,9 @@ limitations under the License.
 [5]: http://www.nohttp.net
 [6]: http://doc.nohttp.net
 [7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5.jar?raw=true
+[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.6.jar?raw=true
 [9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
 [10]: http://www.nohttp.net/image/nohttp_logo.svg
-[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.5-include-source.jar?raw=true
+[11]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.6-include-source.jar?raw=true
 [12]: http://www.yanzhenjie.com
-[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.5
+[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.6

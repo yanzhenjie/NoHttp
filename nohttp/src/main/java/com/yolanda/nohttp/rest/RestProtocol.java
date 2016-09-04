@@ -34,22 +34,26 @@ import java.io.IOException;
  *
  * @author Yan Zhenjie.
  */
-public class RestProtocol extends BasicConnection implements IRestProtocol {
+public class RestProtocol implements IRestProtocol {
 
     private static RestProtocol instance;
 
     private Cache<CacheEntity> mCache;
 
-    public static IRestProtocol getInstance(Cache<CacheEntity> cache) {
+    private IRestConnection mIRestConnection;
+
+    public static IRestProtocol getInstance(Cache<CacheEntity> cache, IRestConnection iRestConnection) {
         synchronized (RestProtocol.class) {
-            if (instance == null)
-                instance = new RestProtocol(cache);
+            if (instance == null) {
+                instance = new RestProtocol(cache, iRestConnection);
+            }
             return instance;
         }
     }
 
-    private RestProtocol(Cache<CacheEntity> cache) {
+    private RestProtocol(Cache<CacheEntity> cache, IRestConnection iRestConnection) {
         mCache = cache;
+        mIRestConnection = iRestConnection;
     }
 
     @Override
@@ -127,11 +131,11 @@ public class RestProtocol extends BasicConnection implements IRestProtocol {
      */
     private ProtocolResult getHttpResponse(IProtocolRequest request) {
         byte[] responseBody = null;
-        Connection connection = getConnection(request);
+        Connection connection = mIRestConnection.getConnection(request);
         Headers responseHeaders = connection.responseHeaders();
         Exception exception = connection.exception();
         if (exception == null) {
-            if (hasResponseBody(request.getRequestMethod(), responseHeaders.getResponseCode()))
+            if (BasicConnection.hasResponseBody(request.getRequestMethod(), responseHeaders.getResponseCode()))
                 try {
                     responseBody = IOUtils.toByteArray(connection.serverStream());
                 } catch (IOException e) {// IOException.
