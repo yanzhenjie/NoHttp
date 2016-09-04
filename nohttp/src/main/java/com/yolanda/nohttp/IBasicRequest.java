@@ -37,7 +37,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * Created by YOLANDA on 2016/8/20.
+ * Created by Yan Zhenjie on 2016/8/20.
  */
 public interface IBasicRequest extends IPriority, Queueable, Startable, Cancelable, SignCancelable, Finishable, Comparable<IBasicRequest> {
 

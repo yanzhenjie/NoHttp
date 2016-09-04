@@ -2,7 +2,7 @@
     <wb-module deploy-name="HttpServer">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="java-output-path" value="/HttpServer/build/classes"/>
         <property name="context-root" value="HttpServer"/>
+        <property name="java-output-path" value="/HttpServer/build/classes"/>
     </wb-module>
 </project-modules>

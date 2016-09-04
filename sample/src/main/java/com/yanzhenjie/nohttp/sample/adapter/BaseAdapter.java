@@ -19,7 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by Yolanda on 2016/5/24.
+ * Created by Yan Zhenjie on 2016/5/24.
  *
   * @author Yan Zhenjie.
  */

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="fastjson-1.2.11">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.alibaba/fastjson/1.2.11/54bfdf73e7aabeed79c974f0956f037898bfa2c5/fastjson-1.2.11.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.alibaba/fastjson/1.2.11/40f1fb319d6636e05bcc46e99cb1c0a68068cd9b/fastjson-1.2.11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -19,7 +19,7 @@ import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.RequestMethod;
 
 /**
- * Created by YOLANDA on 2016/8/20.
+ * Created by Yan Zhenjie on 2016/8/20.
  */
 public class ByteArrayRequest extends RestRequest<byte[]> {
 

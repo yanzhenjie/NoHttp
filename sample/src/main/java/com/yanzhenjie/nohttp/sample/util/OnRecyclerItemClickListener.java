@@ -16,7 +16,7 @@
 package com.yanzhenjie.nohttp.sample.util;
 
 /**
- * Created by Yolanda on 2016/5/20.
+ * Created by Yan Zhenjie on 2016/5/20.
  *
  * @author Yan Zhenjie.
  */

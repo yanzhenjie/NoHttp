@@ -42,7 +42,7 @@ public class RequestDispatcher extends Thread {
     /**
      * HTTP request parse interface.
      */
-    private final IRestParser mImplRestParser;
+    private final IRestParser mIRestParser;
     /**
      * Whether the current request queue polling thread is out of.
      */
@@ -58,7 +58,7 @@ public class RequestDispatcher extends Thread {
     public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue, IRestParser implRestParser) {
         mUnFinishQueue = unFinishQueue;
         mRequestQueue = requestQueue;
-        mImplRestParser = implRestParser;
+        mIRestParser = implRestParser;
     }
 
     /**
@@ -97,7 +97,7 @@ public class RequestDispatcher extends Thread {
             PosterHandler.getInstance().post(startThread);
 
             // request.
-            Response<?> response = mImplRestParser.parserRequest(request);
+            Response<?> response = mIRestParser.parserRequest(request);
 
             // remove it from queue.
             mUnFinishQueue.remove(request);

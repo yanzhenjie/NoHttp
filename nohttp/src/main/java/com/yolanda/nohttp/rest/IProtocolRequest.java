@@ -19,7 +19,7 @@ import com.yolanda.nohttp.IBasicRequest;
 
 /**
  * <p>For the Request to encapsulate some Http protocol related properties.</p>
- * Created by YOLANDA on 2016/8/20.
+ * Created by Yan Zhenjie on 2016/8/20.
  */
 public interface IProtocolRequest extends IBasicRequest {
 

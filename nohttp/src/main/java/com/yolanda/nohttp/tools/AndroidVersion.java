@@ -16,7 +16,7 @@
 package com.yolanda.nohttp.tools;
 
 /**
- * Created by YOLANDA on 2016/3/17.
+ * Created by Yan Zhenjie on 2016/3/17.
  *
  * @author Yan Zhenjie.
  */

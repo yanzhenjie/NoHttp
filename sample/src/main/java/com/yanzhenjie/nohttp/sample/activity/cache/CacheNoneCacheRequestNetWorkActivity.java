@@ -40,7 +40,7 @@ import java.util.List;
 
 /**
  * <p>如果缓存为空才去请求网络。</p>
- * Created by YOLANDA on 2016/3/13.
+ * Created by Yan Zhenjie on 2016/3/13.
  *
  * @author Yan Zhenjie.
  */

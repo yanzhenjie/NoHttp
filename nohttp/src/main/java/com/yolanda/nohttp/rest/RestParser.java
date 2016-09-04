@@ -32,24 +32,24 @@ public class RestParser implements IRestParser {
 
     private static RestParser _INSTANCE;
 
-    private final IRestProtocol mImplRestConnection;
+    private final IRestProtocol mIRestProtocol;
 
-    public static IRestParser getInstance(IRestProtocol implRestConnection) {
+    public static IRestParser getInstance(IRestProtocol iRestProtocol) {
         synchronized (RestParser.class) {
             if (_INSTANCE == null)
-                _INSTANCE = new RestParser(implRestConnection);
+                _INSTANCE = new RestParser(iRestProtocol);
             return _INSTANCE;
         }
     }
 
-    private RestParser(IRestProtocol implRestConnection) {
-        this.mImplRestConnection = implRestConnection;
+    private RestParser(IRestProtocol iRestProtocol) {
+        this.mIRestProtocol = iRestProtocol;
     }
 
     @Override
     public <T> Response<T> parserRequest(IParserRequest<T> request) {
         long startTime = SystemClock.elapsedRealtime();
-        ProtocolResult httpResponse = mImplRestConnection.requestNetwork(request);
+        ProtocolResult httpResponse = mIRestProtocol.requestNetwork(request);
         boolean isFromCache = httpResponse.isFromCache();
         Headers responseHeaders = httpResponse.responseHeaders();
         Exception exception = httpResponse.exception();

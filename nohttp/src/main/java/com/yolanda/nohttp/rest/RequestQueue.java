@@ -44,7 +44,7 @@ public class RequestQueue {
     /**
      * HTTP request actuator interface.
      */
-    private final IRestParser mImplRestParser;
+    private final IRestParser mIRestParser;
 
     /**
      * Request queue polling thread array.
@@ -54,11 +54,11 @@ public class RequestQueue {
     /**
      * Create request queue manager.
      *
-     * @param implRestParser download the network task execution interface, where you need to implement the download tasks that have been implemented.
+     * @param iRestParser    download the network task execution interface, where you need to implement the download tasks that have been implemented.
      * @param threadPoolSize number of thread pool.
      */
-    public RequestQueue(IRestParser implRestParser, int threadPoolSize) {
-        mImplRestParser = implRestParser;
+    public RequestQueue(IRestParser iRestParser, int threadPoolSize) {
+        mIRestParser = iRestParser;
         mDispatchers = new RequestDispatcher[threadPoolSize];
     }
 
@@ -69,7 +69,7 @@ public class RequestQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            RequestDispatcher networkDispatcher = new RequestDispatcher(mUnFinishQueue, mRequestQueue, mImplRestParser);
+            RequestDispatcher networkDispatcher = new RequestDispatcher(mUnFinishQueue, mRequestQueue, mIRestParser);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }

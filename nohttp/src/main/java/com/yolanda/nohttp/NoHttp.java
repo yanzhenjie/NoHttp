@@ -146,16 +146,16 @@ public class NoHttp {
     /**
      * Create a new request queue, using NoHttp default request executor {@link RestProtocol} and default response parser {@link RestParser}.
      *
-     * @param implRestConnection network operating interface, The implementation of the network layer.
-     * @param threadPoolSize     request the number of concurrent.
+     * @param iRestProtocol  network operating interface, The implementation of the network layer.
+     * @param threadPoolSize request the number of concurrent.
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
      * @see #newRequestQueue(int)
      * @see #newRequestQueue(Cache, int)
      * @see #newRequestQueue(IRestParser, int)
      */
-    public static RequestQueue newRequestQueue(IRestProtocol implRestConnection, int threadPoolSize) {
-        return newRequestQueue(RestParser.getInstance(implRestConnection), threadPoolSize);
+    public static RequestQueue newRequestQueue(IRestProtocol iRestProtocol, int threadPoolSize) {
+        return newRequestQueue(RestParser.getInstance(iRestProtocol), threadPoolSize);
     }
 
     /**

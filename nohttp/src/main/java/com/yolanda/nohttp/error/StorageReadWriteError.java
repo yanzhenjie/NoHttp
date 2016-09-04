@@ -18,7 +18,7 @@ package com.yolanda.nohttp.error;
 /**
  * Created in 2016/2/26 19:14.
  *
- * @author Yan Zhenjie..;
+ * @author Yan Zhenjie;
  */
 public class StorageReadWriteError extends Exception {
 

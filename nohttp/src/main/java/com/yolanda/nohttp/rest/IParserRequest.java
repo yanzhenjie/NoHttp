@@ -18,7 +18,7 @@ package com.yolanda.nohttp.rest;
 import com.yolanda.nohttp.Headers;
 
 /**
- * Created by YOLANDA on 2016/8/20.
+ * Created by Yan Zhenjie on 2016/8/20.
  */
 public interface IParserRequest<T> extends IProtocolRequest {
 
