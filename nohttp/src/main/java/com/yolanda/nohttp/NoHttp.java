@@ -160,7 +160,7 @@ public class NoHttp {
     /**
      * Create a new request queue.
      *
-     * @param implRestParser the response parser, The result of parsing the network layer.
+     * @param iRestParser the response parser, The result of parsing the network layer.
      * @param threadPoolSize request the number of concurrent.
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
@@ -168,8 +168,8 @@ public class NoHttp {
      * @see #newRequestQueue(Cache, IRestConnection, int)
      * @see #newRequestQueue(IRestProtocol, int)
      */
-    public static RequestQueue newRequestQueue(IRestParser implRestParser, int threadPoolSize) {
-        RequestQueue requestQueue = new RequestQueue(implRestParser, threadPoolSize);
+    public static RequestQueue newRequestQueue(IRestParser iRestParser, int threadPoolSize) {
+        RequestQueue requestQueue = new RequestQueue(iRestParser, threadPoolSize);
         requestQueue.start();
         return requestQueue;
     }

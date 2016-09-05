@@ -144,7 +144,7 @@ public class RestConnection implements IRestConnection {
         }
         if (failed) {
             throw exception;
-        } else if (request.getRequestMethod().allowRequestBody()) {
+        } else if (isAllowHasBody(request.getRequestMethod())) {
             writeRequestBody(request, connection.getOutputStream());
         }
         return connection;
@@ -203,7 +203,7 @@ public class RestConnection implements IRestConnection {
         }
 
         connection.setDoInput(true);
-        connection.setDoOutput(requestMethod.allowRequestBody());
+        connection.setDoOutput(isAllowHasBody(requestMethod));
 
         // 4.Set request headers
         setHeaders(url.toURI(), connection, request);
@@ -232,7 +232,7 @@ public class RestConnection implements IRestConnection {
 
         // Content-Length.
         RequestMethod requestMethod = request.getRequestMethod();
-        if (requestMethod.allowRequestBody()) {
+        if (isAllowHasBody(requestMethod)) {
             long contentLength = request.getContentLength();
             if (contentLength < Integer.MAX_VALUE)
                 connection.setFixedLengthStreamingMode((int) contentLength);
@@ -304,6 +304,20 @@ public class RestConnection implements IRestConnection {
             redirectRequest.setProxy(oldRequest.getProxy());
         }
         return getConnection(redirectRequest);
+    }
+
+    /**
+     * Allow has body.
+     *
+     * @param requestMethod {@link RequestMethod}.
+     * @return true, other wise is false.
+     */
+    private boolean isAllowHasBody(RequestMethod requestMethod) {
+        boolean allowRequestBody = requestMethod.allowRequestBody();
+        // Fix Android bug.
+        if (Build.VERSION.SDK_INT < AndroidVersion.LOLLIPOP)
+            return allowRequestBody && requestMethod != RequestMethod.DELETE;
+        return allowRequestBody;
     }
 
     /**
