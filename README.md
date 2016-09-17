@@ -1,29 +1,25 @@
 #NoHttp
 > NoHttp，一个有情怀的框架。  
 
-![NoHttp Logo][10]  
+![NoHttp Logo](http://www.nohttp.net/image/nohttp_logo.svg)  
 
-如果你想用OkHttp，请看这个项目：[NoHttp4OkHttp](https://github.com/yanzhenjie/NoHttp4OkHttp)
+如果你想用OkHttp，请看这个项目：[NoHttp4OkHttp](https://github.com/yanzhenjie/NoHttp4OkHttp)。
 
-技术交流群：547839514，加群请一定阅读[群行为规范][2]。  
+技术交流群：547839514，加群请一定阅读[群行为规范](https://github.com/yanzhenjie/SkillGroupRule)。 
 
-严振杰的主页：[http://www.yanzhenjie.com][12]  
-严振杰的博客：[http://blog.yanzhenjie.com](http://blog.yanzhenjie.com) 
+严振杰的主页：[www.yanzhenjie.com](http://www.yanzhenjie.com) 
+严振杰的博客：[blog.yanzhenjie.com](http://blog.yanzhenjie.com) 
 
 ----
 
 #使用方法
 * Eclipse使用Jar包，如果需要依赖源码，请自行下载。
-> [下载Jar包][8]  
+> [下载Jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.7.jar?raw=true)  
 
-* AndroidStudio使用Gradle构建添加依赖（推荐）
+* AndroidStudio使用Gradle构建添加依赖（**推荐**）
 ```groovy
 compile 'com.yolanda.nohttp:nohttp:1.0.7'
 ```
-
-#下载Demo
-[下载NoHttp源码 Demo源码][13]  
-[下载演示Demo APK][9]  
 
 #权限
 ```xml
@@ -345,9 +341,8 @@ queue.add(what, mRequest, responseListener);
 #七. 混淆
 
 ##需要知道的
-    NoHttp全部的类都可以混淆。
-　　NoHttp1.0.0使用了leve23的api，所以打包的时候要用leve23才行。
-　　NoHttp1.0.1及以上所有版本使用了反射调用了高级或者低级的api，所以只要是leve9以上的sdk都可以编译。
+1. NoHttp全部的类都可以混淆。
+2. 1.0.1及以上所有版本使用了反射调用了高级或者低级的api，所有版本的build-tools都可以编译。
 
 ##如果你非要keep
 ```text
@@ -371,16 +366,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
-[1]: https://github.com/yanzhenjie/NoHttp/
-[2]: https://github.com/yanzhenjie/SkillGroupRule
-[3]: http://blog.csdn.net/yanzhenjie1003
-[4]: http://pan.baidu.com/s/1miEOtwG
-[5]: http://www.nohttp.net
-[6]: http://doc.nohttp.net
-[7]: https://github.com/yanzhenjie/NoHttp/issues
-[8]: https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.7.jar?raw=true
-[9]: https://github.com/yanzhenjie/NoHttp/blob/master/nohttp_sample.apk?raw=true
-[10]: http://www.nohttp.net/image/nohttp_logo.svg
-[12]: http://www.yanzhenjie.com
-[13]: https://codeload.github.com/yanzhenjie/NoHttp/zip/1.0.6
