@@ -59,6 +59,8 @@ public enum DiskCookieStore implements CookieStore {
      */
     private CookieStoreListener mCookieStoreListener;
 
+    private boolean enable = true;
+
     DiskCookieStore() {
         mLock = new ReentrantLock();
         mManager = CookieDiskManager.getInstance();
@@ -77,11 +79,15 @@ public enum DiskCookieStore implements CookieStore {
         mCookieStoreListener = cookieStoreListener;
     }
 
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
+
     @Override
     public void add(URI uri, HttpCookie cookie) {
         mLock.lock();
         try {
-            if (uri != null && cookie != null) {
+            if (enable && uri != null && cookie != null) {
                 uri = getEffectiveURI(uri);
                 if (mCookieStoreListener != null)
                     mCookieStoreListener.onSaveCookie(uri, cookie);
@@ -97,8 +103,7 @@ public enum DiskCookieStore implements CookieStore {
     public List<HttpCookie> get(URI uri) {
         mLock.lock();
         try {
-            if (uri == null)
-                return Collections.emptyList();
+            if (uri == null || !enable) return Collections.emptyList();
 
             uri = getEffectiveURI(uri);
             Where where = new Where();
@@ -148,6 +153,7 @@ public enum DiskCookieStore implements CookieStore {
     public List<HttpCookie> getCookies() {
         mLock.lock();
         try {
+            if (!enable) return Collections.<HttpCookie>emptyList();
             List<HttpCookie> rt = new ArrayList<HttpCookie>();
             List<CookieEntity> cookieEntityList = mManager.getAll();
             for (CookieEntity cookieEntity : cookieEntityList)
@@ -163,6 +169,7 @@ public enum DiskCookieStore implements CookieStore {
     public List<URI> getURIs() {
         mLock.lock();
         try {
+            if (!enable) return Collections.<URI>emptyList();
             List<URI> uris = new ArrayList<URI>();
             List<CookieEntity> uriList = mManager.getAll(CookieDisk.URI);
             for (CookieEntity cookie : uriList) {
@@ -186,7 +193,7 @@ public enum DiskCookieStore implements CookieStore {
     public boolean remove(URI uri, HttpCookie httpCookie) {
         mLock.lock();
         try {
-            if (httpCookie == null)
+            if (httpCookie == null || !enable)
                 return true;
             if (mCookieStoreListener != null)
                 mCookieStoreListener.onRemoveCookie(uri, httpCookie);
@@ -213,6 +220,7 @@ public enum DiskCookieStore implements CookieStore {
     public boolean removeAll() {
         mLock.lock();
         try {
+            if (!enable) return true;
             return mManager.deleteAll();
         } finally {
             mLock.unlock();

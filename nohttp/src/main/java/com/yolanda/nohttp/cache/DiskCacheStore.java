@@ -42,15 +42,22 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
      */
     private DBManager<CacheEntity> mManager;
 
+    private boolean enable;
+
     DiskCacheStore() {
         mLock = new ReentrantLock();
         mManager = CacheDiskManager.getInstance();
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     @Override
     public CacheEntity get(String key) {
         mLock.lock();
         try {
+            if (!enable) return null;
             Where where = new Where(CacheDisk.KEY, Options.EQUAL, key);
             List<CacheEntity> cacheEntities = mManager.get(CacheDisk.ALL, where.get(), null, null, null);
             return cacheEntities.size() > 0 ? cacheEntities.get(0) : null;
@@ -63,6 +70,7 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
     public CacheEntity replace(String key, CacheEntity entrance) {
         mLock.lock();
         try {
+            if (!enable) return entrance;
             entrance.setKey(key);
             mManager.replace(entrance);
             return entrance;
@@ -75,7 +83,7 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
     public boolean remove(String key) {
         mLock.lock();
         try {
-            if (key == null)
+            if (key == null || !enable)
                 return true;
             Where where = new Where(CacheDisk.KEY, Options.EQUAL, key);
             return mManager.delete(where.toString());
@@ -88,6 +96,7 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
     public boolean clear() {
         mLock.lock();
         try {
+            if (!enable) return true;
             return mManager.deleteAll();
         } finally {
             mLock.unlock();

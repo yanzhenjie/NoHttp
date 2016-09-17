@@ -229,19 +229,7 @@ public abstract class BasicRequest implements IBasicRequest {
 
     @Override
     public boolean isMultipartFormEnable() {
-        if (isMultipartFormEnable) {
-            return true;
-        } else {
-            Set<String> keys = mParamKeyValues.keySet();
-            for (String key : keys) {
-                List<Object> values = mParamKeyValues.getValues(key);
-                for (Object value : values) {
-                    if (value instanceof Binary)
-                        return true;
-                }
-            }
-        }
-        return false;
+        return isMultipartFormEnable;
     }
 
     @Override
@@ -356,7 +344,7 @@ public abstract class BasicRequest implements IBasicRequest {
         String contentType = mHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0);
         if (!TextUtils.isEmpty(contentType))
             return contentType;
-        if (getRequestMethod().allowRequestBody() && isMultipartFormEnable())
+        if (getRequestMethod().allowRequestBody() && (isMultipartFormEnable() || hasBinary()))
             return Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA + "; boundary=" + boundary;
         else
             return Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED + "; charset=" + getParamsEncoding();
@@ -432,7 +420,7 @@ public abstract class BasicRequest implements IBasicRequest {
     @Override
     public void add(String key, String value) {
         if (value != null) {
-            mParamKeyValues.set(key, value);
+            mParamKeyValues.add(key, value);
         }
     }
 
@@ -551,6 +539,23 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     /**
+     * Has Binary.
+     *
+     * @return true, other wise is false.
+     */
+    protected boolean hasBinary() {
+        Set<String> keys = mParamKeyValues.keySet();
+        for (String key : keys) {
+            List<Object> values = mParamKeyValues.getValues(key);
+            for (Object value : values) {
+                if (value instanceof Binary)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Is there a custom request inclusions.
      *
      * @return Returns true representatives have, return false on behalf of the no.
@@ -576,7 +581,7 @@ public abstract class BasicRequest implements IBasicRequest {
     public void onWriteRequestBody(OutputStream writer) throws IOException {
         if (mRequestBody != null) {
             writeRequestBody(writer);
-        } else if (isMultipartFormEnable()) {
+        } else if (isMultipartFormEnable() || hasBinary()) {
             writeFormStreamData(writer);
         } else {
             writeCommonStreamData(writer);

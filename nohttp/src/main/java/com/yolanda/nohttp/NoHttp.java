@@ -94,10 +94,6 @@ public class NoHttp {
      * Cookie.
      */
     private static CookieManager sCookieManager;
-    /**
-     * Is enable cookies.
-     */
-    private static boolean isEnableCookie = true;
 
     /**
      * Create a new request queue, using NoHttp default configuration. And number of concurrent requests is 3.
@@ -160,7 +156,7 @@ public class NoHttp {
     /**
      * Create a new request queue.
      *
-     * @param iRestParser the response parser, The result of parsing the network layer.
+     * @param iRestParser    the response parser, The result of parsing the network layer.
      * @param threadPoolSize request the number of concurrent.
      * @return Returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
@@ -594,10 +590,19 @@ public class NoHttp {
     /**
      * Set to enable cookies.
      *
-     * @param enableCookie ture enable, false disenable.
+     * @param enableCookie true enable, false disEnable.
      */
     public static void setEnableCookie(boolean enableCookie) {
-        isEnableCookie = enableCookie;
+        DiskCookieStore.INSTANCE.setEnable(enableCookie);
+    }
+
+    /**
+     * Set to enable cache.
+     *
+     * @param enableCache true enable, false disEnable.
+     */
+    public static void setEnableCache(boolean enableCache) {
+        DiskCacheStore.INSTANCE.setEnable(enableCache);
     }
 
     /**
@@ -620,15 +625,6 @@ public class NoHttp {
         if (cookieHandler == null)
             throw new IllegalArgumentException("cookieHandler == null");
         sCookieManager = cookieHandler;
-    }
-
-    /**
-     * Is enable cookie.
-     *
-     * @return true enable, false disenable.
-     */
-    public static boolean isEnableCookie() {
-        return isEnableCookie;
     }
 
     private NoHttp() {
