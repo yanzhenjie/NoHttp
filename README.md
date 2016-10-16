@@ -9,18 +9,41 @@ NoHttp重要升级，支持与`RxJava`完美结合、支持一句话切换底层
 
 ----
 
-**Demo 首页预览：**
-<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/1.gif?raw=true" width="280px"/> <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/2.gif?raw=true" width="280px"/>  
+## 导航目录(点击可跳转到对应节点处)
+- [Demo效果预览](#效果预览)  
+- [NoHttp特性](#框架特性)  
+- [AndroidStuio、Eclipse使用方法](#使用方法)  
+- [NoHttp初始化](#初始化)  
+- [需要的权限](#权限)  
+- [友好的调试模式](#友好的调试模式)  
+- [RxJava](#第三方异步框架)  
+- [请求队列](#请求队列)  
+- [String、Bitmap、JavaBean、Json请求](#几种数据类型请求)  
+- [添加参数，可以链式调用](#添加参数)  
+- [提交Json、XML、自定义Body等](#提交请求包体)  
+- [同步请求](#同步请求)  
+- [五大缓存模式](#五大缓存模式)  
+- [文件下载](#文件下载)  
+- [如何取消请求](#取消请求)  
+- [停止队列](#停止队列)  
+- [自定义请求](#自定义请求)  
+- [代码混淆](#代码混淆)  
 
-<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/3.gif?raw=true" width="280px"/> <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/4.gif?raw=true" width="280px"/>
+## 效果预览
+<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/1.gif?raw=true" width="280px"/>  <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/2.gif?raw=true" width="280px"/>  
 
-## NoHttp特性，比Retrofit使用更简单
+<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/3.gif?raw=true" width="280px"/>  <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/4.gif?raw=true" width="280px"/>
+
+## 框架特性
+比Retrofit使用更简单、更易用。
+
 * 动态配置底层框架为**OkHttp**、HttpURLConnection
 * 与**RxJava**完美结合，支持异步请求、支持同步请求
 * 多文件上传，支持大文件上传，表单提交数据
 * 文件下载、上传下载、上传和下载的进度回调、错误回调
 * 支持Json、xml、Map、List的提交
 * 完美的Http缓存模式，可指定缓存到数据库、SD卡，缓存数据已安全加密
+ * 在6.0以上手机缓存到SD卡时需要请求运行时权限：[AndPermission](https://github.com/yanzhenjie/AndPermission)
 * 自定义Request，直接请求JsonObject、JavaBean等
 * Cookie的自动维持，App重启、关开机后还持续维持
 * http 301 302 303 304 307重定向，支持多层嵌套重定向
@@ -30,8 +53,8 @@ NoHttp重要升级，支持与`RxJava`完美结合、支持一句话切换底层
 * 用队列保存请求，平均分配多线程的资源，支持多个请求并发
 * 支持取消某个请求、取消指定多个请求、取消所有请求
 
-# 使用方法
-## AndroidStudio使用Gradle构建添加依赖（**推荐**）
+## 使用方法
+### AndroidStudio使用方式
 * 如果使用HttpURLConnection作为网络层：  
 ```groovy
 compile 'com.yolanda.nohttp:nohttp:1.1.0'
@@ -41,7 +64,7 @@ compile 'com.yolanda.nohttp:nohttp:1.1.0'
 compile 'com.yolanda.nohttp:okhttp:1.1.0'
 ```
 
-## Eclipse使用方法
+### Eclipse使用方式
 * 如果使用HttpURLConnection作为网络层：  
  [下载NoHttp Jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.1.0.jar?raw=true)  
 * 如果使用OkHttp做为网络层  
@@ -49,7 +72,7 @@ compile 'com.yolanda.nohttp:okhttp:1.1.0'
 
 * 建议没用Android的同学尽早切换到AndroidStudio来开发Android应用。
 
-## NoHttp初始化
+## 初始化
 NoHttp初始化需要一个Context，最好在`Application`的`onCreate()`中初始化，记得在`manifest.xml`中注册`Application`。
 
 ### 一般情况下只需要这样初始化
@@ -125,7 +148,11 @@ Logger.setTag("NoHttpSample");// 设置NoHttp打印Log的tag。
 
 所以说，如果你使用过程中遇到什么问题了，开启调试模式，一切妖魔鬼怪都会现形的。
 
-## 与RxJava完美结合，请参考Demo的RxNoHttp
+## 第三方异步框架
+可以与RxJava、RxAndroid、RxBus、EventBus等第三方异步任务框架完美结合使用，这里在demo中给出了和RxJava一起使用的代码。
+
+### RxJava
+NoHttp可以和RxJava完美结合，这里列出如何使用，具体的封装请参考Demo的RxNoHttp。
 ```java
 Request<UserInfo> request = new JavaBeanRequest<>(url, UserInfo.class);
 RxNoHttp.request(this, request, new SimpleSubscriber<Response<UserInfo>>() {
@@ -137,7 +164,7 @@ RxNoHttp.request(this, request, new SimpleSubscriber<Response<UserInfo>>() {
 });
 ```
 
-## NoHttp强大任务队列
+## 请求队列
 ```java
 RequestQueue requestQueue = NoHttp.newRequestQueue();
 // 如果要指定并发值，传入数字即可：NoHttp.newRequestQueue(3);
@@ -148,13 +175,14 @@ requestQueue.add(what, request, responseListener);
 * 添加请求到队列时有一个what，这个what会在`responseLisetener`响应时回调给开发者，所以开发者可以用一个`responseLisetener`接受多个请求的响应，用what来区分结果。而不用像有的框架一样，每一个请求都要new一个callback。  
 * **强烈建议**把生成队列写成懒汉单例模式，因为每新建队列就会new出相应个数的线程来，同时只有线程数固定了，队列的作用才会发挥到最大。
 
-## String请求
+## 几种数据类型请求
+### String请求
 ```java
 Request<String> request = NoHttp.createStringRequest(url, RequestMethod.GET);
 requestQueue.add(0, request, listener);
 ```
 
-## Json请求
+### Json请求
 ```java
 // JsonObject
 Request<JSONObject> objRequest = NoHttp.createJsonObjectRequest(url, RequestMethod.POST);
@@ -165,27 +193,27 @@ Request<JSONArray> arrayRequest = NoHttp.createJsonArrayRequest(url, RequestMeth
 requestQueue.add(0, arrayRequest, listener);
 ```
 
-## Bitmap请求
+### Bitmap请求
 ```	java
 Request<Bitmap> request = NoHttp.createImageRequest(url, RequestMethod.DELETE);
 requestQueue.add(0, request, listener);
 ```
 
-## FastJson、Gson自定义请求
+### 请求FastJson与Gson
 ```java
 // FastJson
 Request<JSONObject> request = new FastJsonRequest(url, RequestMethod.POST);
 requestQueue.add(0, request, listener);
 ```
 
-## 直接请求JavaBean
+### 直接请求JavaBean
 ```java
 // 内部使用Gson、FastJson解析成JavaBean
 Request<UserInfo> request = new JavaBeanRequest(url, RequestMethod.GET);
 requestQueue.add(0, request, listener);
 ```
 
-## 添加参数，可以链式调用
+## 添加参数
 ```java
 Request<JSONObject> request = new JavaBeanRequest(url, RequestMethod.POST);
    .add("name", "yoldada") // String类型
@@ -244,7 +272,8 @@ fileList.add(new BitmapStreamBinary(Bitmap));
 request.add("file_list", fileList);
 ```
 
-## 提交Json、XML、自定义Body等
+## 提交请求包体
+提交Body分为提交Json、提交String、提交Xml、提交流等，具体用法如下：
 ```java
 // 提交普通String
 request.setDefineRequestBody(String, ContentType);
@@ -274,8 +303,10 @@ if (response.isSucceed()) {
 }
 ```
 
-## 五大缓存模式，一直被模仿，从未被超越
-NoHttp的缓存非常强大，支持缓存到数据库、换到SD卡等，并且不论缓存在数据库或者SD，NoHttp都把数据进行了加密，需要在初始化的时候配置缓存的位置：
+## 五大缓存模式
+NoHttp的缓存非常强大，支持缓存到数据库、换到SD卡等，并且不论缓存在数据库或者SD，NoHttp都把数据进行了加密，需要在初始化的时候配置缓存的位置。
+
+需要注意的是，在6.0以上的手机中如果要缓存在SD卡，需要在请求之前，需要请求运行时权限，如果你不懂运行时权限，可以看这个项目：[AndPermission](https://github.com/yanzhenjie/AndPermission)。
 ```java
 NoHttp.initialize(this, new NoHttp.Config()
     ...
@@ -411,7 +442,7 @@ queue.cancelBySign(sign);
 queue.cancelAll();
 ```
 
-##停止队列
+## 停止队列
 队列停止后再添加请求到队列后，请求不会被执行。
 ```java
 RequestQueue queue = NoHttp.newRequestQueue();
@@ -478,9 +509,7 @@ Request<UserInfo> request = new JavaBeanRequest(url, UserInfo.class);
 queue.add(what, request, listener);
 ```
 
-# 混淆
-
-## 你需要知道的
+## 代码混淆
 1. NoHttp全部的类都可以混淆。  
 2. NoHttp设计到兼容高版本系统的api采用反射调用，所以所有类都可以被混淆  
 
@@ -490,7 +519,7 @@ queue.add(what, request, listener);
 -keep class com.yolanda.nohttp.**{*;}
 ```
 
-# License
+## License
 ```text
 Copyright 2016 Yan Zhenjie
 
