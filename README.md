@@ -61,7 +61,7 @@ compile 'com.yolanda.nohttp:nohttp:1.1.0'
 ```
 * 如果要使用OkHttp作为网络层，请再依赖：  
 ```groovy
-compile 'com.yolanda.nohttp:okhttp:1.1.0'
+compile 'com.yanzhenjie.nohttp:okhttp:1.1.0'
 ```
 
 ### Eclipse使用方式
