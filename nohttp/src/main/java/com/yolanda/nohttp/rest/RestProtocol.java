@@ -15,13 +15,13 @@
  */
 package com.yolanda.nohttp.rest;
 
-import com.yolanda.nohttp.Connection;
+import com.yolanda.nohttp.ConnectionResult;
 import com.yolanda.nohttp.Headers;
-import com.yolanda.nohttp.IRestConnection;
-import com.yolanda.nohttp.RestConnection;
-import com.yolanda.nohttp.cache.Cache;
+import com.yolanda.nohttp.HttpConnection;
+import com.yolanda.nohttp.NetworkExecutor;
 import com.yolanda.nohttp.cache.CacheEntity;
 import com.yolanda.nohttp.error.NotFoundCacheError;
+import com.yolanda.nohttp.tools.CacheStore;
 import com.yolanda.nohttp.tools.HeaderUtil;
 import com.yolanda.nohttp.tools.IOUtils;
 
@@ -35,36 +35,24 @@ import java.io.IOException;
  *
  * @author Yan Zhenjie.
  */
-public class RestProtocol implements IRestProtocol {
+public class RestProtocol {
 
-    private static RestProtocol instance;
+    private CacheStore<CacheEntity> mCache;
 
-    private Cache<CacheEntity> mCache;
+    private HttpConnection mHttpConnection;
 
-    private IRestConnection mIRestConnection;
-
-    public static IRestProtocol getInstance(Cache<CacheEntity> cache, IRestConnection iRestConnection) {
-        synchronized (RestProtocol.class) {
-            if (instance == null) {
-                instance = new RestProtocol(cache, iRestConnection);
-            }
-            return instance;
-        }
-    }
-
-    private RestProtocol(Cache<CacheEntity> cache, IRestConnection iRestConnection) {
+    public RestProtocol(CacheStore<CacheEntity> cache, NetworkExecutor executor) {
         mCache = cache;
-        mIRestConnection = iRestConnection;
+        mHttpConnection = new HttpConnection(executor);
     }
 
-    @Override
     public ProtocolResult requestNetwork(IProtocolRequest request) {
         // Handle cache header.
         CacheMode cacheMode = request.getCacheMode();
         String cacheKey = request.getCacheKey();
         CacheEntity cacheEntity = mCache.get(cacheKey);
 
-        ProtocolResult httpResponse;
+        ProtocolResult httpResponse = null;
         switch (cacheMode) {
             case ONLY_READ_CACHE:// Only read cache.
                 if (cacheEntity == null) {
@@ -72,32 +60,29 @@ public class RestProtocol implements IRestProtocol {
                 } else {
                     return new ProtocolResult(cacheEntity.getResponseHeaders(), cacheEntity.getData(), true, null);
                 }
-//                break;
             case ONLY_REQUEST_NETWORK:// Only request network.
                 httpResponse = getHttpResponse(request);
                 break;
-            case NONE_CACHE_REQUEST_NETWORK:// Cache none request network.
-                if (cacheEntity == null) {
-                    httpResponse = getHttpResponse(request);
-                } else {
+            case NONE_CACHE_REQUEST_NETWORK:// CacheStore none request network.
+                if (cacheEntity != null)
                     return new ProtocolResult(cacheEntity.getResponseHeaders(), cacheEntity.getData(), true, null);
-                }
+                else
+                    httpResponse = getHttpResponse(request);
                 break;
             case REQUEST_NETWORK_FAILED_READ_CACHE:// Request network failed read cache.
-                if (cacheEntity != null)
-                    setRequestCacheHeader(request, cacheEntity);
+                setRequestCacheHeader(request, cacheEntity);
                 httpResponse = getHttpResponse(request);
+                if (httpResponse.exception() != null && cacheEntity != null)
+                    return new ProtocolResult(cacheEntity.getResponseHeaders(), cacheEntity.getData(), true, null);
                 break;
-            default:// Default, Comply with the RFC2616.
-                if (cacheEntity != null) {
-                    if (cacheEntity.getLocalExpire() > System.currentTimeMillis())// Cache valid.
-                        return new ProtocolResult(cacheEntity.getResponseHeaders(), cacheEntity.getData(), true, null);
-                    setRequestCacheHeader(request, cacheEntity);
-                }
+            case DEFAULT:// Default, Comply with the RFC2616.
+                if (cacheEntity != null && cacheEntity.getLocalExpire() > System.currentTimeMillis())// CacheStore validate.
+                    return new ProtocolResult(cacheEntity.getResponseHeaders(), cacheEntity.getData(), true, null);
+                setRequestCacheHeader(request, cacheEntity);
                 httpResponse = getHttpResponse(request);
                 break;
         }
-        return handleResponseCache(request, cacheEntity, httpResponse);
+        return handleResponseCache(cacheKey, cacheEntity, httpResponse);
     }
 
     /**
@@ -113,14 +98,12 @@ public class RestProtocol implements IRestProtocol {
         } else {
             Headers headers = cacheEntity.getResponseHeaders();
             String eTag = headers.getETag();
-            if (eTag != null) {
+            if (eTag != null)
                 request.headers().set(Headers.HEAD_KEY_IF_NONE_MATCH, eTag);
-            }
 
             long lastModified = headers.getLastModified();
-            if (lastModified > 0) {
+            if (lastModified > 0)
                 request.headers().set(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HeaderUtil.formatMillisToGMT(lastModified));
-            }
         }
     }
 
@@ -132,76 +115,57 @@ public class RestProtocol implements IRestProtocol {
      */
     private ProtocolResult getHttpResponse(IProtocolRequest request) {
         byte[] responseBody = null;
-        Connection connection = mIRestConnection.getConnection(request);
-        Headers responseHeaders = connection.responseHeaders();
+        ConnectionResult connection = mHttpConnection.getConnection(request);
         Exception exception = connection.exception();
-        if (exception == null) {
-            if (RestConnection.hasResponseBody(request.getRequestMethod(), responseHeaders.getResponseCode()))
-                try {
-                    responseBody = IOUtils.toByteArray(connection.serverStream());
-                } catch (IOException e) {// IOException.
-                    exception = e;
-                }
+        if (exception == null && connection.serverStream() != null) {
+            try {
+                responseBody = IOUtils.toByteArray(connection.serverStream());
+            } catch (IOException e) {
+                exception = e;
+            }
         }
         IOUtils.closeQuietly(connection);
-        return new ProtocolResult(responseHeaders, responseBody, exception != null, exception);
+        return new ProtocolResult(connection.responseHeaders(), responseBody, exception != null, exception);
     }
 
     /**
      * Process the response cache.
      *
-     * @param request          {@link IProtocolRequest}, The original request object.
+     * @param cacheKey         cache key.
      * @param localCacheEntity {@link CacheEntity}, This request the corresponding local cached entities, which can be null.
-     * @param httpResponse     {@link ProtocolResult}, Request the server to generate the response entity.
+     * @param protocolResult   {@link ProtocolResult}, Request the server to generate the response entity.
      * @return {@link RestProtocol}, According to the response headers and local server cache to regenerate the response entity, you should use this response entity.
      */
-    private ProtocolResult handleResponseCache(IProtocolRequest request, CacheEntity localCacheEntity, ProtocolResult httpResponse) {
-        boolean isFromCache = false;
-        Headers responseHeaders = httpResponse.responseHeaders();
-        byte[] responseBody = httpResponse.responseBody();
-        Exception exception = httpResponse.exception();
+    private ProtocolResult handleResponseCache(String cacheKey, CacheEntity localCacheEntity, ProtocolResult protocolResult) {
+        if (protocolResult.exception() == null) {// Successfully.
+            Headers responseHeaders = protocolResult.responseHeaders();
+            byte[] responseBody = protocolResult.responseBody();
+            int responseCode = responseHeaders.getResponseCode();
 
-        CacheMode cacheMode = request.getCacheMode();
-
-        int responseCode = responseHeaders.getResponseCode();
-        if (exception == null) {// 请求成功
             if (responseCode == 304) {
-                isFromCache = true;
-
                 if (localCacheEntity == null) { // Fix server error for 304.
                     responseBody = new byte[0];
                 } else {
-                    // Update response header.
-                    localCacheEntity.getResponseHeaders().setAll(responseHeaders);
+                    protocolResult.setFromCache(true);
                     responseHeaders = localCacheEntity.getResponseHeaders();
-
-                    // Update localExpires.
-                    localCacheEntity.setLocalExpire(HeaderUtil.getLocalExpires(responseHeaders));
-
+                    responseHeaders.set(Headers.HEAD_KEY_RESPONSE_CODE, Integer.toString(304));
                     responseBody = localCacheEntity.getData();
                 }
-            } else if (responseBody != null) {// Redirect data need cache ?
+            } else if (responseBody != null) {
                 if (localCacheEntity == null) {
-                    localCacheEntity = HeaderUtil.parseCacheHeaders(responseHeaders, responseBody, !cacheMode.isStandardHttpProtocol());// Standard protocol not force.
-                    // Maybe null: Http CacheControl: (no-cache || no-store) && !cacheMode.isStandardHttpProtocol().
+                    localCacheEntity = HeaderUtil.parseCacheHeaders(responseHeaders, responseBody);
                 } else {
-                    localCacheEntity.getResponseHeaders().setAll(responseHeaders);
-
-                    // Update localExpires.
                     localCacheEntity.setLocalExpire(HeaderUtil.getLocalExpires(responseHeaders));
-
+                    localCacheEntity.getResponseHeaders().setAll(responseHeaders);
                     localCacheEntity.setData(responseBody);
                 }
             }
             if (localCacheEntity != null)
-                mCache.replace(request.getCacheKey(), localCacheEntity);
+                mCache.replace(cacheKey, localCacheEntity);
 
-        } else if (cacheMode == CacheMode.REQUEST_NETWORK_FAILED_READ_CACHE && localCacheEntity != null) {
-            exception = null;
-            isFromCache = true;
-            responseHeaders = localCacheEntity.getResponseHeaders();
-            responseBody = localCacheEntity.getData();
+            protocolResult.setResponseBody(responseBody);
+            protocolResult.setResponseHeaders(responseHeaders);
         }
-        return new ProtocolResult(responseHeaders, responseBody, isFromCache, exception);
+        return protocolResult;
     }
 }

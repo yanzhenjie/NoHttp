@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.Snackbar;
@@ -104,7 +103,7 @@ public class PostBodyActivity extends BaseActivity implements View.OnClickListen
         } else {
             Logger.i("提交的数据：" + jsonBody);
             request.setDefineRequestBodyForJson(jsonBody);
-            CallServer.getRequestInstance().add(this, 0, request, httpListener, false, true);
+            request(0, request, httpListener, false, true);
         }
     }
 

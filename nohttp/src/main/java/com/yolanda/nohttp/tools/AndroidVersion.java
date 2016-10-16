@@ -136,4 +136,9 @@ public class AndroidVersion {
      * The value is {@value #M}
      */
     public static final int M = 23;
+
+    /**
+     * The value is {@value #L}
+     */
+    public static final int L = 23;
 }

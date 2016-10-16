@@ -40,10 +40,6 @@ public class RequestDispatcher extends Thread {
      */
     private final BlockingQueue<Request<?>> mUnFinishQueue;
     /**
-     * HTTP request parse interface.
-     */
-    private final IRestParser mIRestParser;
-    /**
      * Whether the current request queue polling thread is out of.
      */
     private volatile boolean mQuit = false;
@@ -51,14 +47,12 @@ public class RequestDispatcher extends Thread {
     /**
      * Create a request queue polling thread.
      *
-     * @param unFinishQueue  un finish queue.
-     * @param requestQueue   request queue.
-     * @param implRestParser network request task actuator.
+     * @param unFinishQueue un finish queue.
+     * @param requestQueue  request queue.
      */
-    public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue, IRestParser implRestParser) {
+    public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue) {
         mUnFinishQueue = unFinishQueue;
         mRequestQueue = requestQueue;
-        mIRestParser = implRestParser;
     }
 
     /**
@@ -97,7 +91,7 @@ public class RequestDispatcher extends Thread {
             PosterHandler.getInstance().post(startThread);
 
             // request.
-            Response<?> response = mIRestParser.parserRequest(request);
+            Response<?> response = SyncRequestExecutor.INSTANCE.execute(request);
 
             // remove it from queue.
             mUnFinishQueue.remove(request);

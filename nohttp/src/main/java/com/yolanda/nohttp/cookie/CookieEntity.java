@@ -17,10 +17,9 @@ package com.yolanda.nohttp.cookie;
 
 import android.text.TextUtils;
 
-import com.yolanda.nohttp.db.DBId;
+import com.yolanda.nohttp.db.BasicEntity;
 import com.yolanda.nohttp.tools.HeaderUtil;
 
-import java.io.Serializable;
 import java.net.HttpCookie;
 import java.net.URI;
 
@@ -30,9 +29,7 @@ import java.net.URI;
  *
  * @author Yan Zhenjie.
  */
-class CookieEntity implements DBId, Serializable {
-
-    private static final long serialVersionUID = 6374381323722046732L;
+class CookieEntity implements BasicEntity {
 
     private long id = -1;
     private String uri; // cookie add by this uri.

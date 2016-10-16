@@ -84,7 +84,7 @@ public class HttpHeaders extends TreeMultiValueMap<String, String> implements He
             for (Map.Entry<String, List<String>> entry : diskCookies.entrySet()) {
                 String key = entry.getKey();
                 List<String> value = entry.getValue();
-                if ((HEAD_KEY_COOKIE.equalsIgnoreCase(key) || HEAD_KEY_COOKIE2.equalsIgnoreCase(key))) {
+                if (HEAD_KEY_COOKIE.equalsIgnoreCase(key)) {
                     add(key, TextUtils.join("; ", value));
                 }
             }
@@ -102,9 +102,8 @@ public class HttpHeaders extends TreeMultiValueMap<String, String> implements He
             String key = keySet.next();
             String value = jsonObject.optString(key);
             JSONArray values = new JSONArray(value);
-            if (values != null)
-                for (int i = 0; i < values.length(); i++)
-                    add(key, values.optString(i));
+            for (int i = 0; i < values.length(); i++)
+                add(key, values.optString(i));
         }
     }
 
@@ -128,7 +127,7 @@ public class HttpHeaders extends TreeMultiValueMap<String, String> implements He
 
     @Override
     public Map<String, String> toRequestHeaders() {
-        Map<String, String> singleMap = new LinkedHashMap<String, String>();
+        Map<String, String> singleMap = new LinkedHashMap<>();
         for (Map.Entry<String, List<String>> entry : entrySet()) {
             String key = entry.getKey();
             List<String> value = entry.getValue();
@@ -145,9 +144,9 @@ public class HttpHeaders extends TreeMultiValueMap<String, String> implements He
 
     @Override
     public List<HttpCookie> getCookies() {
-        List<HttpCookie> cookies = new ArrayList<HttpCookie>();
+        List<HttpCookie> cookies = new ArrayList<>();
         for (String key : keySet()) {
-            if (key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE) || key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE2)) {
+            if (key.equalsIgnoreCase(HEAD_KEY_SET_COOKIE)) {
                 List<String> cookieValues = getValues(key);
                 for (String cookieStr : cookieValues) {
                     for (HttpCookie cookie : HttpCookie.parse(cookieStr))
@@ -165,7 +164,7 @@ public class HttpHeaders extends TreeMultiValueMap<String, String> implements He
         if (cacheControls == null)
             cacheControls = getValues(HEAD_KEY_PRAGMA);
         if (cacheControls == null)
-            cacheControls = new ArrayList<String>();
+            cacheControls = new ArrayList<>();
         return TextUtils.join(",", cacheControls);
     }
 
@@ -206,11 +205,6 @@ public class HttpHeaders extends TreeMultiValueMap<String, String> implements He
         } catch (Exception e) {
         }
         return code;
-    }
-
-    @Override
-    public String getResponseMessage() {
-        return getValue(HEAD_KEY_RESPONSE_MESSAGE, 0);
     }
 
     @Override

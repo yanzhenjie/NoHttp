@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
@@ -58,18 +57,15 @@ public class UploadFileActivity extends BaseActivity {
         saveFile();
     }
 
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            if (0 == position) {
-                startActivity(new Intent(UploadFileActivity.this, UploadSingleFileActivity.class));
-            } else if (position == 1) {
-                startActivity(new Intent(UploadFileActivity.this, UploadMultiFileActivity.class));
-            } else if (position == 2) {
-                startActivity(new Intent(UploadFileActivity.this, UploadFileListActivity.class));
-            } else if (position == 3) {
-                startActivity(new Intent(UploadFileActivity.this, UploadAlbumActivity.class));
-            }
+    private OnItemClickListener mItemClickListener = (v, position) -> {
+        if (0 == position) {
+            startActivity(new Intent(UploadFileActivity.this, UploadSingleFileActivity.class));
+        } else if (position == 1) {
+            startActivity(new Intent(UploadFileActivity.this, UploadMultiFileActivity.class));
+        } else if (position == 2) {
+            startActivity(new Intent(UploadFileActivity.this, UploadFileListActivity.class));
+        } else if (position == 3) {
+            startActivity(new Intent(UploadFileActivity.this, UploadAlbumActivity.class));
         }
     };
 

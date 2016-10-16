@@ -15,12 +15,12 @@
  */
 package com.yanzhenjie.nohttp.sample.nohttp;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 
 import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.dialog.WaitDialog;
-import com.yanzhenjie.nohttp.sample.util.Snackbar;
+import com.yanzhenjie.nohttp.sample.util.Toast;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.error.NetworkError;
 import com.yolanda.nohttp.error.NotFoundCacheError;
@@ -31,9 +31,9 @@ import com.yolanda.nohttp.error.UnKnownHostError;
 import com.yolanda.nohttp.rest.OnResponseListener;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.Response;
+import com.yolanda.nohttp.rest.RestResponse;
 
 import java.net.ProtocolException;
-import java.util.Locale;
 
 /**
  * Created in Nov 4, 2015 12:02:55 PM.
@@ -42,7 +42,7 @@ import java.util.Locale;
  */
 public class HttpResponseListener<T> implements OnResponseListener<T> {
 
-    private BaseActivity mActivity;
+    private Activity mActivity;
     /**
      * Dialog.
      */
@@ -63,7 +63,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
      * @param canCancel    是否允许用户取消请求.
      * @param isLoading    是否显示dialog.
      */
-    public HttpResponseListener(BaseActivity activity, Request<?> request, HttpListener<T> httpCallback, boolean canCancel, boolean isLoading) {
+    public HttpResponseListener(Activity activity, Request<?> request, HttpListener<T> httpCallback, boolean canCancel, boolean isLoading) {
         this.mActivity = activity;
         this.mRequest = request;
         if (activity != null && isLoading) {
@@ -102,18 +102,22 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
      */
     @Override
     public void onSucceed(int what, Response<T> response) {
-        int responseCode = response.getHeaders().getResponseCode();
-        if (responseCode > 400 && mActivity != null) {
-            if (responseCode == 405) {// 405表示服务器不支持这种请求方法，比如GET、POST、TRACE中的TRACE就很少有服务器支持。
-                mActivity.showMessageDialog(R.string.request_succeed, R.string.request_method_not_allow);
-            } else {// 但是其它400+的响应码服务器一般会有流输出。
-                String title = String.format(Locale.getDefault(), mActivity.getString(R.string.error_response_code), responseCode);
-                String content = String.format(Locale.getDefault(), mActivity.getString(R.string.error_response_code_dex), responseCode);
-                mActivity.showMessageDialog(title, content);
-            }
-        }
         if (callback != null) {
-            callback.onSucceed(what, response);
+            // 这里判断一下http响应码，这个响应码问下你们的服务端你们的状态有几种，一般是200成功。
+            // w3c标准http响应码：http://www.w3school.com.cn/tags/html_ref_httpmessages.asp
+
+            int coce = response.responseCode();
+            if (coce == 200 || coce == 304) { // 如果使用http标准的304重定向到缓存的话，还要判断下304状态码。
+                callback.onSucceed(what, response);
+            } else { // 如果
+                Response<T> error = new RestResponse<>(response.request(),
+                        response.isFromCache(),
+                        response.getHeaders(),
+                        null,
+                        response.getNetworkMillis(),
+                        new ParseError("数据错误")); // 这里可以传一个你的自定义异常。
+                onFailed(what, error); // 去让错误的回调处理。
+            }
         }
     }
 
@@ -124,22 +128,22 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
     public void onFailed(int what, Response<T> response) {
         Exception exception = response.getException();
         if (exception instanceof NetworkError) {// 网络不好
-            Snackbar.show(mActivity, R.string.error_please_check_network);
+            Toast.show(mActivity, R.string.error_please_check_network);
         } else if (exception instanceof TimeoutError) {// 请求超时
-            Snackbar.show(mActivity, R.string.error_timeout);
+            Toast.show(mActivity, R.string.error_timeout);
         } else if (exception instanceof UnKnownHostError) {// 找不到服务器
-            Snackbar.show(mActivity, R.string.error_not_found_server);
+            Toast.show(mActivity, R.string.error_not_found_server);
         } else if (exception instanceof URLError) {// URL是错的
-            Snackbar.show(mActivity, R.string.error_url_error);
+            Toast.show(mActivity, R.string.error_url_error);
         } else if (exception instanceof NotFoundCacheError) {
             // 这个异常只会在仅仅查找缓存时没有找到缓存时返回
-            Snackbar.show(mActivity, R.string.error_not_found_cache);
+            Toast.show(mActivity, R.string.error_not_found_cache);
         } else if (exception instanceof ProtocolException) {
-            Snackbar.show(mActivity, R.string.error_system_unsupport_method);
+            Toast.show(mActivity, R.string.error_system_unsupport_method);
         } else if (exception instanceof ParseError) {
-            Snackbar.show(mActivity, R.string.error_parse_data_error);
+            Toast.show(mActivity, R.string.error_parse_data_error);
         } else {
-            Snackbar.show(mActivity, R.string.error_unknow);
+            Toast.show(mActivity, R.string.error_unknow);
         }
         Logger.e("错误：" + exception.getMessage());
         if (callback != null)

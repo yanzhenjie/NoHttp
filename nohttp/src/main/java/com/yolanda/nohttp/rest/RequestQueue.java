@@ -36,15 +36,11 @@ public class RequestQueue {
     /**
      * Save un finish task.
      */
-    private final BlockingQueue<Request<?>> mUnFinishQueue = new LinkedBlockingDeque<Request<?>>();
+    private final BlockingQueue<Request<?>> mUnFinishQueue = new LinkedBlockingDeque<>();
     /**
      * Save request task.
      */
-    private final BlockingQueue<Request<?>> mRequestQueue = new PriorityBlockingQueue<Request<?>>();
-    /**
-     * HTTP request actuator interface.
-     */
-    private final IRestParser mIRestParser;
+    private final BlockingQueue<Request<?>> mRequestQueue = new PriorityBlockingQueue<>();
 
     /**
      * Request queue polling thread array.
@@ -54,11 +50,9 @@ public class RequestQueue {
     /**
      * Create request queue manager.
      *
-     * @param iRestParser    download the network task execution interface, where you need to implement the download tasks that have been implemented.
      * @param threadPoolSize number of thread pool.
      */
-    public RequestQueue(IRestParser iRestParser, int threadPoolSize) {
-        mIRestParser = iRestParser;
+    public RequestQueue(int threadPoolSize) {
         mDispatchers = new RequestDispatcher[threadPoolSize];
     }
 
@@ -69,7 +63,7 @@ public class RequestQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            RequestDispatcher networkDispatcher = new RequestDispatcher(mUnFinishQueue, mRequestQueue, mIRestParser);
+            RequestDispatcher networkDispatcher = new RequestDispatcher(mUnFinishQueue, mRequestQueue);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }

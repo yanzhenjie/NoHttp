@@ -32,6 +32,7 @@ import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.dialog.ImageDialog;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
+import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.rest.Request;
 
 /**
@@ -49,6 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Logger.e(getClass().getName());
         getDelegate().setContentView(R.layout.activity_base);
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
@@ -191,12 +193,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
         builder.setMessage(message);
-        builder.setPositiveButton(R.string.know, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setPositiveButton(R.string.know, (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 

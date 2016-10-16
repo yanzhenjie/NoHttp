@@ -73,7 +73,7 @@ public class CallServer {
      * @param isLoading 是否显示dialog.
      */
     public <T> void add(BaseActivity context, int what, Request<T> request, HttpListener<T> callback, boolean canCancel, boolean isLoading) {
-        requestQueue.add(what, request, new HttpResponseListener<T>(context, request, callback, canCancel, isLoading));
+        requestQueue.add(what, request, new HttpResponseListener<>(context, request, callback, canCancel, isLoading));
     }
 
     /**

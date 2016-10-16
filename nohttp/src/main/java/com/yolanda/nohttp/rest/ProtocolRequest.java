@@ -36,7 +36,7 @@ public abstract class ProtocolRequest extends BasicRequest implements IProtocolR
     private CacheMode mCacheMode = CacheMode.DEFAULT;
 
     /**
-     * Create a request, RequestMethod is {@link RequestMethod#GET}.
+     * Create a request, request method is {@link RequestMethod#GET}.
      *
      * @param url request address, like: http://www.google.com.
      */
@@ -55,8 +55,9 @@ public abstract class ProtocolRequest extends BasicRequest implements IProtocolR
     }
 
     @Override
-    public void setCacheKey(String key) {
+    public IProtocolRequest setCacheKey(String key) {
         this.mCacheKey = key;
+        return this;
     }
 
     @Override
@@ -65,8 +66,9 @@ public abstract class ProtocolRequest extends BasicRequest implements IProtocolR
     }
 
     @Override
-    public void setCacheMode(CacheMode cacheMode) {
+    public IProtocolRequest setCacheMode(CacheMode cacheMode) {
         this.mCacheMode = cacheMode;
+        return this;
     }
 
     @Override

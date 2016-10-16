@@ -18,14 +18,12 @@ package com.yanzhenjie.nohttp.sample.activity.upload;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.config.AppConfig;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yolanda.nohttp.BasicBinary;
@@ -63,11 +61,7 @@ public class UploadSingleFileActivity extends BaseActivity {
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_upload_single);
-        findView(R.id.rv_upload_file_single_root).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+        findView(R.id.rv_upload_file_single_root).setClickable(true);
         mTvResult = findView(R.id.tv_result);
         mPbProgress = findView(R.id.pb_progress);
     }
@@ -98,7 +92,7 @@ public class UploadSingleFileActivity extends BaseActivity {
         request.add("image0", binary);// 添加1个文件
 //            request.add("image1", fileBinary1);// 添加2个文件
 
-        CallServer.getRequestInstance().add(this, 0, request, new HttpListener<String>() {
+        request(0, request, new HttpListener<String>() {
             @Override
             public void onSucceed(int what, Response<String> response) {
                 showMessageDialog(R.string.request_succeed, response.get());

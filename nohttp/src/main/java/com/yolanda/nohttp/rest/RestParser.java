@@ -18,7 +18,10 @@ package com.yolanda.nohttp.rest;
 import android.os.SystemClock;
 
 import com.yolanda.nohttp.Headers;
+import com.yolanda.nohttp.NetworkExecutor;
+import com.yolanda.nohttp.cache.CacheEntity;
 import com.yolanda.nohttp.error.ParseError;
+import com.yolanda.nohttp.tools.CacheStore;
 
 /**
  * <p>
@@ -28,28 +31,17 @@ import com.yolanda.nohttp.error.ParseError;
  *
  * @author Yan Zhenjie.
  */
-public class RestParser implements IRestParser {
+public class RestParser {
 
-    private static IRestParser instance;
+    private RestProtocol mRestProtocol;
 
-    private final IRestProtocol mIRestProtocol;
-
-    public static IRestParser getInstance(IRestProtocol iRestProtocol) {
-        synchronized (RestParser.class) {
-            if (instance == null)
-                instance = new RestParser(iRestProtocol);
-            return instance;
-        }
+    public RestParser(CacheStore<CacheEntity> cache, NetworkExecutor executor) {
+        mRestProtocol = new RestProtocol(cache, executor);
     }
 
-    private RestParser(IRestProtocol iRestProtocol) {
-        this.mIRestProtocol = iRestProtocol;
-    }
-
-    @Override
     public <T> Response<T> parserRequest(IParserRequest<T> request) {
         long startTime = SystemClock.elapsedRealtime();
-        ProtocolResult httpResponse = mIRestProtocol.requestNetwork(request);
+        ProtocolResult httpResponse = mRestProtocol.requestNetwork(request);
         boolean isFromCache = httpResponse.isFromCache();
         Headers responseHeaders = httpResponse.responseHeaders();
         Exception exception = httpResponse.exception();
@@ -62,7 +54,7 @@ public class RestParser implements IRestParser {
                 exception = new ParseError("Parse data error: " + e.getMessage());
             }
         }
-        return new RestResponse<T>(request, isFromCache, responseHeaders, result, SystemClock.elapsedRealtime() - startTime, exception);
+        return new RestResponse<>(request, isFromCache, responseHeaders, result, SystemClock.elapsedRealtime() - startTime, exception);
     }
 
 }

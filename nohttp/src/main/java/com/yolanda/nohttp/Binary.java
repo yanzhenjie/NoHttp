@@ -29,7 +29,7 @@ import java.io.OutputStream;
 public interface Binary extends Cancelable {
 
     /**
-     * Returns the size of the Binary, if size is 0, the Binary Field will not be sent. The rest of the {@link Binary} method will not be invoked.
+     * Returns the size of the Binary, if size is 0, the Binary BasicSQLHelper will not be sent. The rest of the {@link Binary} method will not be invoked.
      *
      * @return Long length.
      */

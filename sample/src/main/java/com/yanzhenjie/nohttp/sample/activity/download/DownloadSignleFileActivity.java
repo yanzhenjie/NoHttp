@@ -33,7 +33,6 @@ import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.download.DownloadListener;
 import com.yolanda.nohttp.download.DownloadRequest;
-import com.yolanda.nohttp.error.ArgumentError;
 import com.yolanda.nohttp.error.NetworkError;
 import com.yolanda.nohttp.error.ServerError;
 import com.yolanda.nohttp.error.StorageReadWriteError;
@@ -166,8 +165,6 @@ public class DownloadSignleFileActivity extends BaseActivity implements View.OnC
                 messageContent = getString(R.string.download_error_un_know_host);
             } else if (exception instanceof URLError) {
                 messageContent = getString(R.string.download_error_url);
-            } else if (exception instanceof ArgumentError) {
-                messageContent = getString(R.string.download_error_argument);
             } else {
                 messageContent = getString(R.string.download_error_un);
             }

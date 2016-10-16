@@ -26,7 +26,6 @@ import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.adapter.LoadFileAdapter;
 import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.entity.LoadFile;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yolanda.nohttp.BasicBinary;
@@ -126,7 +125,7 @@ public class UploadMultiFileActivity extends BaseActivity {
             e.printStackTrace();
         }
 
-        CallServer.getRequestInstance().add(this, 0, request, new HttpListener<String>() {
+        request(0, request, new HttpListener<String>() {
             @Override
             public void onSucceed(int what, Response<String> response) {
                 showMessageDialog(R.string.request_succeed, response.get());

@@ -21,12 +21,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
@@ -57,14 +55,11 @@ public class CacheRequestFailedReadCacheActivity extends BaseActivity {
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            if (0 == position) {// 请求String。
-                requestString();
-            } else if (1 == position) {// 请求图片。
-                requestImage();
-            }
+    private OnItemClickListener mItemClickListener = (v, position) -> {
+        if (0 == position) {// 请求String。
+            requestString();
+        } else if (1 == position) {// 请求图片。
+            requestImage();
         }
     };
 
@@ -75,7 +70,7 @@ public class CacheRequestFailedReadCacheActivity extends BaseActivity {
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD);
         request.setCacheKey("CacheKeyRequestNetworkFailedReadCacheString");// 这里的key是缓存数据的主键，默认是url，使用的时候要保证全局唯一，否则会被其他相同url数据覆盖。
         request.setCacheMode(CacheMode.REQUEST_NETWORK_FAILED_READ_CACHE);//设置为REQUEST_NETWORK_FAILED_READ_CACHE表示请求服务器失败，就返回上次的缓存，如果缓存为空才会请求失败。
-        CallServer.getRequestInstance().add(this, 0, request, stringHttpListener, false, true);
+        request(0, request, stringHttpListener, false, true);
     }
 
     private HttpListener<String> stringHttpListener = new HttpListener<String>() {
@@ -98,7 +93,7 @@ public class CacheRequestFailedReadCacheActivity extends BaseActivity {
         Request<Bitmap> request = NoHttp.createImageRequest(Constants.URL_NOHTTP_IMAGE);
         request.setCacheKey("CacheKeyRequestNetworkFailedReadCacheImage");// 这里的key是缓存数据的主键，默认是url，使用的时候要保证全局唯一，否则会被其他相同url数据覆盖。
         request.setCacheMode(CacheMode.REQUEST_NETWORK_FAILED_READ_CACHE);//设置为REQUEST_NETWORK_FAILED_READ_CACHE表示请求服务器失败，就返回上次的缓存，如果缓存为空才会请求失败。
-        CallServer.getRequestInstance().add(this, 0, request, imageHttpListener, false, true);
+        request(0, request, imageHttpListener, false, true);
     }
 
     private HttpListener<Bitmap> imageHttpListener = new HttpListener<Bitmap>() {

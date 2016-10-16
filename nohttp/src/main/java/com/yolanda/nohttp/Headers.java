@@ -43,11 +43,6 @@ public interface Headers extends MultiValueMap<String, String> {
     /**
      * The value is {@value}.
      */
-    String HEAD_KEY_RESPONSE_MESSAGE = "ResponseMessage";
-
-    /**
-     * The value is {@value}.
-     */
     String HEAD_KEY_ACCEPT = "Accept";
 
     /**
@@ -198,17 +193,7 @@ public interface Headers extends MultiValueMap<String, String> {
     /**
      * The value is {@value}.
      */
-    String HEAD_KEY_COOKIE2 = "Cookie2";
-
-    /**
-     * The value is {@value}.
-     */
     String HEAD_KEY_SET_COOKIE = "Set-Cookie";
-
-    /**
-     * The value is {@value}.
-     */
-    String HEAD_KEY_SET_COOKIE2 = "Set-Cookie2";
 
     /**
      * Copy all head to Headers.
@@ -351,11 +336,4 @@ public interface Headers extends MultiValueMap<String, String> {
      * @return ResponseCode.
      */
     int getResponseCode();
-
-    /**
-     * {@value #HEAD_KEY_RESPONSE_MESSAGE}.
-     *
-     * @return ResponseMessage.
-     */
-    String getResponseMessage();
 }

@@ -55,12 +55,7 @@ public class CacheActivity extends BaseActivity {
     /**
      * list item单击。
      */
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            goItemPager(position);
-        }
-    };
+    private OnItemClickListener mItemClickListener = (v, position) -> goItemPager(position);
 
     private void goItemPager(int position) {
         Intent intent = null;

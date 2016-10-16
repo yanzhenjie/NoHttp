@@ -4,12 +4,8 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
@@ -19,8 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme.Common">
         <activity
-            android:name=".activity.StartActivity"
-            android:label="@string/app_name"
+            android:name=".activity.splash.SplashActivity"
             android:theme="@style/AppTheme.Common.Launch">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,8 +24,19 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activity.splash.WelActivity"
+            android:theme="@style/AppTheme.Common.Launch" />
+        <activity
+            android:name=".activity.StartActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.Common" />
+        <activity
             android:name=".activity.OriginalActivity"
             android:label="@string/title_original_activity"
+            android:theme="@style/AppTheme.Common" />
+        <activity
+            android:name=".activity.rxjava.RxJavaActivity"
+            android:label="@string/title_rxjava_activity"
             android:theme="@style/AppTheme.Common" />
         <activity
             android:name=".activity.MethodActivity"
@@ -50,8 +56,8 @@
             android:theme="@style/AppTheme.Common"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity
-            android:name=".activity.json.FastJsonActivity"
-            android:label="@string/title_fast_json_activity"
+            android:name=".activity.define.DefineRequestActivity"
+            android:label="@string/title_define_request_activity"
             android:theme="@style/AppTheme.Common" />
         <activity
             android:name=".activity.cache.CacheActivity"

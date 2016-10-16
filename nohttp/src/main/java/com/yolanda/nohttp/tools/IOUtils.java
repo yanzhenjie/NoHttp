@@ -354,7 +354,7 @@ public class IOUtils {
             line1 = br1.readLine();
             line2 = br2.readLine();
         }
-        return line1 == null ? false : line2 == null ? true : line1.equals(line2);
+        return line1 != null && (line2 == null || line1.equals(line2));
     }
 
     /**
@@ -449,7 +449,7 @@ public class IOUtils {
      * @return True: success, or false: failure.
      */
     public static boolean createNewFolder(String folderPath) {
-        return deleteFolder(folderPath) && createFolder(folderPath);
+        return delFileOrFolder(folderPath) && createFolder(folderPath);
     }
 
     /**
@@ -459,7 +459,7 @@ public class IOUtils {
      * @return True: success, or false: failure.
      */
     public static boolean createNewFolder(File targetFolder) {
-        return deleteFolder(targetFolder) && createFolder(targetFolder);
+        return delFileOrFolder(targetFolder) && createFolder(targetFolder);
     }
 
     /**
@@ -530,31 +530,7 @@ public class IOUtils {
      *
      * @param path path.
      * @return is succeed.
-     * @deprecated use {@link #delFileOrFolder(String)} instead.
-     */
-    @Deprecated
-    public static boolean deleteFolder(String path) {
-        return delFileOrFolder(new File(path));
-    }
-
-    /**
-     * Delete file or folder.
-     *
-     * @param file file.
-     * @return is succeed.
-     * @deprecated use {@link #delFileOrFolder(File)} instead.
-     */
-    @Deprecated
-    public static boolean deleteFolder(File file) {
-        return delFileOrFolder(file);
-    }
-
-    /**
-     * Delete file or folder.
-     *
-     * @param path path.
-     * @return is succeed.
-     * @see #deleteFolder(File)
+     * @see #delFileOrFolder(File)
      */
     public static boolean delFileOrFolder(String path) {
         return delFileOrFolder(new File(path));

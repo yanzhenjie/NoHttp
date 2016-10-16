@@ -29,7 +29,6 @@ import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.Snackbar;
@@ -87,14 +86,11 @@ public class UploadAlbumActivity extends BaseActivity {
     /**
      * 按钮点击。
      */
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.btn_album) {
-                selectImageFormAlbum();
-            } else if (v.getId() == R.id.btn_start) {
-                upload();
-            }
+    private View.OnClickListener onClickListener = v -> {
+        if (v.getId() == R.id.btn_album) {
+            selectImageFormAlbum();
+        } else if (v.getId() == R.id.btn_start) {
+            upload();
         }
     };
 
@@ -141,7 +137,7 @@ public class UploadAlbumActivity extends BaseActivity {
 
         request.add("userHead", fileBinary0);// 添加1个文件
 
-        CallServer.getRequestInstance().add(this, 0, request, new HttpListener<String>() {
+        request(0, request, new HttpListener<String>() {
             @Override
             public void onSucceed(int what, Response<String> response) {
                 showMessageDialog(R.string.request_succeed, response.get());

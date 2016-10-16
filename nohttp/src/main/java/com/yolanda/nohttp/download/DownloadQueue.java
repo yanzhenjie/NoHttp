@@ -36,15 +36,11 @@ public class DownloadQueue {
     /**
      * Save un finish task.
      */
-    private final BlockingQueue<DownloadRequest> mUnFinishQueue = new LinkedBlockingDeque<DownloadRequest>();
+    private final BlockingQueue<DownloadRequest> mUnFinishQueue = new LinkedBlockingDeque<>();
     /**
      * Save download task.
      */
-    private final BlockingQueue<DownloadRequest> mDownloadQueue = new PriorityBlockingQueue<DownloadRequest>();
-    /**
-     * Download Network task execution interface.
-     */
-    private final Downloader mDownloader;
+    private final BlockingQueue<DownloadRequest> mDownloadQueue = new PriorityBlockingQueue<>();
     /**
      * Download queue polling thread array.
      */
@@ -53,11 +49,9 @@ public class DownloadQueue {
     /**
      * Create download queue manager.
      *
-     * @param downloader     download the network task execution interface, where you need to implement the download tasks that have been implemented.
      * @param threadPoolSize number of thread pool.
      */
-    public DownloadQueue(Downloader downloader, int threadPoolSize) {
-        mDownloader = downloader;
+    public DownloadQueue(int threadPoolSize) {
         mDispatchers = new DownloadDispatcher[threadPoolSize];
     }
 
@@ -68,7 +62,7 @@ public class DownloadQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mUnFinishQueue, mDownloadQueue, mDownloader);
+            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mUnFinishQueue, mDownloadQueue);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }

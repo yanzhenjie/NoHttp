@@ -19,11 +19,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
@@ -54,12 +52,7 @@ public class ImageActivity extends BaseActivity implements HttpListener<Bitmap> 
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            request(position);
-        }
-    };
+    private OnItemClickListener mItemClickListener = (v, position) -> request(position);
 
     private void request(int position) {
         Request<Bitmap> request = null;
@@ -83,7 +76,7 @@ public class ImageActivity extends BaseActivity implements HttpListener<Bitmap> 
                 break;
         }
         if (request != null)
-            CallServer.getRequestInstance().add(this, 0, request, this, false, true);
+            request(0, request, this, false, true);
     }
 
     @Override

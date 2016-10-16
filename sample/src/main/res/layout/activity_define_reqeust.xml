@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchParent">
+
+    <LinearLayout
+        style="@style/MatchParent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_fast_json"
+            style="@style/ButtonWrapContent.WidthMatch"
+            android:text="@string/request_define_fast_json" />
+
+        <Button
+            android:id="@+id/btn_java_bean"
+            style="@style/ButtonWrapContent.WidthMatch"
+            android:text="@string/request_define_java_bean" />
+
+        <TextView
+            android:id="@+id/tv_result"
+            style="@style/WrapContent.WidthMatchParent"
+            android:layout_marginTop="@dimen/dp_10" />
+    </LinearLayout>
+
+</ScrollView>

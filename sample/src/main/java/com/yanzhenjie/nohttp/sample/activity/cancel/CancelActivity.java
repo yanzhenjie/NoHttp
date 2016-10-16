@@ -18,7 +18,6 @@ package com.yanzhenjie.nohttp.sample.activity.cancel;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
@@ -49,12 +48,7 @@ public class CancelActivity extends BaseActivity {
     /**
      * list item单击。
      */
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            geOtherPager(position);
-        }
-    };
+    private OnItemClickListener mItemClickListener = (v, position) -> geOtherPager(position);
 
     private void geOtherPager(int position) {
         Intent intent = null;

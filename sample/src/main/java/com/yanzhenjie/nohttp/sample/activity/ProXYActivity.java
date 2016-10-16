@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yolanda.nohttp.NoHttp;
 import com.yolanda.nohttp.rest.Request;
@@ -49,7 +48,7 @@ public class ProXYActivity extends BaseActivity implements View.OnClickListener,
         Request<String> request = NoHttp.createStringRequest("http://www.baidu.com");
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("119.75.218.70", 80));
         request.setProxy(proxy);
-        CallServer.getRequestInstance().add(this, 0, request, this, false, true);
+        request(0, request, this, false, true);
     }
 
     @Override

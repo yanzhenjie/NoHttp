@@ -145,17 +145,12 @@ public class HeaderUtil {
      *
      * @param responseHeaders response headers.
      * @param responseBody    response data.
-     * @param forceCache      whether mandatory cache.
-     * @return Cache entity.
+     * @return CacheStore entity.
      */
-    public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody, boolean forceCache) {
-        String cacheControl = responseHeaders.getCacheControl();
-        if (!forceCache && cacheControl != null && (cacheControl.contains("no-cache") || cacheControl.contains("no-store")))
-            return null;
-        long localExpire = getLocalExpires(responseHeaders);
+    public static CacheEntity parseCacheHeaders(Headers responseHeaders, byte[] responseBody) {
         CacheEntity cacheEntity = new CacheEntity();
         cacheEntity.setData(responseBody);
-        cacheEntity.setLocalExpire(localExpire);
+        cacheEntity.setLocalExpire(getLocalExpires(responseHeaders));
         cacheEntity.setResponseHeaders(responseHeaders);
         return cacheEntity;
     }
@@ -174,7 +169,6 @@ public class HeaderUtil {
 
         long maxAge = 0;
         long staleWhileRevalidate = 0;
-        boolean mustRevalidate = false;
 
         String cacheControl = responseHeaders.getCacheControl();
         if (!TextUtils.isEmpty(cacheControl)) {
@@ -193,8 +187,6 @@ public class HeaderUtil {
                         staleWhileRevalidate = Long.parseLong(token.substring(23));
                     } catch (Exception e) {
                     }
-                } else if (token.equals("must-revalidate") || token.equals("proxy-revalidate")) {
-                    mustRevalidate = true;
                 }
             }
         }
@@ -205,7 +197,7 @@ public class HeaderUtil {
         // Have CacheControl.
         if (!TextUtils.isEmpty(cacheControl)) {
             localExpire = now + maxAge * 1000;
-            if (mustRevalidate)
+            if (staleWhileRevalidate > 0)
                 localExpire += staleWhileRevalidate * 1000;
         }
 

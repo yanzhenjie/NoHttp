@@ -1,27 +1,113 @@
-#NoHttp
-> NoHttp，一个有情怀的框架。  
-
+# NoHttp，一个有情怀的网络框架
 ![NoHttp Logo](http://www.nohttp.net/image/nohttp_logo.svg)  
 
-如果你想用OkHttp，请看这个项目：[NoHttp4OkHttp](https://github.com/yanzhenjie/NoHttp4OkHttp)。
+严振杰的博客：[blog.yanzhenjie.com](http://blog.yanzhenjie.com)   
 
-技术交流群：547839514，加群请一定阅读[群行为规范](https://github.com/yanzhenjie/SkillGroupRule)。 
+NoHttp重要升级，支持与`RxJava`完美结合、支持一句话切换底层为`OkHttp`，支持请求Restful风格的接口，比Retrofit更简单易用。  
 
-严振杰的主页：[www.yanzhenjie.com](http://www.yanzhenjie.com) 
-严振杰的博客：[blog.yanzhenjie.com](http://blog.yanzhenjie.com) 
+**欢迎加入QQ交流群：[547839514](http://jq.qq.com/?_wv=1027&k=40Qqms0)**
 
 ----
 
-#使用方法
-* Eclipse使用Jar包，如果需要依赖源码，请自行下载。
-> [下载Jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.0.7.jar?raw=true)  
+**Demo 首页预览：**
+<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/1.gif?raw=true" width="280px"/> <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/2.gif?raw=true" width="280px"/>  
 
-* AndroidStudio使用Gradle构建添加依赖（**推荐**）
+<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/3.gif?raw=true" width="280px"/> <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/4.gif?raw=true" width="280px"/>
+
+## NoHttp特性，比Retrofit使用更简单
+* 动态配置底层框架为**OkHttp**、HttpURLConnection
+* 与**RxJava**完美结合，支持异步请求、支持同步请求
+* 多文件上传，支持大文件上传，表单提交数据
+* 文件下载、上传下载、上传和下载的进度回调、错误回调
+* 支持Json、xml、Map、List的提交
+* 完美的Http缓存模式，可指定缓存到数据库、SD卡，缓存数据已安全加密
+* 自定义Request，直接请求JsonObject、JavaBean等
+* Cookie的自动维持，App重启、关开机后还持续维持
+* http 301 302 303 304 307重定向，支持多层嵌套重定向
+* Https、自签名网站Https的访问、支持双向验证
+* 失败重试机制，支持请求优先级
+* GET、POST、PUT、PATCH、HEAD、DELETE、OPTIONS、TRACE等请求协议
+* 用队列保存请求，平均分配多线程的资源，支持多个请求并发
+* 支持取消某个请求、取消指定多个请求、取消所有请求
+
+# 使用方法
+## AndroidStudio使用Gradle构建添加依赖（**推荐**）
+* 如果使用HttpURLConnection作为网络层：  
 ```groovy
-compile 'com.yolanda.nohttp:nohttp:1.0.7'
+compile 'com.yolanda.nohttp:nohttp:1.1.0'
+```
+* 如果要使用OkHttp作为网络层，请再依赖：  
+```groovy
+compile 'com.yolanda.nohttp:okhttp:1.1.0'
 ```
 
-#权限
+## Eclipse使用方法
+* 如果使用HttpURLConnection作为网络层：  
+ [下载NoHttp Jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.1.0.jar?raw=true)  
+* 如果使用OkHttp做为网络层  
+ [下载NoHttp-OkHttp Jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp-okhttp1.1.0.jar?raw=true)，并且请自行下载[okhttp](https://github.com/square/okhttp)、[okio](https://github.com/square/okio)的jar包。
+
+* 建议没用Android的同学尽早切换到AndroidStudio来开发Android应用。
+
+## NoHttp初始化
+NoHttp初始化需要一个Context，最好在`Application`的`onCreate()`中初始化，记得在`manifest.xml`中注册`Application`。
+
+### 一般情况下只需要这样初始化
+直接初始化后，一切采用默认设置。
+```java
+NoHttp.initialize(this);
+```
+
+### 如果需要自定义配置更多信息
+
+* 超时配置，默认10s
+```java
+NoHttp.initialize(this, new NoHttp.Config()
+    // 设置全局连接超时时间，单位毫秒
+    .setConnectTimeout(30 * 1000)
+    // 设置全局服务器响应超时时间，单位毫秒
+    .setReadTimeout(30 * 1000)
+);
+```
+
+* 配置缓存，默认保存在数据库
+```java
+NoHttp.initialize(this, new NoHttp.Config()
+    ...
+    // 保存到数据库
+    .setCacheStore(
+        new DBCacheStore(this).setEnable(true) // 如果不使用缓存，设置false禁用。
+    )
+    // 或者保存到SD卡
+    .setCacheStore(
+        new DiskCacheStore(this)
+    )
+);
+```
+
+* 配置Cookie保存的位置，默认保存在数据库
+```java
+NoHttp.initialize(this, new NoHttp.Config()
+    ...
+    // 默认保存数据库DBCookieStore，开发者可以自己实现。
+    .setCookieStore(
+        new DBCookieStore(this).setEnable(false) // 如果不维护cookie，设置false禁用。
+    )
+);
+```
+
+* 配置网络层
+```java
+NoHttp.initialize(this, new NoHttp.Config()
+    ...
+    // 使用HttpURLConnection
+    .setNetworkExecutor(new URLConnectionNetworkExecutor())
+    // 使用OkHttp
+    .setNetworkExecutor(new OkHttpNetworkExecutor())
+);
+```
+
+## 权限
 ```xml
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -30,130 +116,104 @@ compile 'com.yolanda.nohttp:nohttp:1.0.7'
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
-#NoHttp特性
-　　NoHttp实现了Http1.1（RFC2616），一个标准的Http框架。
-
-* 请求和下载都是队列，平均分配每个线程的资源，支持多个请求并发。
-* 支持GET、POST、PUT、PATCH、HEAD、DELETE、OPTIONS、TRACE等请求协议。
-* 支持基于POST、PUT、PATCH、DELETE的文件上传（Html表单原理）。
-* 文件下载、上传下载、上传和下载的进度回调、错误回调。
-* 提供了五种数据缓存策略供开发者选择使用（详细看下文）。
-* 支持取消某个请求、取消指定多个请求、取消所有请求。
-* 支持自定义Request，利用NoHttp泛型可以解析成你想要的任何数据格式（String、Json、JavaBean等）。
-* 支持Session、Cookie的自动维持，App重启、关开机后还持续维持。
-* 支持Https、自签名网站Https的访问、支持双向验证。
-
-##友好的调试模式
-　　NoHttp提供了调试模式，打开后可以清晰的看到请求过程、怎么传递数据等，基本不用抓包。可以看到请求头、请求数据、响应头、Cookie等的过程。你也不用担心Log太多会让你眼花缭乱，想象不到的整洁。
-
-##请求
->* 支持请求String、Json、FastJson、Gson、Bitmap、JavaBean、XML等扩展。
->* 异步请求，拿到结果直接更新UI，支持同步请求。
-
-##多文件上传
-　　所有下载均有进度回调、错误回调等友好的接口。
->* 大文件上传，不会发生OOM。
->* 多文件上传，多个key多个文件，一个key多个文件（`List<File>`）。
->* 支持File、InputStream、ByteArray、Bitmap，实现NoHttp的Binary接口，理论上任何东西都可以传。
->* 支持取消上传。
-
-##文件下载
->* 文件下载，支持多个文件同时下载，并且有进度回调、错误回调等。
->* 支持暂停继续下载，支持取消下载，支持断点续传。
->* 利用NoHttp的多文件下载可以做一个下载管理器。
-
-##缓存模式
->* 仅仅请求网络。
->* 仅仅读取缓存。
->* 标准Http协议缓存(比如响应码是304的情况)，需要服务器支持，如果服务器不支持就和普通请求一样。
->* 先请求网络，请求失败后返回缓存。
->* 先读取缓存，缓存不存在再请求网络。
-
-##取消请求
-　　所有取消都支持正在执行的请求。
->* 支持取消某个请求。
->* 支持取消用sign指定的几个请求。
->* 支持取消所有的请求。
-
-##请求自动维持Cookie
->* 支持Session、Cookie、临时Cookie的维持。
->* 支持App重启、关机开机后继续持久化维持。
->* 提供了接口，允许开发者监听Cookie的变化，也可以改变某个Cookie的值。
-
-##重定向
->* 对于Http301、302、303、307等重定向的支持。
->* 支持多级重定向嵌套。
->* 支持禁用重定向、NoHttp提供了操作重定向的接口。
-
-##代理
->* 标准的Java的Api，ProXy：指定代理的IP和Port。
->* 比如调试时代理到自己电脑进行抓包，比如用代理访问Google。
-
-#一. 请求
-##String请求
+## 友好的调试模式
 ```java
-// String 请求对象
-Request<String> request = NoHttp.createStringRequest(url, requestMethod);
-
+Logger.setDebug(true);// 开启NoHttp的调试模式, 配置后可看到请求过程、日志和错误信息。
+Logger.setTag("NoHttpSample");// 设置NoHttp打印Log的tag。
 ```
+开启NoHttp的调试模式后可看到请求过程、日志和错误信息，基本不用抓包。可以看到请求头、请求数据、响应头、Cookie等，而且打印出的Log非常整齐。
 
-##Json请求
+所以说，如果你使用过程中遇到什么问题了，开启调试模式，一切妖魔鬼怪都会现形的。
+
+## 与RxJava完美结合，请参考Demo的RxNoHttp
 ```java
-// JsonObject
-Request<JSONObject> request = NoHttp.createJsonObjectRequest(url, reqeustMethod);
-...
-// JsonArray
-Request<JSONArray> request = NoHttp.createJsonArrayRequest(url, reqeustMethod);
+Request<UserInfo> request = new JavaBeanRequest<>(url, UserInfo.class);
+RxNoHttp.request(this, request, new SimpleSubscriber<Response<UserInfo>>() {
+    @Override
+    public void onNext(Response<YanZhenjie> entityResponse) {
+        // 直接拿到实体对象
+        UserInfo userInfo = entiryResponse.get();
+    }
+});
 ```
 
-##Bitmap请求
-```	java
-Request<Bitmap> request = NoHttp.createImageRequest(url, requestMethod);
-```
-
-##添加参数
-```java
-Request<JSONObject> request = ...
-request.add("name", "yoldada");// String类型
-request.add("age", 18);// int类型
-request.add("sex", '0')// char类型
-request.add("time", 16346468473154); // long类型
-...
-```
-
-##添加到队列
+## NoHttp强大任务队列
 ```java
 RequestQueue requestQueue = NoHttp.newRequestQueue();
-// 或者传一个并发值，允许三个请求同时并发
-// RequestQueue requestQueue = NoHttp.newRequestQueue(3);
+// 如果要指定并发值，传入数字即可：NoHttp.newRequestQueue(3);
 
 // 发起请求
 requestQueue.add(what, request, responseListener);
 ```
-　　上面添加到队列时有一个what，这个what会在`responseLisetener`响应时回调给开发者，所以我们可以用一个`responseLisetener`接受多个请求的响应，用what来区分结果。而不用像有的框架一样，每一个请求都要new一个回调。
+* 添加请求到队列时有一个what，这个what会在`responseLisetener`响应时回调给开发者，所以开发者可以用一个`responseLisetener`接受多个请求的响应，用what来区分结果。而不用像有的框架一样，每一个请求都要new一个callback。  
+* **强烈建议**把生成队列写成懒汉单例模式，因为每新建队列就会new出相应个数的线程来，同时只有线程数固定了，队列的作用才会发挥到最大。
 
-## 同步请求
-　　在当前线程发起请求，在线程这么使用。
+## String请求
 ```java
-Request<String> request = ...
-Response<String> response = NoHttp.startRequestSync(request);
-if (response.isSucceed()) {
-    // 请求成功
-} else {
-    // 请求失败
-}
+Request<String> request = NoHttp.createStringRequest(url, RequestMethod.GET);
+requestQueue.add(0, request, listener);
 ```
 
-#二. 文件上传
-　　支持多文件上传，多个key多个文件，一个key多个文件（`List<File>`）。支持File、InputStream、ByteArray、Bitmap，实现NoHttp的Binary接口，理论上任何东西都可以传。
-##单个文件
+## Json请求
+```java
+// JsonObject
+Request<JSONObject> objRequest = NoHttp.createJsonObjectRequest(url, RequestMethod.POST);
+requestQueue.add(0, objRequest, listener);
+
+// JsonArray
+Request<JSONArray> arrayRequest = NoHttp.createJsonArrayRequest(url, RequestMethod.PUT);
+requestQueue.add(0, arrayRequest, listener);
+```
+
+## Bitmap请求
+```	java
+Request<Bitmap> request = NoHttp.createImageRequest(url, RequestMethod.DELETE);
+requestQueue.add(0, request, listener);
+```
+
+## FastJson、Gson自定义请求
+```java
+// FastJson
+Request<JSONObject> request = new FastJsonRequest(url, RequestMethod.POST);
+requestQueue.add(0, request, listener);
+```
+
+## 直接请求JavaBean
+```java
+// 内部使用Gson、FastJson解析成JavaBean
+Request<UserInfo> request = new JavaBeanRequest(url, RequestMethod.GET);
+requestQueue.add(0, request, listener);
+```
+
+## 添加参数，可以链式调用
+```java
+Request<JSONObject> request = new JavaBeanRequest(url, RequestMethod.POST);
+   .add("name", "yoldada") // String类型
+   .add("age", 18) // int类型
+   .add("sex", '0') // char类型
+   .add("time", 16346468473154) // long类型
+
+   // 添加Bitmap
+   .add("head", new BitmapBinary(bitmap))
+   // 添加File
+   .add("head", new FileBinary(file))
+   // 添加ByteArray
+   .add("head", new ByteArrayBinary(byte[]))
+   // 添加InputStream
+   .add("head", new InputStreamBinary(inputStream));
+```
+
+文件上传实现了http表单的标准协议，满足了广大开发者的需求，有以下几种形式：
+
+* 单个文件
 ```java
 Request<String> request = ...
 request.add("file", new FileBinary(file));
 ```
 
-##上传多个文件、多个Key多个文件形式
-　　这里可以添加各种形式的文件，File、Bitmap、InputStream、ByteArray：
+* 上传多个文件、多个Key多个文件形式  
+这里可以添加各种形式的文件，File、Bitmap、InputStream、ByteArray。
+
 ```java
 Request<String> request = ...
 request.add("file1", new FileBinary(File));
@@ -163,8 +223,7 @@ request.add("file4", new ByteArrayBinary(byte[]));
 request.add("file5", new BitmapBinary(Bitmap));
 ```
 
-##上传多个文件、一个Key多个文件形式
-　　用同一个key添加，如果请求方法是POST、PUT、PATCH、DELETE，同一个key不会被覆盖。
+* 上传多个文件、一个Key多个文件形式
 ```java
 Request<String> request = ...
 fileList.add("image", new FileBinary(File));
@@ -172,7 +231,8 @@ fileList.add("image", new InputStreamBinary(InputStream));
 fileList.add("image", new ByteArrayBinary(byte[]));
 fileList.add("image", new BitmapBinary(Bitmap));
 ```
-　　或者：
+
+或者：  
 ```java
 Request<String> request = ...
 
@@ -184,9 +244,104 @@ fileList.add(new BitmapStreamBinary(Bitmap));
 request.add("file_list", fileList);
 ```
 
-#三. 下载文件
-　　因为下载文件代码比较多，这里贴关键部分，具体的请参考sample。
-##发起下载请求
+## 提交Json、XML、自定义Body等
+```java
+// 提交普通String
+request.setDefineRequestBody(String, ContentType);
+
+// 提交json字符串
+request.setDefineRequestBodyForJson(JsonString)
+
+// 提交jsonObject对象，其实还是json字符串
+request.setDefineRequestBodyForJson(JSONObject)
+
+// 提交xml字符串
+request.setDefineRequestBodyForXML(XmlString)
+
+// 提交字体Body，比如File（这跟表单上传不一样的），可以转为InputStream来提交
+request.setDefineRequestBody(InputStream, ContentType)
+```
+
+## 同步请求
+在当前线程发起请求，在线程这么使用。
+```java
+Request<String> request = NoHttp.createStringRequest(url, RequestMethod.DELETE);
+Response<String> response = NoHttp.startRequestSync(request);
+if (response.isSucceed()) {
+    // 请求成功
+} else {
+    // 请求失败
+}
+```
+
+## 五大缓存模式，一直被模仿，从未被超越
+NoHttp的缓存非常强大，支持缓存到数据库、换到SD卡等，并且不论缓存在数据库或者SD，NoHttp都把数据进行了加密，需要在初始化的时候配置缓存的位置：
+```java
+NoHttp.initialize(this, new NoHttp.Config()
+    ...
+    // 保存到数据库
+    .setCacheStore(
+        new DBCacheStore(this).setEnable(true) // 如果不使用缓存，设置false禁用。
+    )
+    // 或者保存到SD卡
+    .setCacheStore(
+        new DiskCacheStore(this)
+    )
+);
+```
+
+
+* 1、Default模式，实现http 304重定向缓存
+NoHttp本身是实现了RFC2616，所以这里不用设置或者设置为DEFAULT。
+```java
+Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
+request.setCacheMode(CacheMode.DEFAULT);
+```
+
+* 2、 当请求服务器失败的时候，读取缓存
+请求服务器成功则返回服务器数据，如果请求服务器失败，读取缓存数据返回。
+```java
+Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
+request.setCacheMode(CacheMode.REQUEST_NETWORK_FAILED_READ_CACHE);
+```
+
+* 3、如果发现有缓存直接成功，没有缓存才请求服务器
+我们知道ImageLoader的核心除了内存优化外，剩下一个就是发现把内地有图片则直接使用，没有则请求服务器，所以NoHttp这一点非常使用做一个ImageLoader。  
+
+请求String，缓存String：
+```java
+Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
+// 非标准Http协议，改变缓存模式为IF_NONE_CACHE_REQUEST_NETWORK
+request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST_NETWORK);
+```
+
+请求图片，缓存图片：
+```java
+Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
+request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST_NETWORK);
+```
+
+* 4、仅仅请求网络
+这里不会读取缓存，也不支持Http304。
+```java
+Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
+request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
+...
+```
+
+* 5、仅仅读取缓存
+仅仅读取缓存，不会请求网络和其它操作。
+```java
+Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
+request.setCacheMode(CacheMode.ONLY_READ_CACHE);
+```
+
+## 文件下载
+因为下载文件代码比较多，这里贴关键部分，具体的请参考demo。  
+
+文件下载也是队列，队列和开头所说的请求的队列是一样的。
+
+- 发起下载请求
 ```java
 //下载文件
 downloadRequest = NoHttp.createDownloadRequest...
@@ -196,12 +351,12 @@ downloadRequest = NoHttp.createDownloadRequest...
 downloadQueue.add(0, downloadRequest, downloadListener);
 ```
 
-##暂停或者停止下载
+- 暂停或者停止下载
 ```java
 downloadRequest.cancel();
 ```
 
-##监听下载过程
+- 监听下载过程
 ```java
 private DownloadListener downloadListener = new DownloadListener() {
 	@Override
@@ -231,80 +386,42 @@ private DownloadListener downloadListener = new DownloadListener() {
 };
 ```
 
-#四. 缓存模式
-##1. Http标准协议的缓存，比如响应码是304时
-　　NoHttp本身是实现了RFC2616，所以这里不用设置或者设置为DEFAULT。
-```java
-Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
-request.setCacheMode(CacheMode.DEFAULT);
-```
+## 取消请求
+NoHttp支持取消某个请求、取消指定多个请求、取消所有请求。
 
-##2. 当请求服务器失败的时候，读取缓存
-　　请求服务器成功则返回服务器数据，如果请求服务器失败，读取缓存数据返回。
-```java
-Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
-request.setCacheMode(CacheMode.REQUEST_NETWORK_FAILED_READ_CACHE);
-```
-
-##3. 如果发现有缓存直接成功，没有缓存才请求服务器
-　　我们知道ImageLoader的核心除了内存优化外，剩下一个就是发现把内地有图片则直接使用，没有则请求服务器，所以NoHttp这一点非常使用做一个ImageLoader。
-　　如果没有缓存才去请求服务器，否则使用缓存：
-```java
-Request<JSONObject> request = NoHttp.createJsonObjectRequest(url);
-// 非标准Http协议，改变缓存模式为IF_NONE_CACHE_REQUEST_NETWORK
-request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST_NETWORK);
-```
-　　请求图片，缓存图片：
-```java
-Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
-request.setCacheMode(CacheMode.IF_NONE_CACHE_REQUEST_NETWORK);
-```
-
-##4. 仅仅请求网络
-　　这里不会读取缓存，也不会使用Http304：
-```java
-Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
-request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
-...
-```
-
-##5. 仅仅读取缓存
-　　仅仅读取缓存，不会请求网络和其它操作：
-```java
-Request<Bitmap> request = NoHttp.createImageRequest(imageUrl);
-request.setCacheMode(CacheMode.ONLY_READ_CACHE);
-```
-
-#五. 取消请求
-##取消单个请求
-　　直接调用请求对象的cancel方法。
+* 取消单个请求  
+直接调用请求对象的cancel方法。
 ```java
 request.cancel();
 ```
 
-##从队列中取消指定的请求
-　　给请求set一个sign，取消的时候调用队列的cancelBySign就可以取消掉所有指定这个sign的请求。
+* 从队列中取消指定的请求
+在请求之前给请求set一个sign，取消的时候调用队列的cancelBySign就可以取消掉所有指定这个sign的请求。
 ```java
-request.setCancelSign(sign);
+request1.setCancelSign(sign);
+request2.setCancelSign(sign);
 ...
+
+// 取消队列中多个用sign标志的请求
 queue.cancelBySign(sign);
 ```
 
-##取消队列中所有请求
+* 取消队列中所有请求
 ```java
 queue.cancelAll();
 ```
 
 ##停止队列
-　　队列停止后再添加请求到队列后，请求不会被执行。
+队列停止后再添加请求到队列后，请求不会被执行。
 ```java
 RequestQueue queue = NoHttp.newRequestQueue();
 ...
+
 queue.stop();
 ```
 
-#六. 自定义请求类型: FastJsonRequest
-## 定义请求对象
+## 自定义请求
+* FastJsonRequest
 ```java
 public class FastJsonRequest extends RestRequestor<JSONObject> {
 
@@ -314,43 +431,66 @@ public class FastJsonRequest extends RestRequestor<JSONObject> {
 
     public FastJsonRequest(String url, RequestMethod requestMethod) {
 	    super(url, requestMethod);
-	    setAccept("application/json");
     }
 
     @Override
-    public JSONObject parseResponse(String url, Headers headers, byte[] responseBody) {
-	    String result = StringRequest.parseResponseString(url, headers, responseBody);
-	    JSONObject jsonObject = null;
-	    if (!TextUtils.isEmpty(result)) {
-		    jsonObject = JSON.parseObject(result);
-	    } else {
-		    // 这里默认的错误可以定义为你们自己的数据格式
-		    jsonObject = JSON.toJSON("{}");
-	    }
-	    return jsonObject;
+    public JSONObject parseResponse(Headers header, byte[] body) throws Throwable {
+	    String result = StringRequest.parseResponseString(headers, body);
+	    return JSON.parseObject(result);
     }
 }
 ```
 
-##b. 使用自定义请求-和NoHttp默认请求没有区别的哦
+* JavaBeanRequest，利用FastJson、Gson等把数据直接转为JavaBean
 ```java
-Request<JSONObject> mRequest = new FastJsonRequest(url, requestMethod);
-queue.add(what, mRequest, responseListener);
+public class JavaBeanRequest<T> extends RestRequest<T> {
+    private Class<T> clazz;
+
+    public JavaBeanRequest(String url, Class<T> clazz) {
+        this(url, RequestMethod.GET, clazz);
+    }
+
+    public JavaBeanRequest(String url, RequestMethod requestMethod, Class<T> clazz) {
+        super(url, requestMethod);
+        this.clazz = clazz;
+    }
+
+    @Override
+    public T parseResponse(Headers header, byte[] body) throws Throwable {
+        String response = StringRequest.parseResponseString(header, body);
+
+        // 这里如果数据格式错误，或者解析失败，会在失败的回调方法中返回 ParseError 异常。
+        return JSON.parseObject(response, clazz);
+    }
+}
 ```
 
-#七. 混淆
+* 使用自定义请求
+```java
+// 使用FastJson自定义请求
+Request<JSONObject> request = new FastJsonRequest(url, requestMethod);
+queue.add(what, mRequest, listener);
 
-##需要知道的
-1. NoHttp全部的类都可以混淆。
-2. 1.0.1及以上所有版本使用了反射调用了高级或者低级的api，所有版本的build-tools都可以编译。
+...
 
-##如果你非要keep
+// 直击请求JavaBean
+Request<UserInfo> request = new JavaBeanRequest(url, UserInfo.class);
+queue.add(what, request, listener);
+```
+
+# 混淆
+
+## 你需要知道的
+1. NoHttp全部的类都可以混淆。  
+2. NoHttp设计到兼容高版本系统的api采用反射调用，所以所有类都可以被混淆  
+
+3. 如果你非要keep的话，如下配置即可  
 ```text
 -dontwarn com.yolanda.nohttp.**
 -keep class com.yolanda.nohttp.**{*;}
 ```
 
-#License
+# License
 ```text
 Copyright 2016 Yan Zhenjie
 

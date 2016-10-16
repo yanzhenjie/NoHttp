@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchParent"
+    android:background="@color/colorPrimary"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/WrapContent"
+        android:text="@string/wel_hint_1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/wel_hint_1" />
+
+    <TextView
+        style="@style/WrapContent"
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="@string/wel_hint_3"
+        android:textColor="@color/white"
+        android:textSize="@dimen/wel_hint_3" />
+
+    <ImageView
+        style="@style/WrapContent"
+        android:scaleType="center"
+        android:src="@mipmap/group_logo" />
+
+</LinearLayout>

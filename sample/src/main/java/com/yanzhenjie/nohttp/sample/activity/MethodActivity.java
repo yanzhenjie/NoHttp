@@ -17,12 +17,10 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListMultiAdapter;
 import com.yanzhenjie.nohttp.sample.entity.ListItem;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
@@ -58,12 +56,7 @@ public class MethodActivity extends BaseActivity {
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            request(position);
-        }
-    };
+    private OnItemClickListener mItemClickListener = (v, position) -> request(position);
 
     /**
      * @param position
@@ -84,28 +77,19 @@ public class MethodActivity extends BaseActivity {
                 request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.PUT);
                 break;
             case 4:
-                request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.MOVE);
-                break;
-            case 5:
-                request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.COPY);
-                break;
-            case 6:
                 request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.DELETE);
                 break;
-            case 7:
+            case 5:
                 request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.HEAD);
                 break;
-            case 8:
+            case 6:
                 request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.PATCH);
                 break;
-            case 9:
+            case 7:
                 request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.OPTIONS);
                 break;
-            case 10:
+            case 8:
                 request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.TRACE);
-                break;
-            case 11:
-                request = NoHttp.createStringRequest(Constants.URL_NOHTTP_METHOD, RequestMethod.CONNECT);
                 break;
             default:
                 break;
@@ -118,7 +102,7 @@ public class MethodActivity extends BaseActivity {
             request.add("userSex", '1');// char类型，还支持其它类型
 
 //        // 添加到请求队列
-            CallServer.getRequestInstance().add(this, 0, request, httpListener, true, true);
+            request(0, request, httpListener, true, true);
         }
     }
 

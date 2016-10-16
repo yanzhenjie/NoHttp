@@ -17,26 +17,25 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.AppBarLayout;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.cache.CacheActivity;
 import com.yanzhenjie.nohttp.sample.activity.cancel.CancelActivity;
 import com.yanzhenjie.nohttp.sample.activity.download.DownloadActivity;
-import com.yanzhenjie.nohttp.sample.activity.json.FastJsonActivity;
+import com.yanzhenjie.nohttp.sample.activity.define.DefineRequestActivity;
 import com.yanzhenjie.nohttp.sample.activity.json.JsonActivity;
+import com.yanzhenjie.nohttp.sample.activity.rxjava.RxJavaActivity;
 import com.yanzhenjie.nohttp.sample.activity.upload.UploadFileActivity;
-import com.yanzhenjie.nohttp.sample.adapter.MainBannerAdapter;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListMultiAdapter;
 import com.yanzhenjie.nohttp.sample.entity.ListItem;
 import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
-import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
-import com.yanzhenjie.nohttp.sample.view.AutoPlayViewPager;
-import com.yolanda.nohttp.tools.ResCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,24 +48,51 @@ import java.util.List;
  */
 public class StartActivity extends AppCompatActivity {
 
-    private AutoPlayViewPager autoPlayViewPager;
+    AppBarLayout mAppBarLayout;
+    Toolbar mToolbar;
+    ViewGroup mTitleContainerLine;
+    TextView mTvTitleToolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getDelegate().setContentView(R.layout.activity_start);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-        CollapsingToolbarLayout collapsingtoolbarlayout = (CollapsingToolbarLayout) findViewById(R.id.collapsingtoolbarlayout);
-        collapsingtoolbarlayout.setCollapsedTitleTextColor(ResCompat.getColor(R.color.white));
-        collapsingtoolbarlayout.setExpandedTitleColor(ResCompat.getColor(R.color.white));
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_start);
+        mTitleContainerLine = (ViewGroup) findViewById(R.id.layout_start_title_root);
+        mTvTitleToolbar = (TextView) findViewById(R.id.tv_start_toolbar_title);
 
-        autoPlayViewPager = (AutoPlayViewPager) findViewById(R.id.vp_main_banner);
-        autoPlayViewPager.setAdapter(new MainBannerAdapter());
+        mAppBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
-        autoPlayViewPager.setCurrentItem(MainBannerAdapter.IMAGES.length * 5);
-        autoPlayViewPager.start();
 
+        initialize();
+    }
+
+    /**
+     * AppBarLayout的offset监听。
+     */
+    private AppBarLayout.OnOffsetChangedListener offsetChangedListener = new AppBarLayout.OnOffsetChangedListener() {
+        @Override
+        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+            int maxScroll = appBarLayout.getTotalScrollRange();
+            float percentage = (float) Math.abs(verticalOffset) / (float) maxScroll;
+            ViewCompat.setAlpha(mTitleContainerLine, 1 - percentage);
+            ViewCompat.setAlpha(mTvTitleToolbar, percentage);
+            mToolbar.getBackground().mutate().setAlpha((int) (255 * percentage));
+
+//        if (percentage >= 1 || percentage <= 0) {
+//            int distance = getResources().getDimensionPixelSize(android.support.design.);
+//            mContentRoot.animate().translationY(distance * percentage).start();
+//        }
+        }
+    };
+
+
+    /**
+     * 初始化页面功能。
+     */
+    private void initialize() {
         List<ListItem> listItems = new ArrayList<>();
         String[] titles = getResources().getStringArray(R.array.activity_start_items);
         String[] titlesDes = getResources().getStringArray(R.array.activity_start_items_des);
@@ -74,20 +100,10 @@ public class StartActivity extends AppCompatActivity {
             listItems.add(new ListItem(titles[i], titlesDes[i]));
         }
 
-        RecyclerListMultiAdapter listAdapter = new RecyclerListMultiAdapter(listItems, mItemClickListener);
+        RecyclerListMultiAdapter listAdapter = new RecyclerListMultiAdapter(listItems, (v, position) -> goItemPager(position));
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_start_activity);
         recyclerView.setAdapter(listAdapter);
     }
-
-    /**
-     * list item单击.
-     */
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            goItemPager(position);
-        }
-    };
 
     private void goItemPager(int position) {
         Intent intent = null;
@@ -95,43 +111,46 @@ public class StartActivity extends AppCompatActivity {
             case 0:// 最原始使用方法
                 intent = new Intent(this, OriginalActivity.class);
                 break;
-            case 1:// 各种请求方法演示(GET, POST, HEAD, PUT等等)
+            case 1:// 与RxJava一起使用。
+                intent = new Intent(this, RxJavaActivity.class);
+                break;
+            case 2:// 各种请求方法演示(GET, POST, HEAD, PUT等等)
                 intent = new Intent(this, MethodActivity.class);
                 break;
-            case 2:// 请求图片
+            case 3:// 请求图片
                 intent = new Intent(this, ImageActivity.class);
                 break;
-            case 3:// JsonObject, JsonArray
+            case 4:// JsonObject, JsonArray
                 intent = new Intent(this, JsonActivity.class);
                 break;
-            case 4:// POST一段JSON、XML，自定义包体等
+            case 5:// POST一段JSON、XML，自定义包体等
                 intent = new Intent(this, PostBodyActivity.class);
                 break;
-            case 5:// 自定义请求FastJson
-                intent = new Intent(this, FastJsonActivity.class);
+            case 6:// 自定义请求FastJson
+                intent = new Intent(this, DefineRequestActivity.class);
                 break;
-            case 6:// NoHttp缓存演示
+            case 7:// NoHttp缓存演示
                 intent = new Intent(this, CacheActivity.class);
                 break;
-            case 7:// 响应码302/303重定向演示
+            case 8:// 响应码302/303重定向演示
                 intent = new Intent(this, RedirectActivity.class);
                 break;
-            case 8:// 文件上传
+            case 9:// 文件上传
                 intent = new Intent(this, UploadFileActivity.class);
                 break;
-            case 9: // 文件下载
+            case 10: // 文件下载
                 intent = new Intent(this, DownloadActivity.class);
                 break;
-            case 10:// 如何取消请求
+            case 11:// 如何取消请求
                 intent = new Intent(this, CancelActivity.class);
                 break;
-            case 11:// 同步请求
+            case 12:// 同步请求
                 intent = new Intent(this, SyncActivity.class);
                 break;
-            case 12:// 通过代理服务器请求
+            case 13:// 通过代理服务器请求
                 intent = new Intent(this, ProXYActivity.class);
                 break;
-            case 13:// https请求
+            case 14:// https请求
                 intent = new Intent(this, HttpsActivity.class);
                 break;
             default:
@@ -143,8 +162,6 @@ public class StartActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        autoPlayViewPager.stop();
-
         // 程序退出时取消所有请求
         CallServer.getRequestInstance().cancelAll();
 

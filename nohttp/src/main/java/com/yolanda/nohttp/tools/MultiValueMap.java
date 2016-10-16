@@ -86,7 +86,7 @@ public interface MultiValueMap<K, V> {
     Set<K> keySet();
 
     /**
-     * To get all key of all values.
+     * To getList all key of all values.
      *
      * @return List.
      */
@@ -100,7 +100,7 @@ public interface MultiValueMap<K, V> {
     Set<Map.Entry<K, List<V>>> entrySet();
 
     /**
-     * To get the key of the at index value.
+     * To getList the key of the at index value.
      *
      * @param key   key.
      * @param index index value.
@@ -109,7 +109,7 @@ public interface MultiValueMap<K, V> {
     V getValue(K key, int index);
 
     /**
-     * To get key of all values.
+     * To getList key of all values.
      *
      * @param key key.
      * @return values.

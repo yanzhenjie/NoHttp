@@ -40,7 +40,7 @@ public abstract class RestRequest<T> extends ParseRequest<T> implements Request<
     /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
      *
-     * @param url request address, like: http://www.google.com.
+     * @param url request address, like: {@code http://www.yanzhenjie.com}.
      */
     public RestRequest(String url) {
         this(url, RequestMethod.GET);
@@ -49,7 +49,7 @@ public abstract class RestRequest<T> extends ParseRequest<T> implements Request<
     /**
      * Create a request
      *
-     * @param url           request address, like: http://www.google.com.
+     * @param url           request address, like: {@code http://www.yanzhenjie.com}.
      * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public RestRequest(String url, RequestMethod requestMethod) {

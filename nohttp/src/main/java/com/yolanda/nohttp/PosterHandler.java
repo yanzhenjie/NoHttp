@@ -29,11 +29,11 @@ public final class PosterHandler extends Handler {
     private static PosterHandler instance;
 
     public static PosterHandler getInstance() {
-        synchronized (PosterHandler.class) {
-            if (instance == null) {
-                instance = new PosterHandler();
+        if (instance == null)
+            synchronized (PosterHandler.class) {
+                if (instance == null)
+                    instance = new PosterHandler();
             }
-        }
         return instance;
     }
 

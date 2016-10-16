@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="wel_hint_1">18sp</dimen>
+    <dimen name="wel_hint_3">24sp</dimen>
+</resources>

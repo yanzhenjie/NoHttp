@@ -8,13 +8,21 @@
     <string name="tip">Tip</string>
     <string name="wait_dialog_title">Please wait for a while…</string>
 
+    <string name="wel_hint_1">Welcome page is so ugly</string>
+    <string name="wel_hint_3">Anyway, you can not to hit me</string>
+
+    <string name="nohttp">NoHttp</string>
+    <string name="nohttp_slogan">There are feelings of framework</string>
+
+    <string name="behavior_user_head_move">com.yanzhenjie.nohttp.sample.behavior.AvatarImageBehavior</string>
     <!-- title field -->
 
     <string name="title_original_activity">NoHttp native usage</string>
+    <string name="title_rxjava_activity">NoHttp with rxjava</string>
     <string name="title_method_activity">Demo request agreement</string>
     <string name="title_image_activity">NoHttp request image</string>
     <string name="title_post_body_activity">Post json, custom inclusions</string>
-    <string name="title_fast_json_activity">The custom request</string>
+    <string name="title_define_request_activity">The custom request</string>
     <string name="title_json_activity">JsonObject、JsonArray demo</string>
     <string name="title_cache_activity">Five caching strategies</string>
     <string name="title_cache_http_activity">The HTTP standard protocol of the cache</string>
@@ -63,9 +71,10 @@
     <string name="request_json_object">JsonObject Object</string>
     <string name="request_json_array">JsonArray Object</string>
     <string name="request_json_body_input_tip">Json request input please.</string>
-    <string name="request_fast_json">Define Request For FastJson</string>
+    <string name="request_define_fast_json">Define Request for FastJson</string>
+    <string name="request_define_java_bean">Define Request for JavaBean</string>
 
-    <!-- Cache -->
+    <!-- CacheStore -->
 
     <string name="request_from_cache">Result come from cache.</string>
     <string name="request_from_network">Result come from network.</string>
@@ -111,7 +120,6 @@
     <string name="download_error_timeout">Download the timeout!</string>
     <string name="download_error_un_know_host">Can not find a server.</string>
     <string name="download_error_url">URL address errors.</string>
-    <string name="download_error_argument">Download the parameter error.</string>
     <string name="download_error_un">Unknown error.</string>
 
     <!-- Cancel -->

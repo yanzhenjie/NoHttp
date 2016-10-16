@@ -17,11 +17,9 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
@@ -53,14 +51,11 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            if (0 == position) {
-                requestAllowRedirect();
-            } else {
-                requestDisAllowRedirect();
-            }
+    private OnItemClickListener mItemClickListener = (v, position) -> {
+        if (0 == position) {
+            requestAllowRedirect();
+        } else {
+            requestDisAllowRedirect();
         }
     };
 
@@ -86,7 +81,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
                 return false;
             }
         });
-        CallServer.getRequestInstance().add(this, 0, request, this, false, true);
+        request(0, request, this, false, true);
     }
 
     /**
@@ -107,7 +102,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
                 return true;
             }
         });
-        CallServer.getRequestInstance().add(this, 0, request, this, false, true);
+        request(0, request, this, false, true);
     }
 
     @Override

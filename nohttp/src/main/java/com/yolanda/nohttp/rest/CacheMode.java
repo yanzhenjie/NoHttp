@@ -52,22 +52,7 @@ public enum CacheMode {
     ONLY_READ_CACHE,
 
     /**
-     * It does not deal with anything related to the cache, only to get the data from the network.
+     * It does not deal with anything related to the cache, only to getList the data from the network.
      */
-    ONLY_REQUEST_NETWORK;
-
-    /**
-     * Whether caching pattern is in compliance with the Http protocol.
-     *
-     * @return true or false.
-     */
-    public boolean isStandardHttpProtocol() {
-        switch (this) {
-            case DEFAULT:
-            case ONLY_REQUEST_NETWORK:
-                return true;
-            default:
-                return false;
-        }
-    }
+    ONLY_REQUEST_NETWORK
 }

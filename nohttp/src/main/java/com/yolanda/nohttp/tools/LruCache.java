@@ -49,7 +49,7 @@ public class LruCache<K, V> {
             throw new IllegalArgumentException("maxSize <= 0");
         }
         this.maxSize = maxSize;
-        this.map = new LinkedHashMap<K, V>(0, 0.75f, true);
+        this.map = new LinkedHashMap<>(0, 0.75f, true);
     }
 
     /**

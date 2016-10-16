@@ -27,8 +27,9 @@ public interface IProtocolRequest extends IBasicRequest {
      * Set the request cache primary key, it should be globally unique.
      *
      * @param key unique key.
+     * @return {@link IProtocolRequest}.
      */
-    void setCacheKey(String key);
+    IProtocolRequest setCacheKey(String key);
 
     /**
      * Get key of cache data.
@@ -41,8 +42,9 @@ public interface IProtocolRequest extends IBasicRequest {
      * Set the cache mode.
      *
      * @param cacheMode The value from {@link CacheMode}.
+     * @return {@link IProtocolRequest}.
      */
-    void setCacheMode(CacheMode cacheMode);
+    IProtocolRequest setCacheMode(CacheMode cacheMode);
 
     /**
      * He got the request cache mode.

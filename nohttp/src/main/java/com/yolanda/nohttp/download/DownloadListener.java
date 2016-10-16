@@ -29,7 +29,7 @@ public interface DownloadListener {
      * An error occurred while downloading.
      *
      * @param what      which is used to mark the download tasks.
-     * @param exception error types. Error types include the following:<p>{@link com.yolanda.nohttp.error.ArgumentError} Need to check the download parameters are correct.</p>
+     * @param exception error types. Error types include the following:
      *                  <p>{@link com.yolanda.nohttp.error.NetworkError} The network is not available, please check the network.</p>
      *                  <p>{@link com.yolanda.nohttp.error.ServerError} When the response code is more than 400, you need to look at the response code specific how much is the judgement is something wrong.</p>
      *                  <p>{@link com.yolanda.nohttp.error.StorageReadWriteError} An error occurred when read/write memory CARDS, please check the memory card.</p>

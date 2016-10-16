@@ -15,40 +15,35 @@
  */
 package com.yolanda.nohttp;
 
-import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import com.yolanda.nohttp.cache.Cache;
 import com.yolanda.nohttp.cache.CacheEntity;
-import com.yolanda.nohttp.cache.DiskCacheStore;
-import com.yolanda.nohttp.cookie.DiskCookieStore;
-import com.yolanda.nohttp.download.DownloadConnection;
+import com.yolanda.nohttp.cache.DBCacheStore;
+import com.yolanda.nohttp.cookie.DBCookieStore;
+import com.yolanda.nohttp.download.DefaultDownloadRequest;
 import com.yolanda.nohttp.download.DownloadQueue;
 import com.yolanda.nohttp.download.DownloadRequest;
-import com.yolanda.nohttp.download.Downloader;
-import com.yolanda.nohttp.download.RestDownloadRequest;
+import com.yolanda.nohttp.rest.ByteArrayRequest;
 import com.yolanda.nohttp.rest.IParserRequest;
-import com.yolanda.nohttp.rest.IRestParser;
-import com.yolanda.nohttp.rest.IRestProtocol;
 import com.yolanda.nohttp.rest.ImageRequest;
 import com.yolanda.nohttp.rest.JsonArrayRequest;
 import com.yolanda.nohttp.rest.JsonObjectRequest;
 import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
-import com.yolanda.nohttp.rest.RestParser;
-import com.yolanda.nohttp.rest.RestProtocol;
 import com.yolanda.nohttp.rest.StringRequest;
+import com.yolanda.nohttp.rest.SyncRequestExecutor;
+import com.yolanda.nohttp.tools.CacheStore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.net.PasswordAuthentication;
+import java.net.CookieStore;
 
 /**
  * <p>
@@ -61,111 +56,143 @@ import java.net.PasswordAuthentication;
 public class NoHttp {
 
     /**
-     * The value is {@value}.
-     */
-    public static final String CHARSET_UTF8 = "UTF-8";
-
-    /**
-     * RequestQueue default thread size, value is {@value}.
-     */
-    private static int DEFAULT_REQUEST_THREAD_SIZE = 3;
-
-    /**
-     * DownloadQueue default thread size, value is {@value}.
-     */
-    private static int DEFAULT_DOWNLOAD_THREAD_SIZE = 3;
-
-    /**
-     * Default connect timeout. The value is {@value}.
-     */
-    private static int sDefaultConnectTimeout = 10 * 1000;
-
-    /**
-     * Default read timeout. The value is {@value}.
-     */
-    private static int sDefaultReadTimeout = 10 * 1000;
-
-    /**
      * Context.
      */
-    private static Application sApplication;
+    private static Context sContext;
+    private static NoHttp instance;
+
+    private int mConnectTimeout;
+    private int mReadTimeout;
+
+    private CookieManager mCookieManager;
+    private NetworkExecutor mNetworkExecutor;
+    private CacheStore<CacheEntity> mCacheStore;
+
+    private NoHttp(Config config) {
+        mConnectTimeout = config.mConnectTimeout;
+        mReadTimeout = config.mReadTimeout;
+
+        CookieStore cookieStore = config.mCookieStore == null ? new DBCookieStore(NoHttp.getContext()) : config.mCookieStore;
+        mCookieManager = new CookieManager(cookieStore, CookiePolicy.ACCEPT_ALL);
+        mCacheStore = config.mCacheStore == null ? new DBCacheStore(NoHttp.getContext()) : config.mCacheStore;
+        mNetworkExecutor = config.mNetworkExecutor == null ? new URLConnectionNetworkExecutor() : config.mNetworkExecutor;
+    }
 
     /**
-     * Cookie.
-     */
-    private static CookieManager sCookieManager;
-
-    /**
-     * Create a new request queue, using NoHttp default configuration. And number of concurrent requests is 3.
+     * Initialize NoHttp, should invoke on {@link android.app.Application#onCreate()}.
      *
-     * @return Returns the request queue, the queue is used to control the entry of the request.
+     * @param context {@link Context}.
+     */
+    public static void initialize(Context context) {
+        initialize(context, null);
+    }
+
+    /**
+     * Initialize NoHttp, should invoke on {@link android.app.Application#onCreate()}.
+     *
+     * @param context {@link Context}.
+     * @param config  {@link }.
+     */
+    public static void initialize(Context context, Config config) {
+        if (sContext == null) {
+            sContext = context.getApplicationContext();
+            instance = new NoHttp(config == null ? new Config() : config);
+        }
+    }
+
+    /**
+     * Gets context of app.
+     *
+     * @return {@link Context}.
+     */
+    public static Context getContext() {
+        testInitialize();
+        return sContext;
+    }
+
+    /**
+     * Gets instance for config.
+     *
+     * @return {@link NoHttp}.
+     */
+    private static NoHttp getInstance() {
+        testInitialize();
+        return instance;
+    }
+
+    /**
+     * Test initialized.
+     */
+    private static void testInitialize() {
+        if (sContext == null)
+            throw new ExceptionInInitializerError("Please invoke NoHttp.initialize(Application) on Application#onCreate()");
+    }
+
+
+    /**
+     * Gets connect timeout.
+     *
+     * @return ms.
+     */
+    public static int getConnectTimeout() {
+        return getInstance().mConnectTimeout;
+    }
+
+    /**
+     * Gets read timeout.
+     *
+     * @return ms.
+     */
+    public static int getReadTimeout() {
+        return getInstance().mReadTimeout;
+    }
+
+    /**
+     * Gets cookie manager.
+     *
+     * @return {@link CookieHandler}.
+     */
+    public static CookieManager getCookieManager() {
+        return getInstance().mCookieManager;
+    }
+
+    /**
+     * Gets cache store.
+     *
+     * @return {@link CacheStore}.
+     */
+    public static CacheStore<CacheEntity> getCacheStore() {
+        return getInstance().mCacheStore;
+    }
+
+    /**
+     * Gets executor implement of http.
+     *
+     * @return {@link NetworkExecutor}.
+     */
+    public static NetworkExecutor getNetworkExecutor() {
+        return getInstance().mNetworkExecutor;
+    }
+
+    /**
+     * Create a queue of request, the default thread pool size is 3.
+     *
+     * @return returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue(int)
-     * @see #newRequestQueue(Cache, IRestConnection, int)
-     * @see #newRequestQueue(IRestProtocol, int)
-     * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue() {
-        return newRequestQueue(DEFAULT_REQUEST_THREAD_SIZE);
+        return newRequestQueue(3);
     }
 
     /**
-     * Create a new request queue, using NoHttp default configuration.
+     * Create a queue of request.
      *
      * @param threadPoolSize request the number of concurrent.
-     * @return Returns the request queue, the queue is used to control the entry of the request.
+     * @return returns the request queue, the queue is used to control the entry of the request.
      * @see #newRequestQueue()
-     * @see #newRequestQueue(Cache, IRestConnection, int)
-     * @see #newRequestQueue(IRestProtocol, int)
-     * @see #newRequestQueue(IRestParser, int)
      */
     public static RequestQueue newRequestQueue(int threadPoolSize) {
-        return newRequestQueue(DiskCacheStore.INSTANCE, RestConnection.getInstance(), threadPoolSize);
-    }
-
-    /**
-     * Create a new request queue, using NoHttp default request connection {@link RestProtocol} and default response parser {@link RestParser}.
-     *
-     * @param cache           cache interface, which is used to cache the request results.
-     * @param iRestConnection The realization of the network layer.
-     * @param threadPoolSize  request the number of concurrent.
-     * @return Returns the request queue, the queue is used to control the entry of the request.
-     * @see #newRequestQueue()
-     * @see #newRequestQueue(int)
-     * @see #newRequestQueue(IRestProtocol, int)
-     * @see #newRequestQueue(IRestParser, int)
-     */
-    public static RequestQueue newRequestQueue(Cache<CacheEntity> cache, IRestConnection iRestConnection, int threadPoolSize) {
-        return newRequestQueue(RestProtocol.getInstance(cache, iRestConnection), threadPoolSize);
-    }
-
-    /**
-     * Create a new request queue, using NoHttp default request executor {@link RestProtocol} and default response parser {@link RestParser}.
-     *
-     * @param iRestProtocol  network operating interface, The implementation of the network layer.
-     * @param threadPoolSize request the number of concurrent.
-     * @return Returns the request queue, the queue is used to control the entry of the request.
-     * @see #newRequestQueue()
-     * @see #newRequestQueue(int)
-     * @see #newRequestQueue(Cache, IRestConnection, int)
-     * @see #newRequestQueue(IRestParser, int)
-     */
-    public static RequestQueue newRequestQueue(IRestProtocol iRestProtocol, int threadPoolSize) {
-        return newRequestQueue(RestParser.getInstance(iRestProtocol), threadPoolSize);
-    }
-
-    /**
-     * Create a new request queue.
-     *
-     * @param iRestParser    the response parser, The result of parsing the network layer.
-     * @param threadPoolSize request the number of concurrent.
-     * @return Returns the request queue, the queue is used to control the entry of the request.
-     * @see #newRequestQueue()
-     * @see #newRequestQueue(int)
-     * @see #newRequestQueue(Cache, IRestConnection, int)
-     * @see #newRequestQueue(IRestProtocol, int)
-     */
-    public static RequestQueue newRequestQueue(IRestParser iRestParser, int threadPoolSize) {
-        RequestQueue requestQueue = new RequestQueue(iRestParser, threadPoolSize);
+        RequestQueue requestQueue = new RequestQueue(threadPoolSize);
         requestQueue.start();
         return requestQueue;
     }
@@ -282,73 +309,47 @@ public class NoHttp {
     }
 
     /**
+     * Create a byte array request, the request method is {@link RequestMethod#GET}.
+     *
+     * @param url url.
+     * @return {@code Request<byte[]>}.
+     * @see #createByteArrayRequest(String, RequestMethod)
+     */
+    public static Request<byte[]> createByteArrayRequest(String url) {
+        return new ByteArrayRequest(url);
+    }
+
+    /**
+     * Create a byte array request.
+     *
+     * @param url    url.
+     * @param method {@link RequestMethod}.
+     * @return {@code Request<byte[]>}.
+     * @see #createByteArrayRequest(String)
+     */
+    public static Request<byte[]> createByteArrayRequest(String url, RequestMethod method) {
+        return new ByteArrayRequest(url, method);
+    }
+
+    /**
      * Initiate a synchronization request.
      *
      * @param request request object.
      * @param <T>     {@link T}.
      * @return {@link Response}.
-     * @see #startRequestSync(Cache, IParserRequest)
-     * @see #startRequestSync(IRestProtocol, IParserRequest)
-     * @see #startRequestSync(IRestParser, IParserRequest)
      */
     public static <T> Response<T> startRequestSync(IParserRequest<T> request) {
-        return startRequestSync(DiskCacheStore.INSTANCE, request);
+        return SyncRequestExecutor.INSTANCE.execute(request);
     }
 
     /**
-     * Initiate a synchronization request.
-     *
-     * @param cache   cache interface, which is used to cache the request results.
-     * @param request tequest object.
-     * @param <T>     {@link T}.
-     * @return {@link Response}.
-     * @see #startRequestSync(IParserRequest)
-     * @see #startRequestSync(IRestProtocol, IParserRequest)
-     * @see #startRequestSync(IRestParser, IParserRequest)
-     */
-    public static <T> Response<T> startRequestSync(Cache<CacheEntity> cache, IParserRequest<T> request) {
-        return startRequestSync(RestProtocol.getInstance(cache, RestConnection.getInstance()), request);
-    }
-
-    /**
-     * Initiate a synchronization request.
-     *
-     * @param implRestConnection complete implementation of the {@link IRestProtocol}.
-     * @param request            request object.
-     * @param <T>                {@link T}.
-     * @return {@link Response}.
-     * @see #startRequestSync(IParserRequest)
-     * @see #startRequestSync(Cache, IParserRequest)
-     * @see #startRequestSync(IRestParser, IParserRequest)
-     */
-    public static <T> Response<T> startRequestSync(IRestProtocol implRestConnection, IParserRequest<T> request) {
-        return startRequestSync(RestParser.getInstance(implRestConnection), request);
-    }
-
-    /**
-     * Initiate a synchronization request.
-     *
-     * @param implRestParser complete implementation of the {@link IRestParser}.
-     * @param request        request object.
-     * @param <T>            {@link T}.
-     * @return {@link Response}.
-     * @see #startRequestSync(IParserRequest)
-     * @see #startRequestSync(Cache, IParserRequest)
-     * @see #startRequestSync(IRestProtocol, IParserRequest)
-     */
-    public static <T> Response<T> startRequestSync(IRestParser implRestParser, IParserRequest<T> request) {
-        return implRestParser.parserRequest(request);
-    }
-
-    /**
-     * Create a new download queue, the default thread pool number is 3.
+     * Create a new download queue, the default thread pool size is 3.
      *
      * @return {@link DownloadQueue}.
      * @see #newDownloadQueue(int)
-     * @see #newDownloadQueue(Downloader, int)
      */
     public static DownloadQueue newDownloadQueue() {
-        return newDownloadQueue(DEFAULT_DOWNLOAD_THREAD_SIZE);
+        return newDownloadQueue(3);
     }
 
     /**
@@ -357,36 +358,9 @@ public class NoHttp {
      * @param threadPoolSize thread pool number, here is the number of concurrent tasks.
      * @return {@link DownloadQueue}.
      * @see #newDownloadQueue()
-     * @see #newDownloadQueue(Downloader, int)
      */
     public static DownloadQueue newDownloadQueue(int threadPoolSize) {
-        return newDownloadQueue(RestConnection.getInstance(), threadPoolSize);
-    }
-
-    /**
-     * Create a new download queue.
-     *
-     * @param iRestConnection {@link IRestConnection}.
-     * @param threadPoolSize  thread pool number, here is the number of concurrent tasks.
-     * @return {@link DownloadQueue}.
-     * @see #newDownloadQueue()
-     * @see #newDownloadQueue(Downloader, int)
-     */
-    public static DownloadQueue newDownloadQueue(IRestConnection iRestConnection, int threadPoolSize) {
-        return newDownloadQueue(DownloadConnection.getInstance(iRestConnection), threadPoolSize);
-    }
-
-    /**
-     * Create a new download queue.
-     *
-     * @param downloader     {@link Downloader}.
-     * @param threadPoolSize number of concurrent.
-     * @return {@link DownloadQueue}
-     * @see #newDownloadQueue()
-     * @see #newDownloadQueue(int)
-     */
-    public static DownloadQueue newDownloadQueue(Downloader downloader, int threadPoolSize) {
-        DownloadQueue downloadQueue = new DownloadQueue(downloader, threadPoolSize);
+        DownloadQueue downloadQueue = new DownloadQueue(threadPoolSize);
         downloadQueue.start();
         return downloadQueue;
     }
@@ -415,7 +389,7 @@ public class NoHttp {
      * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
      */
     public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, boolean isDeleteOld) {
-        return new RestDownloadRequest(url, requestMethod, fileFolder, isDeleteOld);
+        return new DefaultDownloadRequest(url, requestMethod, fileFolder, isDeleteOld);
     }
 
     /**
@@ -446,195 +420,8 @@ public class NoHttp {
      * @see #createDownloadRequest(String, String, String, boolean, boolean)
      */
     public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
-        return new RestDownloadRequest(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
+        return new DefaultDownloadRequest(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
     }
-
-    /**
-     * Get version name of NoHttp.
-     *
-     * @return {@link String}.
-     */
-    public static String versionName() {
-        return "1.0.6";
-    }
-
-    /**
-     * Get version code of NoHttp.
-     *
-     * @return {@link Integer}.
-     */
-    public static int versionCode() {
-        return 106;
-    }
-
-    /**
-     * Initialization NoHttp, Should invoke on {@link Application#onCreate()}.
-     *
-     * @param application {@link Application}.
-     * @deprecated use {@link #initialize(Application)} instead.
-     */
-    @Deprecated
-    public static void init(Application application) {
-        initialize(application);
-    }
-
-    /**
-     * Initialization NoHttp, Should invoke on {@link Application#onCreate()}.
-     *
-     * @param application {@link Application}.
-     */
-    public static void initialize(Application application) {
-        if (sApplication == null) {
-            sApplication = application;
-            sCookieManager = new CookieManager(DiskCookieStore.INSTANCE, CookiePolicy.ACCEPT_ALL);
-        }
-    }
-
-    /**
-     * Get application of app.
-     *
-     * @return {@link Application}.
-     */
-    public static Application getContext() {
-        if (sApplication == null)
-            throw new ExceptionInInitializerError("Please invoke NoHttp.initialize(Application) on Application#onCreate()");
-        return sApplication;
-    }
-
-    /**
-     * It will be called whenever the realm that the URL is pointing to requires authorization.
-     *
-     * @param passwordAuthentication passwordAuthentication which has to be set as default.
-     */
-    public static void setDefaultAuthenticator(final PasswordAuthentication passwordAuthentication) {
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return passwordAuthentication;
-            }
-        });
-    }
-
-    /**
-     * Set default connect timeout.
-     *
-     * @param timeout ms.
-     */
-    public static void setDefaultConnectTimeout(int timeout) {
-        sDefaultConnectTimeout = timeout;
-    }
-
-    /**
-     * Get default connect timeout.
-     *
-     * @return ms.
-     */
-    public static int getDefaultConnectTimeout() {
-        return sDefaultConnectTimeout;
-    }
-
-    /**
-     * Set default read timeout.
-     *
-     * @param timeout ms.
-     */
-    public static void setDefaultReadTimeout(int timeout) {
-        sDefaultReadTimeout = timeout;
-    }
-
-    /**
-     * Get default read timeout.
-     *
-     * @return ms.
-     */
-    public static int getDefaultReadTimeout() {
-        return sDefaultReadTimeout;
-    }
-
-    /**
-     * Set default request thread pool size.
-     *
-     * @param size count.
-     */
-    public static void setDefaultRequestThreadSize(int size) {
-        DEFAULT_REQUEST_THREAD_SIZE = size;
-    }
-
-    /**
-     * Get default request thread pool size.
-     *
-     * @return count.
-     */
-    public static int getDefaultRequestThreadSize() {
-        return DEFAULT_REQUEST_THREAD_SIZE;
-    }
-
-    /**
-     * Set default download thread pool size.
-     *
-     * @param size count.
-     */
-    public static void setDefaultDownloadThreadSize(int size) {
-        DEFAULT_DOWNLOAD_THREAD_SIZE = size;
-    }
-
-    /**
-     * Get default donwload thread pool size.
-     *
-     * @return count.
-     */
-    public static int getDefaultDownloadThreadSize() {
-        return DEFAULT_DOWNLOAD_THREAD_SIZE;
-    }
-
-    /**
-     * Set to enable cookies.
-     *
-     * @param enableCookie true enable, false disEnable.
-     */
-    public static void setEnableCookie(boolean enableCookie) {
-        DiskCookieStore.INSTANCE.setEnable(enableCookie);
-    }
-
-    /**
-     * Set to enable cache.
-     *
-     * @param enableCache true enable, false disEnable.
-     */
-    public static void setEnableCache(boolean enableCache) {
-        DiskCacheStore.INSTANCE.setEnable(enableCache);
-    }
-
-    /**
-     * Get NoHttp Cookie manager by default.
-     *
-     * @return {@link CookieHandler}.
-     * @see #setDefaultCookieManager(CookieManager)
-     */
-    public static CookieManager getDefaultCookieManager() {
-        return sCookieManager;
-    }
-
-    /**
-     * Sets the system-wide cookie handler.
-     *
-     * @param cookieHandler {@link CookieHandler}.
-     * @see #getDefaultCookieManager()
-     */
-    public static void setDefaultCookieManager(CookieManager cookieHandler) {
-        if (cookieHandler == null)
-            throw new IllegalArgumentException("cookieHandler == null");
-        sCookieManager = cookieHandler;
-    }
-
-    private NoHttp() {
-    }
-
-    /*
-     * =================================================
-     * ||                   Instance                  ||
-     * =================================================
-     */
 
     /**
      * Default thread pool size for request queue.
@@ -652,11 +439,12 @@ public class NoHttp {
      * @return {@link RequestQueue}.
      */
     public static RequestQueue getRequestQueueInstance() {
-        synchronized (NoHttp.class) {
-            if (sRequestQueueInstance == null) {
-                sRequestQueueInstance = newRequestQueue();
+        if (sRequestQueueInstance == null)
+            synchronized (NoHttp.class) {
+                if (sRequestQueueInstance == null) {
+                    sRequestQueueInstance = newRequestQueue();
+                }
             }
-        }
         return sRequestQueueInstance;
     }
 
@@ -666,12 +454,82 @@ public class NoHttp {
      * @return {@link DownloadQueue}.
      */
     public static DownloadQueue getDownloadQueueInstance() {
-        synchronized (NoHttp.class) {
-            if (sDownloadQueueInstance == null) {
-                sDownloadQueueInstance = newDownloadQueue();
+        if (sDownloadQueueInstance == null)
+            synchronized (NoHttp.class) {
+                if (sDownloadQueueInstance == null) {
+                    sDownloadQueueInstance = newDownloadQueue();
+                }
             }
-        }
         return sDownloadQueueInstance;
+    }
+
+    public static final class Config {
+
+        private int mConnectTimeout = 10 * 1000;
+        private int mReadTimeout = 10 * 1000;
+
+        private CookieStore mCookieStore;
+        private CacheStore<CacheEntity> mCacheStore;
+
+        private NetworkExecutor mNetworkExecutor;
+
+        public Config() {
+        }
+
+        /**
+         * Set default connect timeout.
+         *
+         * @param timeout ms.
+         * @return {@link Config}.
+         */
+        public Config setConnectTimeout(int timeout) {
+            mConnectTimeout = timeout;
+            return this;
+        }
+
+        /**
+         * Set default read timeout.
+         *
+         * @param timeout ms.
+         * @return {@link Config}.
+         */
+        public Config setReadTimeout(int timeout) {
+            mReadTimeout = timeout;
+            return this;
+        }
+
+        /**
+         * Sets cookie manager.
+         *
+         * @param cookieStore {@link CookieStore}.
+         * @return {@link Config}.
+         */
+        public Config setCookieStore(CookieStore cookieStore) {
+            this.mCookieStore = cookieStore;
+            return this;
+        }
+
+        /**
+         * Sets cache store.
+         *
+         * @param cacheStore {@link CacheStore}.
+         * @return {@link Config}.
+         */
+        public Config setCacheStore(CacheStore<CacheEntity> cacheStore) {
+            this.mCacheStore = cacheStore;
+            return this;
+        }
+
+        /**
+         * Set the Http request interface, realizes the Http request.
+         *
+         * @param executor {@link NetworkExecutor}.
+         * @return {@link Config}.
+         */
+        public Config setNetworkExecutor(NetworkExecutor executor) {
+            this.mNetworkExecutor = executor;
+            return this;
+        }
     }
 
 }

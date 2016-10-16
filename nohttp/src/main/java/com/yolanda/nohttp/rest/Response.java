@@ -29,13 +29,13 @@ import com.yolanda.nohttp.Headers;
  * <p>Http response, Including header information and response packets.</p>
  * Created in Oct 15, 2015 8:55:37 PM.
  *
- * @param <T> a generic, on behalf of you can accept the result type,.It should be with the {@link Request}, {@link OnResponseListener}.
+ * @param <T> The request data type, it should be with the {@link Request}, {@link OnResponseListener}.
  * @author Yan Zhenjie.
  */
 public interface Response<T> {
 
     /**
-     * Get the {@code IParserRequest} object.
+     * Get the {@link IParserRequest} object.
      *
      * @return {@link IParserRequest}.
      */
@@ -47,13 +47,6 @@ public interface Response<T> {
      * @return response code.
      */
     int responseCode();
-
-    /**
-     * Get the response message of request.
-     *
-     * @return response message.
-     */
-    String responseMessage();
 
     /**
      * Request is executed successfully.
@@ -84,7 +77,7 @@ public interface Response<T> {
     T get();
 
     /**
-     * When the request fail to get the exception type.
+     * When the request fail to getList the exception type.
      *
      * @return The exception.
      */

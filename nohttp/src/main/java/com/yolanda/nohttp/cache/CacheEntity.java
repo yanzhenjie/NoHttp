@@ -15,25 +15,22 @@
  */
 package com.yolanda.nohttp.cache;
 
+import android.util.Base64;
+
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.HttpHeaders;
 import com.yolanda.nohttp.Logger;
-import com.yolanda.nohttp.db.DBId;
-import com.yolanda.nohttp.db.Field;
+import com.yolanda.nohttp.db.BasicEntity;
 
 import org.json.JSONException;
 
-import java.io.Serializable;
-
 /**
- * <p>Cache entity class.</p>
+ * <p>CacheStore entity class.</p>
  * Created in Jan 10, 2016 12:43:10 AM.
  *
  * @author Yan Zhenjie;
  */
-public class CacheEntity implements DBId, Field, Serializable {
-
-    private static final long serialVersionUID = 12348534793L;
+public class CacheEntity implements BasicEntity {
 
     private long id;
 
@@ -47,7 +44,7 @@ public class CacheEntity implements DBId, Field, Serializable {
     private Headers responseHeaders = new HttpHeaders();
 
     /**
-     * Cache data.
+     * CacheStore data.
      */
     private byte[] data = {};
 
@@ -131,7 +128,7 @@ public class CacheEntity implements DBId, Field, Serializable {
     }
 
     /**
-     * To get the json data format of the head.
+     * To getList the json data format of the head.
      *
      * @return json.
      */
@@ -144,6 +141,20 @@ public class CacheEntity implements DBId, Field, Serializable {
      */
     public byte[] getData() {
         return data;
+    }
+
+    /**
+     * @param data the data to set.
+     */
+    public void setDataBase64(String data) {
+        this.data = Base64.decode(data, Base64.DEFAULT);
+    }
+
+    /**
+     * @return the data.
+     */
+    public String getDataBase64() {
+        return Base64.encodeToString(data, Base64.DEFAULT);
     }
 
     /**
@@ -165,6 +176,20 @@ public class CacheEntity implements DBId, Field, Serializable {
      */
     public void setLocalExpire(long localExpire) {
         this.localExpire = localExpire;
+    }
+
+    /**
+     * @return the localExpire.
+     */
+    public String getLocalExpireString() {
+        return Long.toOctalString(localExpire);
+    }
+
+    /**
+     * @param localExpire the localExpire to set.
+     */
+    public void setLocalExpireString(String localExpire) {
+        this.localExpire = Long.parseLong(localExpire);
     }
 
 }

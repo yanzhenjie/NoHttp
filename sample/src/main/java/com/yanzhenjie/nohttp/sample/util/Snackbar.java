@@ -16,6 +16,7 @@
 package com.yanzhenjie.nohttp.sample.util;
 
 import android.support.annotation.StringRes;
+import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 
@@ -27,11 +28,19 @@ import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 public class Snackbar {
 
     public static void show(BaseActivity context, CharSequence msg) {
-        android.support.design.widget.Snackbar.make(context.getContentRoot(), msg, android.support.design.widget.Snackbar.LENGTH_LONG).show();
+        show(context.getContentRoot(), msg);
     }
 
     public static void show(BaseActivity context, @StringRes int stringId) {
-        android.support.design.widget.Snackbar.make(context.getContentRoot(), stringId, android.support.design.widget.Snackbar.LENGTH_LONG).show();
+        show(context.getContentRoot(), stringId);
+    }
+
+    public static void show(View view, CharSequence msg) {
+        android.support.design.widget.Snackbar.make(view, msg, android.support.design.widget.Snackbar.LENGTH_LONG).show();
+    }
+
+    public static void show(View view, @StringRes int stringId) {
+        android.support.design.widget.Snackbar.make(view, stringId, android.support.design.widget.Snackbar.LENGTH_LONG).show();
     }
 
 }

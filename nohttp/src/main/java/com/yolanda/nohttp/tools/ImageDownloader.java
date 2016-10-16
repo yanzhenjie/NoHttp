@@ -41,7 +41,7 @@ public class ImageDownloader {
     private ExecutorService mExecutorService;
 
     /**
-     * Cache path.
+     * CacheStore path.
      */
     private String mCachePath;
 

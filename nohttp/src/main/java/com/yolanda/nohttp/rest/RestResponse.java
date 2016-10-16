@@ -65,9 +65,8 @@ public class RestResponse<T> implements Response<T> {
      * @param result      result.
      * @param millis      request time.
      * @param e           exception.
-     * @return {@link com.yolanda.nohttp.rest.Response}.
      */
-    RestResponse(IParserRequest<T> request, boolean isFromCache, Headers headers, T result, long millis, Exception e) {
+    public RestResponse(IParserRequest<T> request, boolean isFromCache, Headers headers, T result, long millis, Exception e) {
         this.request = request;
         this.isFromCache = isFromCache;
         this.headers = headers;
@@ -84,11 +83,6 @@ public class RestResponse<T> implements Response<T> {
     @Override
     public int responseCode() {
         return headers.getResponseCode();
-    }
-
-    @Override
-    public String responseMessage() {
-        return headers.getResponseMessage();
     }
 
     @Override

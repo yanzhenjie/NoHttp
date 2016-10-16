@@ -26,7 +26,6 @@ import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.adapter.LoadFileAdapter;
 import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.entity.LoadFile;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yolanda.nohttp.BasicBinary;
@@ -131,12 +130,11 @@ public class UploadFileListActivity extends BaseActivity {
 
         // 添加FileList到请求
         request.add("image1", binaries);
-        // 这里要提醒一点喔：在POST, PUT, DELETE, PATCH请求方法下，相同的key重复添加是不会被覆盖的。所以你也可以这么添加文件，用一个key上传多个文件。
 //        request.add("image1", binary1);
 //        request.add("image1", binary2);
 //        request.add("image1", binary3);
 
-        CallServer.getRequestInstance().add(this, 0, request, new HttpListener<String>() {
+        request(0, request, new HttpListener<String>() {
             @Override
             public void onSucceed(int what, Response<String> response) {
                 showMessageDialog(R.string.request_succeed, response.get());

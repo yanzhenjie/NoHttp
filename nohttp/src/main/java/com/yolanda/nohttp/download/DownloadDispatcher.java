@@ -42,10 +42,6 @@ class DownloadDispatcher extends Thread {
      */
     private final BlockingQueue<DownloadRequest> mDownloadQueue;
     /**
-     * Perform network request interface.
-     */
-    private final Downloader mDownloader;
-    /**
      * Are you out of this thread.
      */
     private boolean mQuit = false;
@@ -55,12 +51,10 @@ class DownloadDispatcher extends Thread {
      *
      * @param unFinishQueue un finish queue.
      * @param downloadQueue download queue to be polled.
-     * @param downloader    perform network request interface.
      */
-    public DownloadDispatcher(BlockingQueue<DownloadRequest> unFinishQueue, BlockingQueue<DownloadRequest> downloadQueue, Downloader downloader) {
+    public DownloadDispatcher(BlockingQueue<DownloadRequest> unFinishQueue, BlockingQueue<DownloadRequest> downloadQueue) {
         mUnFinishQueue = unFinishQueue;
         mDownloadQueue = downloadQueue;
-        mDownloader = downloader;
     }
 
     /**
@@ -90,7 +84,7 @@ class DownloadDispatcher extends Thread {
             }
 
             request.start();
-            mDownloader.download(request.what(), request, new DownloadListener() {
+            SyncDownloadExecutor.INSTANCE.execute(request.what(), request, new DownloadListener() {
 
                 @Override
                 public void onStart(int what, boolean isResume, long beforeLength, Headers headers, long allCount) {

@@ -18,7 +18,6 @@ package com.yanzhenjie.nohttp.sample.activity.download;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
@@ -50,14 +49,11 @@ public class DownloadActivity extends BaseActivity {
     /**
      * list item单击.
      */
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            if (position == 0) {// 下载单个文件
-                startActivity(new Intent(DownloadActivity.this, DownloadSignleFileActivity.class));
-            } else if (position == 1) {// 下载多个文件
-                startActivity(new Intent(DownloadActivity.this, DownloadFileListActivity.class));
-            }
+    private OnItemClickListener mItemClickListener = (v, position) -> {
+        if (position == 0) {// 下载单个文件
+            startActivity(new Intent(DownloadActivity.this, DownloadSignleFileActivity.class));
+        } else if (position == 1) {// 下载多个文件
+            startActivity(new Intent(DownloadActivity.this, DownloadFileListActivity.class));
         }
     };
 

@@ -42,7 +42,7 @@ public class ServerError extends Exception {
     }
 
     /**
-     * To get the wrong information.
+     * To getList the wrong information.
      *
      * @return the error message.
      */

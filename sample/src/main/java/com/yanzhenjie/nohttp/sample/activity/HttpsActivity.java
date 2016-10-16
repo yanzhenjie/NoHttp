@@ -17,11 +17,9 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 import com.yanzhenjie.nohttp.sample.util.SSLContextUtil;
@@ -52,14 +50,11 @@ public class HttpsActivity extends BaseActivity implements HttpListener<String> 
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, int position) {
-            if (0 == position) {
-                httpsVerify();
-            } else {
-                httpsNoVerify();
-            }
+    private OnItemClickListener mItemClickListener = (v, position) -> {
+        if (0 == position) {
+            httpsVerify();
+        } else {
+            httpsNoVerify();
         }
     };
 
@@ -71,7 +66,7 @@ public class HttpsActivity extends BaseActivity implements HttpListener<String> 
         SSLContext sslContext = SSLContextUtil.getSSLContext();
         if (sslContext != null)
             httpsRequest.setSSLSocketFactory(sslContext.getSocketFactory());
-        CallServer.getRequestInstance().add(this, 0, httpsRequest, this, false, true);
+        request(0, httpsRequest, this, false, true);
     }
 
     /**
@@ -83,7 +78,7 @@ public class HttpsActivity extends BaseActivity implements HttpListener<String> 
         if (sslContext != null)
             httpsRequest.setSSLSocketFactory(sslContext.getSocketFactory());
         httpsRequest.setHostnameVerifier(SSLContextUtil.HOSTNAME_VERIFIER);
-        CallServer.getRequestInstance().add(this, 0, httpsRequest, this, false, true);
+        request(0, httpsRequest, this, false, true);
     }
 
     @Override

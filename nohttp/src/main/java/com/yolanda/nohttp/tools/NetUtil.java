@@ -108,7 +108,7 @@ public class NetUtil {
      * According to the different type of network to determine whether the network connection.
      *
      * @param netType from {@link NetType}.
-     * @return Connection state return true, otherwise it returns false.
+     * @return ConnectionResult state return true, otherwise it returns false.
      */
     public static boolean isNetworkAvailable(NetType netType) {
         ConnectivityManager connectivity = (ConnectivityManager) NoHttp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -147,7 +147,7 @@ public class NetUtil {
      *
      * @param netType     from {@link NetType}.
      * @param networkInfo from {@link NetworkInfo}.
-     * @return Connection state return true, otherwise it returns false.
+     * @return ConnectionResult state return true, otherwise it returns false.
      */
     public static boolean isConnected(NetType netType, NetworkInfo networkInfo) {
         if (netType == NetType.Any && networkInfo != null && isConnected(networkInfo))
@@ -163,7 +163,7 @@ public class NetUtil {
      * Whether network connection.
      *
      * @param networkInfo from {@link NetworkInfo}.
-     * @return Connection state return true, otherwise it returns false.
+     * @return ConnectionResult state return true, otherwise it returns false.
      */
     public static boolean isConnected(NetworkInfo networkInfo) {
         return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();

@@ -92,11 +92,11 @@ public abstract class BasicRequest implements IBasicRequest {
     /**
      * Connect timeout of request.
      */
-    private int mConnectTimeout = NoHttp.getDefaultConnectTimeout();
+    private int mConnectTimeout = NoHttp.getConnectTimeout();
     /**
      * Read data timeout.
      */
-    private int mReadTimeout = NoHttp.getDefaultReadTimeout();
+    private int mReadTimeout = NoHttp.getReadTimeout();
     /**
      * Request heads.
      */
@@ -171,12 +171,13 @@ public abstract class BasicRequest implements IBasicRequest {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, HeaderUtil.systemAcceptLanguage());
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, UserAgent.instance());
 
-        mParamKeyValues = new LinkedMultiValueMap<String, Object>();
+        mParamKeyValues = new LinkedMultiValueMap<>();
     }
 
     @Override
-    public void setPriority(Priority priority) {
+    public IBasicRequest setPriority(Priority priority) {
         this.mPriority = priority;
+        return this;
     }
 
     @Override
@@ -185,8 +186,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setSequence(int sequence) {
+    public IBasicRequest setSequence(int sequence) {
         this.sequence = sequence;
+        return this;
     }
 
     @Override
@@ -205,12 +207,12 @@ public abstract class BasicRequest implements IBasicRequest {
     public String url() {
         StringBuilder urlBuilder = new StringBuilder(url);
         if (!getRequestMethod().allowRequestBody() && mParamKeyValues.size() > 0) {
-            StringBuffer paramBuffer = buildCommonParams(getParamKeyValues(), getParamsEncoding());
-            if (url.contains("?") && url.contains("=") && paramBuffer.length() > 0)
+            StringBuilder paramBuilder = buildCommonParams(getParamKeyValues(), getParamsEncoding());
+            if (url.contains("?") && url.contains("=") && paramBuilder.length() > 0)
                 urlBuilder.append("&");
-            else if (paramBuffer.length() > 0 && !url.endsWith("?")) // end with '?', not append '?'.
+            else if (paramBuilder.length() > 0 && !url.endsWith("?")) // end with '?', not append '?'.
                 urlBuilder.append("?");
-            urlBuilder.append(paramBuffer);
+            urlBuilder.append(paramBuilder);
         }
         return urlBuilder.toString();
     }
@@ -221,10 +223,11 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setMultipartFormEnable(boolean enable) {
+    public IBasicRequest setMultipartFormEnable(boolean enable) {
         if (enable && !getRequestMethod().allowRequestBody())
             throw new IllegalArgumentException("MultipartFormEnable is request method is the premise of the POST/PUT/PATCH/DELETE, but the Android system under API level 19 does not support the DELETE.");
         isMultipartFormEnable = enable;
+        return this;
     }
 
     @Override
@@ -233,8 +236,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setProxy(Proxy proxy) {
+    public IBasicRequest setProxy(Proxy proxy) {
         this.mProxy = proxy;
+        return this;
     }
 
     @Override
@@ -243,8 +247,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
+    public IBasicRequest setSSLSocketFactory(SSLSocketFactory socketFactory) {
         mSSLSocketFactory = socketFactory;
+        return this;
     }
 
     @Override
@@ -253,8 +258,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+    public IBasicRequest setHostnameVerifier(HostnameVerifier hostnameVerifier) {
         mHostnameVerifier = hostnameVerifier;
+        return this;
     }
 
     @Override
@@ -263,8 +269,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setConnectTimeout(int connectTimeout) {
+    public IBasicRequest setConnectTimeout(int connectTimeout) {
         mConnectTimeout = connectTimeout;
+        return this;
     }
 
     @Override
@@ -273,8 +280,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setReadTimeout(int readTimeout) {
+    public IBasicRequest setReadTimeout(int readTimeout) {
         mReadTimeout = readTimeout;
+        return this;
     }
 
     @Override
@@ -283,29 +291,34 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void addHeader(String key, String value) {
+    public IBasicRequest addHeader(String key, String value) {
         mHeaders.add(key, value);
+        return this;
     }
 
     @Override
-    public void setHeader(String key, String value) {
+    public IBasicRequest setHeader(String key, String value) {
         mHeaders.set(key, value);
+        return this;
     }
 
     @Override
-    public void addHeader(HttpCookie cookie) {
+    public IBasicRequest addHeader(HttpCookie cookie) {
         if (cookie != null)
             mHeaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
+        return this;
     }
 
     @Override
-    public void removeHeader(String key) {
+    public IBasicRequest removeHeader(String key) {
         mHeaders.remove(key);
+        return this;
     }
 
     @Override
-    public void removeAllHeader() {
+    public IBasicRequest removeAllHeader() {
         mHeaders.clear();
+        return this;
     }
 
     @Override
@@ -314,13 +327,15 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setAccept(String accept) {
+    public IBasicRequest setAccept(String accept) {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT, accept);
+        return this;
     }
 
     @Override
-    public void setAcceptLanguage(String acceptLanguage) {
+    public IBasicRequest setAcceptLanguage(String acceptLanguage) {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
+        return this;
     }
 
     @Override
@@ -335,8 +350,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setContentType(String contentType) {
+    public IBasicRequest setContentType(String contentType) {
         mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
+        return this;
     }
 
     @Override
@@ -351,13 +367,15 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setUserAgent(String userAgent) {
+    public IBasicRequest setUserAgent(String userAgent) {
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, userAgent);
+        return this;
     }
 
     @Override
-    public void setRetryCount(int count) {
+    public IBasicRequest setRetryCount(int count) {
         this.mRetryCount = count;
+        return this;
     }
 
     @Override
@@ -366,128 +384,149 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setParamsEncoding(String encoding) {
+    public IBasicRequest setParamsEncoding(String encoding) {
         this.mParamEncoding = encoding;
+        return this;
     }
 
     @Override
     public String getParamsEncoding() {
         if (TextUtils.isEmpty(mParamEncoding))
-            mParamEncoding = NoHttp.CHARSET_UTF8;
+            mParamEncoding = "utf-8";
         return mParamEncoding;
     }
 
     @Override
-    public void add(String key, int value) {
+    public IBasicRequest add(String key, int value) {
         add(key, Integer.toString(value));
+        return this;
     }
 
     @Override
-    public void add(String key, long value) {
+    public IBasicRequest add(String key, long value) {
         add(key, Long.toString(value));
+        return this;
     }
 
     @Override
-    public void add(String key, boolean value) {
+    public IBasicRequest add(String key, boolean value) {
         add(key, String.valueOf(value));
+        return this;
     }
 
     @Override
-    public void add(String key, char value) {
+    public IBasicRequest add(String key, char value) {
         add(key, String.valueOf(value));
+        return this;
     }
 
     @Override
-    public void add(String key, double value) {
+    public IBasicRequest add(String key, double value) {
         add(key, Double.toString(value));
+        return this;
     }
 
     @Override
-    public void add(String key, float value) {
+    public IBasicRequest add(String key, float value) {
         add(key, Float.toString(value));
+        return this;
     }
 
     @Override
-    public void add(String key, short value) {
+    public IBasicRequest add(String key, short value) {
         add(key, Integer.toString(value));
+        return this;
     }
 
     @Override
-    public void add(String key, byte value) {
+    public IBasicRequest add(String key, byte value) {
         add(key, Integer.toString(value));
+        return this;
     }
 
     @Override
-    public void add(String key, String value) {
+    public IBasicRequest add(String key, String value) {
         if (value != null) {
             mParamKeyValues.add(key, value);
         }
+        return this;
     }
 
     @Override
-    public void set(String key, String value) {
+    public IBasicRequest set(String key, String value) {
         if (value != null)
             mParamKeyValues.set(key, value);
+        return this;
     }
 
     @Override
-    public void add(String key, Binary binary) {
+    public IBasicRequest add(String key, Binary binary) {
         mParamKeyValues.add(key, binary);
+        return this;
     }
 
     @Override
-    public void set(String key, Binary binary) {
+    public IBasicRequest set(String key, Binary binary) {
         mParamKeyValues.set(key, binary);
+        return this;
     }
 
     @Override
-    public void add(String key, File file) {
+    public IBasicRequest add(String key, File file) {
         add(key, new FileBinary(file));
+        return this;
     }
 
     @Override
-    public void set(String key, File file) {
+    public IBasicRequest set(String key, File file) {
         set(key, new FileBinary(file));
+        return this;
     }
 
     @Override
-    public void add(String key, List<Binary> binaries) {
+    public IBasicRequest add(String key, List<Binary> binaries) {
         if (binaries != null) {
             for (Binary binary : binaries)
                 mParamKeyValues.add(key, binary);
         }
+        return this;
     }
 
     @Override
-    public void set(String key, List<Binary> binaries) {
+    public IBasicRequest set(String key, List<Binary> binaries) {
         mParamKeyValues.remove(key);
         add(key, binaries);
+        return this;
     }
 
     @Override
-    public void add(Map<String, String> params) {
+    public IBasicRequest add(Map<String, String> params) {
         if (params != null) {
             for (Map.Entry<String, String> stringEntry : params.entrySet())
                 add(stringEntry.getKey(), stringEntry.getValue());
         }
+        return this;
     }
 
     @Override
-    public void set(Map<String, String> params) {
+    public IBasicRequest set(Map<String, String> params) {
         if (params != null) {
             for (Map.Entry<String, String> stringEntry : params.entrySet())
                 set(stringEntry.getKey(), stringEntry.getValue());
         }
+        return this;
     }
 
     @Override
-    public List<Object> remove(String key) {
-        return mParamKeyValues.remove(key);
+    public IBasicRequest remove(String key) {
+        mParamKeyValues.remove(key);
+        return this;
     }
 
     @Override
-    public void removeAll() {
+    public IBasicRequest removeAll() {
         mParamKeyValues.clear();
+        return this;
     }
 
     @Override
@@ -496,7 +535,7 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setDefineRequestBody(InputStream requestBody, String contentType) {
+    public IBasicRequest setDefineRequestBody(InputStream requestBody, String contentType) {
         if (requestBody == null || contentType == null)
             throw new IllegalArgumentException("The requestBody and contentType must be can't be null");
         if (requestBody instanceof ByteArrayInputStream || requestBody instanceof FileInputStream) {
@@ -505,10 +544,11 @@ public abstract class BasicRequest implements IBasicRequest {
         } else {
             throw new IllegalArgumentException("Can only accept ByteArrayInputStream and FileInputStream type of stream");
         }
+        return this;
     }
 
     @Override
-    public void setDefineRequestBody(String requestBody, String contentType) {
+    public IBasicRequest setDefineRequestBody(String requestBody, String contentType) {
         if (!TextUtils.isEmpty(requestBody)) {
             try {
                 mRequestBody = IOUtils.toInputStream(requestBody, getParamsEncoding());
@@ -518,24 +558,28 @@ public abstract class BasicRequest implements IBasicRequest {
                 setDefineRequestBody(IOUtils.toInputStream(requestBody), contentType);
             }
         }
+        return this;
     }
 
     @Override
-    public void setDefineRequestBodyForJson(String jsonBody) {
+    public IBasicRequest setDefineRequestBodyForJson(String jsonBody) {
         if (!TextUtils.isEmpty(jsonBody))
             setDefineRequestBody(jsonBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
+        return this;
     }
 
     @Override
-    public void setDefineRequestBodyForJson(JSONObject jsonBody) {
+    public IBasicRequest setDefineRequestBodyForJson(JSONObject jsonBody) {
         if (jsonBody != null)
             setDefineRequestBody(jsonBody.toString(), Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
+        return this;
     }
 
     @Override
-    public void setDefineRequestBodyForXML(String xmlBody) {
+    public IBasicRequest setDefineRequestBodyForXML(String xmlBody) {
         if (!TextUtils.isEmpty(xmlBody))
             setDefineRequestBody(xmlBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_XML);
+        return this;
     }
 
     /**
@@ -565,7 +609,7 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     /**
-     * To get custom inclusions.
+     * To getList custom inclusions.
      *
      * @return {@link InputStream}.
      */
@@ -625,13 +669,11 @@ public abstract class BasicRequest implements IBasicRequest {
      * @throws IOException Write the data may be abnormal.
      */
     private void writeFormString(OutputStream writer, String key, String value) throws IOException {
-        StringBuilder stringFieldBuilder = new StringBuilder(startBoundary).append("\r\n");
+        String stringFieldBuilder = startBoundary + "\r\n" +
+                "Content-Disposition: form-data; name=\"" + key + "\"\r\n" +
+                "Content-Type: text/plain; charset=" + getParamsEncoding() + "\r\n\r\n";
 
-        stringFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"\r\n");
-        stringFieldBuilder.append("Content-Type: text/plain; charset=").append(getParamsEncoding()).append("\r\n\r\n");
-
-        writer.write(stringFieldBuilder.toString().getBytes(getParamsEncoding()));
-
+        writer.write(stringFieldBuilder.getBytes(getParamsEncoding()));
         writer.write(value.getBytes(getParamsEncoding()));
     }
 
@@ -640,15 +682,11 @@ public abstract class BasicRequest implements IBasicRequest {
      */
     private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
         if (!value.isCanceled()) {
-            StringBuilder binaryFieldBuilder = new StringBuilder(startBoundary).append("\r\n");
-
-            binaryFieldBuilder.append("Content-Disposition: form-data; name=\"").append(key).append("\"");
-            binaryFieldBuilder.append("; filename=\"").append(value.getFileName()).append("\"\r\n");
-
-            binaryFieldBuilder.append("Content-Type: ").append(value.getMimeType()).append("\r\n");
-            binaryFieldBuilder.append("Content-Transfer-Encoding: binary\r\n\r\n");
-
-            writer.write(binaryFieldBuilder.toString().getBytes());
+            String binaryFieldBuilder = startBoundary + "\r\n" +
+                    "Content-Disposition: form-data; name=\"" + key + "\"" + "; filename=\"" + value.getFileName() + "\"\r\n" +
+                    "Content-Type: " + value.getMimeType() + "\r\n" +
+                    "Content-Transfer-Encoding: binary\r\n\r\n";
+            writer.write(binaryFieldBuilder.getBytes());
 
             if (writer instanceof CounterOutputStream) {
                 ((CounterOutputStream) writer).write(value.getLength());
@@ -690,8 +728,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setRedirectHandler(RedirectHandler redirectHandler) {
+    public IBasicRequest setRedirectHandler(RedirectHandler redirectHandler) {
         mRedirectHandler = redirectHandler;
+        return this;
     }
 
     @Override
@@ -700,8 +739,9 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void setTag(Object tag) {
+    public IBasicRequest setTag(Object tag) {
         this.mTag = tag;
+        return this;
     }
 
     @Override
@@ -765,8 +805,9 @@ public abstract class BasicRequest implements IBasicRequest {
         return isCanceled;
     }
 
-    public void setCancelSign(Object sign) {
+    public IBasicRequest setCancelSign(Object sign) {
         this.mCancelSign = sign;
+        return this;
     }
 
     @Override
@@ -784,41 +825,30 @@ public abstract class BasicRequest implements IBasicRequest {
      * @param encodeCharset charset.
      * @return string parameter combination, each key value on nails with {@code "&"} space.
      */
-    public static StringBuffer buildCommonParams(MultiValueMap<String, Object> paramMap, String encodeCharset) {
-        StringBuffer paramBuffer = new StringBuffer();
+    public static StringBuilder buildCommonParams(MultiValueMap<String, Object> paramMap, String encodeCharset) {
+        StringBuilder paramBuilder = new StringBuilder();
         Set<String> keySet = paramMap.keySet();
         for (String key : keySet) {
             List<Object> values = paramMap.getValues(key);
             for (Object value : values) {
                 if (value != null && value instanceof CharSequence) {
-                    paramBuffer.append("&");
+                    paramBuilder.append("&");
                     try {
-                        paramBuffer.append(URLEncoder.encode(key, encodeCharset));
-                        paramBuffer.append("=");
-                        paramBuffer.append(URLEncoder.encode(value.toString(), encodeCharset));
+                        paramBuilder.append(URLEncoder.encode(key, encodeCharset));
+                        paramBuilder.append("=");
+                        paramBuilder.append(URLEncoder.encode(value.toString(), encodeCharset));
                     } catch (UnsupportedEncodingException e) {
                         Logger.e("Encoding " + encodeCharset + " format is not supported by the system");
-                        paramBuffer.append(key);
-                        paramBuffer.append("=");
-                        paramBuffer.append(value.toString());
+                        paramBuilder.append(key);
+                        paramBuilder.append("=");
+                        paramBuilder.append(value.toString());
                     }
                 }
             }
         }
-        if (paramBuffer.length() > 0)
-            paramBuffer.deleteCharAt(0);
-        return paramBuffer;
-    }
-
-    /**
-     * Create acceptLanguage.
-     *
-     * @return Returns the client can accept the language types. Such as:zh-CN,zh.
-     * @deprecated use {@link HeaderUtil#systemAcceptLanguage()} instead.
-     */
-    @Deprecated
-    public static String defaultAcceptLanguage() {
-        return HeaderUtil.systemAcceptLanguage();
+        if (paramBuilder.length() > 0)
+            paramBuilder.deleteCharAt(0);
+        return paramBuilder;
     }
 
     /**
@@ -827,7 +857,7 @@ public abstract class BasicRequest implements IBasicRequest {
      * @return Random code.
      */
     public static String createBoundary() {
-        StringBuffer sb = new StringBuffer("----NoHttpFormBoundary");
+        StringBuilder sb = new StringBuilder("----NoHttpFormBoundary");
         for (int t = 1; t < 12; t++) {
             long time = System.currentTimeMillis() + t;
             if (time % 3L == 0L) {

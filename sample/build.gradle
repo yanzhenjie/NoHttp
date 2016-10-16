@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
@@ -12,6 +13,11 @@ android {
         versionName "1.0"
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -21,10 +27,21 @@ android {
 }
 
 dependencies {
-    compile 'com.yolanda.nohttp:nohttp:1.0.7'
-    compile 'com.alibaba:fastjson:1.1.54.android'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:cardview-v7:24.2.1'
+    // nohttp 相关库
+    // {
+         compile 'com.yolanda.nohttp:nohttp:1.1.0'
+         // 如果要使用okhttp作为nohttp底层，依赖这个库
+    // }
+
+    // json
+    compile 'com.alibaba:fastjson:1.1.54.android'
+    // circle image
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    // rx
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.2.1'
 }

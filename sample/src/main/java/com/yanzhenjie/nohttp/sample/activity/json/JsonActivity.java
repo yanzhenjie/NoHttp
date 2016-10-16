@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
-import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yolanda.nohttp.NoHttp;
@@ -55,10 +54,10 @@ public class JsonActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.btn_object_reqeust) {
             Request<JSONObject> request = NoHttp.createJsonObjectRequest(Constants.URL_NOHTTP_JSONOBJECT);
-            CallServer.getRequestInstance().add(this, 0, request, objectListener, true, true);
+            request(0, request, objectListener, true, true);
         } else if (v.getId() == R.id.btn_array_request) {
             Request<JSONArray> request = NoHttp.createJsonArrayRequest(Constants.URL_NOHTTP_JSONARRAY);
-            CallServer.getRequestInstance().add(this, 1, request, arrayListener, true, true);
+            request(1, request, arrayListener, true, true);
         }
     }
 

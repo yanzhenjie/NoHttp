@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Yan Zhenjie
+ * Copyright © Yan Zhenjie. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,66 +15,121 @@
  */
 package com.yolanda.nohttp.cache;
 
-import com.yolanda.nohttp.db.DBManager;
-import com.yolanda.nohttp.db.Where;
-import com.yolanda.nohttp.db.Where.Options;
+import android.content.Context;
+import android.text.TextUtils;
 
-import java.util.List;
+import com.yolanda.nohttp.Logger;
+import com.yolanda.nohttp.tools.CacheStore;
+import com.yolanda.nohttp.tools.Encryption;
+import com.yolanda.nohttp.tools.IOUtils;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * <p>Http cache interface implementation.</p>
- * Created in Jan 10, 2016 12:45:34 AM.
- *
- * @author Yan Zhenjie;
+ * <p>You must remember to check the runtime permissions.</p>
+ * Created by Yan Zhenjie on 2016/10/15.
  */
-public enum DiskCacheStore implements Cache<CacheEntity> {
-
-    INSTANCE;
+public class DiskCacheStore implements CacheStore<CacheEntity> {
 
     /**
      * Database sync lock.
      */
     private Lock mLock;
     /**
-     * Database manager.
+     *
      */
-    private DBManager<CacheEntity> mManager;
+    private Encryption mEncryption;
+    /**
+     * Folder.
+     */
+    private String mCacheDirectory;
+    /**
+     * Encryption key.
+     */
+    private String encryptionKey = DiskCacheStore.class.getSimpleName();
 
-    private boolean enable;
-
-    DiskCacheStore() {
-        mLock = new ReentrantLock();
-        mManager = CacheDiskManager.getInstance();
+    /**
+     * You must remember to check the runtime permissions.
+     *
+     * @param context {@link Context}.
+     */
+    public DiskCacheStore(Context context) {
+        this(context.getCacheDir().getAbsolutePath());
     }
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
+    /**
+     * Introduced to the cache folder, you must remember to check the runtime permissions.
+     *
+     * @param cacheDirectory cache directory.
+     */
+    public DiskCacheStore(String cacheDirectory) {
+        if (TextUtils.isEmpty(cacheDirectory))
+            throw new IllegalArgumentException("The cacheDirectory can't be null.");
+        mLock = new ReentrantLock();
+        mEncryption = new Encryption(encryptionKey);
+        mCacheDirectory = cacheDirectory;
     }
 
     @Override
     public CacheEntity get(String key) {
         mLock.lock();
+        BufferedReader bufferedReader = null;
         try {
-            if (!enable) return null;
-            Where where = new Where(CacheDisk.KEY, Options.EQUAL, key);
-            List<CacheEntity> cacheEntities = mManager.get(CacheDisk.ALL, where.get(), null, null, null);
-            return cacheEntities.size() > 0 ? cacheEntities.get(0) : null;
+            if (TextUtils.isEmpty(key))
+                return null;
+            File file = new File(mCacheDirectory, getFileName(key));
+            if (!file.exists() || file.isDirectory())
+                return null;
+            CacheEntity cacheEntity = new CacheEntity();
+
+            bufferedReader = new BufferedReader(new FileReader(file));
+            cacheEntity.setResponseHeadersJson(decrypt(bufferedReader.readLine()));
+            cacheEntity.setDataBase64(decrypt(bufferedReader.readLine()));
+            cacheEntity.setLocalExpireString(decrypt(bufferedReader.readLine()));
+            return cacheEntity;
+        } catch (Exception e) {
+            IOUtils.delFileOrFolder(new File(mCacheDirectory, getFileName(key)));
+            Logger.e(e);
         } finally {
+            IOUtils.closeQuietly(bufferedReader);
             mLock.unlock();
         }
+        return null;
     }
 
     @Override
-    public CacheEntity replace(String key, CacheEntity entrance) {
+    public CacheEntity replace(String key, CacheEntity cacheEntity) {
         mLock.lock();
+        BufferedWriter bufferedWriter = null;
         try {
-            if (!enable) return entrance;
-            entrance.setKey(key);
-            mManager.replace(entrance);
-            return entrance;
+            if (TextUtils.isEmpty(key) || cacheEntity == null)
+                return cacheEntity;
+            initialize();
+            File file = new File(mCacheDirectory, getFileName(key));
+
+            IOUtils.createNewFile(file);
+
+            bufferedWriter = new BufferedWriter(new FileWriter(file));
+            bufferedWriter.write(encrypt(cacheEntity.getResponseHeadersJson()));
+            bufferedWriter.newLine();
+            bufferedWriter.write(encrypt(cacheEntity.getDataBase64()));
+            bufferedWriter.newLine();
+            bufferedWriter.write(encrypt(cacheEntity.getLocalExpireString()));
+            bufferedWriter.flush();
+            bufferedWriter.close();
+            return cacheEntity;
+        } catch (Exception e) {
+            IOUtils.delFileOrFolder(new File(mCacheDirectory, getFileName(key)));
+            Logger.e(e);
+            return null;
         } finally {
+            IOUtils.closeQuietly(bufferedWriter);
             mLock.unlock();
         }
     }
@@ -83,10 +138,7 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
     public boolean remove(String key) {
         mLock.lock();
         try {
-            if (key == null || !enable)
-                return true;
-            Where where = new Where(CacheDisk.KEY, Options.EQUAL, key);
-            return mManager.delete(where.toString());
+            return IOUtils.delFileOrFolder(new File(mCacheDirectory, getFileName(key)));
         } finally {
             mLock.unlock();
         }
@@ -96,11 +148,26 @@ public enum DiskCacheStore implements Cache<CacheEntity> {
     public boolean clear() {
         mLock.lock();
         try {
-            if (!enable) return true;
-            return mManager.deleteAll();
+            return IOUtils.delFileOrFolder(mCacheDirectory);
         } finally {
             mLock.unlock();
         }
+    }
+
+    private boolean initialize() {
+        return IOUtils.createFolder(mCacheDirectory);
+    }
+
+    private String getFileName(String cacheKey) {
+        return Encryption.getMa5ForString(cacheKey) + ".nohttp";
+    }
+
+    private String encrypt(String encryptionText) throws Exception {
+        return mEncryption.encrypt(encryptionText);
+    }
+
+    private String decrypt(String cipherText) throws Exception {
+        return mEncryption.decrypt(cipherText);
     }
 
 }

@@ -31,10 +31,6 @@ public enum RequestMethod {
 
     PUT("PUT"),
 
-    MOVE("MOVE"),
-
-    COPY("COPY"),
-
     DELETE("DELETE"),
 
     HEAD("HEAD"),
@@ -42,10 +38,8 @@ public enum RequestMethod {
     PATCH("PATCH"),
 
     OPTIONS("OPTIONS"),
-
-    TRACE("TRACE"),
-
-    CONNECT("CONNECT");
+    
+    TRACE("TRACE");
 
     private final String value;
 

@@ -19,10 +19,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONObject;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.dialog.WaitDialog;
 import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.Snackbar;
+import com.yanzhenjie.nohttp.sample.util.Toast;
 import com.yolanda.nohttp.Headers;
 import com.yolanda.nohttp.Logger;
 import com.yolanda.nohttp.NoHttp;
@@ -38,6 +39,7 @@ import com.yolanda.nohttp.rest.Request;
 import com.yolanda.nohttp.rest.RequestQueue;
 import com.yolanda.nohttp.rest.Response;
 
+import java.io.FileInputStream;
 import java.net.ProtocolException;
 import java.util.Locale;
 
@@ -82,30 +84,29 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_TEST, RequestMethod.POST);
 
         // 添加请求参数。
-        request.add("userName", "yolanda"); // String型。
-        request.add("userPass", 1); // int型。
-        request.add("userAge", 1.25); // double型。
-        request.add("nooxxx", 1.2F); // flocat型。
+        request.add("userName", "yolanda") // String型。
+                .add("userPass", 1) // int型。
+                .add("userAge", 1.25) // double型。
+                .add("nooxxx", 1.2F) // flocat型。
 
-        request.setConnectTimeout(10 * 1000); // 设置连接超时。
-        request.setReadTimeout(20 * 1000); // 设置读取超时时间，也就是服务器的响应超时。
+                .setConnectTimeout(10 * 1000) // 设置连接超时。
+                .setReadTimeout(20 * 1000) // 设置读取超时时间，也就是服务器的响应超时。
 
-        /**
-         * 上传文件；上传文件支持File、Bitmap、ByteArrayBinary、InputStream四种，这里推荐File、InputStream。
-         */
-        // request.add("userHead", new FileBinary());
-        // request.add("userHead", new BitmapBinary());
-        // request.add("userHead", new ByteArrayBinary());
-        // request.add("", new InputStreamBinary());
+                /**
+                 * 上传文件；上传文件支持File、Bitmap、ByteArrayBinary、InputStream四种，这里推荐File、InputStream。
+                 */
+                // request.add("userHead", new FileBinary());
+                // request.add("userHead", new BitmapBinary());
+                // request.add("userHead", new ByteArrayBinary());
+                // request.add("", new InputStreamBinary());
 
-        // 请求头，是否要添加头，添加什么头，要看开发者服务器端的要求。
-        request.addHeader("Author", "sample");
+                // 请求头，是否要添加头，添加什么头，要看开发者服务器端的要求。
+                .addHeader("Author", "sample")
 
-        // 设置一个tag, 在请求完(失败/成功)时原封不动返回; 多数情况下不需要。
-        request.setTag(this);
-
-        // 设置取消标志。
-        request.setCancelSign(this);
+                // 设置一个tag, 在请求完(失败/成功)时原封不动返回; 多数情况下不需要。
+                .setTag(this)
+                // 设置取消标志。
+                .setCancelSign(this);
 
 		/*
          * what: 当多个请求同时使用同一个OnResponseListener时用来区分请求, 类似handler的what一样。
@@ -162,22 +163,22 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
             // 请求失败
             Exception exception = response.getException();
             if (exception instanceof NetworkError) {// 网络不好
-                Snackbar.show(OriginalActivity.this, R.string.error_please_check_network);
+                Toast.show(OriginalActivity.this, R.string.error_please_check_network);
             } else if (exception instanceof TimeoutError) {// 请求超时
-                Snackbar.show(OriginalActivity.this, R.string.error_timeout);
+                Toast.show(OriginalActivity.this, R.string.error_timeout);
             } else if (exception instanceof UnKnownHostError) {// 找不到服务器
-                Snackbar.show(OriginalActivity.this, R.string.error_not_found_server);
+                Toast.show(OriginalActivity.this, R.string.error_not_found_server);
             } else if (exception instanceof URLError) {// URL是错的
-                Snackbar.show(OriginalActivity.this, R.string.error_url_error);
+                Toast.show(OriginalActivity.this, R.string.error_url_error);
             } else if (exception instanceof NotFoundCacheError) {
                 // 这个异常只会在仅仅查找缓存时没有找到缓存时返回
-                Snackbar.show(OriginalActivity.this, R.string.error_not_found_cache);
+                Toast.show(OriginalActivity.this, R.string.error_not_found_cache);
             } else if (exception instanceof ProtocolException) {
-                Snackbar.show(OriginalActivity.this, R.string.error_system_unsupport_method);
+                Toast.show(OriginalActivity.this, R.string.error_system_unsupport_method);
             } else if (exception instanceof ParseError) {
-                Snackbar.show(OriginalActivity.this, R.string.error_parse_data_error);
+                Toast.show(OriginalActivity.this, R.string.error_parse_data_error);
             } else {
-                Snackbar.show(OriginalActivity.this, R.string.error_unknow);
+                Toast.show(OriginalActivity.this, R.string.error_unknow);
             }
             Logger.e("错误：" + exception.getMessage());
         }
