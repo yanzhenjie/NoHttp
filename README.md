@@ -1,24 +1,26 @@
-# NoHttp，一个有情怀的网络框架
+# NoHttp
 ![NoHttp Logo](http://www.nohttp.net/image/nohttp_logo.svg)  
 
-严振杰的博客：[blog.yanzhenjie.com](http://blog.yanzhenjie.com)   
+1. NoHttp详细文档：[http://doc.nohttp.net](http://doc.nohttp.net)  
 
-NoHttp重要升级，支持与`RxJava`完美结合、支持一句话切换底层为`OkHttp`，支持请求Restful风格的接口，比Retrofit更简单易用。  
+2. NoHttp公益测试接口：[http://api.nohttp.net](http://api.nohttp.net)  
 
-**欢迎加入QQ交流群：[547839514](http://jq.qq.com/?_wv=1027&k=40Qqms0)**
+支持与`RxJava`完美结合、支持一句话切换底层为`OkHttp`，支持缓存数据到数据库或SD卡，支持请求Restful风格的接口，比Retrofit更简单易用。  
+
+**欢迎加入QQ技术交流群：[46523908](http://jq.qq.com/?_wv=1027&k=40hvC7E)**
 
 ----
 
-## 导航目录(点击可跳转到对应节点处)
+## 导航
 - [Demo效果预览](#效果预览)  
 - [NoHttp特性](#框架特性)  
 - [AndroidStuio、Eclipse使用方法](#使用方法)  
 - [NoHttp初始化](#初始化)  
-- [需要的权限](#权限)  
+- [需要的权限](#需要的权限)  
 - [友好的调试模式](#友好的调试模式)  
 - [RxJava](#第三方异步框架)  
 - [请求队列](#请求队列)  
-- [String、Bitmap、JavaBean、Json请求](#几种数据类型请求)  
+- [String、Bitmap、JavaBean、Json请求](#请求类型)  
 - [添加参数，可以链式调用](#添加参数)  
 - [提交Json、XML、自定义Body等](#提交请求包体)  
 - [同步请求](#同步请求)  
@@ -66,22 +68,26 @@ compile 'com.yanzhenjie.nohttp:okhttp:1.1.0'
 
 ### Eclipse使用方式
 * 如果使用HttpURLConnection作为网络层：  
- [下载NoHttp Jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.1.0.jar?raw=true)  
-* 如果使用OkHttp做为网络层  
- [下载NoHttp-OkHttp Jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp-okhttp1.1.0.jar?raw=true)，并且请自行下载[okhttp](https://github.com/square/okhttp)、[okio](https://github.com/square/okio)的jar包。
+ - [下载nohttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.1.0.jar?raw=true)
+* 如果使用OkHttp做为网络层
+ - [下载nohttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.1.0.jar?raw=true)：nohttp原生jar。
+ - [下载nohttp-okhttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp-okhttp1.1.0.jar?raw=true)：nohttp和okhttp过渡，只有两个类。
+ - [下载okhttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okhttp-3.4.1?raw=true)：okhttp原生jar。
+ - [下载okhttp-url jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okhttp-urlconnection-3.4.1?raw=true)：okhttp和URLConnection的过度。
+ - [下载okio jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okio-1.11.0.jar?raw=true)：okio的包。
 
-* 建议没用Android的同学尽早切换到AndroidStudio来开发Android应用。
+* 好多jar啊，所以强烈的999次方建议没有使用`AndroidStudio`的同学赶紧切换过来。
 
 ## 初始化
 NoHttp初始化需要一个Context，最好在`Application`的`onCreate()`中初始化，记得在`manifest.xml`中注册`Application`。
 
-### 一般情况下只需要这样初始化
+### 一般初始化
 直接初始化后，一切采用默认设置。
 ```java
 NoHttp.initialize(this);
 ```
 
-### 如果需要自定义配置更多信息
+### 高级自定义初始化
 
 * 超时配置，默认10s
 ```java
@@ -130,7 +136,7 @@ NoHttp.initialize(this, new NoHttp.Config()
 );
 ```
 
-## 权限
+## 需要的权限
 ```xml
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -148,11 +154,9 @@ Logger.setTag("NoHttpSample");// 设置NoHttp打印Log的tag。
 
 所以说，如果你使用过程中遇到什么问题了，开启调试模式，一切妖魔鬼怪都会现形的。
 
-## 第三方异步框架
-可以与RxJava、RxAndroid、RxBus、EventBus等第三方异步任务框架完美结合使用，这里在demo中给出了和RxJava一起使用的代码。
-
-### RxJava
-NoHttp可以和RxJava完美结合，这里列出如何使用，具体的封装请参考Demo的RxNoHttp。
+##第三方异步框架
+**RxJava**
+可以与RxJava、RxAndroid、RxBus、EventBus等第三方异步任务框架完美结合使用，这里在demo中给出了和RxJava一起使用的代码。具体的封装请参考Demo的RxNoHttp。
 ```java
 Request<UserInfo> request = new JavaBeanRequest<>(url, UserInfo.class);
 RxNoHttp.request(this, request, new SimpleSubscriber<Response<UserInfo>>() {
@@ -175,14 +179,14 @@ requestQueue.add(what, request, responseListener);
 * 添加请求到队列时有一个what，这个what会在`responseLisetener`响应时回调给开发者，所以开发者可以用一个`responseLisetener`接受多个请求的响应，用what来区分结果。而不用像有的框架一样，每一个请求都要new一个callback。  
 * **强烈建议**把生成队列写成懒汉单例模式，因为每新建队列就会new出相应个数的线程来，同时只有线程数固定了，队列的作用才会发挥到最大。
 
-## 几种数据类型请求
-### String请求
+##请求类型
+## String请求
 ```java
 Request<String> request = NoHttp.createStringRequest(url, RequestMethod.GET);
 requestQueue.add(0, request, listener);
 ```
 
-### Json请求
+## Json请求
 ```java
 // JsonObject
 Request<JSONObject> objRequest = NoHttp.createJsonObjectRequest(url, RequestMethod.POST);
@@ -193,20 +197,20 @@ Request<JSONArray> arrayRequest = NoHttp.createJsonArrayRequest(url, RequestMeth
 requestQueue.add(0, arrayRequest, listener);
 ```
 
-### Bitmap请求
+## Bitmap请求
 ```	java
 Request<Bitmap> request = NoHttp.createImageRequest(url, RequestMethod.DELETE);
 requestQueue.add(0, request, listener);
 ```
 
-### 请求FastJson与Gson
+## 请求FastJson与Gson
 ```java
 // FastJson
 Request<JSONObject> request = new FastJsonRequest(url, RequestMethod.POST);
 requestQueue.add(0, request, listener);
 ```
 
-### 直接请求JavaBean
+## 直接请求JavaBean
 ```java
 // 内部使用Gson、FastJson解析成JavaBean
 Request<UserInfo> request = new JavaBeanRequest(url, RequestMethod.GET);
@@ -452,6 +456,7 @@ queue.stop();
 ```
 
 ## 自定义请求
+NoHttp的所有自带请求都是继承`RestRequest`类，所以我们自定义请求也需要继承`RestRequest`，泛型写自己想要请求的数据类型，最后在`parseResponse()`方法中解析服务器数据成自己自己想要的数据类型即可。
 * FastJsonRequest
 ```java
 public class FastJsonRequest extends RestRequestor<JSONObject> {
@@ -510,14 +515,37 @@ queue.add(what, request, listener);
 ```
 
 ## 代码混淆
-1. NoHttp全部的类都可以混淆。  
-2. NoHttp设计到兼容高版本系统的api采用反射调用，所以所有类都可以被混淆  
+NoHttp设计到兼容高版本系统的api采用反射调用，所以所有类都可以被混淆，如果你非要keep的话，如下配置即可。
 
-3. 如果你非要keep的话，如下配置即可  
+* 原生NoHttp混淆
 ```text
 -dontwarn com.yolanda.nohttp.**
 -keep class com.yolanda.nohttp.**{*;}
 ```
+* 如果使用okhttp的版本
+```text
+// nohttp
+-dontwarn com.yolanda.nohttp.**
+-keep class com.yolanda.nohttp.**{*;}
+
+// nohttp-okhttp
+-dontwarn com.yanzhenjie.nohttp.**
+-keep class com.yanzhenjie.nohttp.**{*;}
+
+// okhttp
+-dontwarn okhttp3.**
+-keep class okhttp3.** { *;} 
+-dontwarn okio.**
+-keep class okio.** { *;} 
+```
+ 
+## 关于我
+![微信二维码](http://img.blog.csdn.net/20161020083048694)
+
+1. 关注我的[Github](https://github.com/yanzhenjie)，了解我的最新项目。
+
+2. 关注[我的博客](http://blog.yanzhenjie.com)，阅读我的最新文章。
+3. 关注[我的微博](http://weibo.com/yanzhenjieit)，有问题随时沟通。
 
 ## License
 ```text
