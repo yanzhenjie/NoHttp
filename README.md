@@ -1,4 +1,3 @@
-# NoHttp
 ![NoHttp Logo](http://www.nohttp.net/image/nohttp_logo.svg)  
 
 1. NoHttp详细文档：[http://doc.nohttp.net](http://doc.nohttp.net)  
@@ -72,8 +71,8 @@ compile 'com.yanzhenjie.nohttp:okhttp:1.1.0'
 * 如果使用OkHttp做为网络层
  - [下载nohttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp1.1.0.jar?raw=true)：nohttp原生jar。
  - [下载nohttp-okhttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/nohttp-okhttp1.1.0.jar?raw=true)：nohttp和okhttp过渡，只有两个类。
- - [下载okhttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okhttp-3.4.1?raw=true)：okhttp原生jar。
- - [下载okhttp-url jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okhttp-urlconnection-3.4.1?raw=true)：okhttp和URLConnection的过度。
+ - [下载okhttp jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okhttp-3.4.1.jar?raw=true)：okhttp原生jar。
+ - [下载okhttp-url jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okhttp-urlconnection-3.4.1.jar?raw=true)：okhttp和URLConnection的过度。
  - [下载okio jar包](https://github.com/yanzhenjie/NoHttp/blob/master/Jar/okio-1.11.0.jar?raw=true)：okio的包。
 
 * 好多jar啊，所以强烈的999次方建议没有使用`AndroidStudio`的同学赶紧切换过来。
