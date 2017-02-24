@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -262,4 +263,16 @@ public class HttpHeaders extends TreeMultiValueMap<String, String> implements He
         return toJSONString();
     }
 
+    @Override
+    public boolean containsKey(String key) {
+        return super.containsKey(key) || super.containsKey(key.toLowerCase(Locale.getDefault()));
+    }
+
+    @Override
+    public List<String> getValues(String key) {
+        List<String> strings = super.getValues(key);
+        if (strings == null || strings.isEmpty())
+            strings = super.getValues(key.toLowerCase(Locale.getDefault()));
+        return strings;
+    }
 }

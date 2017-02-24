@@ -211,15 +211,12 @@ public abstract class BasicRequest implements IBasicRequest {
             buildUrl(urlBuilder);
             return urlBuilder.toString();
         }
-        // second form.
-        if (isMultipartFormEnable())
+        // form or push params.
+        if (getRequestMethod().allowRequestBody())
             return urlBuilder.toString();
 
         // third common post.
-        if (!hasBinary() && mParamKeyValues.size() > 0) {
-            buildUrl(urlBuilder);
-            return urlBuilder.toString();
-        }
+        buildUrl(urlBuilder);
         return urlBuilder.toString();
     }
 
@@ -230,10 +227,9 @@ public abstract class BasicRequest implements IBasicRequest {
      */
     private void buildUrl(StringBuilder urlBuilder) {
         StringBuilder paramBuilder = buildCommonParams(getParamKeyValues(), getParamsEncoding());
-        if (url.contains("?") && url.contains("=") && paramBuilder.length() > 0)
-            urlBuilder.append("&");
-        else if (paramBuilder.length() > 0 && !url.endsWith("?")) // end with '?', not append '?'.
-            urlBuilder.append("?");
+        if (paramBuilder.length() <= 0) return;
+        if (url.contains("?") && url.contains("=")) urlBuilder.append("&");
+        else if (!url.endsWith("?")) urlBuilder.append("?");
         urlBuilder.append(paramBuilder);
     }
 
@@ -251,7 +247,7 @@ public abstract class BasicRequest implements IBasicRequest {
 
     @Override
     public boolean isMultipartFormEnable() {
-        return isMultipartFormEnable;
+        return isMultipartFormEnable || hasBinary();
     }
 
     @Override
@@ -379,7 +375,7 @@ public abstract class BasicRequest implements IBasicRequest {
         String contentType = mHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0);
         if (!TextUtils.isEmpty(contentType))
             return contentType;
-        if (getRequestMethod().allowRequestBody() && (isMultipartFormEnable() || hasBinary()))
+        if (getRequestMethod().allowRequestBody() && isMultipartFormEnable())
             return Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA + "; boundary=" + boundary;
         else
             return Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED + "; charset=" + getParamsEncoding();
@@ -671,8 +667,10 @@ public abstract class BasicRequest implements IBasicRequest {
     public void onWriteRequestBody(OutputStream writer) throws IOException {
         if (hasDefineRequestBody()) {
             writeRequestBody(writer);
-        } else if (isMultipartFormEnable() || hasBinary()) {
+        } else if (isMultipartFormEnable()) {
             writeFormStreamData(writer);
+        } else {
+            writeParamStreamData(writer);
         }
     }
 
@@ -745,7 +743,8 @@ public abstract class BasicRequest implements IBasicRequest {
     private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
         if (!value.isCanceled()) {
             String binaryFieldBuilder = startBoundary + "\r\n" +
-                    "Content-Disposition: form-data; name=\"" + key + "\"" + "; filename=\"" + value.getFileName() + "\"\r\n"
+                    "Content-Disposition: form-data; name=\"" + key + "\"" + "; filename=\"" + value.getFileName() +
+                    "\"\r\n"
                     + "Content-Type: " + value.getMimeType() + "\r\n"
                     + "Content-Transfer-Encoding: binary\r\n\r\n";
             writer.write(binaryFieldBuilder.getBytes());
@@ -755,6 +754,21 @@ public abstract class BasicRequest implements IBasicRequest {
             } else {
                 value.onWriteBinary(writer);
             }
+        }
+    }
+
+    /**
+     * Write params.
+     *
+     * @param writer {@link OutputStream}.
+     * @throws IOException IOException.
+     */
+    private void writeParamStreamData(OutputStream writer) throws IOException {
+        StringBuilder paramBuilder = buildCommonParams(mParamKeyValues, getParamsEncoding());
+        if (paramBuilder.length() > 0) {
+            String params = paramBuilder.toString();
+            Logger.i("Body: " + params);
+            IOUtils.write(params.getBytes(), writer);
         }
     }
 
@@ -863,15 +877,11 @@ public abstract class BasicRequest implements IBasicRequest {
             List<Object> values = paramMap.getValues(key);
             for (Object value : values) {
                 if (value != null && value instanceof CharSequence) {
-                    paramBuilder.append("&");
+                    paramBuilder.append("&").append(key).append("=");
                     try {
-                        paramBuilder.append(URLEncoder.encode(key, encodeCharset));
-                        paramBuilder.append("=");
                         paramBuilder.append(URLEncoder.encode(value.toString(), encodeCharset));
                     } catch (UnsupportedEncodingException e) {
-                        Logger.e("Encoding " + encodeCharset + " format is not supported by the system");
-                        paramBuilder.append(key);
-                        paramBuilder.append("=");
+                        Logger.e("Encoding " + encodeCharset + " format is not supported by the system.");
                         paramBuilder.append(value.toString());
                     }
                 }

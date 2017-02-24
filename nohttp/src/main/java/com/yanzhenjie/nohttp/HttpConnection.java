@@ -16,15 +16,15 @@
 package com.yanzhenjie.nohttp;
 
 import android.text.TextUtils;
+import android.webkit.URLUtil;
 
 import com.yanzhenjie.nohttp.error.NetworkError;
+import com.yanzhenjie.nohttp.error.TimeoutError;
 import com.yanzhenjie.nohttp.error.URLError;
 import com.yanzhenjie.nohttp.error.UnKnownHostError;
 import com.yanzhenjie.nohttp.rest.Request;
-import com.yanzhenjie.nohttp.rest.StringRequest;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 import com.yanzhenjie.nohttp.tools.NetUtil;
-import com.yanzhenjie.nohttp.error.TimeoutError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
@@ -194,13 +195,29 @@ public class HttpConnection {
         if (redirectHandler != null) {
             if (redirectHandler.isDisallowedRedirect(responseHeaders))
                 return new Connection(null, responseHeaders, null, null);
-            else
+            else {
                 redirectRequest = redirectHandler.onRedirect(responseHeaders);
+            }
         }
         if (redirectRequest == null) {
-            redirectRequest = new StringRequest(responseHeaders.getLocation(), oldRequest.getRequestMethod());
+            String location = responseHeaders.getLocation();
+
+            if (!URLUtil.isNetworkUrl(location)) {
+                String oldUrl = oldRequest.url();
+                try {
+                    URL url = new URL(oldUrl);
+                    location = url.getProtocol() + "://" + url.getHost() + location;
+                } catch (MalformedURLException e) {
+                    // nothing.
+                }
+            }
+
+            redirectRequest = new BasicRequest(location, oldRequest.getRequestMethod()) {
+            };
+            redirectRequest.setRedirectHandler(oldRequest.getRedirectHandler());
             redirectRequest.setSSLSocketFactory(oldRequest.getSSLSocketFactory());
             redirectRequest.setHostnameVerifier(oldRequest.getHostnameVerifier());
+            redirectRequest.setParamsEncoding(oldRequest.getParamsEncoding());
             redirectRequest.setProxy(oldRequest.getProxy());
         }
         return getConnection(redirectRequest);

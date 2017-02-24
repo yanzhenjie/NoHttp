@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mIvHeadBackground.getLayoutParams().height = DisplayUtils.screenWidth * 10 / 9;
+        mIvHeadBackground.getLayoutParams().height = DisplayUtils.screenWidth * 12 / 13;
         mIvHeadBackground.requestLayout();
 
         // 让toolbar下来。

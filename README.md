@@ -33,7 +33,7 @@ Demo中用的6.0权限管理友链：[https://github.com/yanzhenjie/AndPermissio
 - [代码混淆](#代码混淆)  
 
 ## 效果预览
-<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/1.gif?raw=true"/>  <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/2.gif?raw=true"/>
+<image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/1.gif?raw=true" width="200px"/>  <image src="https://github.com/yanzhenjie/NoHttp/blob/master/image/2.gif?raw=true" width="200px"/>
 
 ## 框架特性
 比Retrofit使用更简单、更易用。
@@ -64,7 +64,7 @@ compile 'com.yanzhenjie.nohttp:nohttp:1.1.1'
 compile 'com.yanzhenjie.nohttp:okhttp:1.1.1'
 ```
 
-> 新版NoHttp修改了包名为`com.yanzhenjie.nohttp`，开发生从旧版升级后会发生编译错误，请使用全局替换，将`com.yolanda.nohttp`替换为`com.yanzhenjie.nohttp`即可。
+> 新版NoHttp修改了包名为`com.yanzhenjie.nohttp`，开发者从旧版升级后请使用全局替换，将`com.yolanda.nohttp`替换为`com.yanzhenjie.nohttp`即可。
 
 ### Eclipse ADT
 1. 放弃治疗。  
@@ -510,14 +510,14 @@ NoHttp设计到兼容高版本系统的api采用反射调用，所以所有类�
 
 * 原生NoHttp混淆
 ```text
--dontwarn com.yolanda.nohttp.**
--keep class com.yolanda.nohttp.**{*;}
+-dontwarn com.yanzhenjie.nohttp.**
+-keep class com.yanzhenjie.nohttp.**{*;}
 ```
 * 如果使用okhttp的版本
 ```text
 // nohttp
--dontwarn com.yolanda.nohttp.**
--keep class com.yolanda.nohttp.**{*;}
+-dontwarn com.yanzhenjie.nohttp.**
+-keep class com.yanzhenjie.nohttp.**{*;}
 
 // nohttp-okhttp
 -dontwarn com.yanzhenjie.nohttp.**
