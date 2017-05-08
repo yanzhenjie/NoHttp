@@ -57,11 +57,11 @@ Demo中用的6.0权限管理友链：[https://github.com/yanzhenjie/AndPermissio
 ### Gradle
 * 如果使用HttpURLConnection作为网络层：
 ```groovy
-compile 'com.yanzhenjie.nohttp:nohttp:1.1.1'
+compile 'com.yanzhenjie.nohttp:nohttp:1.1.2'
 ```
 * 如果要使用OkHttp作为网络层，请再依赖：
 ```groovy
-compile 'com.yanzhenjie.nohttp:okhttp:1.1.1'
+compile 'com.yanzhenjie.nohttp:okhttp:1.1.2'
 ```
 
 > 新版NoHttp修改了包名为`com.yanzhenjie.nohttp`，开发者从旧版升级后请使用全局替换，将`com.yolanda.nohttp`替换为`com.yanzhenjie.nohttp`即可。

@@ -366,7 +366,12 @@ public class IOUtils {
      * @return space size.
      */
     public static long getDirSize(String path) {
-        StatFs stat = new StatFs(path);
+        StatFs stat;
+        try {
+            stat = new StatFs(path);
+        } catch (Exception e) {
+            return 0;
+        }
         if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN_MR2)
             return getStatFsSize(stat, "getBlockSizeLong", "getAvailableBlocksLong");
         else
@@ -381,14 +386,8 @@ public class IOUtils {
             Method getAvailableBlocksMethod = statFs.getClass().getMethod(availableBlocksMethod);
             getAvailableBlocksMethod.setAccessible(true);
 
-            long blockSize, availableBlocks;
-            if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN_MR2) {
-                blockSize = (Long) getBlockSizeMethod.invoke(statFs);
-                availableBlocks = (Long) getAvailableBlocksMethod.invoke(statFs);
-            } else {
-                blockSize = (Integer) getBlockSizeMethod.invoke(statFs);
-                availableBlocks = (Integer) getAvailableBlocksMethod.invoke(statFs);
-            }
+            long blockSize = (Long) getBlockSizeMethod.invoke(statFs);
+            long availableBlocks = (Long) getAvailableBlocksMethod.invoke(statFs);
             return blockSize * availableBlocks;
         } catch (Throwable e) {
         }

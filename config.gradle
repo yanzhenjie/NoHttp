@@ -22,11 +22,11 @@ ext {
 
     dependencies = [
             // okhttp.
-            okhttpUrl      : 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0',
+            okhttpUrl      : 'com.squareup.okhttp3:okhttp-urlconnection:3.7.0',
 
             // nohttp.
-            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.1',
-            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.1',
+            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.2',
+            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.2',
 
             // support.
             appcompat      : 'com.android.support:appcompat-v7:25.1.1',
