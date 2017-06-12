@@ -25,10 +25,11 @@ public interface RedirectHandler {
     /**
      * When the server's response code is 302 or 303 corresponding need to redirect is invoked.
      *
+     * @param oldRequest      the old request.
      * @param responseHeaders the service side head accordingly.
      * @return {@link IBasicRequest}.
      */
-    IBasicRequest onRedirect(Headers responseHeaders);
+    IBasicRequest onRedirect(IBasicRequest oldRequest, Headers responseHeaders);
 
     /**
      * Whether to allow the redirection, if not redirect will not be {@code #onRedirect(Headers)} callback method, at

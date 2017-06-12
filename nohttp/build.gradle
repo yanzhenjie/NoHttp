@@ -5,8 +5,8 @@ android {
     buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        minSdkVersion rootProject.ext.android.librayMinSdkVersion
+        targetSdkVersion rootProject.ext.android.libraryTargetSdkVersion
     }
 }
 

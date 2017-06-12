@@ -20,16 +20,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.dialog.WaitDialog;
-import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
-
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.dialog.WaitDialog;
+import com.yanzhenjie.nohttp.sample.util.Constants;
 
 /**
  * <p>同步请求。</p>
@@ -37,7 +34,7 @@ import butterknife.OnClick;
  *
  * @author Yan Zhenjie.
  */
-public class SyncActivity extends BaseActivity {
+public class SyncActivity extends BaseActivity implements View.OnClickListener {
 
     /**
      * 等待的dialog。
@@ -47,7 +44,8 @@ public class SyncActivity extends BaseActivity {
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_sync);
-        ButterKnife.bind(this);
+
+        findViewById(R.id.btn_start).setOnClickListener(this);
     }
 
     /**
@@ -78,7 +76,7 @@ public class SyncActivity extends BaseActivity {
         }
     };
 
-    @OnClick(R.id.btn_start)
+    @Override
     public void onClick(View v) {
         showDialog();
         new Thread() {

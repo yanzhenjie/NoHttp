@@ -17,12 +17,13 @@ package com.yanzhenjie.nohttp.sample.activity.cancel;
 
 import android.os.Bundle;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
-import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Request;
+import com.yanzhenjie.nohttp.rest.RequestQueue;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
+import com.yanzhenjie.nohttp.sample.util.Constants;
 
 /**
  * <p>根据sign取消某几个请求。</p>
@@ -32,6 +33,8 @@ import com.yanzhenjie.nohttp.rest.Request;
  */
 public class CancelSignActivity extends BaseActivity {
 
+    private RequestQueue mRequestQueue;
+
     /**
      * 用来标志请求的sign。
      */
@@ -40,6 +43,8 @@ public class CancelSignActivity extends BaseActivity {
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_cacel_demo);
+
+        mRequestQueue = NoHttp.newRequestQueue(5);
 
         // 请求1。
         Request<String> request1 = NoHttp.createStringRequest(Constants.URL_NOHTTP_JSONOBJECT, RequestMethod.GET);
@@ -53,14 +58,10 @@ public class CancelSignActivity extends BaseActivity {
         Request<String> request3 = NoHttp.createStringRequest(Constants.URL_NOHTTP_JSONOBJECT, RequestMethod.GET);
         request3.setCancelSign(cancelSign);
 
-        /**
-         * 1. 第一步：
-         * 这里假设有好多请求在队列中。
-         * 我们给每一个请求setSign。
-         */
-//        CallServer.getRequestInstance().add(this, 0, request1, this, true, false);
-//        CallServer.getRequestInstance().add(this, 1, request2, this, true, false);
-//        CallServer.getRequestInstance().add(this, 2, request3, this, true, false);
+        // 这里添加很多request进去。
+//        mRequestQueue.add(0, request1, null);
+//        mRequestQueue.add(1, request2, null);
+//        mRequestQueue.add(2, request3, null);
     }
 
     @Override
@@ -74,6 +75,6 @@ public class CancelSignActivity extends BaseActivity {
          *
          * 特别注意：有人把"123"这种字符串穿进去，取消的时候又了"123"字符串，这样就不是同一个对象了，不能成功的取消请求。
          */
-        cancelBySign(cancelSign);
+        mRequestQueue.cancelBySign(cancelSign);
     }
 }

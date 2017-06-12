@@ -17,6 +17,8 @@ package com.yanzhenjie.nohttp.rest;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
+import java.lang.ref.WeakReference;
+
 /**
  * <p>
  * The realization method of the parameters.
@@ -35,7 +37,7 @@ public abstract class RestRequest<T> extends ProtocolRequest<T> implements Reque
     /**
      * The request of the listener.
      */
-    private OnResponseListener<T> responseListener;
+    private WeakReference<OnResponseListener<T>> responseListener;
 
     /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
@@ -59,7 +61,7 @@ public abstract class RestRequest<T> extends ProtocolRequest<T> implements Reque
     @Override
     public void onPreResponse(int what, OnResponseListener<T> responseListener) {
         this.what = what;
-        this.responseListener = responseListener;
+        this.responseListener = new WeakReference<>(responseListener);
     }
 
     @Override
@@ -69,6 +71,6 @@ public abstract class RestRequest<T> extends ProtocolRequest<T> implements Reque
 
     @Override
     public OnResponseListener<T> responseListener() {
-        return responseListener;
+        return responseListener.get();
     }
 }

@@ -17,23 +17,22 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.yanzhenjie.nohttp.NoHttp;
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Request;
+import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 import com.yanzhenjie.nohttp.sample.util.SSLContextUtil;
-import com.yanzhenjie.nohttp.NoHttp;
-import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.rest.Request;
-import com.yanzhenjie.nohttp.rest.Response;
 
 import java.util.Arrays;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
-
-import butterknife.ButterKnife;
 
 /**
  * Created in Nov 3, 2015 1:48:34 PM.
@@ -48,15 +47,18 @@ public class HttpsActivity extends BaseActivity implements HttpListener<String> 
 
         List<String> imageItems = Arrays.asList(getResources().getStringArray(R.array.activity_https_item));
         RecyclerListSingleAdapter listAdapter = new RecyclerListSingleAdapter(imageItems, mItemClickListener);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_https_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_https_activity);
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = (v, position) -> {
-        if (0 == position) {
-            httpsVerify();
-        } else {
-            httpsNoVerify();
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, int position) {
+            if (0 == position) {
+                httpsVerify();
+            } else {
+                httpsNoVerify();
+            }
         }
     };
 

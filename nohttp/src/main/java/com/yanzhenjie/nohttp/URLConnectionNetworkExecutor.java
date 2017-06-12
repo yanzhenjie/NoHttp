@@ -18,11 +18,9 @@ package com.yanzhenjie.nohttp;
 import android.os.Build;
 
 import com.yanzhenjie.nohttp.tools.HeaderUtil;
-import com.yanzhenjie.nohttp.tools.AndroidVersion;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
@@ -75,22 +73,15 @@ public class URLConnectionNetworkExecutor implements NetworkExecutor {
         // To fix bug: accidental EOFException before API 19.
         List<String> values = headers.getValues(Headers.HEAD_KEY_CONNECTION);
         if (values == null || values.size() == 0)
-            headers.set(Headers.HEAD_KEY_CONNECTION, Build.VERSION.SDK_INT > AndroidVersion.KITKAT ? Headers
+            headers.set(Headers.HEAD_KEY_CONNECTION, Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT ? Headers
                     .HEAD_VALUE_CONNECTION_KEEP_ALIVE : Headers.HEAD_VALUE_CONNECTION_CLOSE);
 
         if (isAllowBody) {
             long contentLength = request.getContentLength();
-            if (contentLength < Integer.MAX_VALUE)
+            if (contentLength <= Integer.MAX_VALUE)
                 connection.setFixedLengthStreamingMode((int) contentLength);
-            else if (Build.VERSION.SDK_INT >= AndroidVersion.KITKAT)
-                try {
-                    Class<?> connectionClass = connection.getClass();
-                    Method setFixedLengthStreamingModeMethod = connectionClass.getMethod
-                            ("setFixedLengthStreamingMode", long.class);
-                    setFixedLengthStreamingModeMethod.invoke(connection, contentLength);
-                } catch (Throwable e) {
-                    connection.setChunkedStreamingMode(256 * 1024);
-                }
+            else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                connection.setFixedLengthStreamingMode(contentLength);
             else
                 connection.setChunkedStreamingMode(256 * 1024);
             headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(contentLength));
@@ -111,7 +102,7 @@ public class URLConnectionNetworkExecutor implements NetworkExecutor {
     private boolean isAllowBody(RequestMethod requestMethod) {
         boolean allowRequestBody = requestMethod.allowRequestBody();
         // Fix Android bug.
-        if (Build.VERSION.SDK_INT < AndroidVersion.LOLLIPOP)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             return allowRequestBody && requestMethod != RequestMethod.DELETE;
         return allowRequestBody;
     }

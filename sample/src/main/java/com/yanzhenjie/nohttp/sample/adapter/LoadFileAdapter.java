@@ -26,9 +26,6 @@ import com.yanzhenjie.nohttp.sample.entity.LoadFile;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * <p>文件列表适配器。</p>
  * Created on 2016/5/31.
@@ -61,17 +58,16 @@ public class LoadFileAdapter extends BaseAdapter<LoadFileAdapter.DownloadFileVie
         /**
          * 文件状态。
          */
-        @BindView(R.id.tv_result)
         TextView mTvResult;
         /**
          * 文件进度。
          */
-        @BindView(R.id.pb_progress)
         ProgressBar mPbProgress;
 
         public DownloadFileViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            mTvResult = (TextView) itemView.findViewById(R.id.tv_result);
+            mPbProgress = (ProgressBar) itemView.findViewById(R.id.pb_progress);
             itemView.setOnClickListener(this);
         }
 

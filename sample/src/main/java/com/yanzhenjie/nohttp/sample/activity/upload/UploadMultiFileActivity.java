@@ -41,7 +41,6 @@ import com.yanzhenjie.nohttp.OnUploadListener;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
-import com.yanzhenjie.nohttp.tools.ImageLocalLoader;
 
 import java.io.File;
 import java.io.FileInputStream;

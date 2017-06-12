@@ -5,14 +5,13 @@ android {
     buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        minSdkVersion rootProject.ext.android.librayMinSdkVersion
+        targetSdkVersion rootProject.ext.android.libraryTargetSdkVersion
     }
 }
 
 dependencies {
-    compile rootProject.ext.dependencies.nohttp
+    // compile rootProject.ext.dependencies.nohttp
+    compile project(':nohttp')
     compile rootProject.ext.dependencies.okhttpUrl
 }
-
-apply from: "maven.gradle"

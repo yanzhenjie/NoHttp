@@ -1,6 +1,4 @@
 apply plugin: rootProject.ext.plugin.application
-apply plugin: rootProject.ext.plugin.retrolambda
-apply plugin: rootProject.ext.plugin.butterknife
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -8,21 +6,23 @@ android {
 
     defaultConfig {
         applicationId rootProject.ext.android.applicationId
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        minSdkVersion rootProject.ext.android.sampleMinSdkVersion
+        targetSdkVersion rootProject.ext.android.sampleTargetSdkVersion
         versionCode rootProject.ext.android.versionCode
         versionName rootProject.ext.android.versionName
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
 dependencies {
-    compile rootProject.ext.dependencies.nohttp
-    compile rootProject.ext.dependencies.okhttp
+//    compile rootProject.ext.dependencies.nohttp
+//    compile rootProject.ext.dependencies.okhttp
+    compile project(':nohttp')
+    compile project(':okhttp')
 
     // support.
     compile rootProject.ext.dependencies.appcompat
@@ -36,10 +36,7 @@ dependencies {
     // circle image.
     compile rootProject.ext.dependencies.circleimageview
 
-    // permission manager.
-    compile rootProject.ext.dependencies.permisson
-
-    // view bind
-    apt rootProject.ext.dependencies.butterknifeapt
-    compile rootProject.ext.dependencies.butterknife
+    // image.
+    compile rootProject.ext.dependencies.album
+    compile rootProject.ext.dependencies.durban
 }

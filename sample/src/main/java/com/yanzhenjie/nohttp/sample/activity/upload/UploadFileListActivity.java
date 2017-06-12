@@ -15,23 +15,13 @@
  */
 package com.yanzhenjie.nohttp.sample.activity.upload;
 
-import android.Manifest;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
-import com.yanzhenjie.nohttp.sample.adapter.LoadFileAdapter;
-import com.yanzhenjie.nohttp.sample.config.AppConfig;
-import com.yanzhenjie.nohttp.sample.entity.LoadFile;
-import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
-import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.PermissionListener;
 import com.yanzhenjie.nohttp.BasicBinary;
 import com.yanzhenjie.nohttp.Binary;
 import com.yanzhenjie.nohttp.BitmapBinary;
@@ -42,15 +32,19 @@ import com.yanzhenjie.nohttp.OnUploadListener;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
-import com.yanzhenjie.nohttp.tools.ImageLocalLoader;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
+import com.yanzhenjie.nohttp.sample.adapter.LoadFileAdapter;
+import com.yanzhenjie.nohttp.sample.config.AppConfig;
+import com.yanzhenjie.nohttp.sample.entity.LoadFile;
+import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
+import com.yanzhenjie.nohttp.sample.util.Constants;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 /**
  * <p>一个key上传文件List。</p>
@@ -72,7 +66,7 @@ public class UploadFileListActivity extends BaseActivity {
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_upload_file_list);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_upload_file_list_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_upload_file_list_activity);
 
         uploadFiles = new ArrayList<>();
         uploadFiles.add(new LoadFile(R.string.upload_file_status_wait, 0));
@@ -109,9 +103,8 @@ public class UploadFileListActivity extends BaseActivity {
 
 
             // 2. BitmapBinary用法。
-            Bitmap file2 = ImageLocalLoader.getInstance().readImage(AppConfig.getInstance().APP_PATH_ROOT +
-                    "/image2" +
-                    ".jpg", 720, 1280);
+            Bitmap file2 = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+
             /**
              * 第一个参数是bitmap。
              * 第二个参数是文件名，因为bitmap无法获取文件名，所以需要传，如果你的服务器不关心这个参数，你可以不传。
@@ -200,30 +193,8 @@ public class UploadFileListActivity extends BaseActivity {
     @Override
     protected boolean onOptionsItemSelectedCompat(MenuItem item) {
         if (item.getItemId() == R.id.menu_upload_file_request) {
-            if (AndPermission.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                uploadMultiListFile();
-            else
-                AndPermission.with(this)
-                        .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .requestCode(100)
-                        .send();
+            uploadMultiListFile();
         }
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        AndPermission.onRequestPermissionsResult(requestCode, permissions, grantResults, new PermissionListener() {
-            @Override
-            public void onSucceed(int requestCode, List<String> grantPermissions) {
-                uploadMultiListFile();
-            }
-
-            @Override
-            public void onFailed(int requestCode, List<String> deniedPermissions) {
-            }
-        });
     }
 }

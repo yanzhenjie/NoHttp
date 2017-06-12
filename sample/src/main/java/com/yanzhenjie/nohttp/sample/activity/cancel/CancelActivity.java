@@ -18,6 +18,7 @@ package com.yanzhenjie.nohttp.sample.activity.cancel;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
@@ -26,8 +27,6 @@ import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 
 import java.util.Arrays;
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 /**
  * <p>演示怎么取消请求。</p>
@@ -43,30 +42,33 @@ public class CancelActivity extends BaseActivity {
 
         List<String> imageItems = Arrays.asList(getResources().getStringArray(R.array.activity_cancel_item));
         RecyclerListSingleAdapter listAdapter = new RecyclerListSingleAdapter(imageItems, mItemClickListener);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_cancel_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_cancel_activity);
         recyclerView.setAdapter(listAdapter);
     }
 
     /**
      * list item单击。
      */
-    private OnItemClickListener mItemClickListener = (v, position) -> {
-        Intent intent = null;
-        switch (position) {
-            case 0:// 和Activity声明周日联动。
-                intent = new Intent(CancelActivity.this, CancelLinkageActivity.class);
-                break;
-            case 1:// 根据sign取消队列中某几个请求。
-                intent = new Intent(CancelActivity.this, CancelSignActivity.class);
-                break;
-            case 2:// 取消队列中所有请求。
-                intent = new Intent(CancelActivity.this, CancelAllActivity.class);
-                break;
-            default:
-                break;
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, int position) {
+            Intent intent = null;
+            switch (position) {
+                case 0:// 和Activity声明周日联动。
+                    intent = new Intent(CancelActivity.this, CancelLinkageActivity.class);
+                    break;
+                case 1:// 根据sign取消队列中某几个请求。
+                    intent = new Intent(CancelActivity.this, CancelSignActivity.class);
+                    break;
+                case 2:// 取消队列中所有请求。
+                    intent = new Intent(CancelActivity.this, CancelAllActivity.class);
+                    break;
+                default:
+                    break;
+            }
+            if (intent != null)
+                startActivity(intent);
         }
-        if (intent != null)
-            startActivity(intent);
     };
 
 }

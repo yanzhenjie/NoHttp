@@ -18,13 +18,13 @@ package com.yanzhenjie.nohttp.tools;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
 
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -61,8 +61,7 @@ public class NetUtil {
         if (sConnectivityManager == null) {
             synchronized (NetUtil.class) {
                 if (sConnectivityManager == null)
-                    sConnectivityManager = (ConnectivityManager) NoHttp.getContext().getSystemService(Context
-                            .CONNECTIVITY_SERVICE);
+                    sConnectivityManager = (ConnectivityManager) NoHttp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             }
         }
         return sConnectivityManager;
@@ -72,22 +71,16 @@ public class NetUtil {
      * Open network settings page.
      */
     public static void openSetting() {
-        if (Build.VERSION.SDK_INT > AndroidVersion.GINGERBREAD_MR1)
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1)
             openSetting("ACTION_WIFI_SETTINGS");
         else
             openSetting("ACTION_WIRELESS_SETTINGS");
     }
 
     private static void openSetting(String actionName) {
-        try {
-            Class<?> settingsClass = Class.forName(ANDROID_PROVIDER_SETTINGS);
-            Field actionWifiSettingsField = settingsClass.getDeclaredField(actionName);
-            Intent settingIntent = new Intent(actionWifiSettingsField.get(null).toString());
-            settingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            NoHttp.getContext().startActivity(settingIntent);
-        } catch (Throwable e) {
-            Logger.w(e);
-        }
+        Intent settingIntent = new Intent(actionName);
+        settingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        NoHttp.getContext().startActivity(settingIntent);
     }
 
     /**
@@ -125,54 +118,32 @@ public class NetUtil {
      */
     public static boolean isNetworkAvailable(NetType netType) {
         getConnectivityManager();
-        Class<?> connectivityManagerClass = sConnectivityManager.getClass();
-        if (Build.VERSION.SDK_INT >= AndroidVersion.LOLLIPOP) {
-            try {
-                Method getAllNetworksMethod = connectivityManagerClass.getMethod("getAllNetworks");
-                getAllNetworksMethod.setAccessible(true);
-                Object[] networkArray = (Object[]) getAllNetworksMethod.invoke(sConnectivityManager);
-                for (Object network : networkArray) {
-                    Method getNetworkInfoMethod = connectivityManagerClass.getMethod("getNetworkInfo", Class
-                            .forName("android.net.Network"));
-                    getNetworkInfoMethod.setAccessible(true);
-                    NetworkInfo networkInfo = (NetworkInfo) getNetworkInfoMethod.invoke(sConnectivityManager,
-                            network);
-                    if (isConnected(netType, networkInfo))
-                        return true;
-                }
-            } catch (Throwable e) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Network[] networkArray = sConnectivityManager.getAllNetworks();
+            for (Network network : networkArray) {
+                NetworkInfo networkInfo = sConnectivityManager.getNetworkInfo(network);
+                if (isConnected(netType, networkInfo)) return true;
             }
         } else {
-            try {
-                Method getAllNetworkInfoMethod = connectivityManagerClass.getMethod("getAllNetworkInfo");
-                getAllNetworkInfoMethod.setAccessible(true);
-                Object[] networkInfoArray = (Object[]) getAllNetworkInfoMethod.invoke(sConnectivityManager);
-                for (Object object : networkInfoArray) {
-                    if (isConnected(netType, (NetworkInfo) object))
-                        return true;
-                }
-            } catch (Throwable e) {
+            NetworkInfo[] networkInfoArray = sConnectivityManager.getAllNetworkInfo();
+            for (NetworkInfo networkInfo : networkInfoArray) {
+                if (isConnected(netType, networkInfo)) return true;
             }
         }
         return false;
     }
 
-    /**
-     * According to the different type of network to determine whether the network connection.
-     *
-     * @param netType     from {@link NetType}.
-     * @param networkInfo from {@link NetworkInfo}.
-     * @return Connection state return true, otherwise it returns false.
-     */
     private static boolean isConnected(NetType netType, NetworkInfo networkInfo) {
         switch (netType) {
             case Any:
                 return networkInfo != null && isConnected(networkInfo);
             case Wifi:
-                return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI &&
+                return networkInfo != null &&
+                        networkInfo.getType() == ConnectivityManager.TYPE_WIFI &&
                         isConnected(networkInfo);
             case Mobile:
-                return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE &&
+                return networkInfo != null &&
+                        networkInfo.getType() == ConnectivityManager.TYPE_MOBILE &&
                         isConnected(networkInfo);
         }
         return false;
@@ -195,12 +166,13 @@ public class NetUtil {
      */
     public static boolean isGPRSOpen() {
         getConnectivityManager();
+
         Class<?> cmClass = sConnectivityManager.getClass();
         try {
             Method getMobileDataEnabledMethod = cmClass.getMethod("getMobileDataEnabled");
             getMobileDataEnabledMethod.setAccessible(true);
             return (Boolean) getMobileDataEnabledMethod.invoke(sConnectivityManager);
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
         return false;
     }
@@ -217,7 +189,7 @@ public class NetUtil {
             Method setMobileDataEnabledMethod = cmClass.getMethod("setMobileDataEnabled", boolean.class);
             setMobileDataEnabledMethod.setAccessible(true);
             setMobileDataEnabledMethod.invoke(sConnectivityManager, isEnable);
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
     }
 
@@ -268,14 +240,15 @@ public class NetUtil {
         return IPV4_PATTERN.matcher(input).matches();
     }
 
-	/* ===========以下是IPv6的检查========== */
+    // -------------------- IPv6 Check -------------------- */
 
     // 未压缩过的IPv6地址检查
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
+
     // 压缩过的IPv6地址检查
     private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^(([0-9A-Fa-f]{1,4}" +
             "(:[0-9A-Fa-f]{1,4}){0,5})?)" +                                                              // 0-6
-            "::" + "(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)$");// 0-6 hex fields
+            "::" + "(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){0,5})?)$");                                    // 0-6 hex fields.
 
     /**
      * Check whether the parameter is effective standard (uncompressed) IPv6 address.

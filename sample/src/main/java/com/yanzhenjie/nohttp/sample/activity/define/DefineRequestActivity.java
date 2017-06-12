@@ -20,6 +20,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Request;
+import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.entity.YanZhenjie;
@@ -27,50 +30,47 @@ import com.yanzhenjie.nohttp.sample.nohttp.FastJsonRequest;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.nohttp.JavaBeanRequest;
 import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.rest.Request;
-import com.yanzhenjie.nohttp.rest.Response;
 
 import java.util.Locale;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created in Feb 1, 2016 9:14:37 AM.
  *
  * @author Yan Zhenjie.
  */
-public class DefineRequestActivity extends BaseActivity {
+public class DefineRequestActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.tv_result)
     TextView mTvResult;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_define_reqeust);
-        ButterKnife.bind(this);
+
+        mTvResult = (TextView) findViewById(R.id.tv_result);
+
+        findViewById(R.id.btn_fast_json).setOnClickListener(this);
+        findViewById(R.id.btn_java_bean).setOnClickListener(this);
     }
 
-    @OnClick({R.id.btn_fast_json, R.id.btn_java_bean})
+    @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.btn_fast_json) {
-            /**
-             * 这里用的demo自定义的FastJsonRequest解析服务器的json。
-             */
-            Request<JSONObject> request = new FastJsonRequest(Constants.URL_NOHTTP_JSONOBJECT, RequestMethod.GET);
-            request.add("name", "yanzhenjie");
-            request.add("pwd", 123);
-            request(0, request, jsonHttpListener, false, true);
-        } else if (v.getId() == R.id.btn_java_bean) {
-            /**
-             * 这里用的是demo自定义的JavaBeanRequest对象对请求，里面用fastjson解析服务器的数据。
-             */
-            Request<YanZhenjie> request = new JavaBeanRequest<>(Constants.URL_NOHTTP_JSONOBJECT, YanZhenjie.class);
-            request.add("name", "yanzhenjie");
-            request.add("pwd", 123);
-            request(0, request, zhenjieHttpListener, false, true);
+        switch (v.getId()) {
+            case R.id.btn_fast_json: {
+                // 这里用的demo自定义的FastJsonRequest解析服务器的json。
+                Request<JSONObject> request = new FastJsonRequest(Constants.URL_NOHTTP_JSONOBJECT, RequestMethod.GET);
+                request.add("name", "yanzhenjie");
+                request.add("pwd", 123);
+                request(0, request, jsonHttpListener, false, true);
+                break;
+            }
+            case R.id.btn_java_bean: {
+                // 这里用的是demo自定义的JavaBeanRequest对象对请求，里面用fastjson解析服务器的数据。
+                Request<YanZhenjie> request = new JavaBeanRequest<>(Constants.URL_NOHTTP_JSONOBJECT, YanZhenjie.class);
+                request.add("name", "yanzhenjie");
+                request.add("pwd", 123);
+                request(0, request, zhenjieHttpListener, false, true);
+                break;
+            }
         }
     }
 

@@ -15,22 +15,13 @@
  */
 package com.yanzhenjie.nohttp.sample.activity.download;
 
-import android.Manifest;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
-import com.yanzhenjie.nohttp.sample.config.AppConfig;
-import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.Snackbar;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.PermissionListener;
 import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
@@ -43,15 +34,15 @@ import com.yanzhenjie.nohttp.error.StorageSpaceNotEnoughError;
 import com.yanzhenjie.nohttp.error.TimeoutError;
 import com.yanzhenjie.nohttp.error.URLError;
 import com.yanzhenjie.nohttp.error.UnKnownHostError;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
+import com.yanzhenjie.nohttp.sample.config.AppConfig;
+import com.yanzhenjie.nohttp.sample.util.Constants;
+import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 
 import java.text.DecimalFormat;
-import java.util.List;
 import java.util.Locale;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * <p>下载单个文件。</p>
@@ -65,17 +56,14 @@ public class DownloadSingleFileActivity extends BaseActivity {
     /**
      * 下载按钮、暂停、开始等.
      */
-    @BindView(R.id.btn_start_download)
     TextView mBtnStart;
     /**
      * 下载状态.
      */
-    @BindView(R.id.tv_result)
     TextView mTvResult;
     /**
      * 下载进度条.
      */
-    @BindView(R.id.pb_progress)
     ProgressBar mProgressBar;
     /**
      * 下载请求.
@@ -85,34 +73,14 @@ public class DownloadSingleFileActivity extends BaseActivity {
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_download_single);
-        ButterKnife.bind(this);
-    }
+        mBtnStart = (TextView) findViewById(R.id.btn_start_download);
+        mTvResult = (TextView) findViewById(R.id.tv_result);
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_progress);
 
-    @OnClick(R.id.btn_start_download)
-    public void onClick(View v) {
-        if (v.getId() == R.id.btn_start_download) {
-            if (AndPermission.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                download();
-            else
-                AndPermission.with(this)
-                        .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .requestCode(100)
-                        .send();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        AndPermission.onRequestPermissionsResult(requestCode, permissions, grantResults, new PermissionListener() {
+        mBtnStart.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSucceed(int requestCode, List<String> grantPermissions) {
+            public void onClick(View v) {
                 download();
-            }
-
-            @Override
-            public void onFailed(int requestCode, List<String> deniedPermissions) {
             }
         });
     }

@@ -481,8 +481,7 @@ public abstract class BasicRequest implements IBasicRequest {
      */
     private void validateMethodForBody(String methodObject) {
         if (!getRequestMethod().allowRequestBody())
-            throw new IllegalArgumentException(methodObject + " only supports these request methods: " +
-                    "POST/PUT/PATCH/DELETE.");
+            throw new IllegalArgumentException(methodObject + " only supports these request methods: POST/PUT/PATCH/DELETE.");
     }
 
     @Override
@@ -585,8 +584,7 @@ public abstract class BasicRequest implements IBasicRequest {
             this.mRequestBody = requestBody;
             mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
         } else {
-            throw new IllegalArgumentException("Can only accept ByteArrayInputStream and FileInputStream type of " +
-                    "stream");
+            throw new IllegalArgumentException("Can only accept ByteArrayInputStream and FileInputStream type of stream");
         }
         return this;
     }
@@ -683,7 +681,7 @@ public abstract class BasicRequest implements IBasicRequest {
     protected void writeRequestBody(OutputStream writer) throws IOException {
         if (mRequestBody != null) {
             if (writer instanceof CounterOutputStream) {
-                writer.write(mRequestBody.available());
+                ((CounterOutputStream) writer).writeLength(mRequestBody.available());
             } else {
                 IOUtils.write(mRequestBody, writer);
                 IOUtils.closeQuietly(mRequestBody);
@@ -729,9 +727,8 @@ public abstract class BasicRequest implements IBasicRequest {
      * @throws IOException Write the data may be abnormal.
      */
     private void writeFormString(OutputStream writer, String key, String value) throws IOException {
-        String stringFieldBuilder = startBoundary + "\r\n"
-                + "Content-Disposition: form-data; name=\"" + key + "\"\r\n"
-                + "Content-Type: text/plain; charset=" + getParamsEncoding() + "\r\n\r\n";
+        String stringFieldBuilder = startBoundary + "\r\n" +
+                "Content-Disposition: form-data; name=\"" + key + "\"\r\n\n";
 
         writer.write(stringFieldBuilder.getBytes(getParamsEncoding()));
         writer.write(value.getBytes(getParamsEncoding()));
@@ -743,14 +740,12 @@ public abstract class BasicRequest implements IBasicRequest {
     private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
         if (!value.isCanceled()) {
             String binaryFieldBuilder = startBoundary + "\r\n" +
-                    "Content-Disposition: form-data; name=\"" + key + "\"" + "; filename=\"" + value.getFileName() +
-                    "\"\r\n"
-                    + "Content-Type: " + value.getMimeType() + "\r\n"
-                    + "Content-Transfer-Encoding: binary\r\n\r\n";
+                    "Content-Disposition: form-data; name=\"" + key + "\"" + "; filename=\"" + value.getFileName() + "\"\r\n" +
+                    "Content-Type: " + value.getMimeType() + "\r\n\n";
             writer.write(binaryFieldBuilder.getBytes());
 
             if (writer instanceof CounterOutputStream) {
-                ((CounterOutputStream) writer).write(value.getLength());
+                ((CounterOutputStream) writer).writeLength(value.getLength());
             } else {
                 value.onWriteBinary(writer);
             }
@@ -767,7 +762,8 @@ public abstract class BasicRequest implements IBasicRequest {
         StringBuilder paramBuilder = buildCommonParams(mParamKeyValues, getParamsEncoding());
         if (paramBuilder.length() > 0) {
             String params = paramBuilder.toString();
-            Logger.i("Body: " + params);
+            if (!(writer instanceof CounterOutputStream))
+                Logger.i("Body: " + params);
             IOUtils.write(params.getBytes(), writer);
         }
     }

@@ -18,6 +18,7 @@ package com.yanzhenjie.nohttp.sample.activity.cache;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
@@ -27,8 +28,6 @@ import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 /**
  * Created by Yan Zhenjie on 2016/3/13.
@@ -49,35 +48,38 @@ public class CacheActivity extends BaseActivity {
         }
 
         RecyclerListMultiAdapter listAdapter = new RecyclerListMultiAdapter(listItems, mItemClickListener);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_cache_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_cache_activity);
         recyclerView.setAdapter(listAdapter);
     }
 
     /**
      * list item单击。
      */
-    private OnItemClickListener mItemClickListener = (v, position) -> {
-        Intent intent = null;
-        switch (position) {
-            case 0:// Http标准协议的缓存。
-                intent = new Intent(this, CacheHttpActivity.class);
-                break;
-            case 1:// 请求网络失败后返回上次的缓存。
-                intent = new Intent(this, CacheRequestFailedReadCacheActivity.class);
-                break;
-            case 2:// 没有缓存才去请求网络。
-                intent = new Intent(this, CacheNoneCacheRequestNetWorkActivity.class);
-                break;
-            case 3:// 仅仅请求缓存。
-                intent = new Intent(this, CacheOnlyReadCacheActivity.class);
-                break;
-            case 4:// 仅仅请求网络。
-                intent = new Intent(this, CacheOnlyRequestNetworkActivity.class);
-                break;
-            default:
-                break;
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, int position) {
+            Intent intent = null;
+            switch (position) {
+                case 0:// Http标准协议的缓存。
+                    intent = new Intent(CacheActivity.this, CacheHttpActivity.class);
+                    break;
+                case 1:// 请求网络失败后返回上次的缓存。
+                    intent = new Intent(CacheActivity.this, CacheRequestFailedReadCacheActivity.class);
+                    break;
+                case 2:// 没有缓存才去请求网络。
+                    intent = new Intent(CacheActivity.this, CacheNoneCacheRequestNetWorkActivity.class);
+                    break;
+                case 3:// 仅仅请求缓存。
+                    intent = new Intent(CacheActivity.this, CacheOnlyReadCacheActivity.class);
+                    break;
+                case 4:// 仅仅请求网络。
+                    intent = new Intent(CacheActivity.this, CacheOnlyRequestNetworkActivity.class);
+                    break;
+                default:
+                    break;
+            }
+            if (intent != null)
+                startActivity(intent);
         }
-        if (intent != null)
-            startActivity(intent);
     };
 }

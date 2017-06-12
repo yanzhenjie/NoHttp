@@ -18,6 +18,7 @@ package com.yanzhenjie.nohttp.sample.activity.download;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
@@ -26,8 +27,6 @@ import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 
 import java.util.Arrays;
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 /**
  * <p>下载件demo.</p>
@@ -44,18 +43,21 @@ public class DownloadActivity extends BaseActivity {
         List<String> listItems = Arrays.asList(getResources().getStringArray(R.array.activity_download_item));
 
         RecyclerListSingleAdapter listAdapter = new RecyclerListSingleAdapter(listItems, mItemClickListener);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_download_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_download_activity);
         recyclerView.setAdapter(listAdapter);
     }
 
     /**
      * list item单击.
      */
-    private OnItemClickListener mItemClickListener = (v, position) -> {
-        if (position == 0) {// 下载单个文件
-            startActivity(new Intent(DownloadActivity.this, DownloadSingleFileActivity.class));
-        } else if (position == 1) {// 下载多个文件
-            startActivity(new Intent(DownloadActivity.this, DownloadFileListActivity.class));
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, int position) {
+            if (position == 0) {// 下载单个文件
+                startActivity(new Intent(DownloadActivity.this, DownloadSingleFileActivity.class));
+            } else if (position == 1) {// 下载多个文件
+                startActivity(new Intent(DownloadActivity.this, DownloadFileListActivity.class));
+            }
         }
     };
 

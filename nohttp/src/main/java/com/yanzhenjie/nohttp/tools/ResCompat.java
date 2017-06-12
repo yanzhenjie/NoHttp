@@ -18,7 +18,6 @@ package com.yanzhenjie.nohttp.tools;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
@@ -31,8 +30,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.NoHttp;
-
-import java.lang.reflect.Method;
 
 /**
  * Created in Nov 27, 2015 6:20:48 PM.
@@ -47,22 +44,10 @@ public class ResCompat {
 
     public static Drawable getDrawable(int drawableId, Theme theme) {
         Resources resources = NoHttp.getContext().getResources();
-        Class<?> resourcesClass = resources.getClass();
-        if (Build.VERSION.SDK_INT >= AndroidVersion.LOLLIPOP)
-            try {
-                Method getDrawableMethod = resourcesClass.getMethod("getDrawable", int.class, Theme.class);
-                getDrawableMethod.setAccessible(true);
-                return (Drawable) getDrawableMethod.invoke(resources, drawableId, theme);
-            } catch (Throwable e) {
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            return resources.getDrawable(drawableId, theme);
         else
-            try {
-                Method getDrawableMethod = resourcesClass.getMethod("getDrawable", int.class);
-                getDrawableMethod.setAccessible(true);
-                return (Drawable) getDrawableMethod.invoke(resources, drawableId);
-            } catch (Throwable e) {
-            }
-        return null;
+            return resources.getDrawable(drawableId);
     }
 
     public static void setLeftDrawable(TextView textView, Drawable leftDrawable) {
@@ -113,8 +98,11 @@ public class ResCompat {
         setBottomDrawable(textView, getDrawable(drawableId));
     }
 
-    public static void setCompoundDrawables(TextView textView, Drawable leftDrawable, Drawable topDrawable,
-                                            Drawable rightDrawable, Drawable bottomDrawable) {
+    public static void setCompoundDrawables(TextView textView,
+                                            Drawable leftDrawable,
+                                            Drawable topDrawable,
+                                            Drawable rightDrawable,
+                                            Drawable bottomDrawable) {
         setDrawableBounds(leftDrawable);
         setDrawableBounds(topDrawable);
         setDrawableBounds(rightDrawable);
@@ -122,10 +110,16 @@ public class ResCompat {
         textView.setCompoundDrawables(leftDrawable, topDrawable, rightDrawable, bottomDrawable);
     }
 
-    public static void setCompoundDrawables(TextView textView, int drawableLeftId, int drawableRightId, int
-            drawableTopId, int drawableBottomId) {
-        setCompoundDrawables(textView, getDrawable(drawableLeftId), getDrawable(drawableRightId), getDrawable
-                (drawableTopId), getDrawable(drawableBottomId));
+    public static void setCompoundDrawables(TextView textView,
+                                            int drawableLeftId,
+                                            int drawableRightId,
+                                            int drawableTopId,
+                                            int drawableBottomId) {
+        setCompoundDrawables(textView,
+                getDrawable(drawableLeftId),
+                getDrawable(drawableRightId),
+                getDrawable(drawableTopId),
+                getDrawable(drawableBottomId));
     }
 
     public static void setDrawableBounds(Drawable drawable) {
@@ -139,22 +133,10 @@ public class ResCompat {
 
     public static int getColor(int colorId, Theme theme) {
         Resources resources = NoHttp.getContext().getResources();
-        Class<?> resourcesClass = resources.getClass();
-        if (Build.VERSION.SDK_INT >= AndroidVersion.M)
-            try {
-                Method getColorMethod = resourcesClass.getMethod("getColor", int.class, Theme.class);
-                getColorMethod.setAccessible(true);
-                return (Integer) getColorMethod.invoke(resources, colorId, theme);
-            } catch (Throwable e) {
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            return resources.getColor(colorId, theme);
         else
-            try {
-                Method getColorMethod = resourcesClass.getMethod("getColor", int.class);
-                getColorMethod.setAccessible(true);
-                return (Integer) getColorMethod.invoke(resources, colorId);
-            } catch (Throwable e) {
-            }
-        return Color.BLACK;
+            return resources.getColor(colorId);
     }
 
     public static ColorStateList getColorStateList(int colorStateId) {
@@ -163,23 +145,10 @@ public class ResCompat {
 
     public static ColorStateList getColorStateList(int colorStateId, Theme theme) {
         Resources resources = NoHttp.getContext().getResources();
-        Class<?> resourcesClass = resources.getClass();
-        if (Build.VERSION.SDK_INT >= AndroidVersion.M)
-            try {
-                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class, Theme
-                        .class);
-                getColorStateListMethod.setAccessible(true);
-                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId, theme);
-            } catch (Throwable e) {
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            return resources.getColorStateList(colorStateId, theme);
         else
-            try {
-                Method getColorStateListMethod = resourcesClass.getMethod("getColorStateList", int.class);
-                getColorStateListMethod.setAccessible(true);
-                return (ColorStateList) getColorStateListMethod.invoke(resources, colorStateId);
-            } catch (Throwable e) {
-            }
-        return null;
+            return resources.getColorStateList(colorStateId);
     }
 
     public static void setBackground(View view, int drawableId) {
@@ -187,19 +156,10 @@ public class ResCompat {
     }
 
     public static void setBackground(View view, Drawable background) {
-        if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN)
-            setBackground("setBackground", view, background);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            view.setBackground(background);
         else
-            setBackground("setBackgroundDrawable", view, background);
-    }
-
-    public static void setBackground(String method, View view, Drawable background) {
-        try {
-            Method viewMethod = view.getClass().getMethod(method, Drawable.class);
-            viewMethod.setAccessible(true);
-            viewMethod.invoke(view, background);
-        } catch (Throwable e) {
-        }
+            view.setBackgroundDrawable(background);
     }
 
     public static SpannableString getScaleText(CharSequence content, int start, int end, int px) {

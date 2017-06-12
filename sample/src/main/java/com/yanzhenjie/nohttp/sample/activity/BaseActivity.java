@@ -15,6 +15,7 @@
  */
 package com.yanzhenjie.nohttp.sample.activity;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -27,16 +28,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.dialog.ImageDialog;
-import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
-import com.yanzhenjie.nohttp.sample.nohttp.HttpResponseListener;
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.RequestQueue;
-
-import butterknife.ButterKnife;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.dialog.ImageDialog;
+import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
+import com.yanzhenjie.nohttp.sample.nohttp.HttpResponseListener;
 
 /**
  * Created in 2016/5/8 18:19.
@@ -60,10 +59,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         // 初始化请求队列，传入的参数是请求并发值。
         mQueue = NoHttp.newRequestQueue(1);
 
-        mCoordinatorLayout = ButterKnife.findById(this, R.id.coordinatorlayout);
-        mAppBarLayout = ButterKnife.findById(this, R.id.appbarlayout);
-        mToolbar = ButterKnife.findById(this, R.id.toolbar);
-        mContentLayout = ButterKnife.findById(this, R.id.content);
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mContentLayout = (FrameLayout) findViewById(R.id.content);
 
         setSupportActionBar(mToolbar);
         setBackBar(true);
@@ -245,7 +244,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
         builder.setMessage(message);
-        builder.setPositiveButton(R.string.know, (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton(R.string.know, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
         builder.show();
     }
 

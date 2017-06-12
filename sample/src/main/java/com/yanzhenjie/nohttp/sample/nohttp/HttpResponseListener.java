@@ -16,6 +16,7 @@
 package com.yanzhenjie.nohttp.sample.nohttp;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.dialog.WaitDialog;
@@ -65,7 +66,12 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
         if (activity != null && isLoading) {
             mWaitDialog = new WaitDialog(activity);
             mWaitDialog.setCancelable(canCancel);
-            mWaitDialog.setOnCancelListener(dialog -> mRequest.cancel());
+            mWaitDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    mRequest.cancel();
+                }
+            });
         }
         this.callback = httpCallback;
     }

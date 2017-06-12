@@ -17,12 +17,12 @@ package com.yanzhenjie.nohttp.sample.activity.cancel;
 
 import android.os.Bundle;
 
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Request;
+import com.yanzhenjie.nohttp.rest.StringRequest;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.NoHttp;
-import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.rest.Request;
 
 /**
  * <p>和Activity声明周期联动取消。</p>
@@ -41,12 +41,13 @@ public class CancelLinkageActivity extends BaseActivity {
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_cacel_demo);
 
-        mRequest = NoHttp.createStringRequest(Constants.URL_NOHTTP_JSONOBJECT, RequestMethod.GET);
+        mRequest = new StringRequest(Constants.URL_NOHTTP_JSONOBJECT, RequestMethod.GET);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        
         // 退出时取消请求。
         if (mRequest != null)
             mRequest.cancel();

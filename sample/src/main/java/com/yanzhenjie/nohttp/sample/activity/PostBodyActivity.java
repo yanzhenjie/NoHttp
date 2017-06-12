@@ -20,23 +20,19 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
-import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
+import com.yanzhenjie.nohttp.sample.util.Constants;
+import com.yanzhenjie.nohttp.sample.util.Snackbar;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * <p>提交Json到服务器。</p>
@@ -44,18 +40,18 @@ import butterknife.OnClick;
  *
  * @author Yan Zhenjie;
  */
-public class PostBodyActivity extends BaseActivity {
+public class PostBodyActivity extends BaseActivity implements View.OnClickListener {
 
     /**
      * 要提交的数据。
      */
-    @BindView(R.id.edt_post_body)
     EditText mEdtPostBody;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_post_body);
-        ButterKnife.bind(this);
+        mEdtPostBody = (EditText) findViewById(R.id.edt_post_body);
+        findViewById(R.id.btn_start).setOnClickListener(this);
 
         try {
             InputStream inputStream = getAssets().open("json");
@@ -66,7 +62,7 @@ public class PostBodyActivity extends BaseActivity {
         }
     }
 
-    @OnClick(R.id.btn_start)
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_start) {
             pushBody();

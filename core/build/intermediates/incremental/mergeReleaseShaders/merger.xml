@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="D:\Workspace\OpenSourceWork\NoHttp\core\src\main\shaders"/></dataSet><dataSet config="release"><source path="D:\Workspace\OpenSourceWork\NoHttp\core\src\release\shaders"/></dataSet></merger>

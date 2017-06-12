@@ -15,21 +15,11 @@
  */
 package com.yanzhenjie.nohttp.sample.activity.download;
 
-import android.Manifest;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
-import com.yanzhenjie.nohttp.sample.adapter.LoadFileAdapter;
-import com.yanzhenjie.nohttp.sample.config.AppConfig;
-import com.yanzhenjie.nohttp.sample.entity.LoadFile;
-import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.PermissionListener;
 import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
@@ -42,6 +32,12 @@ import com.yanzhenjie.nohttp.error.StorageSpaceNotEnoughError;
 import com.yanzhenjie.nohttp.error.TimeoutError;
 import com.yanzhenjie.nohttp.error.URLError;
 import com.yanzhenjie.nohttp.error.UnKnownHostError;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
+import com.yanzhenjie.nohttp.sample.adapter.LoadFileAdapter;
+import com.yanzhenjie.nohttp.sample.config.AppConfig;
+import com.yanzhenjie.nohttp.sample.entity.LoadFile;
+import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 
 import java.io.File;
@@ -49,8 +45,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import butterknife.ButterKnife;
 
 /**
  * <p>下载多个文件演示。这里为了简单就把下载卸载当前activity中，建议封装到service中。</p>
@@ -123,7 +117,7 @@ public class DownloadFileListActivity extends BaseActivity {
         }
 
         mLoadFileAdapter = new LoadFileAdapter(mFileList);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_download_list_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_download_list_activity);
         recyclerView.setAdapter(mLoadFileAdapter);
 
         // 提示用wifi
@@ -256,48 +250,11 @@ public class DownloadFileListActivity extends BaseActivity {
     protected boolean onOptionsItemSelectedCompat(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_download_file_download) {
-            if (AndPermission.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                download();
-            else
-                AndPermission.with(this)
-                        .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .requestCode(100)
-                        .send();
+            download();
         } else if (itemId == R.id.menu_download_file_delete) {
-            if (AndPermission.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                delete();
-            else
-                AndPermission.with(this)
-                        .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .requestCode(101)
-                        .send();
+            delete();
         }
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        AndPermission.onRequestPermissionsResult(requestCode, permissions, grantResults, new PermissionListener() {
-            @Override
-            public void onSucceed(int requestCode, List<String> grantPermissions) {
-                switch (requestCode) {
-                    case 100: {
-                        download();
-                        break;
-                    }
-                    case 101: {
-                        delete();
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailed(int requestCode, List<String> deniedPermissions) {
-            }
-        });
     }
 
     @Override

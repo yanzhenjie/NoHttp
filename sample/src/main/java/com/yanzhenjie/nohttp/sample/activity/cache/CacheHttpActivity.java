@@ -19,22 +19,21 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.yanzhenjie.nohttp.NoHttp;
+import com.yanzhenjie.nohttp.rest.CacheMode;
+import com.yanzhenjie.nohttp.rest.Request;
+import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
-import com.yanzhenjie.nohttp.NoHttp;
-import com.yanzhenjie.nohttp.rest.CacheMode;
-import com.yanzhenjie.nohttp.rest.Request;
-import com.yanzhenjie.nohttp.rest.Response;
 
 import java.util.Arrays;
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 /**
  * <p>Http相应头304缓存演示.</p>
@@ -61,16 +60,19 @@ public class CacheHttpActivity extends BaseActivity {
 
         List<String> cacheDataTypes = Arrays.asList(getResources().getStringArray(R.array.activity_cache_item));
         RecyclerListSingleAdapter listAdapter = new RecyclerListSingleAdapter(cacheDataTypes, mItemClickListener);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_cache_demo_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_cache_demo_activity);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = (v, position) -> {
-        if (0 == position) {// 请求String。
-            requestString();
-        } else if (1 == position) {// 请求图片。
-            requestImage();
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, int position) {
+            if (0 == position) {// 请求String。
+                requestString();
+            } else if (1 == position) {// 请求图片。
+                requestImage();
+            }
         }
     };
 

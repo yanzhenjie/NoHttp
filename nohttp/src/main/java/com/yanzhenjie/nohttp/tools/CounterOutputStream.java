@@ -32,9 +32,8 @@ public class CounterOutputStream extends OutputStream {
     public CounterOutputStream() {
     }
 
-    public void write(long count) {
-        if (count > 0)
-            length.addAndGet(count);
+    public void writeLength(long count) {
+        length.addAndGet(count);
     }
 
     public long get() {
@@ -43,7 +42,7 @@ public class CounterOutputStream extends OutputStream {
 
     @Override
     public void write(int oneByte) throws IOException {
-        length.addAndGet(oneByte);
+        length.addAndGet(1);
     }
 
     @Override

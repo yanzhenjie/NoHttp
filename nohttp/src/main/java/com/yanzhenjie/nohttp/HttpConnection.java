@@ -24,6 +24,7 @@ import com.yanzhenjie.nohttp.error.URLError;
 import com.yanzhenjie.nohttp.error.UnKnownHostError;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.tools.IOUtils;
+import com.yanzhenjie.nohttp.tools.MultiValueMap;
 import com.yanzhenjie.nohttp.tools.NetUtil;
 
 import java.io.IOException;
@@ -196,7 +197,7 @@ public class HttpConnection {
             if (redirectHandler.isDisallowedRedirect(responseHeaders))
                 return new Connection(null, responseHeaders, null, null);
             else {
-                redirectRequest = redirectHandler.onRedirect(responseHeaders);
+                redirectRequest = redirectHandler.onRedirect(oldRequest, responseHeaders);
             }
         }
         if (redirectRequest == null) {
@@ -214,6 +215,27 @@ public class HttpConnection {
 
             redirectRequest = new BasicRequest(location, oldRequest.getRequestMethod()) {
             };
+
+            // headers.
+            Headers headers = oldRequest.headers();
+            for (Map.Entry<String, List<String>> stringListEntry : headers.entrySet()) {
+                String key = stringListEntry.getKey();
+                List<String> values = stringListEntry.getValue();
+                for (String value : values) {
+                    redirectRequest.addHeader(key, value);
+                }
+            }
+
+            // params.
+            MultiValueMap<String, Object> multiValueMap = oldRequest.getParamKeyValues();
+            for (Map.Entry<String, List<Object>> stringListEntry : multiValueMap.entrySet()) {
+                String key = stringListEntry.getKey();
+                List<Object> values = stringListEntry.getValue();
+                for (Object value : values) {
+                    if (value instanceof CharSequence) redirectRequest.add(key, value.toString());
+                    else if (value instanceof Binary) redirectRequest.add(key, (Binary) value);
+                }
+            }
             redirectRequest.setRedirectHandler(oldRequest.getRedirectHandler());
             redirectRequest.setSSLSocketFactory(oldRequest.getSSLSocketFactory());
             redirectRequest.setHostnameVerifier(oldRequest.getHostnameVerifier());

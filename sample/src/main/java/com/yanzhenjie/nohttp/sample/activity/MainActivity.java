@@ -38,14 +38,11 @@ import com.yanzhenjie.nohttp.sample.activity.upload.UploadFileActivity;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListMultiAdapter;
 import com.yanzhenjie.nohttp.sample.entity.ListItem;
 import com.yanzhenjie.nohttp.sample.util.DisplayUtils;
+import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 import com.yanzhenjie.nohttp.sample.view.ListRecyclerCardItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindArray;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * <p>开始界面.</p>
@@ -55,25 +52,15 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.app_bar_layout)
     AppBarLayout mAppBarLayout;
-    @BindView(R.id.toolbar_root)
     ViewGroup mToolbarRoot;
     private int headViewSize;
 
-    @BindView(R.id.iv_head_background)
     ImageView mIvHeadBackground;
-
-    @BindView(R.id.iv_toolbar_head)
     ImageView mIvToolbarHead;
-
-    @BindView(R.id.rv_start_activity)
     RecyclerView mRvContent;
 
-    @BindArray(R.array.activity_start_items)
     String[] titles;
-
-    @BindArray(R.array.activity_start_items_des)
     String[] titlesDes;
 
 
@@ -84,7 +71,14 @@ public class MainActivity extends AppCompatActivity {
         headViewSize = DisplayUtils.dip2px(42);
 
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        mToolbarRoot = (ViewGroup) findViewById(R.id.toolbar_root);
+        mIvHeadBackground = (ImageView) findViewById(R.id.iv_head_background);
+        mIvToolbarHead = (ImageView) findViewById(R.id.iv_toolbar_head);
+        mRvContent = (RecyclerView) findViewById(R.id.rv_start_activity);
+
+        titles = getResources().getStringArray(R.array.activity_start_items);
+        titlesDes = getResources().getStringArray(R.array.activity_start_items_des);
 
         mIvHeadBackground.getLayoutParams().height = DisplayUtils.screenWidth * 12 / 13;
         mIvHeadBackground.requestLayout();
@@ -109,16 +103,19 @@ public class MainActivity extends AppCompatActivity {
     /**
      * AppBarLayout的offset监听。
      */
-    private AppBarLayout.OnOffsetChangedListener offsetChangedListener = (appBarLayout, verticalOffset) -> {
-        int maxScroll = appBarLayout.getTotalScrollRange();
-        float percentage = (float) Math.abs(verticalOffset) / (float) maxScroll;
-        mIvToolbarHead.setAlpha(percentage);
+    private AppBarLayout.OnOffsetChangedListener offsetChangedListener = new AppBarLayout.OnOffsetChangedListener() {
+        @Override
+        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+            int maxScroll = appBarLayout.getTotalScrollRange();
+            float percentage = (float) Math.abs(verticalOffset) / (float) maxScroll;
+            mIvToolbarHead.setAlpha(percentage);
 
-        int background = (int) (250 * percentage);
-        mToolbarRoot.getBackground().mutate().setAlpha(background);
+            int background = (int) (250 * percentage);
+            mToolbarRoot.getBackground().mutate().setAlpha(background);
 
-        int realSize = (int) (headViewSize * percentage);
-        mToolbarRoot.setTranslationX(realSize);
+            int realSize = (int) (headViewSize * percentage);
+            mToolbarRoot.setTranslationX(realSize);
+        }
     };
 
 
@@ -135,8 +132,12 @@ public class MainActivity extends AppCompatActivity {
         mRvContent.addItemDecoration(new ListRecyclerCardItemDecoration());
         mRvContent.setNestedScrollingEnabled(true);
 
-        RecyclerListMultiAdapter listAdapter = new RecyclerListMultiAdapter(listItems, (v, position) ->
-                goItemPager(position));
+        RecyclerListMultiAdapter listAdapter = new RecyclerListMultiAdapter(listItems, new OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                goItemPager(position);
+            }
+        });
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_start_activity);
         recyclerView.setAdapter(listAdapter);
     }

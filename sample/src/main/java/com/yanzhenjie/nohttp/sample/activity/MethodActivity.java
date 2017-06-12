@@ -17,24 +17,22 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.yanzhenjie.nohttp.NoHttp;
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Request;
+import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.adapter.RecyclerListMultiAdapter;
 import com.yanzhenjie.nohttp.sample.entity.ListItem;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
-import com.yanzhenjie.nohttp.NoHttp;
-import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.rest.Request;
-import com.yanzhenjie.nohttp.rest.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import butterknife.BindArray;
-import butterknife.ButterKnife;
 
 /**
  * <p>演示各种请求方法Demo.<p>
@@ -44,16 +42,14 @@ import butterknife.ButterKnife;
  */
 public class MethodActivity extends BaseActivity {
 
-    @BindArray(R.array.activity_method_item)
     String[] titles;
-
-    @BindArray(R.array.activity_method_item_des)
     String[] titlesDes;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_method);
-        ButterKnife.bind(this);
+        titles = getResources().getStringArray(R.array.activity_method_item);
+        titlesDes = getResources().getStringArray(R.array.activity_method_item_des);
 
         List<ListItem> listItems = new ArrayList<>();
         for (int i = 0; i < titles.length; i++) {
@@ -61,11 +57,16 @@ public class MethodActivity extends BaseActivity {
         }
 
         RecyclerListMultiAdapter listAdapter = new RecyclerListMultiAdapter(listItems, mItemClickListener);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_method_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_method_activity);
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = (v, position) -> request(position);
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, int position) {
+            request(position);
+        }
+    };
 
     /**
      * @param position

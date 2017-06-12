@@ -15,41 +15,27 @@
  */
 package com.yanzhenjie.nohttp.sample.activity.upload;
 
-import android.Manifest;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
-import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
-import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.Snackbar;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.PermissionListener;
+import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.task.LocalImageLoader;
 import com.yanzhenjie.nohttp.FileBinary;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.OnUploadListener;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
-import com.yanzhenjie.nohttp.tools.ImageLocalLoader;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
+import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
+import com.yanzhenjie.nohttp.sample.util.Constants;
 
 import java.io.File;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * <p>从相册选择图片上传。</p>
@@ -57,7 +43,7 @@ import butterknife.OnClick;
  *
  * @author Yan Zhenjie;
  */
-public class UploadAlbumActivity extends BaseActivity {
+public class UploadAlbumActivity extends BaseActivity implements View.OnClickListener {
 
     /**
      * 相册选择回调。
@@ -67,98 +53,55 @@ public class UploadAlbumActivity extends BaseActivity {
     /**
      * 展示选择的头像。
      */
-    @BindView(R.id.iv_icon)
     ImageView mIvIcon;
-    /**
-     * 选择的图片路径。
-     */
-    private String mImagePath;
     /**
      * 显示状态。
      */
-    @BindView(R.id.tv_result)
     TextView mTvResult;
     /**
      * 显示进度。
      */
-    @BindView(R.id.pb_progress)
     ProgressBar mProgressBar;
+
+    private String filePath;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_upload_album);
-        ButterKnife.bind(this);
+        mIvIcon = (ImageView) findViewById(R.id.iv_icon);
+        mTvResult = (TextView) findViewById(R.id.tv_result);
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_progress);
+
+        findViewById(R.id.btn_album).setOnClickListener(this);
+        findViewById(R.id.btn_start).setOnClickListener(this);
     }
 
     /**
      * 按钮点击。
      */
-    @OnClick({R.id.btn_album, R.id.btn_start})
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_album) {
-            if (AndPermission.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                selectImageFormAlbum();
-            else
-                AndPermission.with(this)
-                        .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .requestCode(100)
-                        .send();
+            Album.album(this)
+                    .columnCount(1)
+                    .requestCode(RESULT_BACK_ALBUM)
+                    .start();
         } else if (v.getId() == R.id.btn_start) {
-            upload();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        AndPermission.onRequestPermissionsResult(requestCode, permissions, grantResults, new PermissionListener() {
-            @Override
-            public void onSucceed(int requestCode, List<String> grantPermissions) {
-                selectImageFormAlbum();
-            }
-
-            @Override
-            public void onFailed(int requestCode, List<String> deniedPermissions) {
-            }
-        });
-    }
-
-    /**
-     * 选择图片。
-     */
-    private void selectImageFormAlbum() {
-        Intent picture = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media
-                .EXTERNAL_CONTENT_URI);
-        startActivityForResult(picture, RESULT_FIRST_USER);
-    }
-
-    /**
-     * 上传图片。
-     */
-    private void upload() {
-        if (TextUtils.isEmpty(mImagePath))
-            Snackbar.show(this, R.string.upload_file_select_album_null);
-        else {
-            File file = new File(mImagePath);
-            if (file.exists())
-                executeUpload(file);
-            else
-                Snackbar.show(this, R.string.upload_file_select_album_null_again);
+            executeUpload();
         }
     }
 
     /**
      * 执行上传任务。
      */
-    private void executeUpload(File file) {
+    private void executeUpload() {
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_UPLOAD, RequestMethod.POST);
 
         // 添加普通参数。
         request.add("user", "yolanda");
 
         // 上传文件需要实现NoHttp的Binary接口，NoHttp默认实现了FileBinary、InputStreamBinary、ByteArrayBitnary、BitmapBinary。
-        FileBinary fileBinary0 = new FileBinary(file);
+        FileBinary fileBinary0 = new FileBinary(new File(filePath));
         /**
          * 监听上传过程，如果不需要监听就不用设置。
          * 第一个参数：what，what和handler的what一样，会在回调被调用的回调你开发者，作用是一个Listener可以监听多个文件的上传状态。
@@ -214,22 +157,13 @@ public class UploadAlbumActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RESULT_BACK_ALBUM && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            getRealPathFromURI(uri);
-            ImageLocalLoader.getInstance().loadImage(mIvIcon, mImagePath);
-        }
-    }
-
-    public void getRealPathFromURI(Uri contentUri) {
-        String[] filePathColumns = {MediaStore.MediaColumns.DATA};
-        ContentResolver contentResolver = getContentResolver();
-        Cursor c = contentResolver.query(contentUri, filePathColumns, null, null, null);
-        if (c != null) {
-            c.moveToFirst();
-            int columnIndex = c.getColumnIndex(filePathColumns[0]);
-            mImagePath = c.getString(columnIndex);
-            c.close();
+        if (resultCode != RESULT_OK) return;
+        switch (requestCode) {
+            case 1: {
+                this.filePath = Album.parseResult(data).get(0);
+                LocalImageLoader.getInstance().loadImage(mIvIcon, filePath);
+                break;
+            }
         }
     }
 }

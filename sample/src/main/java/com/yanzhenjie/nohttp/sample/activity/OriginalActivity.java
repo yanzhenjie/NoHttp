@@ -39,17 +39,13 @@ import com.yanzhenjie.nohttp.sample.util.Toast;
 
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 /**
  * <p>最原始的使用方法。这里没有任何的对NoHttp的封装，就是new队列，然后把new请求，把请求添加到队列，完成请求。</p>
  * Created in Nov 4, 2015 1:38:02 PM.
  *
  * @author Yan Zhenjie.
  */
-public class OriginalActivity extends BaseActivity {
+public class OriginalActivity extends BaseActivity implements View.OnClickListener {
 
     /**
      * 用来标志请求的what, 类似handler的what一样，这里用来区分请求。
@@ -66,13 +62,13 @@ public class OriginalActivity extends BaseActivity {
      */
     private RequestQueue mQueue;
 
-    @BindView(R.id.tv_result)
     TextView mTvResult;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_original);
-        ButterKnife.bind(this);
+        mTvResult = (TextView) findViewById(R.id.tv_result);
+        findViewById(R.id.btn_start).setOnClickListener(this);
 
         mWaitDialog = new WaitDialog(this);
 
@@ -82,7 +78,7 @@ public class OriginalActivity extends BaseActivity {
 
     private Object sign = new Object();
 
-    @OnClick(R.id.btn_start)
+    @Override
     public void onClick(View v) {
         // 创建请求对象。
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_JSONOBJECT, RequestMethod.GET);

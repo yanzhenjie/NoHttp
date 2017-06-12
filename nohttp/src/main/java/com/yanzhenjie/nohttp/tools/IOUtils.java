@@ -19,8 +19,6 @@ import android.os.Build;
 import android.os.StatFs;
 import android.text.TextUtils;
 
-import com.yanzhenjie.nohttp.Logger;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -39,7 +37,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +52,7 @@ public class IOUtils {
         if (closeable != null)
             try {
                 closeable.close();
-            } catch (Exception e) {
-                Logger.w(e);
+            } catch (Exception ignored) {
             }
     }
 
@@ -64,8 +60,7 @@ public class IOUtils {
         if (flushable != null)
             try {
                 flushable.flush();
-            } catch (Exception e) {
-                Logger.w(e);
+            } catch (Exception ignored) {
             }
     }
 
@@ -75,13 +70,11 @@ public class IOUtils {
     }
 
     public static BufferedInputStream toBufferedInputStream(InputStream inputStream) {
-        return inputStream instanceof BufferedInputStream ? (BufferedInputStream) inputStream : new
-                BufferedInputStream(inputStream);
+        return inputStream instanceof BufferedInputStream ? (BufferedInputStream) inputStream : new BufferedInputStream(inputStream);
     }
 
     public static BufferedOutputStream toBufferedOutputStream(OutputStream outputStream) {
-        return outputStream instanceof BufferedOutputStream ? (BufferedOutputStream) outputStream : new
-                BufferedOutputStream(outputStream);
+        return outputStream instanceof BufferedOutputStream ? (BufferedOutputStream) outputStream : new BufferedOutputStream(outputStream);
     }
 
     public static BufferedReader toBufferedReader(Reader reader) {
@@ -150,20 +143,16 @@ public class IOUtils {
     }
 
     public static byte[] toByteArray(InputStream input, int size) throws IOException {
-        if (size < 0)
-            throw new IllegalArgumentException("Size must be equal or greater than zero: " + size);
+        if (size < 0) throw new IllegalArgumentException("Size must be equal or greater than zero: " + size);
 
-        if (size == 0)
-            return new byte[0];
+        if (size == 0) return new byte[0];
 
         byte[] data = new byte[size];
         int offset = 0;
         int byteCount;
-        while ((offset < size) && (byteCount = input.read(data, offset, size - offset)) != -1)
-            offset += byteCount;
+        while ((offset < size) && (byteCount = input.read(data, offset, size - offset)) != -1) offset += byteCount;
 
-        if (offset != size)
-            throw new IOException("Unexpected byte count size. current: " + offset + ", excepted: " + size);
+        if (offset != size) throw new IOException("Unexpected byte count size. current: " + offset + ", excepted: " + size);
         return data;
     }
 
@@ -217,7 +206,7 @@ public class IOUtils {
 
     public static List<String> readLines(Reader input) throws IOException {
         BufferedReader reader = toBufferedReader(input);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         String line = reader.readLine();
         while (line != null) {
             list.add(line);
@@ -319,9 +308,7 @@ public class IOUtils {
         int ch = input1.read();
         while (-1 != ch) {
             int ch2 = input2.read();
-            if (ch != ch2) {
-                return false;
-            }
+            if (ch != ch2) return false;
             ch = input1.read();
         }
 
@@ -336,9 +323,7 @@ public class IOUtils {
         int ch = input1.read();
         while (-1 != ch) {
             int ch2 = input2.read();
-            if (ch != ch2) {
-                return false;
-            }
+            if (ch != ch2) return false;
             ch = input1.read();
         }
 
@@ -372,26 +357,10 @@ public class IOUtils {
         } catch (Exception e) {
             return 0;
         }
-        if (Build.VERSION.SDK_INT >= AndroidVersion.JELLY_BEAN_MR2)
-            return getStatFsSize(stat, "getBlockSizeLong", "getAvailableBlocksLong");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
+            return stat.getBlockSizeLong() * stat.getAvailableBlocksLong();
         else
-            return getStatFsSize(stat, "getBlockSize", "getAvailableBlocks");
-    }
-
-    private static long getStatFsSize(StatFs statFs, String blockSizeMethod, String availableBlocksMethod) {
-        try {
-            Method getBlockSizeMethod = statFs.getClass().getMethod(blockSizeMethod);
-            getBlockSizeMethod.setAccessible(true);
-
-            Method getAvailableBlocksMethod = statFs.getClass().getMethod(availableBlocksMethod);
-            getAvailableBlocksMethod.setAccessible(true);
-
-            long blockSize = (Long) getBlockSizeMethod.invoke(statFs);
-            long availableBlocks = (Long) getAvailableBlocksMethod.invoke(statFs);
-            return blockSize * availableBlocks;
-        } catch (Throwable e) {
-        }
-        return 0;
+            return stat.getBlockSize() * stat.getAvailableBlocks();
     }
 
     /**

@@ -17,24 +17,23 @@ package com.yanzhenjie.nohttp.sample.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
-import com.yanzhenjie.nohttp.sample.R;
-import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
-import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
-import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.IBasicRequest;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RedirectHandler;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
+import com.yanzhenjie.nohttp.sample.R;
+import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
+import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
+import com.yanzhenjie.nohttp.sample.util.Constants;
+import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import butterknife.ButterKnife;
 
 /**
  * Created in Jan 31, 2016 4:30:31 PM;
@@ -49,15 +48,18 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
 
         List<String> imageItems = Arrays.asList(getResources().getStringArray(R.array.activity_redirect_item));
         RecyclerListSingleAdapter listAdapter = new RecyclerListSingleAdapter(imageItems, mItemClickListener);
-        RecyclerView recyclerView = ButterKnife.findById(this, R.id.rv_redirect_activity);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_redirect_activity);
         recyclerView.setAdapter(listAdapter);
     }
 
-    private OnItemClickListener mItemClickListener = (v, position) -> {
-        if (0 == position) {
-            requestAllowRedirect();
-        } else {
-            requestDisAllowRedirect();
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, int position) {
+            if (0 == position) {
+                requestAllowRedirect();
+            } else {
+                requestDisAllowRedirect();
+            }
         }
     };
 
@@ -68,7 +70,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
         final Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_REDIRECT_BAIDU);
         request.setRedirectHandler(new RedirectHandler() {
             @Override
-            public IBasicRequest onRedirect(Headers responseHeaders) {
+            public IBasicRequest onRedirect(IBasicRequest oldRequest, Headers responseHeaders) {
                 // 允许重定向时这个方法会被调用
                 // 1. 返回null，NoHttp会自动拷贝父请求的请求方法和代理自动请求，不会拷贝其他属性。
                 // 2. 返回非null，会把这个新请求的数据交给父请求去解析。
@@ -94,7 +96,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_REDIRECT_BAIDU);
         request.setRedirectHandler(new RedirectHandler() {
             @Override
-            public IBasicRequest onRedirect(Headers responseHeaders) {
+            public IBasicRequest onRedirect(IBasicRequest oldRequest, Headers responseHeaders) {
                 // 不允许重定向时此方法不会被调用。
                 return null;
             }

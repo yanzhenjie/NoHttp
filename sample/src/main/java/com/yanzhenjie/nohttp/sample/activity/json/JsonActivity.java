@@ -19,40 +19,38 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.yanzhenjie.nohttp.NoHttp;
+import com.yanzhenjie.nohttp.rest.Request;
+import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
-import com.yanzhenjie.nohttp.NoHttp;
-import com.yanzhenjie.nohttp.rest.Request;
-import com.yanzhenjie.nohttp.rest.Response;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 /**
  * Created in Jan 31, 2016 10:16:26 PM.
  *
  * @author Yan Zhenjie.
  */
-public class JsonActivity extends BaseActivity {
+public class JsonActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.tv_result)
     TextView mTvResult;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_json);
-        ButterKnife.bind(this);
+        mTvResult = (TextView) findViewById(R.id.tv_result);
+
+        findViewById(R.id.btn_object_reqeust).setOnClickListener(this);
+        findViewById(R.id.btn_array_request).setOnClickListener(this);
     }
 
-    @OnClick({R.id.btn_object_reqeust, R.id.btn_array_request})
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_object_reqeust) {
             Request<JSONObject> request = NoHttp.createJsonObjectRequest(Constants.URL_NOHTTP_JSONOBJECT);
