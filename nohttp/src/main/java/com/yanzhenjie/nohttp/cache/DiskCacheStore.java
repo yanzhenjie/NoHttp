@@ -19,6 +19,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.yanzhenjie.nohttp.Logger;
+import com.yanzhenjie.nohttp.rest.AsyncRequestExecutor;
 import com.yanzhenjie.nohttp.tools.CacheStore;
 import com.yanzhenjie.nohttp.tools.Encryption;
 import com.yanzhenjie.nohttp.tools.IOUtils;

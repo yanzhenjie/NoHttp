@@ -18,7 +18,6 @@ package com.yanzhenjie.nohttp;
 import android.os.Build;
 import android.text.TextUtils;
 
-import java.lang.reflect.Field;
 import java.util.Locale;
 
 /**
@@ -51,21 +50,8 @@ public class UserAgent {
      * @return UA.
      */
     public static String newInstance() {
-        String webUserAgent = null;
-        try {
-            Class<?> sysResCls = Class.forName("com.android.internal.R$string");
-            Field webUserAgentField = sysResCls.getDeclaredField("web_user_agent");
-            Integer resId = (Integer) webUserAgentField.get(null);
-            webUserAgent = NoHttp.getContext().getString(resId);
-        } catch (Exception e) {
-            // We have nothing to do
-        }
-        if (TextUtils.isEmpty(webUserAgent)) {
-            webUserAgent = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 " +
-                    "%sSafari/533.1";
-        }
+        String webUserAgent = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 %sSafari/533.1";
 
-        Locale locale = Locale.getDefault();
         StringBuffer buffer = new StringBuffer();
         // Add version
         final String version = Build.VERSION.RELEASE;
@@ -76,6 +62,8 @@ public class UserAgent {
             buffer.append("1.0");
         }
         buffer.append("; ");
+
+        Locale locale = Locale.getDefault();
         final String language = locale.getLanguage();
         if (language != null) {
             buffer.append(language.toLowerCase(locale));
@@ -90,16 +78,14 @@ public class UserAgent {
         }
         // add the model for the release build
         if ("REL".equals(Build.VERSION.CODENAME)) {
-            final String model = Build.MODEL;
-            if (model.length() > 0) {
+            if (Build.MODEL.length() > 0) {
                 buffer.append("; ");
-                buffer.append(model);
+                buffer.append(Build.MODEL);
             }
         }
-        final String id = Build.ID;
-        if (id.length() > 0) {
+        if (Build.ID.length() > 0) {
             buffer.append(" Build/");
-            buffer.append(id);
+            buffer.append(Build.ID);
         }
         return String.format(webUserAgent, buffer, "Mobile ");
     }

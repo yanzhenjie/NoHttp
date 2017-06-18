@@ -17,6 +17,10 @@ package com.yanzhenjie.nohttp;
 
 import android.text.TextUtils;
 
+import com.yanzhenjie.nohttp.able.Cancelable;
+import com.yanzhenjie.nohttp.able.Finishable;
+import com.yanzhenjie.nohttp.able.Startable;
+import com.yanzhenjie.nohttp.ssl.SSLUtils;
 import com.yanzhenjie.nohttp.tools.CounterOutputStream;
 import com.yanzhenjie.nohttp.tools.HeaderUtil;
 import com.yanzhenjie.nohttp.tools.IOUtils;
@@ -38,20 +42,20 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
  * <p>
- * Implement all the methods of the base class {@link IBasicRequest}.
+ * Request the basics to encapsulate.
  * </p>
  * Created in Nov 4, 2015 8:28:50 AM.
  *
  * @author Yan Zhenjie.
  */
-public abstract class BasicRequest implements IBasicRequest {
+public abstract class BasicRequest<T extends BasicRequest>
+        implements Comparable<BasicRequest>, Startable, Cancelable, Finishable {
 
     private final String boundary = createBoundary();
     private final String startBoundary = "--" + boundary;
@@ -84,19 +88,19 @@ public abstract class BasicRequest implements IBasicRequest {
     /**
      * SSLSockets.
      */
-    private SSLSocketFactory mSSLSocketFactory = null;
+    private SSLSocketFactory mSSLSocketFactory = NoHttp.getInitializeConfig().getSSLSocketFactory();
     /**
      * HostnameVerifier.
      */
-    private HostnameVerifier mHostnameVerifier = null;
+    private HostnameVerifier mHostnameVerifier = NoHttp.getInitializeConfig().getHostnameVerifier();
     /**
      * Connect timeout of request.
      */
-    private int mConnectTimeout = NoHttp.getConnectTimeout();
+    private int mConnectTimeout = NoHttp.getInitializeConfig().getConnectTimeout();
     /**
      * Read data timeout.
      */
-    private int mReadTimeout = NoHttp.getReadTimeout();
+    private int mReadTimeout = NoHttp.getInitializeConfig().getReadTimeout();
     /**
      * Request heads.
      */
@@ -104,7 +108,7 @@ public abstract class BasicRequest implements IBasicRequest {
     /**
      * After the failure of retries.
      */
-    private int mRetryCount;
+    private int mRetryCount = NoHttp.getInitializeConfig().getRetryCount();
     /**
      * The params encoding.
      */
@@ -112,7 +116,7 @@ public abstract class BasicRequest implements IBasicRequest {
     /**
      * Param collection.
      */
-    private MultiValueMap<String, Object> mParamKeyValues;
+    private MultiValueMap<String, Object> mParams;
     /**
      * RequestBody.
      */
@@ -121,10 +125,6 @@ public abstract class BasicRequest implements IBasicRequest {
      * Redirect handler.
      */
     private RedirectHandler mRedirectHandler;
-    /**
-     * Request queue
-     */
-    private BlockingQueue<?> blockingQueue;
     /**
      * The record has started.
      */
@@ -149,7 +149,7 @@ public abstract class BasicRequest implements IBasicRequest {
     /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
      *
-     * @param url request address, like: http://www.yanzhenjie.com.
+     * @param url request address, like: http://www.nohttp.net.
      */
     public BasicRequest(String url) {
         this(url, RequestMethod.GET);
@@ -158,52 +158,40 @@ public abstract class BasicRequest implements IBasicRequest {
     /**
      * Create a request.
      *
-     * @param url           request adress, like: http://www.yanzhenjie.com.
+     * @param url           request adress, like: http://www.nohttp.net.
      * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public BasicRequest(String url, RequestMethod requestMethod) {
         this.url = url;
         mRequestMethod = requestMethod;
 
-        mHeaders = new HttpHeaders();
+        mHeaders = new Headers();
         mHeaders.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_ALL);
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING_GZIP_DEFLATE);
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, HeaderUtil.systemAcceptLanguage());
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, UserAgent.instance());
+        MultiValueMap<String, String> globalHeaders = NoHttp.getInitializeConfig().getHeaders();
+        for (Map.Entry<String, List<String>> headersEntry : globalHeaders.entrySet()) {
+            List<String> valueList = headersEntry.getValue();
+            for (String value : valueList) {
+                mHeaders.set(headersEntry.getKey(), value);
+            }
+        }
 
-        mParamKeyValues = new LinkedMultiValueMap<>();
+
+        mParams = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> globalParams = NoHttp.getInitializeConfig().getParams();
+        for (Map.Entry<String, List<String>> paramsEntry : globalParams.entrySet()) {
+            List<String> valueList = paramsEntry.getValue();
+            for (String value : valueList) {
+                mParams.add(paramsEntry.getKey(), value);
+            }
+        }
     }
 
-    @Override
-    public IBasicRequest setPriority(Priority priority) {
-        this.mPriority = priority;
-        return this;
-    }
-
-    @Override
-    public Priority getPriority() {
-        return mPriority;
-    }
-
-    @Override
-    public IBasicRequest setSequence(int sequence) {
-        this.sequence = sequence;
-        return this;
-    }
-
-    @Override
-    public int getSequence() {
-        return this.sequence;
-    }
-
-    @Override
-    public final int compareTo(IBasicRequest another) {
-        final Priority me = getPriority();
-        final Priority it = another.getPriority();
-        return me == it ? getSequence() - another.getSequence() : it.ordinal() - me.ordinal();
-    }
-
-    @Override
+    /**
+     * Return url of request.
+     */
     public String url() {
         StringBuilder urlBuilder = new StringBuilder(url);
         // first body.
@@ -222,8 +210,6 @@ public abstract class BasicRequest implements IBasicRequest {
 
     /**
      * Build complete url.
-     *
-     * @param urlBuilder url StringBuilder.
      */
     private void buildUrl(StringBuilder urlBuilder) {
         StringBuilder paramBuilder = buildCommonParams(getParamKeyValues(), getParamsEncoding());
@@ -233,127 +219,335 @@ public abstract class BasicRequest implements IBasicRequest {
         urlBuilder.append(paramBuilder);
     }
 
-    @Override
+    /**
+     * return method of request.
+     */
     public RequestMethod getRequestMethod() {
         return mRequestMethod;
     }
 
-    @Override
-    public IBasicRequest setMultipartFormEnable(boolean enable) {
-        validateMethodForBody("Form body");
-        isMultipartFormEnable = enable;
-        return this;
+    /**
+     * Add the path to the URL, such as:
+     * <pre>
+     *     String url = "http://www.nohttp.net/xx";
+     *     StringRequest req = new StringRequest(url);
+     *     req.path(123);
+     *     ...
+     * </pre>
+     * The real url of Request is: http://www.nohttp.net/xx/123
+     */
+    public T path(int value) {
+        return path(Integer.toString(value));
     }
 
-    @Override
-    public boolean isMultipartFormEnable() {
-        return isMultipartFormEnable || hasBinary();
+    /**
+     * Add the path to the URL, such as:
+     * <pre>
+     *     String url = "http://www.nohttp.net/xx";
+     *     StringRequest req = new StringRequest(url);
+     *     req.path(456L);
+     *     ...
+     * </pre>
+     * The real url of Request is: http://www.nohttp.net/xx/456
+     */
+    public T path(long value) {
+        return path(Long.toString(value));
     }
 
-    @Override
-    public IBasicRequest setProxy(Proxy proxy) {
-        this.mProxy = proxy;
-        return this;
+    /**
+     * Add the path to the URL, such as:
+     * <pre>
+     *     String url = "http://www.nohttp.net/xx";
+     *     StringRequest req = new StringRequest(url);
+     *     req.path(true);
+     *     ...
+     * </pre>
+     * The real url of Request is: http://www.nohttp.net/xx/true
+     */
+    public T path(boolean value) {
+        return path(Boolean.toString(value));
     }
 
-    @Override
-    public Proxy getProxy() {
-        return mProxy;
+    /**
+     * Add the path to the URL, such as:
+     * <pre>
+     *     String url = "http://www.nohttp.net/xx";
+     *     StringRequest req = new StringRequest(url);
+     *     req.path('a');
+     *     ...
+     * </pre>
+     * The real url of Request is: http://www.nohttp.net/xx/a
+     */
+    public T path(char value) {
+        return path(String.valueOf(value));
     }
 
-    @Override
-    public IBasicRequest setSSLSocketFactory(SSLSocketFactory socketFactory) {
-        mSSLSocketFactory = socketFactory;
-        return this;
+    /**
+     * Add the path to the URL, such as:
+     * <pre>
+     *     String url = "http://www.nohttp.net/xx";
+     *     StringRequest req = new StringRequest(url);
+     *     req.path(456.99D);
+     *     ...
+     * </pre>
+     * The real url of Request is: http://www.nohttp.net/xx/456.99
+     */
+    public T path(double value) {
+        return path(Double.toString(value));
     }
 
-    @Override
-    public SSLSocketFactory getSSLSocketFactory() {
-        return mSSLSocketFactory;
+    /**
+     * Add the path to the URL, such as:
+     * <pre>
+     *     String url = "http://www.nohttp.net/xx";
+     *     StringRequest req = new StringRequest(url);
+     *     req.path(456.5F);
+     *     ...
+     * </pre>
+     * The real url of Request is: http://www.nohttp.net/xx/456.5
+     */
+    public T path(float value) {
+        return path(Float.toString(value));
     }
 
-    @Override
-    public IBasicRequest setHostnameVerifier(HostnameVerifier hostnameVerifier) {
-        mHostnameVerifier = hostnameVerifier;
-        return this;
+    /**
+     * Add the path to the URL, such as:
+     * <pre>
+     *     String url = "http://www.nohttp.net/xx";
+     *     StringRequest req = new StringRequest(url);
+     *     req.path("oo");
+     *     ...
+     * </pre>
+     * The real url of Request is: http://www.nohttp.net/xx/oo
+     */
+    public T path(String value) {
+        if (!url.endsWith("/"))
+            url += "/";
+        url += value + "/";
+        return (T) this;
     }
 
-    @Override
-    public HostnameVerifier getHostnameVerifier() {
-        return mHostnameVerifier;
-    }
-
-    @Override
-    public IBasicRequest setConnectTimeout(int connectTimeout) {
+    /**
+     * Set the connection timeout time.
+     *
+     * @param connectTimeout timeout number, unit is a millisecond.
+     */
+    public T setConnectTimeout(int connectTimeout) {
         mConnectTimeout = connectTimeout;
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * Get the connection timeout time, Unit is a millisecond.
+     */
     public int getConnectTimeout() {
         return mConnectTimeout;
     }
 
-    @Override
-    public IBasicRequest setReadTimeout(int readTimeout) {
+    /**
+     * Set the read timeout time.
+     *
+     * @param readTimeout timeout number, unit is a millisecond.
+     */
+    public T setReadTimeout(int readTimeout) {
         mReadTimeout = readTimeout;
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * Get the read timeout time, Unit is a millisecond.
+     */
     public int getReadTimeout() {
         return mReadTimeout;
     }
 
-    @Override
-    public IBasicRequest addHeader(String key, String value) {
+    /**
+     * Set the {@link SSLSocketFactory} for this request.
+     *
+     * @param socketFactory {@link SSLSocketFactory}.
+     */
+    public T setSSLSocketFactory(SSLSocketFactory socketFactory) {
+        mSSLSocketFactory = SSLUtils.fixSSLLowerThanLollipop(socketFactory);
+        return (T) this;
+    }
+
+    /**
+     * Get SSLSocketFactory.
+     *
+     * @return {@link SSLSocketFactory}.
+     */
+    public SSLSocketFactory getSSLSocketFactory() {
+        return mSSLSocketFactory;
+    }
+
+    /**
+     * Set the {@link HostnameVerifier}.
+     *
+     * @param hostnameVerifier {@link HostnameVerifier}.
+     */
+    public T setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+        mHostnameVerifier = hostnameVerifier;
+        return (T) this;
+    }
+
+    /**
+     * Get the HostnameVerifier.
+     *
+     * @return {@link HostnameVerifier}.
+     */
+    public HostnameVerifier getHostnameVerifier() {
+        return mHostnameVerifier;
+    }
+
+    /**
+     * Set proxy server, such as:
+     * <pre>
+     *     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("64.233.162.83", 80));
+     * </pre>
+     *
+     * @param proxy {@link Proxy}.
+     */
+    public T setProxy(Proxy proxy) {
+        this.mProxy = proxy;
+        return (T) this;
+    }
+
+    /**
+     * Get proxy server.
+     */
+    public Proxy getProxy() {
+        return mProxy;
+    }
+
+    /**
+     * Set redirect interface.
+     *
+     * @param redirectHandler {@link RedirectHandler}.
+     */
+    public T setRedirectHandler(RedirectHandler redirectHandler) {
+        mRedirectHandler = redirectHandler;
+        return (T) this;
+    }
+
+    /**
+     * Get the redirect handler.
+     */
+    public RedirectHandler getRedirectHandler() {
+        return mRedirectHandler;
+    }
+
+    /**
+     * Set the request fails retry count.The default value is 0, that is to say, after the failure will not go to
+     * this to initiate the request again.
+     *
+     * @param count the retry count, the default value is 0.
+     */
+    public T setRetryCount(int count) {
+        this.mRetryCount = count;
+        return (T) this;
+    }
+
+    /**
+     * Get the failure after retries.
+     *
+     * @return The default value is 0.
+     */
+    public int getRetryCount() {
+        return mRetryCount;
+    }
+
+    /**
+     * Add a new key-value header.
+     *
+     * @param key   key.
+     * @param value value.
+     */
+    public T addHeader(String key, String value) {
         mHeaders.add(key, value);
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest setHeader(String key, String value) {
+    /**
+     * If there is a key to delete, and then add a new key-value header.
+     *
+     * @param key   key.
+     * @param value value.
+     */
+    public T setHeader(String key, String value) {
         mHeaders.set(key, value);
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest addHeader(HttpCookie cookie) {
+    /**
+     * <p>Add a {@link HttpCookie}.</p>
+     * Just like the:
+     * <pre>
+     *     HttpCookie httpCookie = getHttpCookie();
+     *     if(httpCookie != null)
+     *          request.addHeader("Cookie", cookie.getName() + "=" + cookie.getValue());
+     *     ...
+     * </pre>
+     *
+     * @param cookie {@link HttpCookie}.
+     */
+    public T addHeader(HttpCookie cookie) {
         if (cookie != null)
             mHeaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest removeHeader(String key) {
+    /**
+     * Remove the key from the information.
+     *
+     * @param key key.
+     */
+    public T removeHeader(String key) {
         mHeaders.remove(key);
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest removeAllHeader() {
+    /**
+     * Remove all header.
+     */
+    public T removeAllHeader() {
         mHeaders.clear();
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public Headers headers() {
+    /**
+     * Get all Heads.
+     *
+     * @return {@code Headers}.
+     */
+    public Headers getHeaders() {
         return mHeaders;
     }
 
-    @Override
-    public IBasicRequest setAccept(String accept) {
+    /**
+     * Set the accept for head.
+     *
+     * @param accept such as: {@code application/json}.
+     */
+    public T setAccept(String accept) {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT, accept);
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest setAcceptLanguage(String acceptLanguage) {
+    /**
+     * Set the acceptLanguage for head.
+     *
+     * @param acceptLanguage such as "zh-CN,zh", "en-US,us".
+     */
+    public T setAcceptLanguage(String acceptLanguage) {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * The length of the request body.
+     *
+     * @return such as: {@code 2048}.
+     */
     public long getContentLength() {
         CounterOutputStream outputStream = new CounterOutputStream();
         try {
@@ -364,13 +558,21 @@ public abstract class BasicRequest implements IBasicRequest {
         return outputStream.get();
     }
 
-    @Override
-    public IBasicRequest setContentType(String contentType) {
+    /**
+     * Set the contentType for head.
+     *
+     * @param contentType such as: {@code application/json}.
+     */
+    public T setContentType(String contentType) {
         mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * Get contentType of request.
+     *
+     * @return string, such as: {@code application/json}.
+     */
     public String getContentType() {
         String contentType = mHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0);
         if (!TextUtils.isEmpty(contentType))
@@ -381,97 +583,153 @@ public abstract class BasicRequest implements IBasicRequest {
             return Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED + "; charset=" + getParamsEncoding();
     }
 
-    @Override
-    public IBasicRequest setUserAgent(String userAgent) {
+    /**
+     * Set the UA for client.
+     *
+     * @param userAgent such as: {@code Mozilla/5.0 (Android U; Android 5.0) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 Safari/533.1}.
+     */
+    public T setUserAgent(String userAgent) {
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, userAgent);
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest setRetryCount(int count) {
-        this.mRetryCount = count;
-        return this;
-    }
-
-    @Override
-    public int getRetryCount() {
-        return mRetryCount;
-    }
-
-    @Override
-    public IBasicRequest setParamsEncoding(String encoding) {
+    /**
+     * Set the params encoding.
+     *
+     * @param encoding such as {@code utf-8, gbk, gb2312}.
+     */
+    public T setParamsEncoding(String encoding) {
         this.mParamEncoding = encoding;
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * Get the params encoding.
+     *
+     * @return such as {@code utf-8}, default is {@code utf-8}.
+     * @see #setParamsEncoding(String)
+     */
     public String getParamsEncoding() {
         if (TextUtils.isEmpty(mParamEncoding))
             mParamEncoding = "utf-8";
         return mParamEncoding;
     }
 
-    @Override
-    public IBasicRequest add(String key, int value) {
-        add(key, Integer.toString(value));
-        return this;
+    /**
+     * Mandatory set to form pattern to transmit data.
+     * <pre>
+     *     The request method must be one of the following: {@code POST/PUT/PATCH/DELETE}.
+     *     But the Android system under API level 19 does not support the DELETE.
+     * </pre>
+     *
+     * @param enable true enable, other wise false.
+     */
+    public T setMultipartFormEnable(boolean enable) {
+        validateMethodForBody("Form body");
+        isMultipartFormEnable = enable;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest add(String key, long value) {
-        add(key, Long.toString(value));
-        return this;
+    /**
+     * Is it a form?
+     * <pre>
+     *     The request method must be one of the following: {@code POST/PUT/PATCH/DELETE}.
+     *     But the Android system under API level 19 does not support the DELETE.
+     * </pre>
+     *
+     * @return true enable, other wise false.
+     */
+    public boolean isMultipartFormEnable() {
+        return isMultipartFormEnable || hasBinary();
     }
 
-    @Override
-    public IBasicRequest add(String key, boolean value) {
-        add(key, String.valueOf(value));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, char value) {
-        add(key, String.valueOf(value));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, double value) {
-        add(key, Double.toString(value));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, float value) {
-        add(key, Float.toString(value));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, short value) {
-        add(key, Integer.toString(value));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, byte value) {
-        add(key, Integer.toString(value));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, String value) {
-        if (value != null) {
-            mParamKeyValues.add(key, value);
+    /**
+     * Has Binary.
+     *
+     * @return true, other wise is false.
+     */
+    private boolean hasBinary() {
+        Set<String> keys = mParams.keySet();
+        for (String key : keys) {
+            List<Object> values = mParams.getValues(key);
+            for (Object value : values) {
+                if (value instanceof Binary || value instanceof File)
+                    return true;
+            }
         }
-        return this;
+        return false;
     }
 
-    @Override
-    public IBasicRequest set(String key, String value) {
-        if (value != null)
-            mParamKeyValues.set(key, value);
-        return this;
+    /**
+     * Add {@link Integer} param.
+     */
+    public T add(String key, int value) {
+        mParams.add(key, Integer.toString(value));
+        return (T) this;
+    }
+
+    /**
+     * Add {@link Long} param.
+     */
+    public T add(String key, long value) {
+        mParams.add(key, Long.toString(value));
+        return (T) this;
+    }
+
+    /**
+     * Add {@link Boolean} param.
+     */
+    public T add(String key, boolean value) {
+        mParams.add(key, Boolean.toString(value));
+        return (T) this;
+    }
+
+    /**
+     * Add {@code char} param.
+     */
+    public T add(String key, char value) {
+        mParams.add(key, String.valueOf(value));
+        return (T) this;
+    }
+
+    /**
+     * Add {@link Double} param.
+     */
+    public T add(String key, double value) {
+        mParams.add(key, Double.toString(value));
+        return (T) this;
+    }
+
+    /**
+     * Add {@link Float} param.
+     */
+    public T add(String key, float value) {
+        mParams.add(key, Float.toString(value));
+        return (T) this;
+    }
+
+    /**
+     * Add {@link Short} param.
+     */
+    public T add(String key, short value) {
+        mParams.add(key, Integer.toString(value));
+        return (T) this;
+    }
+
+    /**
+     * Add {@link String} param.
+     */
+    public T add(String key, String value) {
+        mParams.add(key, value);
+        return (T) this;
+    }
+
+    /**
+     * Set {@link String} param.
+     */
+    public T set(String key, String value) {
+        mParams.set(key, value);
+        return (T) this;
     }
 
     /**
@@ -484,85 +742,129 @@ public abstract class BasicRequest implements IBasicRequest {
             throw new IllegalArgumentException(methodObject + " only supports these request methods: POST/PUT/PATCH/DELETE.");
     }
 
-    @Override
-    public IBasicRequest add(String key, Binary binary) {
-        validateMethodForBody("The Binary param");
-        mParamKeyValues.add(key, binary);
-        return this;
-    }
-
-    @Override
-    public IBasicRequest set(String key, Binary binary) {
-        validateMethodForBody("The Binary param");
-        mParamKeyValues.set(key, binary);
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, File file) {
-        validateMethodForBody("The File param");
-        add(key, new FileBinary(file));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest set(String key, File file) {
-        validateMethodForBody("The File param");
-        set(key, new FileBinary(file));
-        return this;
-    }
-
-    @Override
-    public IBasicRequest add(String key, List<Binary> binaries) {
+    /**
+     * Add {@link File} param.
+     */
+    public T add(String key, File file) {
         validateMethodForBody("The List<Binary> param");
-        if (binaries != null) {
-            for (Binary binary : binaries)
-                mParamKeyValues.add(key, binary);
-        }
-        return this;
+        mParams.add(key, new FileBinary(file));
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest set(String key, List<Binary> binaries) {
+    /**
+     * Add {@link Binary} param.
+     */
+    public T add(String key, Binary binary) {
+        mParams.add(key, binary);
+        return (T) this;
+    }
+
+    /**
+     * Set {@link Binary} param.
+     */
+    public T set(String key, Binary binary) {
         validateMethodForBody("The List<Binary> param");
-        mParamKeyValues.remove(key);
-        add(key, binaries);
-        return this;
+        mParams.set(key, binary);
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest add(Map<String, String> params) {
-        if (params != null) {
-            for (Map.Entry<String, String> stringEntry : params.entrySet())
-                add(stringEntry.getKey(), stringEntry.getValue());
+    /**
+     * Add {@link Binary} params;
+     */
+    public T add(String key, List<Binary> binaries) {
+        validateMethodForBody("The List<Binary> param");
+        for (Binary binary : binaries)
+            mParams.add(key, binary);
+        return (T) this;
+    }
+
+    /**
+     * Set {@link Binary} params.
+     */
+    public T set(String key, List<Binary> binaries) {
+        validateMethodForBody("The List<Binary> param");
+        mParams.remove(key);
+        for (Binary binary : binaries)
+            mParams.add(key, binary);
+        return (T) this;
+    }
+
+    /**
+     * Add all params.
+     */
+    public T add(Map<String, Object> params) {
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof File) {
+                mParams.add(key, new FileBinary((File) value));
+            } else if (value instanceof List) {
+                List values = (List) value;
+                for (int i = 0; i < values.size(); i++) {
+                    Object o = values.get(i);
+                    if (o instanceof File) {
+                        mParams.add(key, new FileBinary((File) o));
+                    } else {
+                        mParams.add(key, o);
+                    }
+                }
+            } else {
+                mParams.add(key, entry.getValue());
+            }
         }
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest set(Map<String, String> params) {
-        if (params != null) {
-            for (Map.Entry<String, String> stringEntry : params.entrySet())
-                set(stringEntry.getKey(), stringEntry.getValue());
+    /**
+     * Set all params.
+     */
+    public T set(Map<String, Object> params) {
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof File) {
+                mParams.set(key, new FileBinary((File) value));
+            } else if (value instanceof List) {
+                mParams.remove(key);
+                List values = (List) value;
+                for (int i = 0; i < values.size(); i++) {
+                    Object o = values.get(i);
+                    if (o instanceof File) {
+                        mParams.add(key, new FileBinary((File) o));
+                    } else {
+                        mParams.add(key, o);
+                    }
+                }
+            } else {
+                mParams.set(key, entry.getValue());
+            }
         }
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest remove(String key) {
-        mParamKeyValues.remove(key);
-        return this;
+    /**
+     * Remove a request param by key.
+     */
+    public T remove(String key) {
+        mParams.remove(key);
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest removeAll() {
-        mParamKeyValues.clear();
-        return this;
+    /**
+     * Remove all request param.
+     */
+    public T removeAll() {
+        mParams.clear();
+        return (T) this;
     }
 
-    @Override
+    /**
+     * Get the parameters of key-value pairs.
+     *
+     * @return Not empty Map.
+     */
     public MultiValueMap<String, Object> getParamKeyValues() {
-        return mParamKeyValues;
+        return mParams;
     }
 
     /**
@@ -576,21 +878,48 @@ public abstract class BasicRequest implements IBasicRequest {
             throw new NullPointerException("The requestBody and contentType must be can't be null");
     }
 
-    @Override
-    public IBasicRequest setDefineRequestBody(InputStream requestBody, String contentType) {
+    /**
+     * Is there a custom request inclusions.
+     *
+     * @return Returns true representatives have, return false on behalf of the no.
+     */
+    private boolean hasDefineRequestBody() {
+        return mRequestBody != null;
+    }
+
+    /**
+     * Set the package body, which can be any data stream. But the type of stream must be
+     * {@link java.io.ByteArrayInputStream} or {@link java.io.FileInputStream}.
+     *
+     * @param requestBody any data stream, you don't need to close it.
+     * @param contentType such as: {@code application/json;json}, {@code image/*}.
+     * @see #setDefineRequestBody(String, String)
+     * @see #setDefineRequestBodyForJson(JSONObject)
+     * @see #setDefineRequestBodyForJson(String)
+     * @see #setDefineRequestBodyForXML(String)
+     */
+    public T setDefineRequestBody(InputStream requestBody, String contentType) {
         validateMethodForBody("Request body");
         validateParamForBody(requestBody, contentType);
         if (requestBody instanceof ByteArrayInputStream || requestBody instanceof FileInputStream) {
             this.mRequestBody = requestBody;
             mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
-        } else {
+        } else
             throw new IllegalArgumentException("Can only accept ByteArrayInputStream and FileInputStream type of stream");
-        }
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest setDefineRequestBody(String requestBody, String contentType) {
+    /**
+     * Set the request body and content type.
+     *
+     * @param requestBody string body.
+     * @param contentType such as: {@code application/json;json}, {@code image/*}.
+     * @see #setDefineRequestBody(InputStream, String)
+     * @see #setDefineRequestBodyForJson(JSONObject)
+     * @see #setDefineRequestBodyForJson(String)
+     * @see #setDefineRequestBodyForXML(String)
+     */
+    public T setDefineRequestBody(String requestBody, String contentType) {
         validateMethodForBody("Request body");
         validateParamForBody(requestBody, contentType);
         try {
@@ -600,51 +929,49 @@ public abstract class BasicRequest implements IBasicRequest {
             mRequestBody = IOUtils.toInputStream(requestBody);
             mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
         }
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest setDefineRequestBodyForJson(String jsonBody) {
+    /**
+     * Set the request json body.
+     *
+     * @param jsonBody json body.
+     * @see #setDefineRequestBody(InputStream, String)
+     * @see #setDefineRequestBody(String, String)
+     * @see #setDefineRequestBodyForJson(JSONObject)
+     * @see #setDefineRequestBodyForXML(String)
+     */
+    public T setDefineRequestBodyForJson(String jsonBody) {
         setDefineRequestBody(jsonBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest setDefineRequestBodyForJson(JSONObject jsonBody) {
+    /**
+     * Set the request json body.
+     *
+     * @param jsonBody json body.
+     * @see #setDefineRequestBody(InputStream, String)
+     * @see #setDefineRequestBody(String, String)
+     * @see #setDefineRequestBodyForJson(String)
+     * @see #setDefineRequestBodyForXML(String)
+     */
+    public T setDefineRequestBodyForJson(JSONObject jsonBody) {
         setDefineRequestBody(jsonBody.toString(), Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
-        return this;
+        return (T) this;
     }
 
-    @Override
-    public IBasicRequest setDefineRequestBodyForXML(String xmlBody) {
+    /**
+     * Set the request XML body.
+     *
+     * @param xmlBody xml body.
+     * @see #setDefineRequestBody(InputStream, String)
+     * @see #setDefineRequestBody(String, String)
+     * @see #setDefineRequestBody(String, String)
+     * @see #setDefineRequestBodyForJson(String)
+     */
+    public T setDefineRequestBodyForXML(String xmlBody) {
         setDefineRequestBody(xmlBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_XML);
-        return this;
-    }
-
-    /**
-     * Has Binary.
-     *
-     * @return true, other wise is false.
-     */
-    protected boolean hasBinary() {
-        Set<String> keys = mParamKeyValues.keySet();
-        for (String key : keys) {
-            List<Object> values = mParamKeyValues.getValues(key);
-            for (Object value : values) {
-                if (value instanceof Binary)
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Is there a custom request inclusions.
-     *
-     * @return Returns true representatives have, return false on behalf of the no.
-     */
-    protected boolean hasDefineRequestBody() {
-        return mRequestBody != null;
+        return (T) this;
     }
 
     /**
@@ -652,16 +979,20 @@ public abstract class BasicRequest implements IBasicRequest {
      *
      * @return {@link InputStream}.
      */
-    protected InputStream getDefineRequestBody() {
+    public InputStream getDefineRequestBody() {
         return mRequestBody;
     }
 
-    @Override
+    /**
+     * Call before carry out the request, you can do some preparation work.
+     */
     public void onPreExecute() {
         // Do some time-consuming operation.
     }
 
-    @Override
+    /**
+     * Send request body data.
+     */
     public void onWriteRequestBody(OutputStream writer) throws IOException {
         if (hasDefineRequestBody()) {
             writeRequestBody(writer);
@@ -674,11 +1005,8 @@ public abstract class BasicRequest implements IBasicRequest {
 
     /**
      * Send request requestBody.
-     *
-     * @param writer {@link OutputStream}.
-     * @throws IOException write error.
      */
-    protected void writeRequestBody(OutputStream writer) throws IOException {
+    private void writeRequestBody(OutputStream writer) throws IOException {
         if (mRequestBody != null) {
             if (writer instanceof CounterOutputStream) {
                 ((CounterOutputStream) writer).writeLength(mRequestBody.available());
@@ -692,14 +1020,11 @@ public abstract class BasicRequest implements IBasicRequest {
 
     /**
      * Send form data.
-     *
-     * @param writer {@link OutputStream}.
-     * @throws IOException write error.
      */
-    protected void writeFormStreamData(OutputStream writer) throws IOException {
-        Set<String> keys = mParamKeyValues.keySet();
+    private void writeFormStreamData(OutputStream writer) throws IOException {
+        Set<String> keys = mParams.keySet();
         for (String key : keys) {
-            List<Object> values = mParamKeyValues.getValues(key);
+            List<Object> values = mParams.getValues(key);
             for (Object value : values) {
                 if (!isCanceled()) {
                     if (value != null && value instanceof String) {
@@ -721,14 +1046,12 @@ public abstract class BasicRequest implements IBasicRequest {
     /**
      * Send text data in a form.
      *
-     * @param writer {@link OutputStream}
-     * @param key    equivalent to form the name of the input label, {@code "Content-Disposition: form-data; name=key"}.
-     * @param value  equivalent to form the value of the input label.
-     * @throws IOException Write the data may be abnormal.
+     * @param key   equivalent to form the name of the input label, {@code "Content-Disposition: form-data; name=key"}.
+     * @param value equivalent to form the value of the input label.
      */
     private void writeFormString(OutputStream writer, String key, String value) throws IOException {
         String stringFieldBuilder = startBoundary + "\r\n" +
-                "Content-Disposition: form-data; name=\"" + key + "\"\r\n\n";
+                "Content-Disposition: form-data; name=\"" + key + "\"\r\n\r\n";
 
         writer.write(stringFieldBuilder.getBytes(getParamsEncoding()));
         writer.write(value.getBytes(getParamsEncoding()));
@@ -740,8 +1063,8 @@ public abstract class BasicRequest implements IBasicRequest {
     private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
         if (!value.isCanceled()) {
             String binaryFieldBuilder = startBoundary + "\r\n" +
-                    "Content-Disposition: form-data; name=\"" + key + "\"" + "; filename=\"" + value.getFileName() + "\"\r\n" +
-                    "Content-Type: " + value.getMimeType() + "\r\n\n";
+                    "Content-Disposition: form-data; name=\"" + key + "\"; filename=\"" + value.getFileName() + "\"\r\n" +
+                    "Content-Type: " + value.getMimeType() + "\r\n\r\n";
             writer.write(binaryFieldBuilder.getBytes());
 
             if (writer instanceof CounterOutputStream) {
@@ -754,12 +1077,9 @@ public abstract class BasicRequest implements IBasicRequest {
 
     /**
      * Write params.
-     *
-     * @param writer {@link OutputStream}.
-     * @throws IOException IOException.
      */
     private void writeParamStreamData(OutputStream writer) throws IOException {
-        StringBuilder paramBuilder = buildCommonParams(mParamKeyValues, getParamsEncoding());
+        StringBuilder paramBuilder = buildCommonParams(mParams, getParamsEncoding());
         if (paramBuilder.length() > 0) {
             String params = paramBuilder.toString();
             if (!(writer instanceof CounterOutputStream))
@@ -768,36 +1088,64 @@ public abstract class BasicRequest implements IBasicRequest {
         }
     }
 
-    @Override
-    public IBasicRequest setRedirectHandler(RedirectHandler redirectHandler) {
-        mRedirectHandler = redirectHandler;
-        return this;
-    }
-
-    @Override
-    public RedirectHandler getRedirectHandler() {
-        return mRedirectHandler;
-    }
-
-    @Override
-    public IBasicRequest setTag(Object tag) {
+    /**
+     * Set tag of task, At the end of the task is returned to you.
+     */
+    public T setTag(Object tag) {
         this.mTag = tag;
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * Should to return the tag of the object.
+     */
     public Object getTag() {
         return this.mTag;
     }
 
-    @Override
-    public void setQueue(BlockingQueue<?> queue) {
-        blockingQueue = queue;
+    /**
+     * Set the priority of the request object. The default priority is {@link Priority#DEFAULT}.
+     *
+     * @param priority {@link Priority}.
+     */
+    public T setPriority(Priority priority) {
+        this.mPriority = priority;
+        return (T) this;
+    }
+
+    /**
+     * Get the priority of the request object.
+     */
+    public Priority getPriority() {
+        return mPriority;
+    }
+
+    /**
+     * Set the sequence of request.
+     *
+     * @param sequence sequence code.
+     */
+    public T setSequence(int sequence) {
+        this.sequence = sequence;
+        return (T) this;
+    }
+
+    /**
+     * Get the sequence in the queue, under the condition of two requests as priority.
+     * <pre>
+     *     Calculation method:
+     *     {@code left.sequence-right.sequence} decision to order.
+     * </pre>
+     */
+    public int getSequence() {
+        return this.sequence;
     }
 
     @Override
-    public boolean inQueue() {
-        return blockingQueue != null && blockingQueue.contains(this);
+    public final int compareTo(BasicRequest another) {
+        final Priority me = getPriority();
+        final Priority it = another.getPriority();
+        return me == it ? getSequence() - another.getSequence() : it.ordinal() - me.ordinal();
     }
 
     @Override
@@ -811,29 +1159,16 @@ public abstract class BasicRequest implements IBasicRequest {
     }
 
     @Override
-    public void finish() {
-        this.isFinished = true;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    @Override
     public void cancel() {
         if (!isCanceled) {
             isCanceled = true;
             if (mRequestBody != null)
                 IOUtils.closeQuietly(mRequestBody);
 
-            if (blockingQueue != null)
-                blockingQueue.remove(this);
-
             // cancel file upload
-            Set<String> keys = mParamKeyValues.keySet();
+            Set<String> keys = mParams.keySet();
             for (String key : keys) {
-                List<Object> values = mParamKeyValues.getValues(key);
+                List<Object> values = mParams.getValues(key);
                 for (Object value : values)
                     if (value != null && value instanceof Binary)
                         ((Binary) value).cancel();
@@ -846,12 +1181,31 @@ public abstract class BasicRequest implements IBasicRequest {
         return isCanceled;
     }
 
-    public IBasicRequest setCancelSign(Object sign) {
-        this.mCancelSign = sign;
-        return this;
+    @Override
+    public void finish() {
+        this.isFinished = true;
     }
 
     @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    /**
+     * Set cancel sign.
+     *
+     * @param sign a object.
+     */
+    public T setCancelSign(Object sign) {
+        this.mCancelSign = sign;
+        return (T) this;
+    }
+
+    /**
+     * Cancel operation by contrast the sign.
+     *
+     * @param sign an object that can be null.
+     */
     public void cancelBySign(Object sign) {
         if (mCancelSign == sign)
             cancel();

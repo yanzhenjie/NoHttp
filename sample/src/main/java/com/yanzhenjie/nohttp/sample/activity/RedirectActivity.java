@@ -19,8 +19,8 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.yanzhenjie.nohttp.BasicRequest;
 import com.yanzhenjie.nohttp.Headers;
-import com.yanzhenjie.nohttp.IBasicRequest;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RedirectHandler;
 import com.yanzhenjie.nohttp.rest.Request;
@@ -70,7 +70,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
         final Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_REDIRECT_BAIDU);
         request.setRedirectHandler(new RedirectHandler() {
             @Override
-            public IBasicRequest onRedirect(IBasicRequest oldRequest, Headers responseHeaders) {
+            public BasicRequest<?> onRedirect(BasicRequest<?> oldRequest, Headers responseHeaders) {
                 // 允许重定向时这个方法会被调用
                 // 1. 返回null，NoHttp会自动拷贝父请求的请求方法和代理自动请求，不会拷贝其他属性。
                 // 2. 返回非null，会把这个新请求的数据交给父请求去解析。
@@ -96,7 +96,7 @@ public class RedirectActivity extends BaseActivity implements HttpListener<Strin
         Request<String> request = NoHttp.createStringRequest(Constants.URL_NOHTTP_REDIRECT_BAIDU);
         request.setRedirectHandler(new RedirectHandler() {
             @Override
-            public IBasicRequest onRedirect(IBasicRequest oldRequest, Headers responseHeaders) {
+            public BasicRequest<?> onRedirect(BasicRequest<?> oldRequest, Headers responseHeaders) {
                 // 不允许重定向时此方法不会被调用。
                 return null;
             }

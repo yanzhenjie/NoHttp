@@ -74,9 +74,9 @@ public class Downloader {
                     "ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE.");
 
         if (!IOUtils.createFolder(savePathDir))
-            throw new StorageReadWriteError("SD isn't available, please check SD card and permission: " +
-                    "WRITE_EXTERNAL_STORAGE, and you must pay attention to Android6.0 RunTime Permissions: " +
-                    "https://github.com/yanzhenjie/AndPermission.");
+            throw new StorageReadWriteError("SD card isn't available, please check SD card and permission: WRITE_EXTERNAL_STORAGE." +
+                    "\nYou must pay attention to Android6.0 RunTime Permissions: https://github.com/yanzhenjie/AndPermission." +
+                    "\nFailed to create folder: " + savePathDir);
     }
 
     private long handleRange(File tempFile, DownloadRequest downloadRequest) {
@@ -116,7 +116,6 @@ public class Downloader {
 
             File tempFile = new File(savePathDir, fileName + ".nohttp");
             long rangeSize = handleRange(tempFile, downloadRequest);// 断点开始处。
-
 
             // 连接服务器。
             connection = mHttpConnection.getConnection(downloadRequest);
@@ -159,8 +158,7 @@ public class Downloader {
 
             InputStream serverStream = connection.serverStream();
             if (responseCode >= 400) {
-                ServerError error = new ServerError("Download failed, the server response code is " + responseCode +
-                        ": " + downloadRequest.url());
+                ServerError error = new ServerError("Download failed, the server response code is " + responseCode + ": " + downloadRequest.url());
                 error.setErrorBody(IOUtils.toString(serverStream));
                 throw error;
             } else {
@@ -202,14 +200,13 @@ public class Downloader {
                 }
 
                 if (IOUtils.getDirSize(savePathDir) < contentLength)
-                    throw new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file:" +
-                            " " + savePathDir + ".");
+                    throw new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir + ".");
 
                 // 需要重新下载，生成临时文件。
                 if (responseCode != 206 && !IOUtils.createNewFile(tempFile))
-                    throw new StorageReadWriteError("SD isn't available, please check SD card and permission: " +
-                            "WRITE_EXTERNAL_STORAGE, and you must pay attention to Android6.0 RunTime " +
-                            "Permissions: https://github.com/yanzhenjie/AndPermission.");
+                    throw new StorageReadWriteError("SD card isn't available, please check SD card and permission: WRITE_EXTERNAL_STORAGE." +
+                            "\nYou must pay attention to Android6.0 RunTime Permissions: https://github.com/yanzhenjie/AndPermission." +
+                            "\nFailed to create file: " + tempFile);
 
                 if (downloadRequest.isCanceled()) {
                     Log.w("NoHttpDownloader", "Download request is canceled.");
@@ -252,8 +249,7 @@ public class Downloader {
 
                         boolean speedChanged = oldSpeed != speed && time >= 300;
 
-                        Logger.i("speedCount: " + speedCount + "; time: " + time + "; speed: " + speed + "; changed: " +
-                                "" + speedChanged);
+                        Logger.i("speedCount: " + speedCount + "; time: " + time + "; speed: " + speed + "; changed: " + speedChanged);
 
                         if (contentLength != 0) {
                             int progress = (int) (count * 100 / contentLength);
@@ -303,16 +299,17 @@ public class Downloader {
         } catch (IOException e) {
             Exception newException = e;
             if (!IOUtils.canWrite(savePathDir))
-                newException = new StorageReadWriteError("This folder cannot be written to the file: " + savePathDir
-                        + ".");
+                newException = new StorageReadWriteError("SD card isn't available, please check SD card and permission: WRITE_EXTERNAL_STORAGE." +
+                        "\nYou must pay attention to Android6.0 RunTime Permissions: https://github.com/yanzhenjie/AndPermission." +
+                        "\nFailed to create folder: " + savePathDir);
             else if (IOUtils.getDirSize(savePathDir) < 1024)
-                newException = new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded " +
-                        "file: " + savePathDir + ".");
+                newException = new StorageSpaceNotEnoughError("The folder is not enough space to save the downloaded file: " + savePathDir + ".");
             Logger.e(newException);
             downloadListener.onDownloadError(what, newException);
         } catch (Exception e) {// NetworkError | ServerError | StorageCantWriteError | StorageSpaceNotEnoughError
             if (!NetUtil.isNetworkAvailable())
-                e = new NetworkError("The network is not available.");
+                e = new NetworkError("Network is not available, please check network and permission: " +
+                        "INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE.");
             Logger.e(e);
             downloadListener.onDownloadError(what, e);
         } finally {

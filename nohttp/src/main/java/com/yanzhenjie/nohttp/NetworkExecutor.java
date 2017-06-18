@@ -23,10 +23,10 @@ public interface NetworkExecutor {
     /**
      * Perform network connection.
      *
-     * @param request {@link IBasicRequest}.
+     * @param request {@link BasicRequest}.
      * @return {@link Network}.
      * @throws Exception maybe.
      */
-    Network execute(IBasicRequest request) throws Exception;
+    Network execute(BasicRequest<?> request) throws Exception;
 
 }

@@ -28,6 +28,7 @@ import com.yanzhenjie.nohttp.sample.adapter.RecyclerListSingleAdapter;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.OnItemClickListener;
 import com.yanzhenjie.nohttp.sample.util.SSLContextUtil;
+import com.yanzhenjie.nohttp.ssl.SSLUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,10 +81,8 @@ public class HttpsActivity extends BaseActivity implements HttpListener<String> 
      */
     private void httpsNoVerify() {
         Request<String> httpsRequest = NoHttp.createStringRequest("https://kyfw.12306.cn/otn/", RequestMethod.GET);
-        SSLContext sslContext = SSLContextUtil.getDefaultSLLContext();
-        if (sslContext != null)
-            httpsRequest.setSSLSocketFactory(sslContext.getSocketFactory());
-        httpsRequest.setHostnameVerifier(SSLContextUtil.HOSTNAME_VERIFIER);
+        httpsRequest.setSSLSocketFactory(SSLUtils.defaultSSLSocketFactory());
+        httpsRequest.setHostnameVerifier(SSLUtils.defaultHostnameVerifier());
         request(0, httpsRequest, this, false, true);
     }
 

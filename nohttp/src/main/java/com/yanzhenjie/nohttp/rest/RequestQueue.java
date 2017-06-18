@@ -15,8 +15,6 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
-import com.yanzhenjie.nohttp.Delivery;
-import com.yanzhenjie.nohttp.HandlerDelivery;
 import com.yanzhenjie.nohttp.Logger;
 
 import java.util.concurrent.BlockingQueue;
@@ -50,18 +48,12 @@ public class RequestQueue {
     private RequestDispatcher[] mDispatchers;
 
     /**
-     * Delivery.
-     */
-    private Delivery mDelivery;
-
-    /**
      * Create request queue manager.
      *
      * @param threadPoolSize number of thread pool.
      */
     public RequestQueue(int threadPoolSize) {
         mDispatchers = new RequestDispatcher[threadPoolSize];
-        mDelivery = HandlerDelivery.newInstance();
     }
 
     /**
@@ -72,7 +64,7 @@ public class RequestQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            RequestDispatcher networkDispatcher = new RequestDispatcher(mUnFinishQueue, mRequestQueue, mDelivery);
+            RequestDispatcher networkDispatcher = new RequestDispatcher(mUnFinishQueue, mRequestQueue);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }

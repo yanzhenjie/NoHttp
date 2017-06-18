@@ -76,10 +76,10 @@ public class Constants {
      * 下载文件。
      */
     public static final String[] URL_DOWNLOADS = {
-            "http://api.nohttp.net/download/1.apk",
-            "http://api.nohttp.net/download/2.apk",
-            "http://api.nohttp.net/download/3.apk",
-            "http://api.nohttp.net/download/4.apk"
+            "http://oss.ucdl.pp.uc.cn/fs01/union_pack/Wandoujia_110644_web_direct_binded.apk?x-oss-process=udf/pp-udf,Jjc3LiMnJ3FxdnJ1fnE=",
+            "http://oss.ucdl.pp.uc.cn/fs01/union_pack/Wandoujia_110644_web_direct_binded.apk?x-oss-process=udf/pp-udf,Jjc3LiMnJ3V/d3Nyfg==",
+            "http://oss.ucdl.pp.uc.cn/fs01/union_pack/Wandoujia_110644_web_direct_binded.apk?x-oss-process=udf/pp-udf,Jjc3LiMnJ3FxdXR0cX4=",
+            "http://oss.ucdl.pp.uc.cn/fs01/union_pack/Wandoujia_110644_web_direct_binded.apk?x-oss-process=udf/pp-udf,Jjc3LiMnJ3J+c3N/dn4="
     };
 
 }

@@ -15,7 +15,9 @@
  */
 package com.yanzhenjie.nohttp.download;
 
-import com.yanzhenjie.nohttp.IBasicRequest;
+import com.yanzhenjie.nohttp.BasicRequest;
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.able.Queueable;
 
 /**
  * <p>
@@ -25,55 +27,63 @@ import com.yanzhenjie.nohttp.IBasicRequest;
  *
  * @author Yan Zhenjie.
  */
-public interface DownloadRequest extends IBasicRequest {
+public abstract class DownloadRequest extends BasicRequest<DownloadRequest> implements Queueable {
 
     /**
      * Also didn't download to start download again.
      */
-    int STATUS_RESTART = 0;
+    public static final int STATUS_RESTART = 0;
     /**
      * Part has been downloaded, continue to download last time.
      */
-    int STATUS_RESUME = 1;
+    public static final int STATUS_RESUME = 1;
     /**
      * Has the download is complete, not to download operation.
      */
-    int STATUS_FINISH = 2;
+    public static final int STATUS_FINISH = 2;
+
+    public DownloadRequest(String url) {
+        super(url);
+    }
+
+    public DownloadRequest(String url, RequestMethod requestMethod) {
+        super(url, requestMethod);
+    }
 
     /**
      * Return the mFileDir.
      *
      * @return it won't be empty.
      */
-    String getFileDir();
+    public abstract String getFileDir();
 
     /**
      * Return the mFileName.
      *
      * @return it won't be empty.
      */
-    String getFileName();
+    public abstract String getFileName();
 
     /**
      * According to the Http header named files automatically.
      *
      * @return true need, false not need.
      */
-    boolean autoNameByHead();
+    public abstract boolean autoNameByHead();
 
     /**
      * Return the isRange.
      *
      * @return true: breakpoint continuing, false: don't need a breakpoint continuing.
      */
-    boolean isRange();
+    public abstract boolean isRange();
 
     /**
      * If there is a old files, whether to delete the old files.
      *
      * @return true: deleted, false: don't delete.
      */
-    boolean isDeleteOld();
+    public abstract boolean isDeleteOld();
 
     /**
      * <p>
@@ -87,7 +97,7 @@ public interface DownloadRequest extends IBasicRequest {
      * @see #STATUS_RESUME
      * @see #STATUS_FINISH
      */
-    int checkBeforeStatus();
+    public abstract int checkBeforeStatus();
 
     /**
      * Prepare the callback parameter, while waiting for the response callback with thread.
@@ -95,7 +105,7 @@ public interface DownloadRequest extends IBasicRequest {
      * @param what             the callback mark.
      * @param downloadListener {@link DownloadListener}.
      */
-    void onPreResponse(int what, DownloadListener downloadListener);
+    abstract void onPreResponse(int what, DownloadListener downloadListener);
 
     /**
      * The callback mark.
@@ -103,7 +113,7 @@ public interface DownloadRequest extends IBasicRequest {
      * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
      * @see #onPreResponse(int, DownloadListener)
      */
-    int what();
+    public abstract int what();
 
     /**
      * The request of the listener.
@@ -111,5 +121,5 @@ public interface DownloadRequest extends IBasicRequest {
      * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
      * @see #onPreResponse(int, DownloadListener)
      */
-    DownloadListener downloadListener();
+    public abstract DownloadListener downloadListener();
 }

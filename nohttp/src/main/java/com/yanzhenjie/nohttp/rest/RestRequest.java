@@ -18,6 +18,7 @@ package com.yanzhenjie.nohttp.rest;
 import com.yanzhenjie.nohttp.RequestMethod;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * <p>
@@ -28,7 +29,7 @@ import java.lang.ref.WeakReference;
  * @param <T> a generics, regulated the analytic results of the Request.It should be with the {@link Response},
  *            {@link OnResponseListener}.
  */
-public abstract class RestRequest<T> extends ProtocolRequest<T> implements Request<T> {
+public abstract class RestRequest<T> extends Request<T> {
 
     /**
      * The callback mark.
@@ -40,9 +41,14 @@ public abstract class RestRequest<T> extends ProtocolRequest<T> implements Reque
     private WeakReference<OnResponseListener<T>> responseListener;
 
     /**
+     * Request queue
+     */
+    private BlockingQueue<?> blockingQueue;
+
+    /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
      *
-     * @param url request address, like: {@code http://www.yanzhenjie.com}.
+     * @param url request address, like: {@code http://www.nohttp.net}.
      */
     public RestRequest(String url) {
         this(url, RequestMethod.GET);
@@ -51,7 +57,7 @@ public abstract class RestRequest<T> extends ProtocolRequest<T> implements Reque
     /**
      * Create a request
      *
-     * @param url           request address, like: {@code http://www.yanzhenjie.com}.
+     * @param url           request address, like: {@code http://www.nohttp.net}.
      * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public RestRequest(String url, RequestMethod requestMethod) {
@@ -71,6 +77,25 @@ public abstract class RestRequest<T> extends ProtocolRequest<T> implements Reque
 
     @Override
     public OnResponseListener<T> responseListener() {
-        return responseListener.get();
+        if (responseListener != null)
+            return responseListener.get();
+        return null;
+    }
+
+    @Override
+    public void setQueue(BlockingQueue<?> queue) {
+        blockingQueue = queue;
+    }
+
+    @Override
+    public boolean inQueue() {
+        return blockingQueue != null && blockingQueue.contains(this);
+    }
+
+    @Override
+    public void cancel() {
+        if (blockingQueue != null)
+            blockingQueue.remove(this);
+        super.cancel();
     }
 }

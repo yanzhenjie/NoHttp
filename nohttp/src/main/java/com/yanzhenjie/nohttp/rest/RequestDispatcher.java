@@ -17,7 +17,6 @@ package com.yanzhenjie.nohttp.rest;
 
 import android.os.Process;
 
-import com.yanzhenjie.nohttp.Delivery;
 import com.yanzhenjie.nohttp.Logger;
 
 import java.util.concurrent.BlockingQueue;
@@ -40,10 +39,6 @@ public class RequestDispatcher extends Thread {
      */
     private final BlockingQueue<Request<?>> mUnFinishQueue;
     /**
-     * Delivery.
-     */
-    private Delivery mDelivery;
-    /**
      * Whether the current request queue polling thread is out of.
      */
     private volatile boolean mQuit = false;
@@ -53,13 +48,10 @@ public class RequestDispatcher extends Thread {
      *
      * @param unFinishQueue un finish queue.
      * @param requestQueue  request queue.
-     * @param delivery      delivery.
      */
-    public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue,
-                             Delivery delivery) {
+    public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue) {
         this.mUnFinishQueue = unFinishQueue;
         this.mRequestQueue = requestQueue;
-        this.mDelivery = delivery;
     }
 
     /**
@@ -98,7 +90,7 @@ public class RequestDispatcher extends Thread {
             request.start();
             Messenger.prepare(what, listener)
                     .start()
-                    .post(mDelivery);
+                    .post();
 
             // request.
             Response response = SyncRequestExecutor.INSTANCE.execute(request);
@@ -112,13 +104,13 @@ public class RequestDispatcher extends Thread {
                 //noinspection unchecked
                 Messenger.prepare(what, listener)
                         .response(response)
-                        .post(mDelivery);
+                        .post();
 
             // finish.
             request.finish();
             Messenger.prepare(what, listener)
                     .finish()
-                    .post(mDelivery);
+                    .post();
         }
     }
 }

@@ -36,11 +36,9 @@ import com.yanzhenjie.nohttp.Headers;
 public interface Response<T> {
 
     /**
-     * Get the {@link IProtocolRequest} object.
-     *
-     * @return {@link IProtocolRequest}.
+     * Get the {@link ProtocolRequest} object.
      */
-    IProtocolRequest<T> request();
+    ProtocolRequest<?, T> request();
 
     /**
      * Get the response code of request.

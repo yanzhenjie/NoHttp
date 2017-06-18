@@ -15,10 +15,11 @@
  */
 package com.yanzhenjie.nohttp.download;
 
-import com.yanzhenjie.nohttp.BasicRequest;
 import com.yanzhenjie.nohttp.RequestMethod;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * <p>
@@ -28,7 +29,7 @@ import java.io.File;
  *
  * @author Yan Zhenjie..
  */
-public class DefaultDownloadRequest extends BasicRequest implements DownloadRequest {
+public class DefaultDownloadRequest extends DownloadRequest {
 
     /**
      * The callback mark.
@@ -37,7 +38,7 @@ public class DefaultDownloadRequest extends BasicRequest implements DownloadRequ
     /**
      * The request of the listener.
      */
-    private DownloadListener downloadListener;
+    private WeakReference<DownloadListener> downloadListener;
     /**
      * File the target folder.
      */
@@ -58,6 +59,11 @@ public class DefaultDownloadRequest extends BasicRequest implements DownloadRequ
      * If there is a old files, whether to delete the old files.
      */
     private final boolean isDeleteOld;
+
+    /**
+     * Request queue
+     */
+    private BlockingQueue<?> blockingQueue;
 
     /**
      * Create download request.
@@ -85,8 +91,8 @@ public class DefaultDownloadRequest extends BasicRequest implements DownloadRequ
      *                      complete, not to request the network.
      * @see #DefaultDownloadRequest(String, RequestMethod, String, boolean)
      */
-    public DefaultDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename,
-                                  boolean isRange, boolean isDeleteOld) {
+    public DefaultDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange,
+                                  boolean isDeleteOld) {
         this(url, requestMethod, fileFolder, filename, false, isRange, isDeleteOld);
     }
 
@@ -102,8 +108,8 @@ public class DefaultDownloadRequest extends BasicRequest implements DownloadRequ
      * @param isDeleteOld    find the same when the file is deleted after download, or on behalf of the download is
      *                       complete, not to request the network.
      */
-    private DefaultDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename,
-                                   boolean autoNameByHead, boolean isRange, boolean isDeleteOld) {
+    private DefaultDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean autoNameByHead,
+                                   boolean isRange, boolean isDeleteOld) {
         super(url, requestMethod);
         this.mFileDir = fileFolder;
         this.mFileName = filename;
@@ -147,7 +153,7 @@ public class DefaultDownloadRequest extends BasicRequest implements DownloadRequ
                 File tempFile = new File(mFileDir, mFileName + ".nohttp");
                 if (tempFile.exists())
                     return STATUS_RESUME;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         return STATUS_RESTART;
@@ -156,7 +162,7 @@ public class DefaultDownloadRequest extends BasicRequest implements DownloadRequ
     @Override
     public void onPreResponse(int what, DownloadListener downloadListener) {
         this.what = what;
-        this.downloadListener = downloadListener;
+        this.downloadListener = new WeakReference<>(downloadListener);
     }
 
     @Override
@@ -166,6 +172,18 @@ public class DefaultDownloadRequest extends BasicRequest implements DownloadRequ
 
     @Override
     public DownloadListener downloadListener() {
-        return downloadListener;
+        if (downloadListener != null)
+            return downloadListener.get();
+        return null;
+    }
+
+    @Override
+    public void setQueue(BlockingQueue<?> queue) {
+        blockingQueue = queue;
+    }
+
+    @Override
+    public boolean inQueue() {
+        return blockingQueue != null && blockingQueue.contains(this);
     }
 }

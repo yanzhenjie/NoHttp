@@ -27,9 +27,8 @@ public interface RedirectHandler {
      *
      * @param oldRequest      the old request.
      * @param responseHeaders the service side head accordingly.
-     * @return {@link IBasicRequest}.
      */
-    IBasicRequest onRedirect(IBasicRequest oldRequest, Headers responseHeaders);
+    BasicRequest<?> onRedirect(BasicRequest<?> oldRequest, Headers responseHeaders);
 
     /**
      * Whether to allow the redirection, if not redirect will not be {@code #onRedirect(Headers)} callback method, at

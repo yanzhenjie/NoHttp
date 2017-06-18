@@ -15,9 +15,7 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
-import com.yanzhenjie.nohttp.Delivery;
 import com.yanzhenjie.nohttp.Logger;
-import com.yanzhenjie.nohttp.HandlerDelivery;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,32 +28,25 @@ public enum AsyncRequestExecutor {
     INSTANCE;
 
     /**
-     * Delivery.
-     */
-    private Delivery mDelivery;
-    /**
      * ExecutorService.
      */
     private ExecutorService mExecutorService;
 
     AsyncRequestExecutor() {
         mExecutorService = Executors.newCachedThreadPool();
-        mDelivery = HandlerDelivery.newInstance();
     }
 
     public <T> void execute(int what, Request<T> request, OnResponseListener<T> responseListener) {
         request.onPreResponse(what, responseListener);
-        mExecutorService.execute(new RequestTask<>(request, mDelivery));
+        mExecutorService.execute(new RequestTask<>(request));
     }
 
     private static class RequestTask<T> implements Runnable {
 
         private Request<T> request;
-        private Delivery mDelivery;
 
-        private RequestTask(Request<T> request, Delivery mDelivery) {
+        private RequestTask(Request<T> request) {
             this.request = request;
-            this.mDelivery = mDelivery;
         }
 
         @Override
@@ -72,7 +63,7 @@ public enum AsyncRequestExecutor {
             request.start();
             Messenger.prepare(what, listener)
                     .start()
-                    .post(mDelivery);
+                    .post();
 
             // request.
             Response<T> response = SyncRequestExecutor.INSTANCE.execute(request);
@@ -82,13 +73,13 @@ public enum AsyncRequestExecutor {
             else
                 Messenger.prepare(what, listener)
                         .response(response)
-                        .post(mDelivery);
+                        .post();
 
             // finish.
             request.finish();
             Messenger.prepare(what, listener)
                     .finish()
-                    .post(mDelivery);
+                    .post();
         }
     }
 

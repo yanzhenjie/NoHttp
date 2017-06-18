@@ -123,7 +123,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
             Toast.show(mActivity, R.string.error_url_error);
         } else if (exception instanceof NotFoundCacheError) {
             // 这个异常只会在仅仅查找缓存时没有找到缓存时返回
-            Toast.show(mActivity, R.string.error_not_found_cache);
+            // 没有缓存一般不提示用户，如果需要随你。
         } else {
             Toast.show(mActivity, R.string.error_unknow);
         }

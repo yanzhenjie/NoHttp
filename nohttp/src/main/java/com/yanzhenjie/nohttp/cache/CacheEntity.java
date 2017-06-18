@@ -18,7 +18,6 @@ package com.yanzhenjie.nohttp.cache;
 import android.util.Base64;
 
 import com.yanzhenjie.nohttp.Headers;
-import com.yanzhenjie.nohttp.HttpHeaders;
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.db.BasicEntity;
 
@@ -41,7 +40,7 @@ public class CacheEntity implements BasicEntity {
     /**
      * The server response headers.
      */
-    private Headers responseHeaders = new HttpHeaders();
+    private Headers responseHeaders = new Headers();
 
     /**
      * CacheStore data.

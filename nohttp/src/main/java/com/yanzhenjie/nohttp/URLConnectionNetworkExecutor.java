@@ -38,7 +38,7 @@ import javax.net.ssl.SSLSocketFactory;
 public class URLConnectionNetworkExecutor implements NetworkExecutor {
 
     @Override
-    public Network execute(IBasicRequest request) throws Exception {
+    public Network execute(BasicRequest request) throws Exception {
         URL url = new URL(request.url());
         HttpURLConnection connection;
         Proxy proxy = request.getProxy();
@@ -68,7 +68,7 @@ public class URLConnectionNetworkExecutor implements NetworkExecutor {
         connection.setDoOutput(isAllowBody);
 
         // Adds all request header to connection.
-        Headers headers = request.headers();
+        Headers headers = request.getHeaders();
 
         // To fix bug: accidental EOFException before API 19.
         List<String> values = headers.getValues(Headers.HEAD_KEY_CONNECTION);

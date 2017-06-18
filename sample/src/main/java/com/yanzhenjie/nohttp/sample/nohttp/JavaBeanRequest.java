@@ -27,6 +27,15 @@ import com.yanzhenjie.nohttp.rest.StringRequest;
  */
 public class JavaBeanRequest<T> extends RestRequest<T> {
 
+    /**
+     * 更多如何请求JavaBean，List，Map等复杂对象，请看这篇博客：
+     *
+     * http://blog.csdn.net/yanzhenjie1003/article/details/70158030
+     */
+
+    /**
+     * 要解析的JavaBean。
+     */
     private Class<T> clazz;
 
     public JavaBeanRequest(String url, Class<T> clazz) {

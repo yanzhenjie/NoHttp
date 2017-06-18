@@ -18,13 +18,14 @@ package com.yanzhenjie.nohttp.rest;
 import android.text.TextUtils;
 
 import com.yanzhenjie.nohttp.BasicRequest;
+import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.RequestMethod;
 
 /**
  * <p>For the Request to encapsulate some Http protocol related properties.</p>
  * Created by Yan Zhenjie on 2016/8/20.
  */
-public abstract class ProtocolRequest<T> extends BasicRequest implements IProtocolRequest<T> {
+public abstract class ProtocolRequest<T extends ProtocolRequest, Result> extends BasicRequest<T> {
 
     /**
      * Cache key.
@@ -38,7 +39,7 @@ public abstract class ProtocolRequest<T> extends BasicRequest implements IProtoc
     /**
      * Create a request, request method is {@link RequestMethod#GET}.
      *
-     * @param url request address, like: http://www.google.com.
+     * @param url request address, like: http://www.nohttp.net.
      */
     public ProtocolRequest(String url) {
         this(url, RequestMethod.GET);
@@ -47,33 +48,59 @@ public abstract class ProtocolRequest<T> extends BasicRequest implements IProtoc
     /**
      * Create a request
      *
-     * @param url           request address, like: http://www.google.com.
+     * @param url           request address, like: http://www.nohttp.net.
      * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public ProtocolRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
     }
 
-    @Override
-    public IProtocolRequest setCacheKey(String key) {
+    /**
+     * Set the request cache primary key, it should be globally unique.
+     *
+     * @param key unique key.
+     */
+    public T setCacheKey(String key) {
         this.mCacheKey = key;
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * Get key of cache data.
+     *
+     * @return cache key.
+     */
     public String getCacheKey() {
         return TextUtils.isEmpty(mCacheKey) ? url() : mCacheKey;
     }
 
-    @Override
-    public IProtocolRequest setCacheMode(CacheMode cacheMode) {
+    /**
+     * Set the cache mode.
+     *
+     * @param cacheMode The value from {@link CacheMode}.
+     */
+    public T setCacheMode(CacheMode cacheMode) {
         this.mCacheMode = cacheMode;
-        return this;
+        return (T) this;
     }
 
-    @Override
+    /**
+     * He got the request cache mode.
+     *
+     * @return value from {@link CacheMode}.
+     */
     public CacheMode getCacheMode() {
         return mCacheMode;
     }
+
+    /**
+     * Parse request results for generic objects.
+     *
+     * @param responseHeaders response headers of server.
+     * @param responseBody    response data of server.
+     * @return your response result.
+     * @throws Exception parse error.
+     */
+    public abstract Result parseResponse(Headers responseHeaders, byte[] responseBody) throws Exception;
 
 }

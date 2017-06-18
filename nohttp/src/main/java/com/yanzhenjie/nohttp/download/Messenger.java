@@ -15,8 +15,8 @@
  */
 package com.yanzhenjie.nohttp.download;
 
+import com.yanzhenjie.nohttp.HandlerDelivery;
 import com.yanzhenjie.nohttp.Headers;
-import com.yanzhenjie.nohttp.Delivery;
 
 /**
  * Created by Yan Zhenjie on 2017/2/18.
@@ -89,9 +89,9 @@ public class Messenger {
         return this;
     }
 
-    void post(Delivery delivery) {
+    void post() {
         if (listener == null) return;
-        delivery.post(new Runnable() {
+        HandlerDelivery.getInstance().post(new Runnable() {
             @Override
             public void run() {
                 switch (command) {

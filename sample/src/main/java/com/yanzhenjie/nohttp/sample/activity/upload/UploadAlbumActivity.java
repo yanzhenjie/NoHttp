@@ -83,7 +83,8 @@ public class UploadAlbumActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View v) {
         if (v.getId() == R.id.btn_album) {
             Album.album(this)
-                    .columnCount(1)
+                    .columnCount(2)
+                    .selectCount(1)
                     .requestCode(RESULT_BACK_ALBUM)
                     .start();
         } else if (v.getId() == R.id.btn_start) {

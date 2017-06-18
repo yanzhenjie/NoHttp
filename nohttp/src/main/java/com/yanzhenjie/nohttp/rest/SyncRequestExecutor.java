@@ -32,12 +32,8 @@ public enum SyncRequestExecutor {
 
     /**
      * Perform a request.
-     *
-     * @param request {@link IProtocolRequest}.
-     * @param <T>     Want to request to the data types.
-     * @return {@link Response}.
      */
-    public <T> Response<T> execute(IProtocolRequest<T> request) {
+    public <T> Response<T> execute(ProtocolRequest<?, T> request) {
         return mRestProtocol.request(request);
     }
 }

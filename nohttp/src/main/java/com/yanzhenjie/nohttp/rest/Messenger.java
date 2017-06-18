@@ -15,7 +15,7 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
-import com.yanzhenjie.nohttp.Delivery;
+import com.yanzhenjie.nohttp.HandlerDelivery;
 
 /**
  * Created by Yan Zhenjie on 2017/2/16.
@@ -53,9 +53,9 @@ class Messenger<T> {
         return this;
     }
 
-    void post(Delivery delivery) {
+    void post() {
         if (listener == null) return;
-        delivery.post(new Runnable() {
+        HandlerDelivery.getInstance().post(new Runnable() {
             @Override
             public void run() {
                 switch (command) {

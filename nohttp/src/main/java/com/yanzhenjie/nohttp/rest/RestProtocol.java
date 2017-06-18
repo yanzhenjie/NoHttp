@@ -17,15 +17,15 @@ package com.yanzhenjie.nohttp.rest;
 
 import android.os.SystemClock;
 
+import com.yanzhenjie.nohttp.BasicRequest;
+import com.yanzhenjie.nohttp.Connection;
 import com.yanzhenjie.nohttp.Headers;
+import com.yanzhenjie.nohttp.HttpConnection;
+import com.yanzhenjie.nohttp.NetworkExecutor;
 import com.yanzhenjie.nohttp.cache.CacheEntity;
 import com.yanzhenjie.nohttp.error.NotFoundCacheError;
 import com.yanzhenjie.nohttp.tools.CacheStore;
 import com.yanzhenjie.nohttp.tools.HeaderUtil;
-import com.yanzhenjie.nohttp.Connection;
-import com.yanzhenjie.nohttp.HttpConnection;
-import com.yanzhenjie.nohttp.IBasicRequest;
-import com.yanzhenjie.nohttp.NetworkExecutor;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class RestProtocol {
         mHttpConnection = new HttpConnection(executor);
     }
 
-    public <T> Response<T> request(IProtocolRequest<T> request) {
+    public <T> Response<T> request(ProtocolRequest<?, T> request) {
         long startTime = SystemClock.elapsedRealtime();
 
         String cacheKey = request.getCacheKey();
@@ -71,14 +71,13 @@ public class RestProtocol {
                 SystemClock.elapsedRealtime() - startTime, protocol.exception);
     }
 
-    private Protocol requestCacheOrNetwork(CacheMode cacheMode, CacheEntity localCache, IBasicRequest request) {
+    private Protocol requestCacheOrNetwork(CacheMode cacheMode, CacheEntity localCache, ProtocolRequest<?, ?> request) {
         Protocol protocol = null;
         switch (cacheMode) {
             case ONLY_READ_CACHE: {// Only read cache.
                 protocol = new Protocol();
                 if (localCache == null)
-                    protocol.exception = new NotFoundCacheError("The cache mode is ONLY_READ_CACHE, but did not " +
-                            "find the cache.");
+                    protocol.exception = new NotFoundCacheError("The cache mode is ONLY_READ_CACHE, but did not find the cache.");
                 else {
                     protocol.headers = localCache.getResponseHeaders();
                     protocol.body = localCache.getData();
@@ -134,19 +133,19 @@ public class RestProtocol {
      * @param request     the request object.
      * @param cacheEntity cached entities.
      */
-    private void setRequestCacheHeader(IBasicRequest request, CacheEntity cacheEntity) {
+    private void setRequestCacheHeader(BasicRequest<?> request, CacheEntity cacheEntity) {
         if (cacheEntity == null) {
-            request.headers().remove(Headers.HEAD_KEY_IF_NONE_MATCH);
-            request.headers().remove(Headers.HEAD_KEY_IF_MODIFIED_SINCE);
+            request.getHeaders().remove(Headers.HEAD_KEY_IF_NONE_MATCH);
+            request.getHeaders().remove(Headers.HEAD_KEY_IF_MODIFIED_SINCE);
         } else {
             Headers headers = cacheEntity.getResponseHeaders();
             String eTag = headers.getETag();
             if (eTag != null)
-                request.headers().set(Headers.HEAD_KEY_IF_NONE_MATCH, eTag);
+                request.getHeaders().set(Headers.HEAD_KEY_IF_NONE_MATCH, eTag);
 
             long lastModified = headers.getLastModified();
             if (lastModified > 0)
-                request.headers().set(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HeaderUtil.formatMillisToGMT(lastModified));
+                request.getHeaders().set(Headers.HEAD_KEY_IF_MODIFIED_SINCE, HeaderUtil.formatMillisToGMT(lastModified));
         }
     }
 
@@ -156,7 +155,7 @@ public class RestProtocol {
      * @param request request object.
      * @return {@link Protocol}.
      */
-    private Protocol getHttpProtocol(IBasicRequest request) {
+    private Protocol getHttpProtocol(BasicRequest<?> request) {
         Protocol result = new Protocol();
         Connection connection = mHttpConnection.getConnection(request);
         result.headers = connection.responseHeaders();

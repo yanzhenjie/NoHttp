@@ -30,7 +30,7 @@ import javax.net.ssl.SSLSocketFactory;
 public class OkHttpNetworkExecutor implements NetworkExecutor {
 
     @Override
-    public Network execute(IBasicRequest request) throws Exception {
+    public Network execute(BasicRequest<?> request) throws Exception {
         URL url = new URL(request.url());
         HttpURLConnection connection = URLConnectionFactory.getInstance().open(url, request.getProxy());
         connection.setConnectTimeout(request.getConnectTimeout());
@@ -46,17 +46,14 @@ public class OkHttpNetworkExecutor implements NetworkExecutor {
                 ((HttpsURLConnection) connection).setHostnameVerifier(hostnameVerifier);
         }
 
-        // Base attribute
         connection.setRequestMethod(request.getRequestMethod().toString());
 
         connection.setDoInput(true);
         boolean isAllowBody = request.getRequestMethod().allowRequestBody();
         connection.setDoOutput(isAllowBody);
 
-        // Adds all request header to connection.
-        Headers headers = request.headers();
+        Headers headers = request.getHeaders();
 
-        // To fix bug: accidental EOFException before API 19.
         List<String> values = headers.getValues(Headers.HEAD_KEY_CONNECTION);
         if (values == null || values.size() == 0)
             headers.add(Headers.HEAD_KEY_CONNECTION, Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE);

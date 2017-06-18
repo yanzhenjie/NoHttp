@@ -15,8 +15,6 @@
  */
 package com.yanzhenjie.nohttp.download;
 
-import com.yanzhenjie.nohttp.Delivery;
-import com.yanzhenjie.nohttp.HandlerDelivery;
 import com.yanzhenjie.nohttp.Logger;
 
 import java.util.concurrent.BlockingQueue;
@@ -44,10 +42,6 @@ public class DownloadQueue {
      */
     private final BlockingQueue<DownloadRequest> mDownloadQueue = new PriorityBlockingQueue<>();
     /**
-     * Delivery.
-     */
-    private Delivery mDelivery;
-    /**
      * Download queue polling thread array.
      */
     private DownloadDispatcher[] mDispatchers;
@@ -59,7 +53,6 @@ public class DownloadQueue {
      */
     public DownloadQueue(int threadPoolSize) {
         mDispatchers = new DownloadDispatcher[threadPoolSize];
-        mDelivery = HandlerDelivery.newInstance();
     }
 
     /**
@@ -70,7 +63,7 @@ public class DownloadQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mUnFinishQueue, mDownloadQueue, mDelivery);
+            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mUnFinishQueue, mDownloadQueue);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }

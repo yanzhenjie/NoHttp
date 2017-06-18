@@ -160,6 +160,11 @@
             android:name=".activity.HttpsActivity"
             android:label="@string/title_https_activity"
             android:theme="@style/AppTheme.Main"/>
+        <activity
+            android:name="com.yanzhenjie.album.AlbumActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden|stateHidden"/>
     </application>
 
 </manifest>

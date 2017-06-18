@@ -15,9 +15,11 @@
  */
 package com.yanzhenjie.nohttp.sample;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.yanzhenjie.nohttp.InitializationConfig;
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
-import com.yanzhenjie.nohttp.OkHttpNetworkExecutor;
+import com.yanzhenjie.nohttp.URLConnectionNetworkExecutor;
 import com.yanzhenjie.nohttp.cache.DBCacheStore;
 import com.yanzhenjie.nohttp.cookie.DBCookieStore;
 
@@ -33,6 +35,9 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        LeakCanary.install(this);
+
         _instance = this;
 
         Logger.setDebug(BuildConfig.DEBUG);// 开启NoHttp的调试模式, 配置后可看到请求过程、日志和错误信息。
@@ -42,21 +47,22 @@ public class Application extends android.app.Application {
 //        NoHttp.initialize(this);
 
         // 如果你需要自定义配置：
-        NoHttp.initialize(this, new NoHttp.Config()
+        NoHttp.initialize(InitializationConfig.newBuilder(this)
                 // 设置全局连接超时时间，单位毫秒，默认10s。
-                .setConnectTimeout(30 * 1000)
+                .connectionTimeout(30 * 1000)
                 // 设置全局服务器响应超时时间，单位毫秒，默认10s。
-                .setReadTimeout(30 * 1000)
+                .readTimeout(30 * 1000)
                 // 配置缓存，默认保存数据库DBCacheStore，保存到SD卡使用DiskCacheStore。
-                .setCacheStore(
+                .cacheStore(
                         new DBCacheStore(this).setEnable(true) // 如果不使用缓存，设置setEnable(false)禁用。
                 )
                 // 配置Cookie，默认保存数据库DBCookieStore，开发者可以自己实现。
-                .setCookieStore(
+                .cookieStore(
                         new DBCookieStore(this).setEnable(true) // 如果不维护cookie，设置false禁用。
                 )
-                // 配置网络层，默认使用URLConnection，如果想用OkHttp：OkHttpNetworkExecutor。
-                .setNetworkExecutor(new OkHttpNetworkExecutor())
+                // 配置网络层，URLConnectionNetworkExecutor，如果想用OkHttp：OkHttpNetworkExecutor。
+                .networkExecutor(new URLConnectionNetworkExecutor())
+                .build()
         );
 
         // 如果你需要用OkHttp，请依赖下面的项目，version表示版本号：

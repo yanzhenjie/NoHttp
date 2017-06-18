@@ -15,17 +15,35 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
+import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.able.Queueable;
+
 /**
  * <p>
- * Extended {@link IProtocolRequest} class, to increase the method of recording response.
+ * Provide a combination of methods used in conjunction with queues.
  * </p>
- * Created in Oct 16, 2015 8:22:06 PM.
- *
- * @param <T> a generic, on behalf of you can accept the result type, .It should be with the
- *            {@link OnResponseListener}, {@link Response}.
- * @author Yan Zhenjie.
+ * Created by Yan Zhenjie on Oct 16, 2015 8:22:06 PM.
  */
-public interface Request<T> extends IProtocolRequest<T> {
+public abstract class Request<T> extends ProtocolRequest<Request, T> implements Queueable {
+
+    /**
+     * Create a request, request method is {@link RequestMethod#GET}.
+     *
+     * @param url request address, like: http://www.nohttp.net.
+     */
+    public Request(String url) {
+        super(url);
+    }
+
+    /**
+     * Create a request
+     *
+     * @param url           request address, like: http://www.nohttp.net.
+     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
+     */
+    public Request(String url, RequestMethod requestMethod) {
+        super(url, requestMethod);
+    }
 
     /**
      * Prepare the callback parameter, while waiting for the response callback with thread.
@@ -33,7 +51,7 @@ public interface Request<T> extends IProtocolRequest<T> {
      * @param what             the callback mark.
      * @param responseListener {@link OnResponseListener}.
      */
-    void onPreResponse(int what, OnResponseListener<T> responseListener);
+    abstract void onPreResponse(int what, OnResponseListener<T> responseListener);
 
     /**
      * The callback mark.
@@ -41,7 +59,7 @@ public interface Request<T> extends IProtocolRequest<T> {
      * @return Return when {@link #onPreResponse(int, OnResponseListener)} incoming credit.
      * @see #onPreResponse(int, OnResponseListener)
      */
-    int what();
+    public abstract int what();
 
     /**
      * The request of the listener.
@@ -49,5 +67,5 @@ public interface Request<T> extends IProtocolRequest<T> {
      * @return Return when {@link #onPreResponse(int, OnResponseListener)} incoming credit.
      * @see #onPreResponse(int, OnResponseListener)
      */
-    OnResponseListener<T> responseListener();
+    public abstract OnResponseListener<T> responseListener();
 }

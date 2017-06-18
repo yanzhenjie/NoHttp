@@ -32,7 +32,7 @@ public class RestResponse<T> implements Response<T> {
     /**
      * Corresponding request URL.
      */
-    private IProtocolRequest<T> request;
+    private ProtocolRequest<?, T> request;
 
     /**
      * Whether from the cache.
@@ -67,8 +67,7 @@ public class RestResponse<T> implements Response<T> {
      * @param millis      request time.
      * @param e           exception.
      */
-    public RestResponse(IProtocolRequest<T> request, boolean isFromCache, Headers headers, T result, long millis,
-                        Exception e) {
+    public RestResponse(ProtocolRequest<?, T> request, boolean isFromCache, Headers headers, T result, long millis, Exception e) {
         this.request = request;
         this.isFromCache = isFromCache;
         this.headers = headers;
@@ -78,7 +77,7 @@ public class RestResponse<T> implements Response<T> {
     }
 
     @Override
-    public IProtocolRequest<T> request() {
+    public ProtocolRequest<?, T> request() {
         return request;
     }
 

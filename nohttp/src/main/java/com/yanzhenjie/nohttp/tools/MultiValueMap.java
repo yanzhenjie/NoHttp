@@ -59,13 +59,6 @@ public interface MultiValueMap<K, V> {
     void set(K key, List<V> values);
 
     /**
-     * The removal of all key/value pair, add new keys to enter.
-     *
-     * @param values values.
-     */
-    void set(Map<K, List<V>> values);
-
-    /**
      * Delete a key-value.
      *
      * @param key key.
@@ -107,6 +100,14 @@ public interface MultiValueMap<K, V> {
      * @return The value.
      */
     V getValue(K key, int index);
+
+    /**
+     * Get value.
+     *
+     * @param key key.
+     * @return The value.
+     */
+    V getValue(K key);
 
     /**
      * To getList key of all values.

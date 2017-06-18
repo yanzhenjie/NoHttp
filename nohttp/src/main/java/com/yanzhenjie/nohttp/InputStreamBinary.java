@@ -28,8 +28,6 @@ import java.io.InputStream;
  * All the methods are called in Son thread.
  * </p>
  * Created in Oct 17, 2015 12:40:54 PM.
- *
- * @author Yan Zhenjie.
  */
 public class InputStreamBinary extends BasicBinary {
 

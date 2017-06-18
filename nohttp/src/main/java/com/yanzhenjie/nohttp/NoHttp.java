@@ -15,34 +15,31 @@
  */
 package com.yanzhenjie.nohttp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.yanzhenjie.nohttp.cache.CacheEntity;
-import com.yanzhenjie.nohttp.cache.DBCacheStore;
-import com.yanzhenjie.nohttp.cookie.DBCookieStore;
+import com.yanzhenjie.nohttp.download.DefaultDownloadRequest;
+import com.yanzhenjie.nohttp.download.DownloadQueue;
 import com.yanzhenjie.nohttp.download.DownloadRequest;
 import com.yanzhenjie.nohttp.rest.ByteArrayRequest;
-import com.yanzhenjie.nohttp.rest.IProtocolRequest;
 import com.yanzhenjie.nohttp.rest.ImageRequest;
 import com.yanzhenjie.nohttp.rest.JsonArrayRequest;
 import com.yanzhenjie.nohttp.rest.JsonObjectRequest;
+import com.yanzhenjie.nohttp.rest.ProtocolRequest;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.RequestQueue;
 import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.rest.StringRequest;
 import com.yanzhenjie.nohttp.rest.SyncRequestExecutor;
 import com.yanzhenjie.nohttp.tools.CacheStore;
-import com.yanzhenjie.nohttp.download.DefaultDownloadRequest;
-import com.yanzhenjie.nohttp.download.DownloadQueue;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.CookieStore;
 
 /**
@@ -55,29 +52,10 @@ import java.net.CookieStore;
  */
 public class NoHttp {
 
-    /**
-     * Context.
-     */
-    private static Context sContext;
-    private static NoHttp instance;
+    @SuppressLint("StaticFieldLeak")
+    private static InitializationConfig sInitializeConfig;
 
-    private int mConnectTimeout;
-    private int mReadTimeout;
-
-    private CookieManager mCookieManager;
-    private NetworkExecutor mNetworkExecutor;
-    private CacheStore<CacheEntity> mCacheStore;
-
-    private NoHttp(Config config) {
-        mConnectTimeout = config.mConnectTimeout;
-        mReadTimeout = config.mReadTimeout;
-
-        CookieStore cookieStore = config.mCookieStore == null ? new DBCookieStore(NoHttp.getContext()) : config
-                .mCookieStore;
-        mCookieManager = new CookieManager(cookieStore, CookiePolicy.ACCEPT_ALL);
-        mCacheStore = config.mCacheStore == null ? new DBCacheStore(NoHttp.getContext()) : config.mCacheStore;
-        mNetworkExecutor = config.mNetworkExecutor == null ? new URLConnectionNetworkExecutor() : config
-                .mNetworkExecutor;
+    private NoHttp() {
     }
 
     /**
@@ -86,95 +64,106 @@ public class NoHttp {
      * @param context {@link Context}.
      */
     public static void initialize(Context context) {
-        initialize(context, null);
+        sInitializeConfig = InitializationConfig.newBuilder(context)
+                .build();
     }
 
     /**
      * Initialize NoHttp, should invoke on {@link android.app.Application#onCreate()}.
      *
-     * @param context {@link Context}.
-     * @param config  {@link }.
+     * @deprecated use {@link #initialize(InitializationConfig)} instead.
      */
+    @Deprecated
     public static void initialize(Context context, Config config) {
-        if (sContext == null) {
-            sContext = context.getApplicationContext();
-            instance = new NoHttp(config == null ? new Config() : config);
-        }
+        sInitializeConfig = InitializationConfig.newBuilder(context)
+                .connectionTimeout(config.mConnectTimeout)
+                .readTimeout(config.mReadTimeout)
+                .cookieStore(config.mCookieStore)
+                .cacheStore(config.mCacheStore)
+                .networkExecutor(config.mNetworkExecutor)
+                .build();
     }
 
     /**
-     * Gets context of app.
-     *
-     * @return {@link Context}.
+     * Initialize NoHttp, should invoke on {@link android.app.Application#onCreate()}.
      */
-    public static Context getContext() {
-        testInitialize();
-        return sContext;
-    }
-
-    /**
-     * Gets instance for config.
-     *
-     * @return {@link NoHttp}.
-     */
-    private static NoHttp getInstance() {
-        testInitialize();
-        return instance;
+    public static void initialize(InitializationConfig initializeConfig) {
+        sInitializeConfig = initializeConfig;
     }
 
     /**
      * Test initialized.
      */
     private static void testInitialize() {
-        if (sContext == null)
-            throw new ExceptionInInitializerError("Please invoke NoHttp.initialize(Application) on " +
-                    "Application#onCreate()");
+        if (sInitializeConfig == null)
+            throw new ExceptionInInitializerError("Please invoke NoHttp.initialize(Application) on Application#onCreate()");
+    }
+
+    /**
+     * Gets context of app.
+     */
+    public static Context getContext() {
+        testInitialize();
+        return sInitializeConfig.getContext();
+    }
+
+    /**
+     * Get InitializationConfig.
+     */
+    public static InitializationConfig getInitializeConfig() {
+        testInitialize();
+        return sInitializeConfig;
     }
 
 
     /**
      * Gets connect timeout.
      *
-     * @return ms.
+     * @deprecated use {@link #getInitializeConfig()} instead.
      */
+    @Deprecated
     public static int getConnectTimeout() {
-        return getInstance().mConnectTimeout;
+        return sInitializeConfig.getConnectTimeout();
     }
 
     /**
      * Gets read timeout.
      *
-     * @return ms.
+     * @deprecated use {@link #getInitializeConfig()} instead.
      */
+    @Deprecated
     public static int getReadTimeout() {
-        return getInstance().mReadTimeout;
+        return sInitializeConfig.getReadTimeout();
     }
 
     /**
      * Gets cookie manager.
      *
-     * @return {@link CookieHandler}.
+     * @deprecated use {@link #getInitializeConfig()} instead.
      */
+    @Deprecated
     public static CookieManager getCookieManager() {
-        return getInstance().mCookieManager;
+        return sInitializeConfig.getCookieManager();
     }
 
     /**
      * Gets cache store.
      *
-     * @return {@link CacheStore}.
+     * @deprecated use {@link #getInitializeConfig()} instead.
      */
+    @Deprecated
     public static CacheStore<CacheEntity> getCacheStore() {
-        return getInstance().mCacheStore;
+        return sInitializeConfig.getCacheStore();
     }
 
     /**
      * Gets executor implement of http.
      *
-     * @return {@link NetworkExecutor}.
+     * @deprecated use {@link #getInitializeConfig()} instead.
      */
+    @Deprecated
     public static NetworkExecutor getNetworkExecutor() {
-        return getInstance().mNetworkExecutor;
+        return sInitializeConfig.getNetworkExecutor();
     }
 
     /**
@@ -203,7 +192,7 @@ public class NoHttp {
     /**
      * Create a String type request, the request method is {@link RequestMethod#GET}.
      *
-     * @param url such as: {@code http://www.google.com}.
+     * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<String>}.
      * @see #createStringRequest(String, RequestMethod)
      */
@@ -214,7 +203,7 @@ public class NoHttp {
     /**
      * Create a String type request, custom request method, method from {@link RequestMethod}.
      *
-     * @param url           such as: {@code http://www.google.com}.
+     * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
      * @return {@code Request<String>}.
      * @see #createStringRequest(String)
@@ -226,7 +215,7 @@ public class NoHttp {
     /**
      * Create a JSONObject type request, the request method is {@link RequestMethod#GET}.
      *
-     * @param url such as: {@code http://www.google.com}.
+     * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<JSONObject>}.
      * @see #createJsonObjectRequest(String, RequestMethod)
      */
@@ -237,7 +226,7 @@ public class NoHttp {
     /**
      * Create a JSONObject type request, custom request method, method from {@link RequestMethod}.
      *
-     * @param url           such as: {@code http://www.google.com}.
+     * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
      * @return {@code Request<JSONObject>}.
      * @see #createJsonObjectRequest(String)
@@ -249,7 +238,7 @@ public class NoHttp {
     /**
      * Create a JSONArray type request, the request method is {@link RequestMethod#GET}.
      *
-     * @param url such as: {@code http://www.google.com}.
+     * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<JSONArray>}.
      * @see #createJsonArrayRequest(String, RequestMethod)
      */
@@ -260,7 +249,7 @@ public class NoHttp {
     /**
      * Create a JSONArray type request, custom request method, method from {@link RequestMethod}.
      *
-     * @param url           such as: {@code http://www.google.com}.
+     * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
      * @return {@code Request<JSONArray>}.
      * @see #createJsonArrayRequest(String)
@@ -272,7 +261,7 @@ public class NoHttp {
     /**
      * Create a Image type request, the request method is {@link RequestMethod#GET}.
      *
-     * @param url such as: {@code http://www.google.com}.
+     * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<Bitmap>}.
      * @see #createImageRequest(String, RequestMethod)
      * @see #createImageRequest(String, RequestMethod, int, int, Bitmap.Config, ImageView.ScaleType)
@@ -284,7 +273,7 @@ public class NoHttp {
     /**
      * Create a Image type request.
      *
-     * @param url           such as: {@code http://www.google.com}.
+     * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
      * @return {@code Request<Bitmap>}.
      * @see #createImageRequest(String)
@@ -298,7 +287,7 @@ public class NoHttp {
     /**
      * Create a Image type request.
      *
-     * @param url           such as: {@code http://www.google.com}.
+     * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
      * @param maxWidth      width.
      * @param maxHeight     height.
@@ -343,7 +332,7 @@ public class NoHttp {
      * @param <T>     {@link T}.
      * @return {@link Response}.
      */
-    public static <T> Response<T> startRequestSync(IProtocolRequest<T> request) {
+    public static <T> Response<T> startRequestSync(ProtocolRequest<?, T> request) {
         return SyncRequestExecutor.INSTANCE.execute(request);
     }
 
@@ -475,6 +464,10 @@ public class NoHttp {
         return sDownloadQueueInstance;
     }
 
+    /**
+     * @deprecated use {@link InitializationConfig} instead.
+     */
+    @Deprecated
     public static final class Config {
 
         private int mConnectTimeout = 10 * 1000;

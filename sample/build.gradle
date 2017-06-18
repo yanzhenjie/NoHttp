@@ -39,4 +39,8 @@ dependencies {
     // image.
     compile rootProject.ext.dependencies.album
     compile rootProject.ext.dependencies.durban
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 }
