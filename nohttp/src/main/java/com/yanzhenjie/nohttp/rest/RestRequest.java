@@ -22,12 +22,9 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * <p>
- * The realization method of the parameters.
+ * Based on the implementation of the queue request.
  * </p>
- * Created in Oct 20, 2015 4:24:27 PM.
- *
- * @param <T> a generics, regulated the analytic results of the Request.It should be with the {@link Response},
- *            {@link OnResponseListener}.
+ * Created by YanZhenjie on Oct 20, 2015 4:24:27 PM.
  */
 public abstract class RestRequest<T> extends Request<T> {
 

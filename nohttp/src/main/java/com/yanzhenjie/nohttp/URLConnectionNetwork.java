@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <p>
+ * Implement the network layer based on HttpURLConnection.
+ * </p>
  * Created by Yan Zhenjie on 2017/2/12.
  */
 public class URLConnectionNetwork implements Network {
@@ -52,8 +55,7 @@ public class URLConnectionNetwork implements Network {
 
     @Override
     public InputStream getServerStream(int responseCode, Headers headers) throws IOException {
-        return URLConnectionNetworkExecutor.getServerStream(responseCode, headers.getContentEncoding(),
-                mUrlConnection);
+        return URLConnectionNetworkExecutor.getServerStream(responseCode, headers.getContentEncoding(), mUrlConnection);
     }
 
     @Override

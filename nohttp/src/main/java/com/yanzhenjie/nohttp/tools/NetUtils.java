@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  *
  * @author Yan Zhenjie.
  */
-public class NetUtil {
+public class NetUtils {
 
     public enum NetType {
         Any,
@@ -59,7 +59,7 @@ public class NetUtil {
 
     private static ConnectivityManager getConnectivityManager() {
         if (sConnectivityManager == null) {
-            synchronized (NetUtil.class) {
+            synchronized (NetUtils.class) {
                 if (sConnectivityManager == null)
                     sConnectivityManager = (ConnectivityManager) NoHttp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             }

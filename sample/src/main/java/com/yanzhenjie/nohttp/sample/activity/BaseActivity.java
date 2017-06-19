@@ -91,8 +91,8 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param isLoading 实现显示加载框。
      * @param <T>       想请求到的数据类型。
      */
-    public <T> void request(int what, Request<T> request, HttpListener<T> callback, boolean canCancel, boolean
-            isLoading) {
+    public <T> void request(int what, Request<T> request, HttpListener<T> callback,
+                            boolean canCancel, boolean isLoading) {
         request.setCancelSign(object);
         mQueue.add(what, request, new HttpResponseListener<>(this, request, callback, canCancel, isLoading));
     }

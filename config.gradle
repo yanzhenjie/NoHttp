@@ -12,12 +12,12 @@ ext {
             buildToolsVersion      : "25.0.3",
 
             librayMinSdkVersion    : 9,
-            libraryTargetSdkVersion: 26,
+            libraryTargetSdkVersion: 25,
 
             sampleMinSdkVersion    : 14,
             sampleTargetSdkVersion : 22,
 
-            versionCode            : 2,
+            versionCode            : 100,
             versionName            : "1.1.2",
     ]
 
@@ -26,8 +26,8 @@ ext {
             okhttpUrl      : 'com.squareup.okhttp3:okhttp-urlconnection:3.8.0',
 
             // nohttp.
-            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.2',
-            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.2',
+            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.3',
+            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.3',
 
             // support.
             appcompat      : 'com.android.support:appcompat-v7:25.3.1',

@@ -31,9 +31,9 @@ import com.yanzhenjie.nohttp.error.StorageSpaceNotEnoughError;
 import com.yanzhenjie.nohttp.error.TimeoutError;
 import com.yanzhenjie.nohttp.error.URLError;
 import com.yanzhenjie.nohttp.error.UnKnownHostError;
-import com.yanzhenjie.nohttp.tools.HeaderUtil;
+import com.yanzhenjie.nohttp.tools.HeaderUtils;
 import com.yanzhenjie.nohttp.tools.IOUtils;
-import com.yanzhenjie.nohttp.tools.NetUtil;
+import com.yanzhenjie.nohttp.tools.NetUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,16 +42,15 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 
 /**
  * <p>
- * The network layer to download missions.
+ * File downloader.
  * </p>
- * Created in Jul 31, 2015 9:11:55 AM.
- *
- * @author Yan Zhenjie.
+ * Created by YanZhenjie on Jul 31, 2015 9:11:55 AM.
  */
 public class Downloader {
 
@@ -69,7 +68,7 @@ public class Downloader {
     }
 
     private void validateDevice(String savePathDir) throws Exception {
-        if (!NetUtil.isNetworkAvailable())
+        if (!NetUtils.isNetworkAvailable())
             throw new NetworkError("Network is not available, please check network and permission: INTERNET, " +
                     "ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE.");
 
@@ -79,86 +78,132 @@ public class Downloader {
                     "\nFailed to create folder: " + savePathDir);
     }
 
-    private long handleRange(File tempFile, DownloadRequest downloadRequest) {
-        if (tempFile.exists()) {
-            if (tempFile.isDirectory())
-                IOUtils.delFileOrFolder(tempFile);
+    private Connection getConnectionRetry(DownloadRequest downloadRequest) throws Exception {
+        // 连接服务器。
+        Connection connection = mHttpConnection.getConnection(downloadRequest);
+        Exception exception = connection.exception();
+        if (exception != null)
+            throw exception;
 
-            if (downloadRequest.isRange() && tempFile.exists()) {
-                long rangeSize = tempFile.length();
-                if (rangeSize > 0)
-                    // 例如：从1024开始下载：Range:bytes=1024-。
-                    downloadRequest.setHeader("Range", "bytes=" + rangeSize + "-");
-                return rangeSize;
-            } else {
-                downloadRequest.removeHeader("Range"); // Fix developer add.
-                IOUtils.delFileOrFolder(tempFile);
-            }
+        Headers responseHeaders = connection.responseHeaders();
+        int responseCode = responseHeaders.getResponseCode();
+
+        if (responseCode == 416) {
+            downloadRequest.removeHeader("Range");
+            return mHttpConnection.getConnection(downloadRequest);
         }
-        return 0;
+        return connection;
     }
 
-    public void download(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-        validateParam(downloadRequest, downloadListener);
+    private String getRealFileName(DownloadRequest request, Headers responseHeaders) throws IOException {
+        String fileName = null;
+        String contentDisposition = responseHeaders.getContentDisposition();
+        if (!TextUtils.isEmpty(contentDisposition)) {
+            fileName = HeaderUtils.parseHeadValue(contentDisposition, "filename", null);
+            if (!TextUtils.isEmpty(fileName)) {
+                try {
+                    fileName = URLDecoder.decode(fileName, request.getParamsEncoding());
+                } catch (UnsupportedEncodingException e) {
+                    // Do nothing.
+                }
+                if (fileName.startsWith("\"") && fileName.endsWith("\"")) {
+                    fileName = fileName.substring(1, fileName.length() - 1);
+                }
+            }
+        }
+
+        // From url.
+        if (TextUtils.isEmpty(fileName)) {
+            String url = request.url();
+            URI uri = URI.create(url);
+            String path = uri.getPath();
+            if (TextUtils.isEmpty(path)) {
+                fileName = Integer.toString(url.hashCode());
+            } else {
+                String[] slash = path.split("/");
+                fileName = slash[slash.length - 1];
+            }
+        }
+        return fileName;
+    }
+
+    public void download(int what, DownloadRequest request, DownloadListener downloadListener) {
+        validateParam(request, downloadListener);
 
         Connection connection = null;
         RandomAccessFile randomAccessFile = null;
-        String savePathDir = downloadRequest.getFileDir();
-        String fileName = downloadRequest.getFileName();
+        String savePathDir = request.getFileDir();
+        String fileName = request.getFileName();
         try {
             if (TextUtils.isEmpty(savePathDir))
                 savePathDir = NoHttp.getContext().getFilesDir().getAbsolutePath();
 
             validateDevice(savePathDir);
 
-            if (TextUtils.isEmpty(fileName))// auto named.
-                fileName = Long.toString(System.currentTimeMillis());
+            Headers responseHeaders;
+            int responseCode;
+            File tempFile;
+            long rangeSize;
 
-            File tempFile = new File(savePathDir, fileName + ".nohttp");
-            long rangeSize = handleRange(tempFile, downloadRequest);// 断点开始处。
+            request.removeHeader("Range"); // 去掉开发者自己添加的头。
 
-            // 连接服务器。
-            connection = mHttpConnection.getConnection(downloadRequest);
-            Exception exception = connection.exception();
-            if (exception != null)
-                throw exception;
+            if (TextUtils.isEmpty(fileName)) {// 自动命名。
+                // 探测文件名。
+                connection = getConnectionRetry(request);
+                Exception tempE = connection.exception();
+                if (tempE != null) throw tempE;
+                responseHeaders = connection.responseHeaders();
 
-            Logger.i("----------Response Start----------");
-            Headers responseHeaders = connection.responseHeaders();
-            int responseCode = responseHeaders.getResponseCode();
+                fileName = getRealFileName(request, responseHeaders);
 
-            // getList filename from server.
-            if (downloadRequest.autoNameByHead()) {
-                String contentDisposition = responseHeaders.getContentDisposition();
-                if (!TextUtils.isEmpty(contentDisposition)) {
-                    fileName = HeaderUtil.parseHeadValue(contentDisposition, "filename", null);
-                    if (!TextUtils.isEmpty(fileName)) {
-                        try {
-                            fileName = URLDecoder.decode(fileName, downloadRequest.getParamsEncoding());
-                        } catch (UnsupportedEncodingException e) {
-                            // Do nothing.
-                        }
-                        if (fileName.startsWith("\"") && fileName.endsWith("\"")) {
-                            fileName = fileName.substring(1, fileName.length() - 1);
-                        }
+                tempFile = new File(savePathDir, fileName + ".nohttp");
+                if (request.isRange() && tempFile.exists() && tempFile.length() > 0) { // 文件存在并且需要断点。
+                    connection.close(); // 断开探测文件名。
+
+                    // 增加断点信息，记录断点开始处。
+                    rangeSize = tempFile.length();
+                    request.setHeader("Range", "bytes=" + rangeSize + "-");
+
+                    connection = getConnectionRetry(request); // 更新原来的连接为增加断点的连接。
+                    tempE = connection.exception();
+                    if (tempE != null) throw tempE;
+                    responseHeaders = connection.responseHeaders();
+
+                    if (!request.containsHeader("Range")) { // 服务器不支持断点，从头开始。
+                        IOUtils.delFileOrFolder(tempFile);
+                        rangeSize = 0;
                     }
+                } else { // 自动命名没有下载过，使用原连接开始下载。
+                    IOUtils.delFileOrFolder(tempFile);
+                    rangeSize = 0;
+                }
+            } else {
+                tempFile = new File(savePathDir, fileName + ".nohttp");
+                if (request.isRange() && tempFile.exists() && tempFile.length() > 0) { // 文件存在并且需要断点。
+                    // 增加断点信息，记录断点开始处。
+                    rangeSize = tempFile.length();
+                    request.setHeader("Range", "bytes=" + rangeSize + "-");
+                } else {
+                    IOUtils.delFileOrFolder(tempFile);
+                    rangeSize = 0;
                 }
 
-                // From url.
-                if (TextUtils.isEmpty(fileName)) {
-                    String tempUrl = downloadRequest.url();
-                    String[] slash = tempUrl.split("/");
-                    fileName = slash[slash.length - 1];
-                    int paramIndex = fileName.indexOf("?");
-                    if (paramIndex > 0) {
-                        fileName = fileName.substring(0, paramIndex);
-                    }
+                connection = getConnectionRetry(request);
+                Exception tempE = connection.exception();
+                if (tempE != null) throw tempE;
+                responseHeaders = connection.responseHeaders();
+
+                if (!request.containsHeader("Range")) { // 服务器不支持断点，从头开始。
+                    IOUtils.delFileOrFolder(tempFile);
+                    rangeSize = 0;
                 }
             }
 
+            Logger.i("----------Response Start----------");
+            responseCode = responseHeaders.getResponseCode();
             InputStream serverStream = connection.serverStream();
             if (responseCode >= 400) {
-                ServerError error = new ServerError("Download failed, the server response code is " + responseCode + ": " + downloadRequest.url());
+                ServerError error = new ServerError("Download failed, the server response code is " + responseCode + ": " + request.url());
                 error.setErrorBody(IOUtils.toString(serverStream));
                 throw error;
             } else {
@@ -170,8 +215,7 @@ public class Downloader {
                     try {
                         contentLength = Long.parseLong(range.substring(range.indexOf('/') + 1));// 截取'/'之后的总大小。
                     } catch (Throwable e) {
-                        throw new ServerError("ResponseCode is 206, but content-Range error in Server HTTP header " +
-                                "information: " + range + ".");
+                        throw new ServerError("ResponseCode is 206, but content-Range error in Server HTTP header information: " + range + ".");
                     }
                 } else if (responseCode == 304) {
                     int httpContentLength = responseHeaders.getContentLength();
@@ -188,7 +232,7 @@ public class Downloader {
                 // 验证文件已经存在。
                 File lastFile = new File(savePathDir, fileName);
                 if (lastFile.exists()) {
-                    if (downloadRequest.isDeleteOld())
+                    if (request.isDeleteOld())
                         IOUtils.delFileOrFolder(lastFile);
                     else {
                         downloadListener.onStart(what, true, lastFile.length(), responseHeaders, lastFile.length());
@@ -208,7 +252,7 @@ public class Downloader {
                             "\nYou must pay attention to Android6.0 RunTime Permissions: https://github.com/yanzhenjie/AndPermission." +
                             "\nFailed to create file: " + tempFile);
 
-                if (downloadRequest.isCanceled()) {
+                if (request.isCanceled()) {
                     Log.w("NoHttpDownloader", "Download request is canceled.");
                     downloadListener.onCancel(what);
                     return;
@@ -232,7 +276,7 @@ public class Downloader {
                 long oldSpeed = 0;
 
                 while (((len = serverStream.read(buffer)) != -1)) {
-                    if (downloadRequest.isCanceled()) {
+                    if (request.isCanceled()) {
                         Log.i("NoHttpDownloader", "Download request is canceled.");
                         downloadListener.onCancel(what);
                         break;
@@ -248,8 +292,6 @@ public class Downloader {
                         long speed = speedCount * 1000 / time;
 
                         boolean speedChanged = oldSpeed != speed && time >= 300;
-
-                        Logger.i("speedCount: " + speedCount + "; time: " + time + "; speed: " + speed + "; changed: " + speedChanged);
 
                         if (contentLength != 0) {
                             int progress = (int) (count * 100 / contentLength);
@@ -280,7 +322,7 @@ public class Downloader {
                         }
                     }
                 }
-                if (!downloadRequest.isCanceled()) {
+                if (!request.isCanceled()) {
                     //noinspection ResultOfMethodCallIgnored
                     tempFile.renameTo(lastFile);
                     Logger.d("-------Download finish-------");
@@ -307,7 +349,7 @@ public class Downloader {
             Logger.e(newException);
             downloadListener.onDownloadError(what, newException);
         } catch (Exception e) {// NetworkError | ServerError | StorageCantWriteError | StorageSpaceNotEnoughError
-            if (!NetUtil.isNetworkAvailable())
+            if (!NetUtils.isNetworkAvailable())
                 e = new NetworkError("Network is not available, please check network and permission: " +
                         "INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE.");
             Logger.e(e);

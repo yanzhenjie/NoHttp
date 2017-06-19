@@ -17,7 +17,7 @@ package com.yanzhenjie.nohttp;
 
 import android.text.TextUtils;
 
-import com.yanzhenjie.nohttp.tools.HeaderUtil;
+import com.yanzhenjie.nohttp.tools.HeaderUtils;
 import com.yanzhenjie.nohttp.tools.TreeMultiValueMap;
 
 import org.json.JSONArray;
@@ -66,31 +66,6 @@ public class Headers extends TreeMultiValueMap<String, String> {
     /**
      * The value is {@value}.
      */
-    public static final String HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
-
-    /**
-     * The value is {@value}.
-     */
-    public static final String HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA = "multipart/form-data";
-
-    /**
-     * The value is {@value}.
-     */
-    public static final String HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM = "application/octet-stream";
-
-    /**
-     * The value is {@value}.
-     */
-    public static final String HEAD_VALUE_ACCEPT_APPLICATION_JSON = "application/json";
-
-    /**
-     * The value is {@value}.
-     */
-    public static final String HEAD_VALUE_ACCEPT_APPLICATION_XML = "application/xml";
-
-    /**
-     * The value is {@value}.
-     */
     public static final String HEAD_KEY_ACCEPT_ENCODING = "Accept-Encoding";
 
     /**
@@ -132,6 +107,31 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * The value is {@value}.
      */
     public static final String HEAD_KEY_CONTENT_TYPE = "Content-Type";
+
+    /**
+     * The value is {@value}.
+     */
+    public static final String HEAD_VALUE_CONTENT_TYPE_URLENCODED = "application/x-www-form-urlencoded";
+
+    /**
+     * The value is {@value}.
+     */
+    public static final String HEAD_VALUE_CONTENT_TYPE_FORM_DATA = "multipart/form-data";
+
+    /**
+     * The value is {@value}.
+     */
+    public static final String HEAD_VALUE_CONTENT_TYPE_OCTET_STREAM = "application/octet-stream";
+
+    /**
+     * The value is {@value}.
+     */
+    public static final String HEAD_VALUE_CONTENT_TYPE_JSON = "application/json";
+
+    /**
+     * The value is {@value}.
+     */
+    public static final String HEAD_VALUE_CONTENT_TYPE_XML = "application/xml";
 
     /**
      * The value is {@value}.
@@ -477,7 +477,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
         String value = getValue(key, 0);
         if (!TextUtils.isEmpty(value))
             try {
-                return HeaderUtil.parseGMTToMillis(value);
+                return HeaderUtils.parseGMTToMillis(value);
             } catch (ParseException e) {
                 Logger.w(e);
             }

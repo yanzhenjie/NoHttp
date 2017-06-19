@@ -21,7 +21,6 @@ import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.yanzhenjie.nohttp.cache.CacheEntity;
-import com.yanzhenjie.nohttp.download.DefaultDownloadRequest;
 import com.yanzhenjie.nohttp.download.DownloadQueue;
 import com.yanzhenjie.nohttp.download.DownloadRequest;
 import com.yanzhenjie.nohttp.rest.ByteArrayRequest;
@@ -280,8 +279,7 @@ public class NoHttp {
      * @see #createImageRequest(String, RequestMethod, int, int, Bitmap.Config, ImageView.ScaleType)
      */
     public static Request<Bitmap> createImageRequest(String url, RequestMethod requestMethod) {
-        return createImageRequest(url, requestMethod, 1000, 1000, Bitmap.Config.ARGB_8888, ImageView.ScaleType
-                .CENTER_INSIDE);
+        return createImageRequest(url, requestMethod, 1000, 1000, Bitmap.Config.ARGB_8888, ImageView.ScaleType.CENTER_INSIDE);
     }
 
     /**
@@ -297,8 +295,9 @@ public class NoHttp {
      * @see #createImageRequest(String)
      * @see #createImageRequest(String, RequestMethod)
      */
-    public static Request<Bitmap> createImageRequest(String url, RequestMethod requestMethod, int maxWidth, int
-            maxHeight, Bitmap.Config config, ImageView.ScaleType scaleType) {
+    public static Request<Bitmap> createImageRequest(String url, RequestMethod requestMethod,
+                                                     int maxWidth, int maxHeight,
+                                                     Bitmap.Config config, ImageView.ScaleType scaleType) {
         return new ImageRequest(url, requestMethod, maxWidth, maxHeight, config, scaleType);
     }
 
@@ -386,7 +385,24 @@ public class NoHttp {
      */
     public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder,
                                                         boolean isDeleteOld) {
-        return new DefaultDownloadRequest(url, requestMethod, fileFolder, isDeleteOld);
+        return new DownloadRequest(url, requestMethod, fileFolder, true, isDeleteOld);
+    }
+
+    /**
+     * Create a download object, auto named file.
+     *
+     * @param url           download address.
+     * @param requestMethod {@link RequestMethod}.
+     * @param fileFolder    folder to save file.
+     * @param isRange       whether the breakpoint continuing.
+     * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
+     *                      complete, not to request the network.
+     * @return {@link DownloadRequest}.
+     * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
+     */
+    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder,
+                                                        boolean isRange, boolean isDeleteOld) {
+        return new DownloadRequest(url, requestMethod, fileFolder, true, isDeleteOld);
     }
 
     /**
@@ -401,8 +417,8 @@ public class NoHttp {
      * @return {@link DownloadRequest}.
      * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
      */
-    public static DownloadRequest createDownloadRequest(String url, String fileFolder, String filename, boolean
-            isRange, boolean isDeleteOld) {
+    public static DownloadRequest createDownloadRequest(String url, String fileFolder, String filename,
+                                                        boolean isRange, boolean isDeleteOld) {
         return createDownloadRequest(url, RequestMethod.GET, fileFolder, filename, isRange, isDeleteOld);
     }
 
@@ -421,7 +437,7 @@ public class NoHttp {
      */
     public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder,
                                                         String filename, boolean isRange, boolean isDeleteOld) {
-        return new DefaultDownloadRequest(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
+        return new DownloadRequest(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
     }
 
     /**

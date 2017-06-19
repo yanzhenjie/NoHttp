@@ -15,12 +15,18 @@
  */
 package com.yanzhenjie.nohttp.sample.nohttp;
 
+import android.app.Activity;
+
 import com.yanzhenjie.nohttp.NoHttp;
+import com.yanzhenjie.nohttp.download.DownloadListener;
+import com.yanzhenjie.nohttp.download.DownloadQueue;
+import com.yanzhenjie.nohttp.download.DownloadRequest;
+import com.yanzhenjie.nohttp.rest.OnResponseListener;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.RequestQueue;
-import com.yanzhenjie.nohttp.rest.SimpleResponseListener;
 
 /**
+ * <p>针对队列的一个全局单例封装。</p>
  * Created by YanZhenjie on 2017/6/18.
  */
 public class CallServer {
@@ -36,14 +42,26 @@ public class CallServer {
         return instance;
     }
 
-    private RequestQueue queue;
+    private RequestQueue mRequestQueue;
+    private DownloadQueue mDownloadQueue;
+
 
     private CallServer() {
-        queue = NoHttp.newRequestQueue(5);
+        mRequestQueue = NoHttp.newRequestQueue(5);
+        mDownloadQueue = NoHttp.newDownloadQueue(3);
     }
 
-    public <T> void request(int what, Request<T> request, SimpleResponseListener<T> listener) {
-        queue.add(what, request, listener);
+    public <T> void request(int what, Request<T> request, OnResponseListener<T> listener) {
+        mRequestQueue.add(what, request, listener);
+    }
+
+    public <T> void request(Activity activity, int what, Request<T> request, HttpListener<T> callback,
+                            boolean canCancel, boolean isLoading) {
+        mRequestQueue.add(what, request, new HttpResponseListener<>(activity, request, callback, canCancel, isLoading));
+    }
+
+    public void download(int what, DownloadRequest request, DownloadListener listener) {
+        mDownloadQueue.add(what, request, listener);
     }
 
 }

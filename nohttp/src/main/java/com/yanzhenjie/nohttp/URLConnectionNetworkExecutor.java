@@ -17,7 +17,7 @@ package com.yanzhenjie.nohttp;
 
 import android.os.Build;
 
-import com.yanzhenjie.nohttp.tools.HeaderUtil;
+import com.yanzhenjie.nohttp.tools.HeaderUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +33,9 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
+ * <p>
+ * Network connection actuator based on URLConnection.
+ * </p>
  * Created by Yan Zhenjie on 2016/10/15.
  */
 public class URLConnectionNetworkExecutor implements NetworkExecutor {
@@ -73,8 +76,9 @@ public class URLConnectionNetworkExecutor implements NetworkExecutor {
         // To fix bug: accidental EOFException before API 19.
         List<String> values = headers.getValues(Headers.HEAD_KEY_CONNECTION);
         if (values == null || values.size() == 0)
-            headers.set(Headers.HEAD_KEY_CONNECTION, Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT ? Headers
-                    .HEAD_VALUE_CONNECTION_KEEP_ALIVE : Headers.HEAD_VALUE_CONNECTION_CLOSE);
+            headers.set(Headers.HEAD_KEY_CONNECTION,
+                    Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT ?
+                            Headers.HEAD_VALUE_CONNECTION_KEEP_ALIVE : Headers.HEAD_VALUE_CONNECTION_CLOSE);
 
         if (isAllowBody) {
             long contentLength = request.getContentLength();
@@ -164,7 +168,7 @@ public class URLConnectionNetworkExecutor implements NetworkExecutor {
      */
     private static InputStream gzipInputStream(String contentEncoding, InputStream inputStream) throws
             IOException {
-        if (HeaderUtil.isGzipContent(contentEncoding)) {
+        if (HeaderUtils.isGzipContent(contentEncoding)) {
             inputStream = new GZIPInputStream(inputStream);
         }
         return inputStream;

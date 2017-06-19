@@ -34,7 +34,7 @@ public class JsonArrayRequest extends RestRequest<JSONArray> {
 
     public JsonArrayRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
-        setAccept(Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
+        setAccept(Headers.HEAD_VALUE_CONTENT_TYPE_JSON);
     }
 
     @Override

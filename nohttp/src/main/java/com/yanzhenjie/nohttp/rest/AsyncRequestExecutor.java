@@ -21,6 +21,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * <p>
+ * Asynchronous request executor.
+ * </p>
  * Created by Yan Zhenjie on 2017/2/15.
  */
 public enum AsyncRequestExecutor {

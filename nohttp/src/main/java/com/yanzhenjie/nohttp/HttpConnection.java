@@ -25,7 +25,7 @@ import com.yanzhenjie.nohttp.error.UnKnownHostError;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 import com.yanzhenjie.nohttp.tools.MultiValueMap;
-import com.yanzhenjie.nohttp.tools.NetUtil;
+import com.yanzhenjie.nohttp.tools.NetUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <p>
+ * Responsible for Http network connection and data read and write.
+ * </p>
  * Created by Yan Zhenjie on 2016/9/4.
  */
 public class HttpConnection {
@@ -66,7 +69,7 @@ public class HttpConnection {
         Network network = null;
         String url = request.url();
         try {
-            if (!NetUtil.isNetworkAvailable())
+            if (!NetUtils.isNetworkAvailable())
                 throw new NetworkError("The network is not available, please check the network. The requested url is:" +
                         " " + url);
 
@@ -302,8 +305,10 @@ public class HttpConnection {
      * @return true: there is data, false: no data.
      */
     public static boolean hasResponseBody(int responseCode) {
-        return !(100 <= responseCode && responseCode < 200) && responseCode != 204 && responseCode != 205 && !(300 <=
-                responseCode && responseCode < 400);
+        return !(100 <= responseCode && responseCode < 200) &&
+                responseCode != 204 &&
+                responseCode != 205 &&
+                !(300 <= responseCode && responseCode < 400);
     }
 
 }

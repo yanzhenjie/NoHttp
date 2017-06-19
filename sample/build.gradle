@@ -19,10 +19,8 @@ android {
 }
 
 dependencies {
-//    compile rootProject.ext.dependencies.nohttp
-//    compile rootProject.ext.dependencies.okhttp
-    compile project(':nohttp')
-    compile project(':okhttp')
+    compile rootProject.ext.dependencies.nohttp
+    compile rootProject.ext.dependencies.okhttp
 
     // support.
     compile rootProject.ext.dependencies.appcompat

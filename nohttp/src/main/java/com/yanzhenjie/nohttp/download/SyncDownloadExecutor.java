@@ -18,6 +18,7 @@ package com.yanzhenjie.nohttp.download;
 import com.yanzhenjie.nohttp.NoHttp;
 
 /**
+ * <p>Synchronize File Downloader.</p>
  * Created by Yan Zhenjie on 2016/10/12.
  */
 public enum SyncDownloadExecutor {
@@ -27,7 +28,7 @@ public enum SyncDownloadExecutor {
     private Downloader mDownloader;
 
     SyncDownloadExecutor() {
-        mDownloader = new Downloader(NoHttp.getNetworkExecutor());
+        mDownloader = new Downloader(NoHttp.getInitializeConfig().getNetworkExecutor());
     }
 
     /**

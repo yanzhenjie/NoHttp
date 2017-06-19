@@ -22,7 +22,7 @@ import com.yanzhenjie.nohttp.able.Finishable;
 import com.yanzhenjie.nohttp.able.Startable;
 import com.yanzhenjie.nohttp.ssl.SSLUtils;
 import com.yanzhenjie.nohttp.tools.CounterOutputStream;
-import com.yanzhenjie.nohttp.tools.HeaderUtil;
+import com.yanzhenjie.nohttp.tools.HeaderUtils;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 import com.yanzhenjie.nohttp.tools.LinkedMultiValueMap;
 import com.yanzhenjie.nohttp.tools.MultiValueMap;
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.HttpCookie;
 import java.net.Proxy;
 import java.net.URLEncoder;
@@ -140,11 +141,11 @@ public abstract class BasicRequest<T extends BasicRequest>
     /**
      * Cancel sign.
      */
-    private Object mCancelSign;
+    private WeakReference<Object> mCancelSign;
     /**
      * Tag of request.
      */
-    private Object mTag;
+    private WeakReference<Object> mTag;
 
     /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
@@ -168,7 +169,7 @@ public abstract class BasicRequest<T extends BasicRequest>
         mHeaders = new Headers();
         mHeaders.set(Headers.HEAD_KEY_ACCEPT, Headers.HEAD_VALUE_ACCEPT_ALL);
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_ENCODING, Headers.HEAD_VALUE_ACCEPT_ENCODING_GZIP_DEFLATE);
-        mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, HeaderUtil.systemAcceptLanguage());
+        mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, HeaderUtils.systemAcceptLanguage());
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, UserAgent.instance());
         MultiValueMap<String, String> globalHeaders = NoHttp.getInitializeConfig().getHeaders();
         for (Map.Entry<String, List<String>> headersEntry : globalHeaders.entrySet()) {
@@ -515,6 +516,13 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
+     * Does it contain a request header?
+     */
+    public boolean containsHeader(String key) {
+        return mHeaders.containsKey(key);
+    }
+
+    /**
      * Get all Heads.
      *
      * @return {@code Headers}.
@@ -578,9 +586,9 @@ public abstract class BasicRequest<T extends BasicRequest>
         if (!TextUtils.isEmpty(contentType))
             return contentType;
         if (getRequestMethod().allowRequestBody() && isMultipartFormEnable())
-            return Headers.HEAD_VALUE_ACCEPT_MULTIPART_FORM_DATA + "; boundary=" + boundary;
+            return Headers.HEAD_VALUE_CONTENT_TYPE_FORM_DATA + "; boundary=" + boundary;
         else
-            return Headers.HEAD_VALUE_ACCEPT_APPLICATION_X_WWW_FORM_URLENCODED + "; charset=" + getParamsEncoding();
+            return Headers.HEAD_VALUE_CONTENT_TYPE_URLENCODED + "; charset=" + getParamsEncoding();
     }
 
     /**
@@ -942,7 +950,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @see #setDefineRequestBodyForXML(String)
      */
     public T setDefineRequestBodyForJson(String jsonBody) {
-        setDefineRequestBody(jsonBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
+        setDefineRequestBody(jsonBody, Headers.HEAD_VALUE_CONTENT_TYPE_JSON);
         return (T) this;
     }
 
@@ -956,7 +964,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @see #setDefineRequestBodyForXML(String)
      */
     public T setDefineRequestBodyForJson(JSONObject jsonBody) {
-        setDefineRequestBody(jsonBody.toString(), Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
+        setDefineRequestBody(jsonBody.toString(), Headers.HEAD_VALUE_CONTENT_TYPE_JSON);
         return (T) this;
     }
 
@@ -970,7 +978,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @see #setDefineRequestBodyForJson(String)
      */
     public T setDefineRequestBodyForXML(String xmlBody) {
-        setDefineRequestBody(xmlBody, Headers.HEAD_VALUE_ACCEPT_APPLICATION_XML);
+        setDefineRequestBody(xmlBody, Headers.HEAD_VALUE_CONTENT_TYPE_XML);
         return (T) this;
     }
 
@@ -1092,7 +1100,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Set tag of task, At the end of the task is returned to you.
      */
     public T setTag(Object tag) {
-        this.mTag = tag;
+        this.mTag = new WeakReference<>(tag);
         return (T) this;
     }
 
@@ -1197,7 +1205,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param sign a object.
      */
     public T setCancelSign(Object sign) {
-        this.mCancelSign = sign;
+        this.mCancelSign = new WeakReference<>(sign);
         return (T) this;
     }
 
@@ -1207,7 +1215,10 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param sign an object that can be null.
      */
     public void cancelBySign(Object sign) {
-        if (mCancelSign == sign)
+        Object meSign = null;
+        if (mCancelSign != null)
+            meSign = mCancelSign.get();
+        if (mCancelSign == meSign || (sign != null && meSign != null && meSign.equals(sign)))
             cancel();
     }
 

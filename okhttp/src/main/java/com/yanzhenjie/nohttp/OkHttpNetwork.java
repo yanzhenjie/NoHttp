@@ -52,8 +52,7 @@ public class OkHttpNetwork implements Network {
 
     @Override
     public InputStream getServerStream(int responseCode, Headers headers) throws IOException {
-        return URLConnectionNetworkExecutor.getServerStream(responseCode, headers.getContentEncoding(),
-                mUrlConnection);
+        return URLConnectionNetworkExecutor.getServerStream(responseCode, headers.getContentEncoding(), mUrlConnection);
     }
 
     @Override

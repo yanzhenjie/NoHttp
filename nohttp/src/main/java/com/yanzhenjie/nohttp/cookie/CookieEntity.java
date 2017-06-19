@@ -18,7 +18,7 @@ package com.yanzhenjie.nohttp.cookie;
 import android.text.TextUtils;
 
 import com.yanzhenjie.nohttp.db.BasicEntity;
-import com.yanzhenjie.nohttp.tools.HeaderUtil;
+import com.yanzhenjie.nohttp.tools.HeaderUtils;
 
 import java.net.HttpCookie;
 import java.net.URI;
@@ -66,7 +66,7 @@ class CookieEntity implements BasicEntity {
         if (maxAge != -1 && maxAge > 0) {
             this.expiry = (maxAge * 1000L) + System.currentTimeMillis();
             if (this.expiry < 0L) // 溢出
-                this.expiry = HeaderUtil.getMaxExpiryMillis();
+                this.expiry = HeaderUtils.getMaxExpiryMillis();
         } else
             this.expiry = -1L;
 

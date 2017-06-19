@@ -18,6 +18,9 @@ package com.yanzhenjie.nohttp.rest;
 import com.yanzhenjie.nohttp.NoHttp;
 
 /**
+ * <p>
+ * Synchronization request executor.
+ * </p>
  * Created by Yan Zhenjie on 2016/10/12.
  */
 public enum SyncRequestExecutor {
@@ -27,7 +30,8 @@ public enum SyncRequestExecutor {
     private RestProtocol mRestProtocol;
 
     SyncRequestExecutor() {
-        mRestProtocol = new RestProtocol(NoHttp.getCacheStore(), NoHttp.getNetworkExecutor());
+        mRestProtocol = new RestProtocol(NoHttp.getInitializeConfig().getCacheStore(),
+                NoHttp.getInitializeConfig().getNetworkExecutor());
     }
 
     /**

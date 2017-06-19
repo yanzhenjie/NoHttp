@@ -28,8 +28,7 @@ import java.io.OutputStream;
 
 /**
  * <p>
- * A basic implementation of Binary.
- * All the methods are called in Son thread.
+ * A basic implementation of Binary. All the methods are called in Son thread.
  * </p>
  * Created in Oct 17, 2015 12:40:54 PM.
  *
@@ -135,7 +134,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
         if (TextUtils.isEmpty(mimeType))
-            mimeType = Headers.HEAD_VALUE_ACCEPT_APPLICATION_OCTET_STREAM;
+            mimeType = Headers.HEAD_VALUE_CONTENT_TYPE_OCTET_STREAM;
         return mimeType;
     }
 

@@ -44,7 +44,7 @@ public class Application extends android.app.Application {
         Logger.setTag("NoHttpSample");// 设置NoHttp打印Log的tag。
 
         // 一般情况下你只需要这样初始化：
-//        NoHttp.initialize(this);
+//        NoHttp.initialize(this);Headers.HEAD_VALUE_CONTENT_TYPE_OCTET_STREAM
 
         // 如果你需要自定义配置：
         NoHttp.initialize(InitializationConfig.newBuilder(this)

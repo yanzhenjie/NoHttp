@@ -22,7 +22,9 @@ import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.RequestMethod;
 
 /**
- * <p>For the Request to encapsulate some Http protocol related properties.</p>
+ * <p>
+ * Implement NoHttp's default behavior.
+ * </p>
  * Created by Yan Zhenjie on 2016/8/20.
  */
 public abstract class ProtocolRequest<T extends ProtocolRequest, Result> extends BasicRequest<T> {

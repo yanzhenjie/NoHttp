@@ -19,15 +19,17 @@ import com.yanzhenjie.nohttp.BasicRequest;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.able.Queueable;
 
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.BlockingQueue;
+
 /**
  * <p>
- * Download task request interface.
+ * File download request based on BasicRequest.
  * </p>
- * Created in Oct 21, 2015 11:09:04 AM.
- *
- * @author Yan Zhenjie.
+ * Created by YanZhenjie on Jul 31, 2015 10:38:10 AM.
  */
-public abstract class DownloadRequest extends BasicRequest<DownloadRequest> implements Queueable {
+public class DownloadRequest extends BasicRequest<DownloadRequest> implements Queueable {
 
     /**
      * Also didn't download to start download again.
@@ -42,12 +44,68 @@ public abstract class DownloadRequest extends BasicRequest<DownloadRequest> impl
      */
     public static final int STATUS_FINISH = 2;
 
-    public DownloadRequest(String url) {
-        super(url);
+    /**
+     * The callback mark.
+     */
+    private int what;
+    /**
+     * The request of the listener.
+     */
+    private WeakReference<DownloadListener> downloadListener;
+    /**
+     * File the target folder.
+     */
+    private final String mFileDir;
+    /**
+     * The file target name.
+     */
+    private final String mFileName;
+    /**
+     * If is to download a file, whether the breakpoint continuing.
+     */
+    private final boolean isRange;
+    /**
+     * If there is a old files, whether to delete the old files.
+     */
+    private final boolean isDeleteOld;
+
+    /**
+     * Request queue
+     */
+    private BlockingQueue<?> blockingQueue;
+
+    /**
+     * Create download request.
+     *
+     * @param url           url.
+     * @param requestMethod {@link RequestMethod}.
+     * @param fileFolder    file save folder.
+     * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
+     *                      complete, not to request the network.
+     * @see #DownloadRequest(String, RequestMethod, String, String, boolean, boolean)
+     */
+    public DownloadRequest(String url, RequestMethod requestMethod, String fileFolder, boolean isRange, boolean isDeleteOld) {
+        this(url, requestMethod, fileFolder, null, isRange, isDeleteOld);
     }
 
-    public DownloadRequest(String url, RequestMethod requestMethod) {
+    /**
+     * Create a download object.
+     *
+     * @param url           download address.
+     * @param requestMethod {@link RequestMethod}.
+     * @param fileFolder    folder to save file.
+     * @param filename      filename.
+     * @param isRange       whether the breakpoint continuing.
+     * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
+     *                      complete, not to request the network.
+     * @see #DownloadRequest(String, RequestMethod, String, boolean, boolean)
+     */
+    public DownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
         super(url, requestMethod);
+        this.mFileDir = fileFolder;
+        this.mFileName = filename;
+        this.isRange = isRange;
+        this.isDeleteOld = isDeleteOld;
     }
 
     /**
@@ -55,35 +113,36 @@ public abstract class DownloadRequest extends BasicRequest<DownloadRequest> impl
      *
      * @return it won't be empty.
      */
-    public abstract String getFileDir();
+    public String getFileDir() {
+        return this.mFileDir;
+    }
 
     /**
      * Return the mFileName.
      *
      * @return it won't be empty.
      */
-    public abstract String getFileName();
-
-    /**
-     * According to the Http header named files automatically.
-     *
-     * @return true need, false not need.
-     */
-    public abstract boolean autoNameByHead();
+    public String getFileName() {
+        return this.mFileName;
+    }
 
     /**
      * Return the isRange.
      *
      * @return true: breakpoint continuing, false: don't need a breakpoint continuing.
      */
-    public abstract boolean isRange();
+    public boolean isRange() {
+        return this.isRange;
+    }
 
     /**
      * If there is a old files, whether to delete the old files.
      *
      * @return true: deleted, false: don't delete.
      */
-    public abstract boolean isDeleteOld();
+    public boolean isDeleteOld() {
+        return this.isDeleteOld;
+    }
 
     /**
      * <p>
@@ -97,7 +156,20 @@ public abstract class DownloadRequest extends BasicRequest<DownloadRequest> impl
      * @see #STATUS_RESUME
      * @see #STATUS_FINISH
      */
-    public abstract int checkBeforeStatus();
+    public int checkBeforeStatus() {
+        if (this.isRange) {
+            try {
+                File lastFile = new File(mFileDir, mFileName);
+                if (lastFile.exists() && !isDeleteOld)
+                    return STATUS_FINISH;
+                File tempFile = new File(mFileDir, mFileName + ".nohttp");
+                if (tempFile.exists())
+                    return STATUS_RESUME;
+            } catch (Exception ignored) {
+            }
+        }
+        return STATUS_RESTART;
+    }
 
     /**
      * Prepare the callback parameter, while waiting for the response callback with thread.
@@ -105,7 +177,10 @@ public abstract class DownloadRequest extends BasicRequest<DownloadRequest> impl
      * @param what             the callback mark.
      * @param downloadListener {@link DownloadListener}.
      */
-    abstract void onPreResponse(int what, DownloadListener downloadListener);
+    public void onPreResponse(int what, DownloadListener downloadListener) {
+        this.what = what;
+        this.downloadListener = new WeakReference<>(downloadListener);
+    }
 
     /**
      * The callback mark.
@@ -113,7 +188,9 @@ public abstract class DownloadRequest extends BasicRequest<DownloadRequest> impl
      * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
      * @see #onPreResponse(int, DownloadListener)
      */
-    public abstract int what();
+    public int what() {
+        return what;
+    }
 
     /**
      * The request of the listener.
@@ -121,5 +198,19 @@ public abstract class DownloadRequest extends BasicRequest<DownloadRequest> impl
      * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
      * @see #onPreResponse(int, DownloadListener)
      */
-    public abstract DownloadListener downloadListener();
+    public DownloadListener downloadListener() {
+        if (downloadListener != null)
+            return downloadListener.get();
+        return null;
+    }
+
+    @Override
+    public void setQueue(BlockingQueue<?> queue) {
+        blockingQueue = queue;
+    }
+
+    @Override
+    public boolean inQueue() {
+        return blockingQueue != null && blockingQueue.contains(this);
+    }
 }

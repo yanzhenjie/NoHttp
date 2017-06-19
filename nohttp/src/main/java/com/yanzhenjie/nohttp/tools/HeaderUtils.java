@@ -31,7 +31,7 @@ import java.util.TimeZone;
  *
  * @author Yan Zhenjie.
  */
-public class HeaderUtil {
+public class HeaderUtils {
 
     /**
      * Accept-Language.

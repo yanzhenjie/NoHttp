@@ -36,7 +36,7 @@ public class FastJsonRequest extends RestRequest<JSONObject> {
 
     public FastJsonRequest(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
-        setAccept(Headers.HEAD_VALUE_ACCEPT_APPLICATION_JSON);
+        setAccept(Headers.HEAD_VALUE_CONTENT_TYPE_JSON);
     }
 
     @Override

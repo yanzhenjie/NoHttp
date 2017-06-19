@@ -37,6 +37,7 @@ import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
 import com.yanzhenjie.nohttp.sample.adapter.LoadFileAdapter;
 import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.entity.LoadFile;
+import com.yanzhenjie.nohttp.sample.nohttp.CallServer;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 
@@ -94,25 +95,10 @@ public class DownloadFileListActivity extends BaseActivity {
             LoadFile downloadFile = new LoadFile(title, progress);
             mFileList.add(downloadFile);
 
-            /**
-             * 这里不传文件名称、不断点续传，则会从响应头中读取文件名自动命名，如果响应头中没有则会从url中截取。
-             */
-            // url 下载地址。
-            // fileFolder 文件保存的文件夹。
-            // isDeleteOld 在指定的文件夹发现同名的文件是否删除后重新下载，true则删除重新下载，false则直接通知下载成功。
-            // mDownloadRequest = NoHttp.createDownloadRequest(Constants.URL_DOWNLOADS[0], AppConfig.getInstance()
-            // .APP_PATH_ROOT, true);
-
-            /**
-             * 如果要使用断点续传下载，则一定要指定文件名。
-             */
-            // url 下载地址。
-            // fileFolder 保存的文件夹。
-            // fileName 文件名。
-            // isRange 是否断点续传下载。
-            // isDeleteOld 在指定的文件夹发现同名的文件是否删除后重新下载，true则删除重新下载，false则直接通知下载成功。
-            DownloadRequest downloadRequest = NoHttp.createDownloadRequest(Constants.URL_DOWNLOADS[i], AppConfig
-                    .getInstance().APP_PATH_ROOT, "nohttp_list" + i + ".apk", true, true);
+            DownloadRequest downloadRequest = NoHttp.createDownloadRequest(Constants.URL_DOWNLOADS[i],
+                    AppConfig.getInstance().APP_PATH_ROOT,
+                    "nohttp_list" + i + ".apk",
+                    true, true);
             mDownloadRequests.add(downloadRequest);
         }
 
@@ -129,7 +115,7 @@ public class DownloadFileListActivity extends BaseActivity {
      */
     private void download() {
         for (int i = 0; i < mDownloadRequests.size(); i++) {
-            NoHttp.getDownloadQueueInstance().add(i, mDownloadRequests.get(i), downloadListener);
+            CallServer.getInstance().download(i, mDownloadRequests.get(i), downloadListener);
         }
     }
 

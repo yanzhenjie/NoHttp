@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.yanzhenjie.album.Album;
 import com.yanzhenjie.album.task.LocalImageLoader;
+import com.yanzhenjie.durban.Durban;
 import com.yanzhenjie.nohttp.FileBinary;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.OnUploadListener;
@@ -32,6 +33,7 @@ import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.sample.R;
 import com.yanzhenjie.nohttp.sample.activity.BaseActivity;
+import com.yanzhenjie.nohttp.sample.config.AppConfig;
 import com.yanzhenjie.nohttp.sample.nohttp.HttpListener;
 import com.yanzhenjie.nohttp.sample.util.Constants;
 
@@ -82,13 +84,40 @@ public class UploadAlbumActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_album) {
+            // 去相册选择图片。
             Album.album(this)
                     .columnCount(2)
                     .selectCount(1)
                     .requestCode(RESULT_BACK_ALBUM)
                     .start();
+            // 相册开源项目：https://github.com/yanzhenjie/Album
         } else if (v.getId() == R.id.btn_start) {
             executeUpload();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) return;
+        switch (requestCode) {
+            case 1: { // 接受到相册图片选择结果。
+                String tempFilePath = Album.parseResult(data).get(0);
+
+                // 裁剪图片：开源项目：https://github.com/yanzhenjie/Durban
+                Durban.with(this)
+                        .requestCode(2)
+                        .outputDirectory(AppConfig.getInstance().APP_PATH_ROOT)
+                        .inputImagePaths(tempFilePath)
+                        .aspectRatio(1, 1)
+                        .start();
+                break;
+            }
+            case 2: { // 接受图片裁剪结果。
+                // 记录路径，并加载到页面。
+                this.filePath = Durban.parseResult(data).get(0);
+                LocalImageLoader.getInstance().loadImage(mIvIcon, filePath);
+                break;
+            }
         }
     }
 
@@ -155,16 +184,4 @@ public class UploadAlbumActivity extends BaseActivity implements View.OnClickLis
             mTvResult.setText(R.string.upload_error);
         }
     };
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) return;
-        switch (requestCode) {
-            case 1: {
-                this.filePath = Album.parseResult(data).get(0);
-                LocalImageLoader.getInstance().loadImage(mIvIcon, filePath);
-                break;
-            }
-        }
-    }
 }

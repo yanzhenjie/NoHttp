@@ -20,7 +20,7 @@ import com.yanzhenjie.nohttp.able.Queueable;
 
 /**
  * <p>
- * Provide a combination of methods used in conjunction with queues.
+ * Support the characteristics of the queue.
  * </p>
  * Created by Yan Zhenjie on Oct 16, 2015 8:22:06 PM.
  */
