@@ -17,6 +17,42 @@
 12. `HeaderUtil`改为`HeaderUtils`，`NetUtil`改为`NetUtils`。
 13. 升级`OkHttp`为3.8.0，`OkHttp`原项目：[https://github.com/square/okhttp](https://github.com/square/okhttp)
 
+另外需要说明原来的`Request#add(Map<String, String>)`更新为`Request#add(Map<String, Object>)`，这样做的好处是喜欢使用`Map`封装参数的同学，可以在`Map`中添加以下几种类型的参数了：  
+```java
+String、File、Binary、List<String>、List<Binary>、List<File>、List<Object>
+```
+
+代码举例说明：
+```java
+Map<String, Object> params = new HashMap<>();
+
+params.put("name", "yanzhenjie");
+params.put("head", new File(path));
+params.put("logo", new FileBinary(file));
+params.put("age", 18);
+params.put("height", 180.5);
+
+List<String> hobbies = new ArrayList<>();
+hobbies.add("篮球");
+hobbies.add("帅哥");
+params.put("hobbies", hobbies);
+
+List<File> goods = new ArrayList<>();
+goods.add(file1);
+goods.add(file2);
+params.put("goods", goods);
+
+List<Object> otherParams = new ArrayList<>();
+otherParams.add("yanzhenjie");
+otherParams.add(1);
+otherParams.add(file);
+otherParams.add(new FileBinary(file));
+
+params.put("other", otherParams);
+```
+
+当然，真实开发中第三种和文件一起使用同一个`key`请求，几乎不会存在，但是难免会`String`、`int`等使用同一个`key`请求。
+
 本次升级的一个亮点，增加拼装URL的方法，比如服务器是RESTFUL风格的API，请求用户信息时可能是这样一个URL：  
 ```
 http://api.nohttp.net/rest/<userid>/userinfo

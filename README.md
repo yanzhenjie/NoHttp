@@ -4,7 +4,7 @@
 我的微博：[http://weibo.com/yanzhenjieit](http://weibo.com/yanzhenjieit)，有问题随时沟通。  
 
 使用文档：[http://doc.nohttp.net](http://doc.nohttp.net)  
-测试接口：[http://api.nohttp.net](http://api.nohttp.net)    
+测试接口：[http://api.nohttp.net](http://api.nohttp.net)  
 
 欢迎加入QQ技术交流群：[547839514](https://jq.qq.com/?_wv=1027&k=4Abk0YP)  
 
@@ -400,6 +400,42 @@ StringRequest request = new StringRequest(url, RequestMethod.POST);
    .add("head", new InputStreamBinary(inputStream));
 ```
 
+另外需要说明原来的`Request#add(Map<String, String>)`更新为`Request#add(Map<String, Object>)`，这样做的好处是喜欢使用`Map`封装参数的同学，可以在`Map`中添加以下几种类型的参数了：  
+```java
+String、File、Binary、List<String>、List<Binary>、List<File>、List<Object>
+```
+
+代码举例说明：
+```java
+Map<String, Object> params = new HashMap<>();
+
+params.put("name", "yanzhenjie");
+params.put("head", new File(path));
+params.put("logo", new FileBinary(file));
+params.put("age", 18);
+params.put("height", 180.5);
+
+List<String> hobbies = new ArrayList<>();
+hobbies.add("篮球");
+hobbies.add("帅哥");
+params.put("hobbies", hobbies);
+
+List<File> goods = new ArrayList<>();
+goods.add(file1);
+goods.add(file2);
+params.put("goods", goods);
+
+List<Object> otherParams = new ArrayList<>();
+otherParams.add("yanzhenjie");
+otherParams.add(1);
+otherParams.add(file);
+otherParams.add(new FileBinary(file));
+
+params.put("other", otherParams);
+```
+
+当然，真实开发中第三种和文件一起使用同一个`key`请求，几乎不会存在，但是难免会`String`、`int`等使用同一个`key`请求。
+
 文件上传有两种形式，第一种：以表单的形式上传，第二种：以`request body`的形式上传，下面先介绍第一种表单的形式：
 
 * 单个文件
@@ -649,6 +685,8 @@ queue.add(what, request, listener);
 queue.stop();
 ```
 
+其它的使用方法和封装和上面的`RequestQueue`相同，请参考上面`RequestQueue`用法。
+
 ## 创建请求
 `NoHttp`提供了两种构造下载请求的方法，第一种：手动指定下载文件名；第二种：由`NoHttp`根据服务器响应头、URL等自动确定文件名。
 
@@ -685,7 +723,7 @@ DownloadRequest req = new DownloadRequest(url, method, folder, range, deleteOld)
 特别注意：`Http`下载其实没有暂停下载一说，其本质就是取消下载，继续下载其实利用的就是上面说的断点续传技术，断点续传需要服务器支持，一般`tomcat`、`apache`、`nginx`、`iis`都是支持的。
 
 ### Nohttp暂停下载继续下载原理介绍
-`NoHttp`的demo中演示了暂停下载，继续下载等功能，其实就是下载到中途，暂停下载时调用取消下载，然后继续下载时重新建一个`DownloadRequest`并且使用断点续传下载，此时服务器就会从我们上次取消下载时客户端已经接受的byte数处开始写出文件，客户端也从上次已经接受的byte数处开始接受并写入文件。
+`NoHttp`的demo中演示了暂停下载，继续下载等功能，其实就是下载到中途，暂停下载时调用取消下载，然后继续下载时重新建一个`DownloadRequest`并且使用断点续传下载，此时服务器就会从客户端上次取消下载时客户端已经接受的byte数处开始写出文件，客户端也从上次已经接受的byte数处开始接受并写入文件。
 
 示例：
 ```java
