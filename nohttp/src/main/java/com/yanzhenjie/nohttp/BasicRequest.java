@@ -754,7 +754,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link File} param.
      */
     public T add(String key, File file) {
-        validateMethodForBody("The List<Binary> param");
+        validateMethodForBody("The File param");
         mParams.add(key, new FileBinary(file));
         return (T) this;
     }
@@ -763,6 +763,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link Binary} param.
      */
     public T add(String key, Binary binary) {
+        validateMethodForBody("The Binary param");
         mParams.add(key, binary);
         return (T) this;
     }
@@ -771,7 +772,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Set {@link Binary} param.
      */
     public T set(String key, Binary binary) {
-        validateMethodForBody("The List<Binary> param");
+        validateMethodForBody("The Binary param");
         mParams.set(key, binary);
         return (T) this;
     }
@@ -817,7 +818,7 @@ public abstract class BasicRequest<T extends BasicRequest>
                     }
                 }
             } else {
-                mParams.add(key, entry.getValue());
+                mParams.add(key, String.valueOf(value));
             }
         }
         return (T) this;
@@ -897,7 +898,7 @@ public abstract class BasicRequest<T extends BasicRequest>
 
     /**
      * Set the package body, which can be any data stream. But the type of stream must be
-     * {@link java.io.ByteArrayInputStream} or {@link java.io.FileInputStream}.
+     * {@link ByteArrayInputStream} or {@link FileInputStream}.
      *
      * @param requestBody any data stream, you don't need to close it.
      * @param contentType such as: {@code application/json;json}, {@code image/*}.
