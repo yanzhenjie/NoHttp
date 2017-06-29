@@ -817,7 +817,7 @@ public abstract class BasicRequest<T extends BasicRequest>
                         mParams.add(key, o);
                     }
                 }
-            } else {
+            } else if (value != null) {
                 mParams.add(key, String.valueOf(value));
             }
         }
@@ -844,8 +844,8 @@ public abstract class BasicRequest<T extends BasicRequest>
                         mParams.add(key, o);
                     }
                 }
-            } else {
-                mParams.set(key, entry.getValue());
+            } else if (value != null) {
+                mParams.add(key, String.valueOf(value));
             }
         }
         return (T) this;

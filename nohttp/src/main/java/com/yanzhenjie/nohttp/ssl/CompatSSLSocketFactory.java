@@ -15,8 +15,6 @@
  */
 package com.yanzhenjie.nohttp.ssl;
 
-import android.os.Build;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -58,7 +56,7 @@ public class CompatSSLSocketFactory extends SSLSocketFactory {
     };
 
     private static void setSupportProtocolAndCipherSuites(Socket socket) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && socket instanceof SSLSocket)
+        if (socket instanceof SSLSocket)
             // https://developer.android.com/about/versions/android-5.0-changes.html#ssl
             ((SSLSocket) socket).setEnabledProtocols(PROTOCOL_ARRAY);
     }

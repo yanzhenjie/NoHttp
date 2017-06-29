@@ -196,7 +196,7 @@ public class InitializationConfig {
          * Global SSLSocketFactory.
          */
         public Builder sslSocketFactory(SSLSocketFactory sslSocketFactory) {
-            this.mSSLSocketFactory = sslSocketFactory;
+            this.mSSLSocketFactory = SSLUtils.fixSSLLowerThanLollipop(sslSocketFactory);
             return this;
         }
 

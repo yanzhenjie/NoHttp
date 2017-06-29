@@ -15,6 +15,8 @@
  */
 package com.yanzhenjie.nohttp.ssl;
 
+import android.os.Build;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
@@ -35,7 +37,7 @@ public class SSLUtils {
     }
 
     public static SSLSocketFactory fixSSLLowerThanLollipop(SSLSocketFactory socketFactory) {
-        if (!(socketFactory instanceof CompatSSLSocketFactory))
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && !(socketFactory instanceof CompatSSLSocketFactory))
             socketFactory = new CompatSSLSocketFactory(socketFactory);
         return socketFactory;
     }
