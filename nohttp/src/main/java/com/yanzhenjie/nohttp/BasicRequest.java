@@ -173,9 +173,10 @@ public abstract class BasicRequest<T extends BasicRequest>
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, UserAgent.instance());
         MultiValueMap<String, String> globalHeaders = NoHttp.getInitializeConfig().getHeaders();
         for (Map.Entry<String, List<String>> headersEntry : globalHeaders.entrySet()) {
+            String key = headersEntry.getKey();
             List<String> valueList = headersEntry.getValue();
             for (String value : valueList) {
-                mHeaders.set(headersEntry.getKey(), value);
+                mHeaders.add(key, value);
             }
         }
 
@@ -322,9 +323,11 @@ public abstract class BasicRequest<T extends BasicRequest>
      * The real url of Request is: http://www.nohttp.net/xx/oo
      */
     public T path(String value) {
-        if (!url.endsWith("/"))
-            url += "/";
-        url += value + "/";
+        if (value != null) {
+            if (!url.endsWith("/"))
+                url += "/";
+            url += value;
+        }
         return (T) this;
     }
 
@@ -365,10 +368,11 @@ public abstract class BasicRequest<T extends BasicRequest>
     /**
      * Set the {@link SSLSocketFactory} for this request.
      *
-     * @param socketFactory {@link SSLSocketFactory}.
+     * @param socketFactory {@link SSLSocketFactory}, {@link SSLUtils}.
+     * @see SSLUtils
      */
     public T setSSLSocketFactory(SSLSocketFactory socketFactory) {
-        mSSLSocketFactory = SSLUtils.fixSSLLowerThanLollipop(socketFactory);
+        mSSLSocketFactory = socketFactory;
         return (T) this;
     }
 
@@ -728,7 +732,8 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link String} param.
      */
     public T add(String key, String value) {
-        mParams.add(key, value);
+        if (value != null)
+            mParams.add(key, value);
         return (T) this;
     }
 
@@ -736,7 +741,8 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Set {@link String} param.
      */
     public T set(String key, String value) {
-        mParams.set(key, value);
+        if (value != null)
+            mParams.set(key, value);
         return (T) this;
     }
 
@@ -807,18 +813,22 @@ public abstract class BasicRequest<T extends BasicRequest>
             Object value = entry.getValue();
             if (value instanceof File) {
                 mParams.add(key, new FileBinary((File) value));
+            } else if (value instanceof Binary) {
+                mParams.add(key, value);
             } else if (value instanceof List) {
                 List values = (List) value;
                 for (int i = 0; i < values.size(); i++) {
                     Object o = values.get(i);
                     if (o instanceof File) {
                         mParams.add(key, new FileBinary((File) o));
-                    } else {
-                        mParams.add(key, o);
+                    } else if (o instanceof Binary) {
+                        mParams.add(key, value);
+                    } else if (o != null) {
+                        mParams.add(key, o.toString());
                     }
                 }
             } else if (value != null) {
-                mParams.add(key, String.valueOf(value));
+                mParams.add(key, value.toString());
             }
         }
         return (T) this;
@@ -833,6 +843,8 @@ public abstract class BasicRequest<T extends BasicRequest>
             Object value = entry.getValue();
             if (value instanceof File) {
                 mParams.set(key, new FileBinary((File) value));
+            } else if (value instanceof Binary) {
+                mParams.set(key, value);
             } else if (value instanceof List) {
                 mParams.remove(key);
                 List values = (List) value;
@@ -840,12 +852,14 @@ public abstract class BasicRequest<T extends BasicRequest>
                     Object o = values.get(i);
                     if (o instanceof File) {
                         mParams.add(key, new FileBinary((File) o));
-                    } else {
-                        mParams.add(key, o);
+                    } else if (o instanceof Binary) {
+                        mParams.add(key, value);
+                    } else if (o != null) {
+                        mParams.add(key, o.toString());
                     }
                 }
             } else if (value != null) {
-                mParams.add(key, String.valueOf(value));
+                mParams.add(key, value.toString());
             }
         }
         return (T) this;
@@ -1031,22 +1045,21 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Send form data.
      */
     private void writeFormStreamData(OutputStream writer) throws IOException {
+        if (isCanceled()) return;
         Set<String> keys = mParams.keySet();
         for (String key : keys) {
             List<Object> values = mParams.getValues(key);
             for (Object value : values) {
-                if (!isCanceled()) {
-                    if (value != null && value instanceof String) {
-                        if (!(writer instanceof CounterOutputStream))
-                            Logger.i(key + "=" + value);
-                        writeFormString(writer, key, (String) value);
-                    } else if (value != null && value instanceof Binary) {
-                        if (!(writer instanceof CounterOutputStream))
-                            Logger.i(key + " is Binary");
-                        writeFormBinary(writer, key, (Binary) value);
-                    }
-                    writer.write("\r\n".getBytes());
+                if (value != null && value instanceof String) {
+                    if (!(writer instanceof CounterOutputStream))
+                        Logger.i(key + "=" + value);
+                    writeFormString(writer, key, (String) value);
+                } else if (value != null && value instanceof Binary) {
+                    if (!(writer instanceof CounterOutputStream))
+                        Logger.i(key + " is Binary");
+                    writeFormBinary(writer, key, (Binary) value);
                 }
+                writer.write("\r\n".getBytes());
             }
         }
         writer.write((endBoundary).getBytes());
@@ -1070,17 +1083,15 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Send binary data in a form.
      */
     private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
-        if (!value.isCanceled()) {
-            String binaryFieldBuilder = startBoundary + "\r\n" +
-                    "Content-Disposition: form-data; name=\"" + key + "\"; filename=\"" + value.getFileName() + "\"\r\n" +
-                    "Content-Type: " + value.getMimeType() + "\r\n\r\n";
-            writer.write(binaryFieldBuilder.getBytes());
+        String binaryFieldBuilder = startBoundary + "\r\n" +
+                "Content-Disposition: form-data; name=\"" + key + "\"; filename=\"" + value.getFileName() + "\"\r\n" +
+                "Content-Type: " + value.getMimeType() + "\r\n\r\n";
+        writer.write(binaryFieldBuilder.getBytes());
 
-            if (writer instanceof CounterOutputStream) {
-                ((CounterOutputStream) writer).writeLength(value.getLength());
-            } else {
-                value.onWriteBinary(writer);
-            }
+        if (writer instanceof CounterOutputStream) {
+            ((CounterOutputStream) writer).writeLength(value.getLength());
+        } else {
+            value.onWriteBinary(writer);
         }
     }
 
@@ -1088,7 +1099,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Write params.
      */
     private void writeParamStreamData(OutputStream writer) throws IOException {
-        StringBuilder paramBuilder = buildCommonParams(mParams, getParamsEncoding());
+        StringBuilder paramBuilder = BasicRequest.buildCommonParams(mParams, getParamsEncoding());
         if (paramBuilder.length() > 0) {
             String params = paramBuilder.toString();
             if (!(writer instanceof CounterOutputStream))

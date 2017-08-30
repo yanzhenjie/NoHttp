@@ -1,4 +1,4 @@
-apply plugin: rootProject.ext.plugin.library
+apply plugin: rootProject.ext.plugins.library
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -9,5 +9,3 @@ android {
         targetSdkVersion rootProject.ext.android.libraryTargetSdkVersion
     }
 }
-
-apply from: "maven.gradle"

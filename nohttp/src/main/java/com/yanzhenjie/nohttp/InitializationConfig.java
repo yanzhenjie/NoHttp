@@ -37,7 +37,7 @@ import javax.net.ssl.SSLSocketFactory;
  * <p>Initialize the save parameters.</p>
  * Created by YanZhenjie on 2017/6/14.
  */
-public class InitializationConfig {
+public final class InitializationConfig {
 
     public static Builder newBuilder(Context context) {
         return new Builder(context);
@@ -141,7 +141,7 @@ public class InitializationConfig {
         return mNetworkExecutor;
     }
 
-    public static class Builder {
+    public final static class Builder {
 
         private Context mContext;
 
@@ -160,7 +160,7 @@ public class InitializationConfig {
 
         private NetworkExecutor mNetworkExecutor;
 
-        public Builder(Context context) {
+        private Builder(Context context) {
             this.mContext = context.getApplicationContext();
         }
 
@@ -194,9 +194,12 @@ public class InitializationConfig {
 
         /**
          * Global SSLSocketFactory.
+         *
+         * @param sslSocketFactory {@link SSLSocketFactory}, {@link SSLUtils}.
+         * @see SSLUtils
          */
         public Builder sslSocketFactory(SSLSocketFactory sslSocketFactory) {
-            this.mSSLSocketFactory = SSLUtils.fixSSLLowerThanLollipop(sslSocketFactory);
+            this.mSSLSocketFactory = sslSocketFactory;
             return this;
         }
 
