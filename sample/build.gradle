@@ -1,4 +1,4 @@
-apply plugin: rootProject.ext.plugin.application
+apply plugin: rootProject.ext.plugins.application
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -23,20 +23,23 @@ dependencies {
     compile rootProject.ext.dependencies.okhttp
 
     // support.
-    compile rootProject.ext.dependencies.appcompat
+    compile rootProject.ext.dependencies.appCompat
     compile rootProject.ext.dependencies.design
-    compile rootProject.ext.dependencies.recyclerview
-    compile rootProject.ext.dependencies.cardview
+    compile rootProject.ext.dependencies.recyclerView
+    compile rootProject.ext.dependencies.cardView
 
     // json parser.
-    compile rootProject.ext.dependencies.fastjson
+    compile rootProject.ext.dependencies.fastJson
 
     // circle image.
-    compile rootProject.ext.dependencies.circleimageview
+    compile rootProject.ext.dependencies.circleImageView
 
     // image.
     compile rootProject.ext.dependencies.album
     compile rootProject.ext.dependencies.durban
+
+    // statusView
+    compile rootProject.ext.dependencies.statusView
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'

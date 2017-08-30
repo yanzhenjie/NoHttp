@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Created in Nov 3, 2015 1:48:34 PM.
@@ -71,8 +72,11 @@ public class HttpsActivity extends BaseActivity implements HttpListener<String> 
         SSLContext sslContext = SSLContextUtil.getSSLContext();
 
         // 主要是需要一个SocketFactory对象，这个对象是java通用的，具体用法还请Google、Baidu。
-        if (sslContext != null)
-            httpsRequest.setSSLSocketFactory(sslContext.getSocketFactory());
+        if (sslContext != null) {
+            // SSLUtils.fixSSLLowerThanLollipop 可修复在4.x中不支持TLSv1和TLSv1.1的问题。
+            SSLSocketFactory socketFactory = SSLUtils.fixSSLLowerThanLollipop(sslContext.getSocketFactory());
+            httpsRequest.setSSLSocketFactory(socketFactory);
+        }
         request(0, httpsRequest, this, false, true);
     }
 

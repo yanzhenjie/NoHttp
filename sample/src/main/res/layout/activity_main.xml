@@ -17,26 +17,19 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/MatchParent"
-    tools:context=".activity.MainActivity">
+    style="@style/MatchParent">
 
     <android.support.design.widget.CoordinatorLayout
-        style="@style/MatchParent"
-        android:fitsSystemWindows="true">
+        style="@style/MatchParent">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar_layout"
             style="@style/WrapContent.WidthMatchParent"
-            android:background="@color/transparent"
-            android:fitsSystemWindows="true"
             android:theme="@style/AppTheme.AppBarOverlay">
 
             <android.support.design.widget.CollapsingToolbarLayout
                 style="@style/WrapContent.WidthMatchParent"
-                android:fitsSystemWindows="true"
-                android:minHeight="?actionBarSize"
-                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
+                app:layout_scrollFlags="scroll|snap">
 
                 <ImageView
                     android:id="@+id/iv_head_background"
@@ -57,35 +50,41 @@
             android:background="@color/white"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-
     </android.support.design.widget.CoordinatorLayout>
 
     <LinearLayout
-        android:id="@+id/toolbar_root"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:layout_alignParentTop="true"
-        android:background="?colorPrimary">
+        android:id="@+id/layout_status_toolbar_root"
+        style="@style/WrapContent.WidthMatchParent"
+        android:background="?colorPrimary"
+        android:orientation="vertical">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/iv_toolbar_head"
-            android:layout_width="@dimen/dp_30"
-            android:layout_height="@dimen/dp_30"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/dp_12"
-            android:layout_marginStart="@dimen/dp_12"
-            android:src="@mipmap/ic_launcher"
-            app:civ_border_color="@color/white"
-            app:civ_border_width="@dimen/dp_2"/>
+        <com.yanzhenjie.statusview.StatusView
+            style="@style/WrapContent.WidthMatchParent"/>
 
-        <android.support.v7.widget.Toolbar
+        <LinearLayout
+            android:id="@+id/toolbar_root"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="@color/transparent"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:subtitle="@string/nohttp_slogan"
-            app:subtitleTextColor="@color/white"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/white"/>
+            android:layout_height="?actionBarSize">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_toolbar_head"
+                android:layout_width="@dimen/dp_30"
+                android:layout_height="@dimen/dp_30"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp_12"
+                android:layout_marginStart="@dimen/dp_12"
+                android:src="@mipmap/ic_launcher"
+                app:civ_border_color="@color/white"
+                app:civ_border_width="@dimen/dp_2"/>
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:subtitle="@string/nohttp_slogan"
+                app:subtitleTextColor="@color/white"
+                app:title="@string/app_name"
+                app:titleTextColor="@color/white"/>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

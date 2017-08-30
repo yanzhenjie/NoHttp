@@ -17,7 +17,6 @@
 <resources>
 
     <style name="AppTheme.Main">
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:navigationBarColor">@color/navigation_color</item>
     </style>
 
