@@ -16,6 +16,10 @@
 [https://github.com/yanzhenjie/AndPermission](https://github.com/yanzhenjie/AndPermission)  
 2. 结合业务，直接请求JavaBean、List、Map等，安利一篇博文：  
 [http://blog.csdn.net/yanzhenjie1003/article/details/70158030](http://blog.csdn.net/yanzhenjie1003/article/details/70158030)  
+  
+因为本项目是非UI类型的库，感觉光秃秃的，放一个Demo的截图吧：
+  
+<image src="./image/1.gif"/>
 
 ## 框架特性
 * 动态配置底层框架为OkHttp、HttpURLConnection
@@ -38,20 +42,29 @@
 ### Gradle
 * 如果使用HttpURLConnection作为网络层
 ```groovy
-compile 'com.yanzhenjie.nohttp:nohttp:1.1.3'
+compile 'com.yanzhenjie.nohttp:nohttp:1.1.4'
 ```
 * 如果要使用OkHttp作为网络层，请再依赖
 ```groovy
-compile 'com.yanzhenjie.nohttp:okhttp:1.1.3'
+compile 'com.yanzhenjie.nohttp:okhttp:1.1.4'
 ```
 
-> NoHttp从1.1.1时修改了包名为`com.yanzhenjie.nohttp`，开发者从旧版升级后请使用全局替换，将`com.yolanda.nohttp`替换为`com.yanzhenjie.nohttp`即可，更多信息请看[升级日志](./UPGRADE.md)。
-
-### Eclipse ADT
-自行下载上方jar包，建议转AndroidStudio。  
+> 如果需要Jar包，可以先Gradle依赖，然后在Gradle的本地缓存文件夹找到jar。
 
 ## 初始化
 NoHttp初始化时分两种情况，最基本的初始化仅仅需要一个Context，高级初始化需要一个Config。
+
+### 事前注意
+**注意1**：无论是初始化时还是为Request设置属性时，对Https
+设置SSLSocketFactory需要注意，如果你需要修复在Android4.x系统中不支持TLSv1.1、TLSv1.2协议的问题，你可以调用：
+```
+SSLSocketFactory socketFactory = ...;
+socketFactory = SSLUtils.fixSSLLowerThanLollipop(socketFactory);
+```
+
+新生成的SSLSocketFactory就是已经修复了在Android4.x系统中不支持TLSv1.1、TLSv1.2协议的问题的对象，直接使用即可。
+
+**注意2**：对于Cookie，NoHttp是按照标准协议来维护的，很多同学会遇到Session的持久化问题（Session是对于服务器来说的，等发送到客户端我们把它称为临时Cookie），这是对Http/Cookie协议不了解的体现，关于Session的持久化问题看这里：[http://doc.nohttp.net/248698](http://doc.nohttp.net/248698)。
 
 ### 一般初始化
 直接初始化后，一切采用默认设置。
