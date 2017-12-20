@@ -206,11 +206,9 @@ public class NetUtils {
             Logger.w(e);
         }
         if (enumeration != null) {
-            // 遍历所用的网络接口
             while (enumeration.hasMoreElements()) {
-                NetworkInterface nif = enumeration.nextElement();// 得到每一个网络接口绑定的地址
+                NetworkInterface nif = enumeration.nextElement();
                 Enumeration<InetAddress> inetAddresses = nif.getInetAddresses();
-                // 遍历每一个接口绑定的所有ip
                 if (inetAddresses != null)
                     while (inetAddresses.hasMoreElements()) {
                         InetAddress ip = inetAddresses.nextElement();

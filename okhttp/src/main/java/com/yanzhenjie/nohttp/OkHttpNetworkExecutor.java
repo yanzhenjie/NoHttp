@@ -46,7 +46,7 @@ public class OkHttpNetworkExecutor implements NetworkExecutor {
                 ((HttpsURLConnection) connection).setHostnameVerifier(hostnameVerifier);
         }
 
-        connection.setRequestMethod(request.getRequestMethod().toString());
+        connection.setRequestMethod(request.getRequestMethod().getValue());
 
         connection.setDoInput(true);
         boolean isAllowBody = request.getRequestMethod().allowRequestBody();

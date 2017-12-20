@@ -11,16 +11,12 @@ android {
         versionCode rootProject.ext.android.versionCode
         versionName rootProject.ext.android.versionName
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
 }
 
 dependencies {
-    compile rootProject.ext.dependencies.nohttp
-    compile rootProject.ext.dependencies.okhttp
+    compile project(':okhttp')
+//    compile rootProject.ext.dependencies.nohttp
+//    compile rootProject.ext.dependencies.okhttp
 
     // support.
     compile rootProject.ext.dependencies.appCompat

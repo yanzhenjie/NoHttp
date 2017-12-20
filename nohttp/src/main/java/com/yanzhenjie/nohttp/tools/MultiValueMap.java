@@ -107,7 +107,7 @@ public interface MultiValueMap<K, V> {
      * @param key key.
      * @return The value.
      */
-    V getValue(K key);
+    V getFirstValue(K key);
 
     /**
      * To getList key of all values.

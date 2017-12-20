@@ -17,35 +17,30 @@ ext {
             sampleMinSdkVersion    : 14,
             sampleTargetSdkVersion : 22,
 
-            versionCode            : 100,
-            versionName            : "1.1.2",
+            versionCode            : 114,
+            versionName            : "1.1.4",
     ]
 
     bintray = [
-            // library
-            version       : "1.1.4",
+            version       : "1.1.5",
 
             siteUrl       : 'https://github.com/yanzhenjie/NoHttp',
             gitUrl        : 'git@github.com:yanzhenjie/NoHttp.git',
 
             group         : "com.yanzhenjie.nohttp",
 
-            // project
             packaging     : 'aar',
             name          : 'NoHttp',
             description   : 'Synchronous and asynchronous network request framework for Android',
 
-            // project.license
             licenseName   : 'The Apache Software License, Version 2.0',
             licenseUrl    : 'http://www.apache.org/licenses/LICENSE-2.0.txt',
 
-            // project.developers
             developerId   : 'yanzhenjie',
             developerName : 'yanzhenjie',
             developerEmail: 'smallajax@foxmail.com',
 
-            // bintray
-            binrayLibrary : "okhttp",
+            binrayLibrary : "nohttp1",
             bintrayRepo   : "maven",
             bintrayUser   : 'yolanda',
             bintrayLicense: "Apache-2.0"

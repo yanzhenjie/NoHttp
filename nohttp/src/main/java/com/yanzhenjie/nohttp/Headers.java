@@ -17,8 +17,8 @@ package com.yanzhenjie.nohttp;
 
 import android.text.TextUtils;
 
+import com.yanzhenjie.nohttp.tools.BasicMultiValueMap;
 import com.yanzhenjie.nohttp.tools.HeaderUtils;
-import com.yanzhenjie.nohttp.tools.TreeMultiValueMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,8 +35,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * <p>
@@ -46,7 +48,7 @@ import java.util.Set;
  *
  * @author Yan Zhenjie.
  */
-public class Headers extends TreeMultiValueMap<String, String> {
+public class Headers extends BasicMultiValueMap<String, String> {
 
     /**
      * The value is {@value}.
@@ -71,7 +73,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
     /**
      * The value is {@value}.
      */
-    public static final String HEAD_VALUE_ACCEPT_ENCODING_GZIP_DEFLATE = "gzip, deflate";// no sdch
+    public static final String HEAD_VALUE_ACCEPT_ENCODING_GZIP_DEFLATE = "gzip, deflate";
 
     /**
      * The value is {@value}.
@@ -208,11 +210,57 @@ public class Headers extends TreeMultiValueMap<String, String> {
      */
     public static final String HEAD_KEY_SET_COOKIE = "Set-Cookie";
 
+    /**
+     * Format to Hump-shaped words.
+     */
+    public static String formatKey(String key) {
+        key = key.toLowerCase(Locale.ENGLISH);
+        String[] words = key.split("-");
+
+        StringBuilder builder = new StringBuilder();
+        for (String word : words) {
+            String first = word.substring(0, 1);
+            String end = word.substring(1, word.length());
+            builder.append(first.toUpperCase(Locale.ENGLISH)).append(end).append("-");
+        }
+        builder.deleteCharAt(builder.lastIndexOf("-"));
+        return builder.toString();
+    }
+
     public Headers() {
-        super(new Comparator<String>() {
+        super(new TreeMap<String, List<String>>(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 return o1.compareTo(o2);
+            }
+        }) {
+            @Override
+            public List<String> put(String key, List<String> value) {
+                return super.put(formatKey(key), value);
+            }
+
+            @Override
+            public List<String> get(Object key) {
+                if (key != null && key instanceof String) {
+                    key = formatKey((String) key);
+                }
+                return super.get(key);
+            }
+
+            @Override
+            public List<String> remove(Object key) {
+                if (key != null && key instanceof String) {
+                    key = formatKey((String) key);
+                }
+                return super.remove(key);
+            }
+
+            @Override
+            public boolean containsKey(Object key) {
+                if (key != null && key instanceof String) {
+                    key = formatKey((String) key);
+                }
+                return super.containsKey(key);
             }
         });
     }
@@ -223,11 +271,8 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @param headers headers.
      */
     public void setAll(Headers headers) {
-        if (headers != null) {
-            Set<String> keySet = headers.keySet();
-            for (String key : keySet) {
-                set(key, headers.getValues(key));
-            }
+        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+            set(entry.getKey(), entry.getValue());
         }
     }
 
@@ -358,7 +403,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return {@value HEAD_KEY_CONTENT_DISPOSITION}.
      */
     public String getContentDisposition() {
-        return getValue(HEAD_KEY_CONTENT_DISPOSITION, 0);
+        return getFirstValue(HEAD_KEY_CONTENT_DISPOSITION);
     }
 
     /**
@@ -367,7 +412,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return ContentEncoding.
      */
     public String getContentEncoding() {
-        return getValue(HEAD_KEY_CONTENT_ENCODING, 0);
+        return getFirstValue(HEAD_KEY_CONTENT_ENCODING);
     }
 
     /**
@@ -376,12 +421,12 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return ContentLength.
      */
     public int getContentLength() {
-        String contentLength = getValue(HEAD_KEY_CONTENT_LENGTH, 0);
+        String contentLength = getFirstValue(HEAD_KEY_CONTENT_LENGTH);
         try {
             return Integer.parseInt(contentLength);
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            return 0;
         }
-        return 0;
     }
 
     /**
@@ -390,7 +435,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return ContentType.
      */
     public String getContentType() {
-        return getValue(HEAD_KEY_CONTENT_TYPE, 0);
+        return getFirstValue(HEAD_KEY_CONTENT_TYPE);
     }
 
     /**
@@ -399,9 +444,9 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return {@value #HEAD_KEY_CONTENT_RANGE} or {@value #HEAD_KEY_ACCEPT_RANGE}.
      */
     public String getContentRange() {
-        String contentRange = getValue(HEAD_KEY_CONTENT_RANGE, 0);
+        String contentRange = getFirstValue(HEAD_KEY_CONTENT_RANGE);
         if (contentRange == null)
-            contentRange = getValue(HEAD_KEY_ACCEPT_RANGE, 0);
+            contentRange = getFirstValue(HEAD_KEY_ACCEPT_RANGE);
         return contentRange;
     }
 
@@ -420,7 +465,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return ETag.
      */
     public String getETag() {
-        return getValue(HEAD_KEY_E_TAG, 0);
+        return getFirstValue(HEAD_KEY_E_TAG);
     }
 
     /**
@@ -447,7 +492,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return Location.
      */
     public String getLocation() {
-        return getValue(HEAD_KEY_LOCATION, 0);
+        return getFirstValue(HEAD_KEY_LOCATION);
     }
 
     /**
@@ -456,7 +501,7 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return ResponseCode.
      */
     public int getResponseCode() {
-        String responseCode = getValue(HEAD_KEY_RESPONSE_CODE, 0);
+        String responseCode = getFirstValue(HEAD_KEY_RESPONSE_CODE);
         try {
             return Integer.parseInt(responseCode);
         } catch (Exception ignored) {
@@ -474,26 +519,12 @@ public class Headers extends TreeMultiValueMap<String, String> {
      * @return the header field represented in milliseconds since January 1, 1970 GMT.
      */
     private long getDateField(String key) {
-        String value = getValue(key, 0);
+        String value = getFirstValue(key);
         if (!TextUtils.isEmpty(value))
             try {
                 return HeaderUtils.parseGMTToMillis(value);
-            } catch (ParseException e) {
-                Logger.w(e);
+            } catch (ParseException ignored) {
             }
         return 0;
-    }
-
-    @Override
-    public boolean containsKey(String key) {
-        return super.containsKey(key) || super.containsKey(key.toLowerCase());
-    }
-
-    @Override
-    public List<String> getValues(String key) {
-        List<String> strings = super.getValues(key);
-        if (strings == null || strings.isEmpty())
-            strings = super.getValues(key.toLowerCase());
-        return strings;
     }
 }

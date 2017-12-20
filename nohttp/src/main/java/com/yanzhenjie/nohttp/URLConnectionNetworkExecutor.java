@@ -64,7 +64,7 @@ public class URLConnectionNetworkExecutor implements NetworkExecutor {
         }
 
         // Base attribute
-        connection.setRequestMethod(request.getRequestMethod().toString());
+        connection.setRequestMethod(request.getRequestMethod().getValue());
 
         connection.setDoInput(true);
         boolean isAllowBody = isAllowBody(request.getRequestMethod());

@@ -15,6 +15,10 @@
  */
 package com.yanzhenjie.nohttp;
 
+import android.text.TextUtils;
+
+import java.util.Locale;
+
 /**
  * <p>
  * HTTP request method.
@@ -38,7 +42,7 @@ public enum RequestMethod {
     PATCH("PATCH"),
 
     OPTIONS("OPTIONS"),
-    
+
     TRACE("TRACE");
 
     private final String value;
@@ -47,9 +51,8 @@ public enum RequestMethod {
         this.value = value;
     }
 
-    @Override
-    public String toString() {
-        return this.value;
+    public String getValue() {
+        return value;
     }
 
     public boolean allowRequestBody() {
@@ -61,6 +64,43 @@ public enum RequestMethod {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    public static RequestMethod reverse(String method) {
+        if (TextUtils.isEmpty(method)) {
+            method = "GET";
+        }
+
+        method = method.toUpperCase(Locale.ENGLISH);
+        switch (method) {
+            case "GET": {
+                return GET;
+            }
+            case "POST": {
+                return POST;
+            }
+            case "PUT": {
+                return PUT;
+            }
+            case "DELETE": {
+                return DELETE;
+            }
+            case "HEAD": {
+                return HEAD;
+            }
+            case "PATCH": {
+                return PATCH;
+            }
+            case "OPTIONS": {
+                return OPTIONS;
+            }
+            case "TRACE": {
+                return TRACE;
+            }
+            default: {
+                return GET;
+            }
         }
     }
 

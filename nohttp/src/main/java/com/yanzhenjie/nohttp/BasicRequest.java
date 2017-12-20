@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
 import java.net.HttpCookie;
 import java.net.Proxy;
 import java.net.URLEncoder;
@@ -141,11 +140,11 @@ public abstract class BasicRequest<T extends BasicRequest>
     /**
      * Cancel sign.
      */
-    private WeakReference<Object> mCancelSign;
+    private Object mCancelSign;
     /**
      * Tag of request.
      */
-    private WeakReference<Object> mTag;
+    private Object mTag;
 
     /**
      * Create a request, RequestMethod is {@link RequestMethod#GET}.
@@ -323,7 +322,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * The real url of Request is: http://www.nohttp.net/xx/oo
      */
     public T path(String value) {
-        if (value != null) {
+        if (TextUtils.isEmpty(value)) {
             if (!url.endsWith("/"))
                 url += "/";
             url += value;
@@ -468,7 +467,8 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param value value.
      */
     public T addHeader(String key, String value) {
-        mHeaders.add(key, value);
+        if (!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value))
+            mHeaders.add(key, value);
         return (T) this;
     }
 
@@ -479,7 +479,8 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param value value.
      */
     public T setHeader(String key, String value) {
-        mHeaders.set(key, value);
+        if (!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value))
+            mHeaders.set(key, value);
         return (T) this;
     }
 
@@ -507,7 +508,8 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param key key.
      */
     public T removeHeader(String key) {
-        mHeaders.remove(key);
+        if (!TextUtils.isEmpty(key))
+            mHeaders.remove(key);
         return (T) this;
     }
 
@@ -523,7 +525,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Does it contain a request header?
      */
     public boolean containsHeader(String key) {
-        return mHeaders.containsKey(key);
+        return !TextUtils.isEmpty(key) && mHeaders.containsKey(key);
     }
 
     /**
@@ -586,7 +588,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @return string, such as: {@code application/json}.
      */
     public String getContentType() {
-        String contentType = mHeaders.getValue(Headers.HEAD_KEY_CONTENT_TYPE, 0);
+        String contentType = mHeaders.getContentType();
         if (!TextUtils.isEmpty(contentType))
             return contentType;
         if (getRequestMethod().allowRequestBody() && isMultipartFormEnable())
@@ -676,7 +678,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link Integer} param.
      */
     public T add(String key, int value) {
-        mParams.add(key, Integer.toString(value));
+        add(key, Integer.toString(value));
         return (T) this;
     }
 
@@ -684,7 +686,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link Long} param.
      */
     public T add(String key, long value) {
-        mParams.add(key, Long.toString(value));
+        add(key, Long.toString(value));
         return (T) this;
     }
 
@@ -692,7 +694,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link Boolean} param.
      */
     public T add(String key, boolean value) {
-        mParams.add(key, Boolean.toString(value));
+        add(key, Boolean.toString(value));
         return (T) this;
     }
 
@@ -700,7 +702,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@code char} param.
      */
     public T add(String key, char value) {
-        mParams.add(key, String.valueOf(value));
+        add(key, String.valueOf(value));
         return (T) this;
     }
 
@@ -708,7 +710,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link Double} param.
      */
     public T add(String key, double value) {
-        mParams.add(key, Double.toString(value));
+        add(key, Double.toString(value));
         return (T) this;
     }
 
@@ -716,7 +718,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link Float} param.
      */
     public T add(String key, float value) {
-        mParams.add(key, Float.toString(value));
+        add(key, Float.toString(value));
         return (T) this;
     }
 
@@ -724,7 +726,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link Short} param.
      */
     public T add(String key, short value) {
-        mParams.add(key, Integer.toString(value));
+        add(key, Integer.toString(value));
         return (T) this;
     }
 
@@ -732,7 +734,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Add {@link String} param.
      */
     public T add(String key, String value) {
-        if (value != null)
+        if (!TextUtils.isEmpty(key) && value != null)
             mParams.add(key, value);
         return (T) this;
     }
@@ -741,7 +743,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Set {@link String} param.
      */
     public T set(String key, String value) {
-        if (value != null)
+        if (!TextUtils.isEmpty(key) && value != null)
             mParams.set(key, value);
         return (T) this;
     }
@@ -761,7 +763,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     public T add(String key, File file) {
         validateMethodForBody("The File param");
-        mParams.add(key, new FileBinary(file));
+        add(key, new FileBinary(file));
         return (T) this;
     }
 
@@ -770,7 +772,8 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     public T add(String key, Binary binary) {
         validateMethodForBody("The Binary param");
-        mParams.add(key, binary);
+        if (!TextUtils.isEmpty(key))
+            mParams.add(key, binary);
         return (T) this;
     }
 
@@ -779,7 +782,8 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     public T set(String key, Binary binary) {
         validateMethodForBody("The Binary param");
-        mParams.set(key, binary);
+        if (!TextUtils.isEmpty(key))
+            mParams.set(key, binary);
         return (T) this;
     }
 
@@ -788,8 +792,9 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     public T add(String key, List<Binary> binaries) {
         validateMethodForBody("The List<Binary> param");
-        for (Binary binary : binaries)
-            mParams.add(key, binary);
+        if (!TextUtils.isEmpty(key))
+            for (Binary binary : binaries)
+                mParams.add(key, binary);
         return (T) this;
     }
 
@@ -798,9 +803,11 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     public T set(String key, List<Binary> binaries) {
         validateMethodForBody("The List<Binary> param");
-        mParams.remove(key);
-        for (Binary binary : binaries)
-            mParams.add(key, binary);
+        if (!TextUtils.isEmpty(key)) {
+            mParams.remove(key);
+            for (Binary binary : binaries)
+                mParams.add(key, binary);
+        }
         return (T) this;
     }
 
@@ -811,6 +818,8 @@ public abstract class BasicRequest<T extends BasicRequest>
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
+            if (TextUtils.isEmpty(key) || value == null) continue;
+
             if (value instanceof File) {
                 mParams.add(key, new FileBinary((File) value));
             } else if (value instanceof Binary) {
@@ -819,15 +828,17 @@ public abstract class BasicRequest<T extends BasicRequest>
                 List values = (List) value;
                 for (int i = 0; i < values.size(); i++) {
                     Object o = values.get(i);
+                    if (o == null) continue;
+
                     if (o instanceof File) {
                         mParams.add(key, new FileBinary((File) o));
                     } else if (o instanceof Binary) {
                         mParams.add(key, value);
-                    } else if (o != null) {
+                    } else {
                         mParams.add(key, o.toString());
                     }
                 }
-            } else if (value != null) {
+            } else {
                 mParams.add(key, value.toString());
             }
         }
@@ -841,6 +852,8 @@ public abstract class BasicRequest<T extends BasicRequest>
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
+            if (TextUtils.isEmpty(key) || value == null) continue;
+
             if (value instanceof File) {
                 mParams.set(key, new FileBinary((File) value));
             } else if (value instanceof Binary) {
@@ -850,16 +863,18 @@ public abstract class BasicRequest<T extends BasicRequest>
                 List values = (List) value;
                 for (int i = 0; i < values.size(); i++) {
                     Object o = values.get(i);
+                    if (o == null) continue;
+
                     if (o instanceof File) {
                         mParams.add(key, new FileBinary((File) o));
                     } else if (o instanceof Binary) {
                         mParams.add(key, value);
-                    } else if (o != null) {
+                    } else {
                         mParams.add(key, o.toString());
                     }
                 }
-            } else if (value != null) {
-                mParams.add(key, value.toString());
+            } else {
+                mParams.set(key, value.toString());
             }
         }
         return (T) this;
@@ -1112,7 +1127,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * Set tag of task, At the end of the task is returned to you.
      */
     public T setTag(Object tag) {
-        this.mTag = new WeakReference<>(tag);
+        this.mTag = tag;
         return (T) this;
     }
 
@@ -1217,7 +1232,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param sign a object.
      */
     public T setCancelSign(Object sign) {
-        this.mCancelSign = new WeakReference<>(sign);
+        this.mCancelSign = sign;
         return (T) this;
     }
 
@@ -1227,10 +1242,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param sign an object that can be null.
      */
     public void cancelBySign(Object sign) {
-        Object meSign = null;
-        if (mCancelSign != null)
-            meSign = mCancelSign.get();
-        if (mCancelSign == meSign || (sign != null && meSign != null && meSign.equals(sign)))
+        if (mCancelSign == sign || (sign != null && mCancelSign != null && mCancelSign.equals(sign)))
             cancel();
     }
 
@@ -1254,7 +1266,6 @@ public abstract class BasicRequest<T extends BasicRequest>
                     try {
                         paramBuilder.append(URLEncoder.encode(value.toString(), encodeCharset));
                     } catch (UnsupportedEncodingException e) {
-                        Logger.e("Encoding " + encodeCharset + " format is not supported by the system.");
                         paramBuilder.append(value.toString());
                     }
                 }
