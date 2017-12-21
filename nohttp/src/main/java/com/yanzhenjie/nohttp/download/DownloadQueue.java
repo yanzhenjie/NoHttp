@@ -15,10 +15,9 @@
  */
 package com.yanzhenjie.nohttp.download;
 
-import com.yanzhenjie.nohttp.Logger;
-
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,17 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DownloadQueue {
 
     private AtomicInteger mInteger = new AtomicInteger();
-    /**
-     * Save un finish task.
-     */
-    private final BlockingQueue<DownloadRequest> mUnFinishQueue = new LinkedBlockingDeque<>();
-    /**
-     * Save download task.
-     */
-    private final BlockingQueue<DownloadRequest> mDownloadQueue = new PriorityBlockingQueue<>();
-    /**
-     * Download queue polling thread array.
-     */
+    private final BlockingQueue<DownloadRequest> mRequestQueue = new PriorityBlockingQueue<>();
+    private final Map<DownloadRequest, Messenger> mMessengerMap = new LinkedHashMap<>();
+
     private DownloadDispatcher[] mDispatchers;
 
     /**
@@ -63,7 +54,7 @@ public class DownloadQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mUnFinishQueue, mDownloadQueue);
+            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mRequestQueue, mMessengerMap);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }
@@ -74,37 +65,22 @@ public class DownloadQueue {
      * of tasks is less than the number of thread pool, will be executed immediately.
      *
      * @param what             used to distinguish Download.
-     * @param downloadRequest  download request object.
+     * @param request          download handle object.
      * @param downloadListener download results monitor.
      */
-    public void add(int what, DownloadRequest downloadRequest, DownloadListener downloadListener) {
-        if (downloadRequest.inQueue())
-            Logger.w("This request has been in the queue");
-        else {
-            downloadRequest.setQueue(mUnFinishQueue);
-            downloadRequest.onPreResponse(what, downloadListener);
-            downloadRequest.setSequence(mInteger.incrementAndGet());
-            mUnFinishQueue.add(downloadRequest);
-            mDownloadQueue.add(downloadRequest);
-        }
+    public void add(int what, DownloadRequest request, DownloadListener downloadListener) {
+        request.setSequence(mInteger.incrementAndGet());
+        mMessengerMap.put(request, Messenger.newInstance(what, downloadListener));
+        mRequestQueue.add(request);
     }
 
     /**
-     * Don't start return request queue size.
+     * Don't start return handle queue size.
      *
      * @return size.
      */
-    public int unStartSize() {
-        return mDownloadQueue.size();
-    }
-
-    /**
-     * Returns have started but not the end of the request queue size.
-     *
-     * @return size.
-     */
-    public int unFinishSize() {
-        return mUnFinishQueue.size();
+    public int size() {
+        return mRequestQueue.size();
     }
 
     /**
@@ -123,19 +99,25 @@ public class DownloadQueue {
      * @param sign this sign will be the same as sign's DownloadRequest, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
-        synchronized (mUnFinishQueue) {
-            for (DownloadRequest downloadRequest : mUnFinishQueue)
-                downloadRequest.cancelBySign(sign);
+        synchronized (mRequestQueue) {
+            for (DownloadRequest request : mRequestQueue) {
+                mRequestQueue.remove(request);
+                mMessengerMap.remove(request);
+                request.cancelBySign(sign);
+            }
         }
     }
 
     /**
-     * Cancel all requests, Already in the execution of the request can't use this method.
+     * Cancel all requests, Already in the execution of the handle can't use this method.
      */
     public void cancelAll() {
-        synchronized (mUnFinishQueue) {
-            for (DownloadRequest downloadRequest : mUnFinishQueue)
-                downloadRequest.cancel();
+        synchronized (mRequestQueue) {
+            for (DownloadRequest request : mRequestQueue) {
+                mRequestQueue.remove(request);
+                mMessengerMap.remove(request);
+                request.cancel();
+            }
         }
     }
 

@@ -143,16 +143,19 @@ public class IOUtils {
     }
 
     public static byte[] toByteArray(InputStream input, int size) throws IOException {
-        if (size < 0) throw new IllegalArgumentException("Size must be equal or greater than zero: " + size);
+        if (size < 0)
+            throw new IllegalArgumentException("Size must be equal or greater than zero: " + size);
 
         if (size == 0) return new byte[0];
 
         byte[] data = new byte[size];
         int offset = 0;
         int byteCount;
-        while ((offset < size) && (byteCount = input.read(data, offset, size - offset)) != -1) offset += byteCount;
+        while ((offset < size) && (byteCount = input.read(data, offset, size - offset)) != -1)
+            offset += byteCount;
 
-        if (offset != size) throw new IOException("Unexpected byte count size. current: " + offset + ", excepted: " + size);
+        if (offset != size)
+            throw new IOException("Unexpected byte count size. current: " + offset + ", excepted: " + size);
         return data;
     }
 
@@ -360,7 +363,7 @@ public class IOUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
             return stat.getBlockSizeLong() * stat.getAvailableBlocksLong();
         else
-            return stat.getBlockSize() * stat.getAvailableBlocks();
+            return (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
     }
 
     /**

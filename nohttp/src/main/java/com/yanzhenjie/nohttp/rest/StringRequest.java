@@ -16,16 +16,16 @@
 package com.yanzhenjie.nohttp.rest;
 
 import com.yanzhenjie.nohttp.Headers;
+import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.tools.HeaderUtils;
 import com.yanzhenjie.nohttp.tools.IOUtils;
-import com.yanzhenjie.nohttp.RequestMethod;
 
 /**
  * Created in Jul 28, 2015 7:33:52 PM.
  *
  * @author Yan Zhenjie.
  */
-public class StringRequest extends RestRequest<String> {
+public class StringRequest extends Request<String> {
 
     public StringRequest(String url) {
         this(url, RequestMethod.GET);

@@ -18,9 +18,8 @@ package com.yanzhenjie.nohttp.tools;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
-import android.os.Build;
+import android.telephony.TelephonyManager;
 
 import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
@@ -31,6 +30,12 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
+
+import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Mobile;
+import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Mobile2G;
+import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Mobile3G;
+import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Mobile4G;
+import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Wifi;
 
 /**
  * <p>
@@ -44,16 +49,12 @@ public class NetUtils {
 
     public enum NetType {
         Any,
-
         Wifi,
-
-        Mobile
+        Mobile,
+        Mobile2G,
+        Mobile3G,
+        Mobile4G
     }
-
-    /**
-     * Class name of the {@link android.provider.Settings}.
-     */
-    private static final String ANDROID_PROVIDER_SETTINGS = "android.provider.Settings";
 
     private static ConnectivityManager sConnectivityManager;
 
@@ -71,14 +72,7 @@ public class NetUtils {
      * Open network settings page.
      */
     public static void openSetting() {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1)
-            openSetting("ACTION_WIFI_SETTINGS");
-        else
-            openSetting("ACTION_WIRELESS_SETTINGS");
-    }
-
-    private static void openSetting(String actionName) {
-        Intent settingIntent = new Intent(actionName);
+        Intent settingIntent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
         settingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         NoHttp.getContext().startActivity(settingIntent);
     }
@@ -88,8 +82,17 @@ public class NetUtils {
      *
      * @return Available returns true, unavailable returns false.
      */
-    public static boolean isNetworkAvailable() {
+    public static boolean isAnyNetworkAvailable() {
         return isNetworkAvailable(NetType.Any);
+    }
+
+    /**
+     * Check the network is enable.
+     *
+     * @return Available returns true, unavailable returns false.
+     */
+    public static boolean isNetworkAvailable() {
+        return isWifiConnected() || isMobileConnected();
     }
 
     /**
@@ -98,16 +101,43 @@ public class NetUtils {
      * @return Open return true, close returns false.
      */
     public static boolean isWifiConnected() {
-        return isNetworkAvailable(NetType.Wifi);
+        return isNetworkAvailable(Wifi);
     }
 
     /**
-     * To determine whether a mobile phone network is available.
+     * Mobile Internet connection.
      *
      * @return Open return true, close returns false.
      */
     public static boolean isMobileConnected() {
-        return isNetworkAvailable(NetType.Mobile);
+        return isNetworkAvailable(Mobile);
+    }
+
+    /**
+     * 2G Mobile Internet connection.
+     *
+     * @return Open return true, close returns false.
+     */
+    public static boolean isMobile2GConnected() {
+        return isNetworkAvailable(Mobile2G);
+    }
+
+    /**
+     * 3G Mobile Internet connection.
+     *
+     * @return Open return true, close returns false.
+     */
+    public static boolean isMobile3GConnected() {
+        return isNetworkAvailable(Mobile3G);
+    }
+
+    /**
+     * 4G Mobile Internet connection.
+     *
+     * @return Open return true, close returns false.
+     */
+    public static boolean isMobile4GConnected() {
+        return isNetworkAvailable(Mobile4G);
     }
 
     /**
@@ -118,33 +148,36 @@ public class NetUtils {
      */
     public static boolean isNetworkAvailable(NetType netType) {
         getConnectivityManager();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Network[] networkArray = sConnectivityManager.getAllNetworks();
-            for (Network network : networkArray) {
-                NetworkInfo networkInfo = sConnectivityManager.getNetworkInfo(network);
-                if (isConnected(netType, networkInfo)) return true;
-            }
-        } else {
-            NetworkInfo[] networkInfoArray = sConnectivityManager.getAllNetworkInfo();
-            for (NetworkInfo networkInfo : networkInfoArray) {
-                if (isConnected(netType, networkInfo)) return true;
-            }
-        }
-        return false;
+        return isConnected(netType, sConnectivityManager.getActiveNetworkInfo());
     }
 
     private static boolean isConnected(NetType netType, NetworkInfo networkInfo) {
+        if (networkInfo == null) return false;
+
         switch (netType) {
-            case Any:
-                return networkInfo != null && isConnected(networkInfo);
-            case Wifi:
-                return networkInfo != null &&
-                        networkInfo.getType() == ConnectivityManager.TYPE_WIFI &&
-                        isConnected(networkInfo);
-            case Mobile:
-                return networkInfo != null &&
-                        networkInfo.getType() == ConnectivityManager.TYPE_MOBILE &&
-                        isConnected(networkInfo);
+            case Any: {
+                return isConnected(networkInfo);
+            }
+            case Wifi: {
+                if (!isConnected(networkInfo)) return false;
+                return networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            }
+            case Mobile: {
+                if (!isConnected(networkInfo)) return false;
+                return networkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+            }
+            case Mobile2G: {
+                if (!isConnected(Mobile, networkInfo)) return false;
+                return isMobileSubType(Mobile2G, networkInfo);
+            }
+            case Mobile3G: {
+                if (!isConnected(Mobile, networkInfo)) return false;
+                return isMobileSubType(Mobile3G, networkInfo);
+            }
+            case Mobile4G: {
+                if (!isConnected(Mobile, networkInfo)) return false;
+                return isMobileSubType(Mobile4G, networkInfo);
+            }
         }
         return false;
     }
@@ -157,6 +190,45 @@ public class NetUtils {
      */
     private static boolean isConnected(NetworkInfo networkInfo) {
         return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
+    }
+
+    private static boolean isMobileSubType(NetType netType, NetworkInfo networkInfo) {
+        switch (networkInfo.getType()) {
+            case TelephonyManager.NETWORK_TYPE_GSM:
+            case TelephonyManager.NETWORK_TYPE_GPRS:
+            case TelephonyManager.NETWORK_TYPE_CDMA:
+            case TelephonyManager.NETWORK_TYPE_EDGE:
+            case TelephonyManager.NETWORK_TYPE_1xRTT:
+            case TelephonyManager.NETWORK_TYPE_IDEN: {
+                return netType == Mobile2G;
+            }
+            case TelephonyManager.NETWORK_TYPE_TD_SCDMA:
+            case TelephonyManager.NETWORK_TYPE_EVDO_A:
+            case TelephonyManager.NETWORK_TYPE_UMTS:
+            case TelephonyManager.NETWORK_TYPE_EVDO_0:
+            case TelephonyManager.NETWORK_TYPE_HSDPA:
+            case TelephonyManager.NETWORK_TYPE_HSUPA:
+            case TelephonyManager.NETWORK_TYPE_HSPA:
+            case TelephonyManager.NETWORK_TYPE_EVDO_B:
+            case TelephonyManager.NETWORK_TYPE_EHRPD:
+            case TelephonyManager.NETWORK_TYPE_HSPAP: {
+                return netType == Mobile3G;
+            }
+            case TelephonyManager.NETWORK_TYPE_IWLAN:
+            case TelephonyManager.NETWORK_TYPE_LTE: {
+                return netType == Mobile4G;
+            }
+            default: {
+                String subtypeName = networkInfo.getSubtypeName();
+                if (subtypeName.equalsIgnoreCase("TD-SCDMA")
+                        || subtypeName.equalsIgnoreCase("WCDMA")
+                        || subtypeName.equalsIgnoreCase("CDMA2000")) {
+                    return netType == Mobile3G;
+                }
+                break;
+            }
+        }
+        return false;
     }
 
     /**

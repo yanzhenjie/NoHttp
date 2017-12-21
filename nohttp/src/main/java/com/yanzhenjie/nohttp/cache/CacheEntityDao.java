@@ -22,8 +22,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Base64;
 
 import com.yanzhenjie.nohttp.Logger;
-import com.yanzhenjie.nohttp.tools.Encryption;
 import com.yanzhenjie.nohttp.db.BaseDao;
+import com.yanzhenjie.nohttp.tools.Encryption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,17 +36,11 @@ import java.util.List;
  */
 public class CacheEntityDao extends BaseDao<CacheEntity> {
 
-    /**
-     *
-     */
     private Encryption mEncryption;
-    /**
-     * Encryption key.
-     */
-    private String encryptionKey = DBCacheStore.class.getSimpleName();
 
     public CacheEntityDao(Context context) {
         super(new CacheSQLHelper(context));
+        String encryptionKey = context.getApplicationInfo().packageName;
         mEncryption = new Encryption(encryptionKey);
     }
 
@@ -82,12 +76,9 @@ public class CacheEntityDao extends BaseDao<CacheEntity> {
                 CacheEntity cacheEntity = new CacheEntity();
                 cacheEntity.setId(cursor.getInt(cursor.getColumnIndex(CacheSQLHelper.ID)));
                 cacheEntity.setKey(cursor.getString(cursor.getColumnIndex(CacheSQLHelper.KEY)));
-                cacheEntity.setResponseHeadersJson(decrypt(cursor.getString(cursor.getColumnIndex(CacheSQLHelper
-                        .HEAD))));
-                cacheEntity.setData(Base64.decode(decrypt(cursor.getString(cursor.getColumnIndex(CacheSQLHelper.DATA)
-                )), Base64.DEFAULT));
-                cacheEntity.setLocalExpire(Long.parseLong(decrypt(cursor.getString(cursor.getColumnIndex
-                        (CacheSQLHelper.LOCAL_EXPIRES)))));
+                cacheEntity.setResponseHeadersJson(decrypt(cursor.getString(cursor.getColumnIndex(CacheSQLHelper.HEAD))));
+                cacheEntity.setData(Base64.decode(decrypt(cursor.getString(cursor.getColumnIndex(CacheSQLHelper.DATA))), Base64.DEFAULT));
+                cacheEntity.setLocalExpire(Long.parseLong(decrypt(cursor.getString(cursor.getColumnIndex(CacheSQLHelper.LOCAL_EXPIRES)))));
                 cacheEntities.add(cacheEntity);
             }
         } catch (Exception e) {

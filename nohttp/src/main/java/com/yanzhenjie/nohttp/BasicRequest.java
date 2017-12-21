@@ -24,7 +24,6 @@ import com.yanzhenjie.nohttp.ssl.SSLUtils;
 import com.yanzhenjie.nohttp.tools.CounterOutputStream;
 import com.yanzhenjie.nohttp.tools.HeaderUtils;
 import com.yanzhenjie.nohttp.tools.IOUtils;
-import com.yanzhenjie.nohttp.tools.LinkedMultiValueMap;
 import com.yanzhenjie.nohttp.tools.MultiValueMap;
 
 import org.json.JSONObject;
@@ -54,8 +53,7 @@ import javax.net.ssl.SSLSocketFactory;
  *
  * @author Yan Zhenjie.
  */
-public abstract class BasicRequest<T extends BasicRequest>
-        implements Comparable<BasicRequest>, Startable, Cancelable, Finishable {
+public class BasicRequest<T extends BasicRequest> implements Comparable<BasicRequest>, Startable, Cancelable, Finishable {
 
     private final String boundary = createBoundary();
     private final String startBoundary = "--" + boundary;
@@ -94,17 +92,13 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     private HostnameVerifier mHostnameVerifier = NoHttp.getInitializeConfig().getHostnameVerifier();
     /**
-     * Connect timeout of request.
+     * Connect timeout of handle.
      */
     private int mConnectTimeout = NoHttp.getInitializeConfig().getConnectTimeout();
     /**
      * Read data timeout.
      */
     private int mReadTimeout = NoHttp.getInitializeConfig().getReadTimeout();
-    /**
-     * Request heads.
-     */
-    private Headers mHeaders;
     /**
      * After the failure of retries.
      */
@@ -114,9 +108,13 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     private String mParamEncoding;
     /**
+     * Request heads.
+     */
+    private Headers mHeaders;
+    /**
      * Param collection.
      */
-    private MultiValueMap<String, Object> mParams;
+    private Params mParams;
     /**
      * RequestBody.
      */
@@ -130,7 +128,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     private boolean isStart = false;
     /**
-     * The request is completed.
+     * The handle is completed.
      */
     private boolean isFinished = false;
     /**
@@ -142,24 +140,24 @@ public abstract class BasicRequest<T extends BasicRequest>
      */
     private Object mCancelSign;
     /**
-     * Tag of request.
+     * Tag of handle.
      */
     private Object mTag;
 
     /**
-     * Create a request, RequestMethod is {@link RequestMethod#GET}.
+     * Create a handle, RequestMethod is {@link RequestMethod#GET}.
      *
-     * @param url request address, like: http://www.nohttp.net.
+     * @param url handle address, like: http://www.nohttp.net.
      */
     public BasicRequest(String url) {
         this(url, RequestMethod.GET);
     }
 
     /**
-     * Create a request.
+     * Create a handle.
      *
-     * @param url           request adress, like: http://www.nohttp.net.
-     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
+     * @param url           handle adress, like: http://www.nohttp.net.
+     * @param requestMethod handle method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public BasicRequest(String url, RequestMethod requestMethod) {
         this.url = url;
@@ -179,8 +177,7 @@ public abstract class BasicRequest<T extends BasicRequest>
             }
         }
 
-
-        mParams = new LinkedMultiValueMap<>();
+        mParams = new Params();
         MultiValueMap<String, String> globalParams = NoHttp.getInitializeConfig().getParams();
         for (Map.Entry<String, List<String>> paramsEntry : globalParams.entrySet()) {
             List<String> valueList = paramsEntry.getValue();
@@ -191,7 +188,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Return url of request.
+     * Return url of handle.
      */
     public String url() {
         StringBuilder urlBuilder = new StringBuilder(url);
@@ -221,7 +218,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * return method of request.
+     * return method of handle.
      */
     public RequestMethod getRequestMethod() {
         return mRequestMethod;
@@ -365,7 +362,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Set the {@link SSLSocketFactory} for this request.
+     * Set the {@link SSLSocketFactory} for this handle.
      *
      * @param socketFactory {@link SSLSocketFactory}, {@link SSLUtils}.
      * @see SSLUtils
@@ -441,8 +438,8 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Set the request fails retry count.The default value is 0, that is to say, after the failure will not go to
-     * this to initiate the request again.
+     * Set the handle fails retry count.The default value is 0, that is to say, after the failure will not go to
+     * this to initiate the handle again.
      *
      * @param count the retry count, the default value is 0.
      */
@@ -467,8 +464,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param value value.
      */
     public T addHeader(String key, String value) {
-        if (!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value))
-            mHeaders.add(key, value);
+        mHeaders.add(key, value);
         return (T) this;
     }
 
@@ -479,8 +475,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param value value.
      */
     public T setHeader(String key, String value) {
-        if (!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value))
-            mHeaders.set(key, value);
+        mHeaders.set(key, value);
         return (T) this;
     }
 
@@ -490,7 +485,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * <pre>
      *     HttpCookie httpCookie = getHttpCookie();
      *     if(httpCookie != null)
-     *          request.addHeader("Cookie", cookie.getName() + "=" + cookie.getValue());
+     *          handle.addHeader("Cookie", cookie.getName() + "=" + cookie.getValue());
      *     ...
      * </pre>
      *
@@ -508,8 +503,7 @@ public abstract class BasicRequest<T extends BasicRequest>
      * @param key key.
      */
     public T removeHeader(String key) {
-        if (!TextUtils.isEmpty(key))
-            mHeaders.remove(key);
+        mHeaders.remove(key);
         return (T) this;
     }
 
@@ -522,7 +516,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Does it contain a request header?
+     * Does it contain a handle header?
      */
     public boolean containsHeader(String key) {
         return !TextUtils.isEmpty(key) && mHeaders.containsKey(key);
@@ -558,7 +552,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * The length of the request body.
+     * The length of the handle body.
      *
      * @return such as: {@code 2048}.
      */
@@ -583,7 +577,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Get contentType of request.
+     * Get contentType of handle.
      *
      * @return string, such as: {@code application/json}.
      */
@@ -632,7 +626,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     /**
      * Mandatory set to form pattern to transmit data.
      * <pre>
-     *     The request method must be one of the following: {@code POST/PUT/PATCH/DELETE}.
+     *     The handle method must be one of the following: {@code POST/PUT/PATCH/DELETE}.
      *     But the Android system under API level 19 does not support the DELETE.
      * </pre>
      *
@@ -647,7 +641,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     /**
      * Is it a form?
      * <pre>
-     *     The request method must be one of the following: {@code POST/PUT/PATCH/DELETE}.
+     *     The handle method must be one of the following: {@code POST/PUT/PATCH/DELETE}.
      *     But the Android system under API level 19 does not support the DELETE.
      * </pre>
      *
@@ -749,13 +743,13 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Validate method for request body.
+     * Validate method for handle body.
      *
      * @param methodObject message.
      */
     private void validateMethodForBody(String methodObject) {
         if (!getRequestMethod().allowRequestBody())
-            throw new IllegalArgumentException(methodObject + " only supports these request methods: POST/PUT/PATCH/DELETE.");
+            throw new IllegalArgumentException(methodObject + " only supports these handle methods: POST/PUT/PATCH/DELETE.");
     }
 
     /**
@@ -881,7 +875,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Remove a request param by key.
+     * Remove a handle param by key.
      */
     public T remove(String key) {
         mParams.remove(key);
@@ -889,7 +883,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Remove all request param.
+     * Remove all handle param.
      */
     public T removeAll() {
         mParams.clear();
@@ -908,7 +902,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     /**
      * Validate param null.
      *
-     * @param body        request body.
+     * @param body        handle body.
      * @param contentType content type.
      */
     private void validateParamForBody(Object body, String contentType) {
@@ -917,7 +911,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Is there a custom request inclusions.
+     * Is there a custom handle inclusions.
      *
      * @return Returns true representatives have, return false on behalf of the no.
      */
@@ -948,7 +942,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Set the request body and content type.
+     * Set the handle body and content type.
      *
      * @param requestBody string body.
      * @param contentType such as: {@code application/json;json}, {@code image/*}.
@@ -971,7 +965,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Set the request json body.
+     * Set the handle json body.
      *
      * @param jsonBody json body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -985,7 +979,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Set the request json body.
+     * Set the handle json body.
      *
      * @param jsonBody json body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -999,7 +993,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Set the request XML body.
+     * Set the handle XML body.
      *
      * @param xmlBody xml body.
      * @see #setDefineRequestBody(InputStream, String)
@@ -1022,14 +1016,14 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Call before carry out the request, you can do some preparation work.
+     * Call before carry out the handle, you can do some preparation work.
      */
     public void onPreExecute() {
         // Do some time-consuming operation.
     }
 
     /**
-     * Send request body data.
+     * Send handle body data.
      */
     public void onWriteRequestBody(OutputStream writer) throws IOException {
         if (hasDefineRequestBody()) {
@@ -1042,7 +1036,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Send request requestBody.
+     * Send handle requestBody.
      */
     private void writeRequestBody(OutputStream writer) throws IOException {
         if (mRequestBody != null) {
@@ -1139,7 +1133,7 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Set the priority of the request object. The default priority is {@link Priority#DEFAULT}.
+     * Set the priority of the handle object. The default priority is {@link Priority#DEFAULT}.
      *
      * @param priority {@link Priority}.
      */
@@ -1149,14 +1143,14 @@ public abstract class BasicRequest<T extends BasicRequest>
     }
 
     /**
-     * Get the priority of the request object.
+     * Get the priority of the handle object.
      */
     public Priority getPriority() {
         return mPriority;
     }
 
     /**
-     * Set the sequence of request.
+     * Set the sequence of handle.
      *
      * @param sequence sequence code.
      */

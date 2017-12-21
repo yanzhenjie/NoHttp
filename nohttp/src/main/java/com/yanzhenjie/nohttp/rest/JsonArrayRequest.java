@@ -21,12 +21,12 @@ import com.yanzhenjie.nohttp.RequestMethod;
 import org.json.JSONArray;
 
 /**
- * <p>JsonArray is returned by the server data, using the request object.</p>
+ * <p>JsonArray is returned by the server data, using the handle object.</p>
  * Created in Jan 19, 2016 3:32:28 PM.
  *
  * @author Yan Zhenjie.
  */
-public class JsonArrayRequest extends RestRequest<JSONArray> {
+public class JsonArrayRequest extends Request<JSONArray> {
 
     public JsonArrayRequest(String url) {
         this(url, RequestMethod.GET);

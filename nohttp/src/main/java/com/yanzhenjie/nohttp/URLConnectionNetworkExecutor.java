@@ -70,7 +70,7 @@ public class URLConnectionNetworkExecutor implements NetworkExecutor {
         boolean isAllowBody = isAllowBody(request.getRequestMethod());
         connection.setDoOutput(isAllowBody);
 
-        // Adds all request header to connection.
+        // Adds all handle header to connection.
         Headers headers = request.getHeaders();
 
         // To fix bug: accidental EOFException before API 19.

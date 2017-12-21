@@ -17,9 +17,9 @@ package com.yanzhenjie.nohttp.cache;
 
 import android.content.Context;
 
+import com.yanzhenjie.nohttp.db.BaseDao;
 import com.yanzhenjie.nohttp.db.Where;
 import com.yanzhenjie.nohttp.tools.CacheStore;
-import com.yanzhenjie.nohttp.db.BaseDao;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -31,7 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Yan Zhenjie;
  */
-public class DBCacheStore implements CacheStore<CacheEntity> {
+public class DBCacheStore extends BasicCacheStore {
 
     /**
      * Database sync lock.
@@ -45,6 +45,7 @@ public class DBCacheStore implements CacheStore<CacheEntity> {
     private boolean mEnable = true;
 
     public DBCacheStore(Context context) {
+        super(context);
         mLock = new ReentrantLock();
         mManager = new CacheEntityDao(context);
     }
@@ -57,6 +58,7 @@ public class DBCacheStore implements CacheStore<CacheEntity> {
     @Override
     public CacheEntity get(String key) {
         mLock.lock();
+        key = uniqueKey(key);
         try {
             if (!mEnable) return null;
             Where where = new Where(CacheSQLHelper.KEY, Where.Options.EQUAL, key);
@@ -70,6 +72,7 @@ public class DBCacheStore implements CacheStore<CacheEntity> {
     @Override
     public CacheEntity replace(String key, CacheEntity cacheEntity) {
         mLock.lock();
+        key = uniqueKey(key);
         try {
             if (!mEnable) return cacheEntity;
             cacheEntity.setKey(key);
@@ -83,8 +86,9 @@ public class DBCacheStore implements CacheStore<CacheEntity> {
     @Override
     public boolean remove(String key) {
         mLock.lock();
+        key = uniqueKey(key);
         try {
-            if (key == null || !mEnable)
+            if (!mEnable)
                 return false;
             Where where = new Where(CacheSQLHelper.KEY, Where.Options.EQUAL, key);
             return mManager.delete(where.toString());
@@ -97,8 +101,7 @@ public class DBCacheStore implements CacheStore<CacheEntity> {
     public boolean clear() {
         mLock.lock();
         try {
-            if (!mEnable) return false;
-            return mManager.deleteAll();
+            return mEnable && mManager.deleteAll();
         } finally {
             mLock.unlock();
         }

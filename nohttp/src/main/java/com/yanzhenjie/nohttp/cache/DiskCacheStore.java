@@ -19,8 +19,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.yanzhenjie.nohttp.Logger;
-import com.yanzhenjie.nohttp.rest.AsyncRequestExecutor;
-import com.yanzhenjie.nohttp.tools.CacheStore;
 import com.yanzhenjie.nohttp.tools.Encryption;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 
@@ -36,8 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>You must remember to check the runtime permissions.</p>
  * Created by Yan Zhenjie on 2016/10/15.
  */
-public class DiskCacheStore implements CacheStore<CacheEntity> {
-
+public class DiskCacheStore extends BasicCacheStore {
     /**
      * Database sync lock.
      */
@@ -57,7 +54,7 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
      * @param context {@link Context}.
      */
     public DiskCacheStore(Context context) {
-        this(context.getCacheDir().getAbsolutePath());
+        this(context, context.getCacheDir().getAbsolutePath());
     }
 
     /**
@@ -65,7 +62,9 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
      *
      * @param cacheDirectory cache directory.
      */
-    public DiskCacheStore(String cacheDirectory) {
+    public DiskCacheStore(Context context, String cacheDirectory) {
+        super(context);
+
         if (TextUtils.isEmpty(cacheDirectory))
             throw new IllegalArgumentException("The cacheDirectory can't be null.");
         mLock = new ReentrantLock();
@@ -76,11 +75,13 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
     @Override
     public CacheEntity get(String key) {
         mLock.lock();
+        key = uniqueKey(key);
+
         BufferedReader bufferedReader = null;
         try {
             if (TextUtils.isEmpty(key))
                 return null;
-            File file = new File(mCacheDirectory, getFileName(key));
+            File file = new File(mCacheDirectory, key);
             if (!file.exists() || file.isDirectory())
                 return null;
             CacheEntity cacheEntity = new CacheEntity();
@@ -91,7 +92,7 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
             cacheEntity.setLocalExpireString(decrypt(bufferedReader.readLine()));
             return cacheEntity;
         } catch (Exception e) {
-            IOUtils.delFileOrFolder(new File(mCacheDirectory, getFileName(key)));
+            IOUtils.delFileOrFolder(new File(mCacheDirectory, key));
             Logger.e(e);
         } finally {
             IOUtils.closeQuietly(bufferedReader);
@@ -103,12 +104,14 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
     @Override
     public CacheEntity replace(String key, CacheEntity cacheEntity) {
         mLock.lock();
+        key = uniqueKey(key);
+
         BufferedWriter bufferedWriter = null;
         try {
             if (TextUtils.isEmpty(key) || cacheEntity == null)
                 return cacheEntity;
             initialize();
-            File file = new File(mCacheDirectory, getFileName(key));
+            File file = new File(mCacheDirectory, key);
 
             IOUtils.createNewFile(file);
 
@@ -122,7 +125,7 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
             bufferedWriter.close();
             return cacheEntity;
         } catch (Exception e) {
-            IOUtils.delFileOrFolder(new File(mCacheDirectory, getFileName(key)));
+            IOUtils.delFileOrFolder(new File(mCacheDirectory, key));
             Logger.e(e);
             return null;
         } finally {
@@ -134,8 +137,10 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
     @Override
     public boolean remove(String key) {
         mLock.lock();
+        key = uniqueKey(key);
+
         try {
-            return IOUtils.delFileOrFolder(new File(mCacheDirectory, getFileName(key)));
+            return IOUtils.delFileOrFolder(new File(mCacheDirectory, key));
         } finally {
             mLock.unlock();
         }
@@ -153,10 +158,6 @@ public class DiskCacheStore implements CacheStore<CacheEntity> {
 
     private boolean initialize() {
         return IOUtils.createFolder(mCacheDirectory);
-    }
-
-    private String getFileName(String cacheKey) {
-        return Encryption.getMD5ForString(cacheKey) + ".nohttp";
     }
 
     private String encrypt(String encryptionText) throws Exception {

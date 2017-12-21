@@ -21,7 +21,7 @@ import com.yanzhenjie.nohttp.RequestMethod;
 /**
  * Created by Yan Zhenjie on 2016/8/20.
  */
-public class ByteArrayRequest extends RestRequest<byte[]> {
+public class ByteArrayRequest extends Request<byte[]> {
 
     public ByteArrayRequest(String url) {
         this(url, RequestMethod.GET);

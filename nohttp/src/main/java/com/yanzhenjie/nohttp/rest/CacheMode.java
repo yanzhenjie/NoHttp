@@ -33,23 +33,23 @@ public enum CacheMode {
     DEFAULT,
 
     /**
-     * If the request is successful return data server, if the request is returned failure cache data, if does not
+     * If the handle is successful return data server, if the handle is returned failure cache data, if does not
      * cache the data failed.
      */
     REQUEST_NETWORK_FAILED_READ_CACHE,
 
     /**
-     * If there is no cache request, it returns the cache cache exists.
+     * If there is no cache handle, it returns the cache cache exists.
      */
     NONE_CACHE_REQUEST_NETWORK,
 
     /**
-     * If the cache exists, the request is successful, other wise is failed.
+     * If the cache exists, the handle is successful, other wise is failed.
      */
     ONLY_READ_CACHE,
 
     /**
-     * Just request to the server, can't read cache anyway, also won't add cache related to head to the request.
+     * Just handle to the server, can't read cache anyway, also won't add cache related to head to the handle.
      */
     ONLY_REQUEST_NETWORK
 }

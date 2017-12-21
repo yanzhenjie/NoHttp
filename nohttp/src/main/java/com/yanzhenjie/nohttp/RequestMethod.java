@@ -21,7 +21,7 @@ import java.util.Locale;
 
 /**
  * <p>
- * HTTP request method.
+ * HTTP handle method.
  * </p>
  * Created in Oct 10, 2015 8:00:48 PM.
  *

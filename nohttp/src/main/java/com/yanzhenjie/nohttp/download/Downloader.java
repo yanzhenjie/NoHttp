@@ -79,7 +79,6 @@ public class Downloader {
     }
 
     private Connection getConnectionRetry(DownloadRequest downloadRequest) throws Exception {
-        // 连接服务器。
         Connection connection = mHttpConnection.getConnection(downloadRequest);
         Exception exception = connection.exception();
         if (exception != null)
@@ -253,7 +252,7 @@ public class Downloader {
                             "\nFailed to create file: " + tempFile);
 
                 if (request.isCanceled()) {
-                    Log.w("NoHttpDownloader", "Download request is canceled.");
+                    Log.w("NoHttpDownloader", "Download handle is canceled.");
                     downloadListener.onCancel(what);
                     return;
                 }
@@ -277,7 +276,7 @@ public class Downloader {
 
                 while (((len = serverStream.read(buffer)) != -1)) {
                     if (request.isCanceled()) {
-                        Log.i("NoHttpDownloader", "Download request is canceled.");
+                        Log.i("NoHttpDownloader", "Download handle is canceled.");
                         downloadListener.onCancel(what);
                         break;
                     } else {

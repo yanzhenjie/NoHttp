@@ -21,12 +21,12 @@ import com.yanzhenjie.nohttp.RequestMethod;
 import org.json.JSONObject;
 
 /**
- * <p>JsonObject is returned by the server data, using the request object.</p>
+ * <p>JsonObject is returned by the server data, using the handle object.</p>
  * Created in Jan 19, 2016 3:27:35 PM.
  *
  * @author Yan Zhenjie.
  */
-public class JsonObjectRequest extends RestRequest<JSONObject> {
+public class JsonObjectRequest extends Request<JSONObject> {
 
     public JsonObjectRequest(String url) {
         this(url, RequestMethod.GET);

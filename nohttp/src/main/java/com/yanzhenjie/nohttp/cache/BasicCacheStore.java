@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yanzhenjie.nohttp.able;
+package com.yanzhenjie.nohttp.cache;
 
-import java.util.concurrent.BlockingQueue;
+import android.content.Context;
+
+import com.yanzhenjie.nohttp.tools.CacheStore;
+import com.yanzhenjie.nohttp.tools.Encryption;
 
 /**
- * <p>Queue interface.</p>
- * Created in Nov 12, 2015 5:59:29 PM.
- *
- * @author Yan Zhenjie;
+ * Created by YanZhenjie on 2017/12/21.
  */
-public interface Queueable {
+public abstract class BasicCacheStore implements CacheStore<CacheEntity> {
 
-    /**
-     * Set the request in the queue.
-     *
-     * @param queue queue.
-     */
-    void setQueue(BlockingQueue<?> queue);
+    private Context mContext;
 
-    /**
-     * In the queue?
-     *
-     * @return true: in the queue, false: not in the queue.
-     */
-    boolean inQueue();
+    public BasicCacheStore(Context context) {
+        mContext = context;
+    }
+
+    protected String uniqueKey(String key) {
+        key += mContext.getApplicationInfo().packageName;
+        return Encryption.getMD5ForString(key);
+    }
 
 }

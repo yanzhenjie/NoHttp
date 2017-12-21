@@ -85,7 +85,7 @@ public interface DownloadListener {
     void onFinish(int what, String filePath);
 
     /**
-     * Download request is canceled.
+     * Download handle is canceled.
      *
      * @param what which is used to mark the download tasks.
      */

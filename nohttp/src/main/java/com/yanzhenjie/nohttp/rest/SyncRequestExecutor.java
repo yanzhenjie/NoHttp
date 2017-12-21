@@ -19,7 +19,7 @@ import com.yanzhenjie.nohttp.NoHttp;
 
 /**
  * <p>
- * Synchronization request executor.
+ * Synchronization handle executor.
  * </p>
  * Created by Yan Zhenjie on 2016/10/12.
  */
@@ -27,17 +27,16 @@ public enum SyncRequestExecutor {
 
     INSTANCE;
 
-    private RestProtocol mRestProtocol;
+    private RequestHandler mRequestHandler;
 
     SyncRequestExecutor() {
-        mRestProtocol = new RestProtocol(NoHttp.getInitializeConfig().getCacheStore(),
-                NoHttp.getInitializeConfig().getNetworkExecutor());
+        mRequestHandler = new RequestHandler(NoHttp.getInitializeConfig().getCacheStore(), NoHttp.getInitializeConfig().getNetworkExecutor());
     }
 
     /**
-     * Perform a request.
+     * Perform a handle.
      */
-    public <T> Response<T> execute(ProtocolRequest<?, T> request) {
-        return mRestProtocol.request(request);
+    public <T> Response<T> execute(Request<T> request) {
+        return mRequestHandler.handle(request);
     }
 }

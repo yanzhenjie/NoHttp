@@ -36,10 +36,9 @@ class CacheSQLHelper extends BasicSQLHelper {
     static final String DATA = "data";
     static final String LOCAL_EXPIRES = "local_expires";
 
-    private static final String SQL_CREATE_TABLE = "CREATE TABLE cache_table(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "key TEXT, head TEXT, data text, local_expires text)";
-    private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cache_unique_index ON cache_table" +
-            "(\"key\")";
+    private static final String SQL_CREATE_TABLE = "CREATE TABLE cache_table" +
+            "(_id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, head TEXT, data text, local_expires text)";
+    private static final String SQL_CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX cache_unique_index ON cache_table(\"key\")";
     private static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS cache_table";
 
     public CacheSQLHelper(Context context) {

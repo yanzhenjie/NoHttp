@@ -19,6 +19,7 @@ import android.os.Process;
 
 import com.yanzhenjie.nohttp.Logger;
 
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -30,28 +31,18 @@ import java.util.concurrent.BlockingQueue;
  * @author Yan Zhenjie.
  */
 public class RequestDispatcher extends Thread {
-    /**
-     * Request queue.
-     */
+
     private final BlockingQueue<Request<?>> mRequestQueue;
+    private final Map<Request<?>, Messenger<?>> mMessengerMap;
+
     /**
-     * Un finish task queue.
-     */
-    private final BlockingQueue<Request<?>> mUnFinishQueue;
-    /**
-     * Whether the current request queue polling thread is out of.
+     * Whether the current handle queue polling thread is out of.
      */
     private volatile boolean mQuit = false;
 
-    /**
-     * Create a request queue polling thread.
-     *
-     * @param unFinishQueue un finish queue.
-     * @param requestQueue  request queue.
-     */
-    public RequestDispatcher(BlockingQueue<Request<?>> unFinishQueue, BlockingQueue<Request<?>> requestQueue) {
-        this.mUnFinishQueue = unFinishQueue;
+    public RequestDispatcher(BlockingQueue<Request<?>> requestQueue, Map<Request<?>, Messenger<?>> messengerMap) {
         this.mRequestQueue = requestQueue;
+        this.mMessengerMap = messengerMap;
     }
 
     /**
@@ -79,38 +70,34 @@ public class RequestDispatcher extends Thread {
             }
 
             if (request.isCanceled()) {
+                mRequestQueue.remove(request);
+                mMessengerMap.remove(request);
                 Logger.d(request.url() + " is canceled.");
                 continue;
             }
 
-            int what = request.what();
-            OnResponseListener<?> listener = request.responseListener();
-
-            // start
+            // start.
             request.start();
-            Messenger.prepare(what, listener)
-                    .start()
-                    .post();
+            mMessengerMap.get(request).start();
 
-            // request.
+            // handle.
             Response response = SyncRequestExecutor.INSTANCE.execute(request);
-            // remove it from queue.
-            mUnFinishQueue.remove(request);
 
-            // response
-            if (request.isCanceled())
+            // response.
+            if (request.isCanceled()) {
                 Logger.d(request.url() + " finish, but it's canceled.");
-            else
-                //noinspection unchecked
-                Messenger.prepare(what, listener)
-                        .response(response)
-                        .post();
+            } else {
+                // noinspection unchecked
+                mMessengerMap.get(request).response(response);
+            }
 
             // finish.
             request.finish();
-            Messenger.prepare(what, listener)
-                    .finish()
-                    .post();
+            mMessengerMap.get(request).finish();
+
+            // remove it from queue.
+            mRequestQueue.remove(request);
+            mMessengerMap.remove(request);
         }
     }
 }

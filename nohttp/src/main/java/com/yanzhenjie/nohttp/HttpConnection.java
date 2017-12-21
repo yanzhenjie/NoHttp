@@ -24,7 +24,6 @@ import com.yanzhenjie.nohttp.error.URLError;
 import com.yanzhenjie.nohttp.error.UnKnownHostError;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.tools.IOUtils;
-import com.yanzhenjie.nohttp.tools.MultiValueMap;
 import com.yanzhenjie.nohttp.tools.NetUtils;
 
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class HttpConnection {
     }
 
     /**
-     * Send the request, send only head, parameters, such as file information.
+     * Send the handle, send only head, parameters, such as file information.
      *
      * @param request {@link BasicRequest}.
      * @return {@link Connection}.
@@ -70,8 +69,7 @@ public class HttpConnection {
         String url = request.url();
         try {
             if (!NetUtils.isNetworkAvailable())
-                throw new NetworkError("The network is not available, please check the network. The requested url is:" +
-                        " " + url);
+                throw new NetworkError("The network is not available, please check the network. The requested url is:" + url);
 
             // MalformedURLException, IOException, ProtocolException, UnknownHostException, SocketTimeoutException
             network = createConnectionAndWriteData(request);
@@ -106,7 +104,7 @@ public class HttpConnection {
     }
 
     /**
-     * Handle retries, and complete the request network here.
+     * Handle retries, and complete the handle network here.
      *
      * @param request {@link BasicRequest}.
      * @return {@link Network}.
@@ -135,7 +133,7 @@ public class HttpConnection {
     }
 
     /**
-     * The connection is established, including the head and send the request body.
+     * The connection is established, including the head and send the handle body.
      *
      * @param request {@link BasicRequest}.
      * @return {@link HttpURLConnection} Have been established and the server connection, and send the complete data,
@@ -165,35 +163,35 @@ public class HttpConnection {
             headers.set(Headers.HEAD_KEY_CONTENT_LENGTH, Long.toString(request.getContentLength()));
 
         // Cookie.
-        headers.addCookie(new URI(url), NoHttp.getCookieManager());
+        headers.addCookie(new URI(url), NoHttp.getInitializeConfig().getCookieManager());
         return mExecutor.execute(request);
     }
 
     /**
-     * Write request params.
+     * Write handle params.
      *
      * @param request      {@link BasicRequest}.
      * @param outputStream {@link OutputStream}.
      * @throws IOException io exception.
      */
     private void writeRequestBody(BasicRequest<?> request, OutputStream outputStream) throws IOException {
-        // 6. Write request body
-        Logger.i("-------Send request data start-------");
+        // 6. Write handle body
+        Logger.i("-------Send handle data start-------");
         OutputStream realOutputStream = IOUtils.toBufferedOutputStream(outputStream);
         request.onWriteRequestBody(realOutputStream);
         IOUtils.closeQuietly(realOutputStream);
-        Logger.i("-------Send request data end-------");
+        Logger.i("-------Send handle data end-------");
     }
 
     /**
      * The redirection process any response.
      *
      * @param oldRequest      need to redirect the {@link Request}.
-     * @param responseHeaders need to redirect the request of the responding head.
+     * @param responseHeaders need to redirect the handle of the responding head.
      * @return {@link Connection}.
      */
     private Connection handleRedirect(BasicRequest<?> oldRequest, Headers responseHeaders) {
-        // redirect request
+        // redirect handle
         BasicRequest<?> redirectRequest = null;
         RedirectHandler redirectHandler = oldRequest.getRedirectHandler();
         if (redirectHandler != null) {
@@ -210,35 +208,13 @@ public class HttpConnection {
                 String oldUrl = oldRequest.url();
                 try {
                     URL url = new URL(oldUrl);
+                    location = location.startsWith("/") ? location : "/" + location;
                     location = url.getProtocol() + "://" + url.getHost() + location;
-                } catch (MalformedURLException e) {
-                    // nothing.
+                } catch (MalformedURLException ignored) {
                 }
             }
 
-            redirectRequest = new BasicRequest(location, oldRequest.getRequestMethod()) {
-            };
-
-            // headers.
-            Headers headers = oldRequest.getHeaders();
-            for (Map.Entry<String, List<String>> stringListEntry : headers.entrySet()) {
-                String key = stringListEntry.getKey();
-                List<String> values = stringListEntry.getValue();
-                for (String value : values) {
-                    redirectRequest.addHeader(key, value);
-                }
-            }
-
-            // params.
-            MultiValueMap<String, Object> multiValueMap = oldRequest.getParamKeyValues();
-            for (Map.Entry<String, List<Object>> stringListEntry : multiValueMap.entrySet()) {
-                String key = stringListEntry.getKey();
-                List<Object> values = stringListEntry.getValue();
-                for (Object value : values) {
-                    if (value instanceof CharSequence) redirectRequest.add(key, value.toString());
-                    else if (value instanceof Binary) redirectRequest.add(key, (Binary) value);
-                }
-            }
+            redirectRequest = new BasicRequest(location, oldRequest.getRequestMethod());
             redirectRequest.setRedirectHandler(oldRequest.getRedirectHandler());
             redirectRequest.setSSLSocketFactory(oldRequest.getSSLSocketFactory());
             redirectRequest.setHostnameVerifier(oldRequest.getHostnameVerifier());

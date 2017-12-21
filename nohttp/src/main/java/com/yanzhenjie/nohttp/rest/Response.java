@@ -30,18 +30,18 @@ import com.yanzhenjie.nohttp.Headers;
  * <p>Http response, Including header information and response packets.</p>
  * Created in Oct 15, 2015 8:55:37 PM.
  *
- * @param <T> The request data type, it should be with the {@link Request}, {@link OnResponseListener}.
+ * @param <T> The handle data type, it should be with the {@link Request}, {@link OnResponseListener}.
  * @author Yan Zhenjie.
  */
 public interface Response<T> {
 
     /**
-     * Get the {@link ProtocolRequest} object.
+     * Get the Request.
      */
-    ProtocolRequest<?, T> request();
+    Request<T> request();
 
     /**
-     * Get the response code of request.
+     * Get the response code of handle.
      *
      * @return response code.
      */
@@ -69,28 +69,28 @@ public interface Response<T> {
     Headers getHeaders();
 
     /**
-     * Get request results.
+     * Get handle results.
      *
      * @return {@link T}.
      */
     T get();
 
     /**
-     * When the request fail to getList the exception type.
+     * When the handle fail to getList the exception type.
      *
      * @return The exception.
      */
     Exception getException();
 
     /**
-     * Gets the tag of request.
+     * Gets the tag of handle.
      *
      * @return {@link Object}.
      */
     Object getTag();
 
     /**
-     * Gets the millisecond of request.
+     * Gets the millisecond of handle.
      *
      * @return {@link Long}.
      */

@@ -26,12 +26,12 @@ import com.yanzhenjie.nohttp.RequestMethod;
 import java.util.Locale;
 
 /**
- * <p>Image request parameter.</p>
+ * <p>Image handle parameter.</p>
  * Created in Oct 17, 2015 12:17:57 PM.
  *
  * @author Yan Zhenjie.
  */
-public class ImageRequest extends RestRequest<Bitmap> {
+public class ImageRequest extends Request<Bitmap> {
 
     private final int mMaxWidth;
     private final int mMaxHeight;

@@ -15,8 +15,11 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
+import android.text.TextUtils;
+
+import com.yanzhenjie.nohttp.BasicRequest;
+import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.able.Queueable;
 
 /**
  * <p>
@@ -24,48 +27,81 @@ import com.yanzhenjie.nohttp.able.Queueable;
  * </p>
  * Created by Yan Zhenjie on Oct 16, 2015 8:22:06 PM.
  */
-public abstract class Request<T> extends ProtocolRequest<Request, T> implements Queueable {
+public abstract class Request<Result> extends BasicRequest<Request> {
+    /**
+     * Cache key.
+     */
+    private String mCacheKey;
+    /**
+     * If just read from cache.
+     */
+    private CacheMode mCacheMode = CacheMode.DEFAULT;
 
     /**
-     * Create a request, request method is {@link RequestMethod#GET}.
+     * Create a handle, handle method is {@link RequestMethod#GET}.
      *
-     * @param url request address, like: http://www.nohttp.net.
+     * @param url handle address, like: http://www.nohttp.net.
      */
     public Request(String url) {
-        super(url);
+        this(url, RequestMethod.GET);
     }
 
     /**
-     * Create a request
+     * Create a handle
      *
-     * @param url           request address, like: http://www.nohttp.net.
-     * @param requestMethod request method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
+     * @param url           handle address, like: http://www.nohttp.net.
+     * @param requestMethod handle method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public Request(String url, RequestMethod requestMethod) {
         super(url, requestMethod);
     }
 
     /**
-     * Prepare the callback parameter, while waiting for the response callback with thread.
+     * Set the handle cache primary key, it should be globally unique.
      *
-     * @param what             the callback mark.
-     * @param responseListener {@link OnResponseListener}.
+     * @param key unique key.
      */
-    abstract void onPreResponse(int what, OnResponseListener<T> responseListener);
+    public Request setCacheKey(String key) {
+        this.mCacheKey = key;
+        return this;
+    }
 
     /**
-     * The callback mark.
+     * Get key of cache data.
      *
-     * @return Return when {@link #onPreResponse(int, OnResponseListener)} incoming credit.
-     * @see #onPreResponse(int, OnResponseListener)
+     * @return cache key.
      */
-    public abstract int what();
+    public String getCacheKey() {
+        return TextUtils.isEmpty(mCacheKey) ? url() : mCacheKey;
+    }
 
     /**
-     * The request of the listener.
+     * Set the cache mode.
      *
-     * @return Return when {@link #onPreResponse(int, OnResponseListener)} incoming credit.
-     * @see #onPreResponse(int, OnResponseListener)
+     * @param cacheMode The value from {@link CacheMode}.
      */
-    public abstract OnResponseListener<T> responseListener();
+    public Request setCacheMode(CacheMode cacheMode) {
+        this.mCacheMode = cacheMode;
+        return this;
+    }
+
+    /**
+     * He got the handle cache mode.
+     *
+     * @return value from {@link CacheMode}.
+     */
+    public CacheMode getCacheMode() {
+        return mCacheMode;
+    }
+
+    /**
+     * Parse handle results for generic objects.
+     *
+     * @param responseHeaders response headers of server.
+     * @param responseBody    response data of server.
+     * @return your response result.
+     * @throws Exception parse error.
+     */
+    public abstract Result parseResponse(Headers responseHeaders, byte[] responseBody) throws Exception;
+
 }

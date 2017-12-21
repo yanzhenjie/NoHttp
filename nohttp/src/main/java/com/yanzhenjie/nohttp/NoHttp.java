@@ -15,31 +15,24 @@
  */
 package com.yanzhenjie.nohttp;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import com.yanzhenjie.nohttp.cache.CacheEntity;
 import com.yanzhenjie.nohttp.download.DownloadQueue;
 import com.yanzhenjie.nohttp.download.DownloadRequest;
 import com.yanzhenjie.nohttp.rest.ByteArrayRequest;
 import com.yanzhenjie.nohttp.rest.ImageRequest;
 import com.yanzhenjie.nohttp.rest.JsonArrayRequest;
 import com.yanzhenjie.nohttp.rest.JsonObjectRequest;
-import com.yanzhenjie.nohttp.rest.ProtocolRequest;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.RequestQueue;
 import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.rest.StringRequest;
 import com.yanzhenjie.nohttp.rest.SyncRequestExecutor;
-import com.yanzhenjie.nohttp.tools.CacheStore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.net.CookieManager;
-import java.net.CookieStore;
 
 /**
  * <p>
@@ -51,7 +44,6 @@ import java.net.CookieStore;
  */
 public class NoHttp {
 
-    @SuppressLint("StaticFieldLeak")
     private static InitializationConfig sInitializeConfig;
 
     private NoHttp() {
@@ -63,24 +55,7 @@ public class NoHttp {
      * @param context {@link Context}.
      */
     public static void initialize(Context context) {
-        sInitializeConfig = InitializationConfig.newBuilder(context)
-                .build();
-    }
-
-    /**
-     * Initialize NoHttp, should invoke on {@link android.app.Application#onCreate()}.
-     *
-     * @deprecated use {@link #initialize(InitializationConfig)} instead.
-     */
-    @Deprecated
-    public static void initialize(Context context, Config config) {
-        sInitializeConfig = InitializationConfig.newBuilder(context)
-                .connectionTimeout(config.mConnectTimeout)
-                .readTimeout(config.mReadTimeout)
-                .cookieStore(config.mCookieStore)
-                .cacheStore(config.mCacheStore)
-                .networkExecutor(config.mNetworkExecutor)
-                .build();
+        initialize(InitializationConfig.newBuilder(context).build());
     }
 
     /**
@@ -114,61 +89,10 @@ public class NoHttp {
         return sInitializeConfig;
     }
 
-
     /**
-     * Gets connect timeout.
+     * Create a queue of handle, the default thread pool size is 3.
      *
-     * @deprecated use {@link #getInitializeConfig()} instead.
-     */
-    @Deprecated
-    public static int getConnectTimeout() {
-        return sInitializeConfig.getConnectTimeout();
-    }
-
-    /**
-     * Gets read timeout.
-     *
-     * @deprecated use {@link #getInitializeConfig()} instead.
-     */
-    @Deprecated
-    public static int getReadTimeout() {
-        return sInitializeConfig.getReadTimeout();
-    }
-
-    /**
-     * Gets cookie manager.
-     *
-     * @deprecated use {@link #getInitializeConfig()} instead.
-     */
-    @Deprecated
-    public static CookieManager getCookieManager() {
-        return sInitializeConfig.getCookieManager();
-    }
-
-    /**
-     * Gets cache store.
-     *
-     * @deprecated use {@link #getInitializeConfig()} instead.
-     */
-    @Deprecated
-    public static CacheStore<CacheEntity> getCacheStore() {
-        return sInitializeConfig.getCacheStore();
-    }
-
-    /**
-     * Gets executor implement of http.
-     *
-     * @deprecated use {@link #getInitializeConfig()} instead.
-     */
-    @Deprecated
-    public static NetworkExecutor getNetworkExecutor() {
-        return sInitializeConfig.getNetworkExecutor();
-    }
-
-    /**
-     * Create a queue of request, the default thread pool size is 3.
-     *
-     * @return returns the request queue, the queue is used to control the entry of the request.
+     * @return returns the handle queue, the queue is used to control the entry of the handle.
      * @see #newRequestQueue(int)
      */
     public static RequestQueue newRequestQueue() {
@@ -176,10 +100,10 @@ public class NoHttp {
     }
 
     /**
-     * Create a queue of request.
+     * Create a queue of handle.
      *
-     * @param threadPoolSize request the number of concurrent.
-     * @return returns the request queue, the queue is used to control the entry of the request.
+     * @param threadPoolSize handle the number of concurrent.
+     * @return returns the handle queue, the queue is used to control the entry of the handle.
      * @see #newRequestQueue()
      */
     public static RequestQueue newRequestQueue(int threadPoolSize) {
@@ -189,7 +113,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a String type request, the request method is {@link RequestMethod#GET}.
+     * Create a String type handle, the handle method is {@link RequestMethod#GET}.
      *
      * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<String>}.
@@ -200,7 +124,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a String type request, custom request method, method from {@link RequestMethod}.
+     * Create a String type handle, custom handle method, method from {@link RequestMethod}.
      *
      * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
@@ -212,7 +136,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a JSONObject type request, the request method is {@link RequestMethod#GET}.
+     * Create a JSONObject type handle, the handle method is {@link RequestMethod#GET}.
      *
      * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<JSONObject>}.
@@ -223,7 +147,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a JSONObject type request, custom request method, method from {@link RequestMethod}.
+     * Create a JSONObject type handle, custom handle method, method from {@link RequestMethod}.
      *
      * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
@@ -235,7 +159,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a JSONArray type request, the request method is {@link RequestMethod#GET}.
+     * Create a JSONArray type handle, the handle method is {@link RequestMethod#GET}.
      *
      * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<JSONArray>}.
@@ -246,7 +170,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a JSONArray type request, custom request method, method from {@link RequestMethod}.
+     * Create a JSONArray type handle, custom handle method, method from {@link RequestMethod}.
      *
      * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
@@ -258,7 +182,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a Image type request, the request method is {@link RequestMethod#GET}.
+     * Create a Image type handle, the handle method is {@link RequestMethod#GET}.
      *
      * @param url such as: {@code http://www.nohttp.net}.
      * @return {@code Request<Bitmap>}.
@@ -270,7 +194,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a Image type request.
+     * Create a Image type handle.
      *
      * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
@@ -283,7 +207,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a Image type request.
+     * Create a Image type handle.
      *
      * @param url           such as: {@code http://www.nohttp.net}.
      * @param requestMethod {@link RequestMethod}.
@@ -302,7 +226,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a byte array request, the request method is {@link RequestMethod#GET}.
+     * Create a byte array handle, the handle method is {@link RequestMethod#GET}.
      *
      * @param url url.
      * @return {@code Request<byte[]>}.
@@ -313,7 +237,7 @@ public class NoHttp {
     }
 
     /**
-     * Create a byte array request.
+     * Create a byte array handle.
      *
      * @param url    url.
      * @param method {@link RequestMethod}.
@@ -325,13 +249,13 @@ public class NoHttp {
     }
 
     /**
-     * Initiate a synchronization request.
+     * Initiate a synchronization handle.
      *
-     * @param request request object.
+     * @param request handle object.
      * @param <T>     {@link T}.
      * @return {@link Response}.
      */
-    public static <T> Response<T> startRequestSync(ProtocolRequest<?, T> request) {
+    public static <T> Response<T> startRequestSync(Request<T> request) {
         return SyncRequestExecutor.INSTANCE.execute(request);
     }
 
@@ -359,12 +283,12 @@ public class NoHttp {
     }
 
     /**
-     * Create a download object, auto named file. The request method is {@link RequestMethod#GET}.
+     * Create a download object, auto named file. The handle method is {@link RequestMethod#GET}.
      *
      * @param url         download address.
      * @param fileFolder  folder to save file.
      * @param isDeleteOld find the same when the file is deleted after download, or on behalf of the download is
-     *                    complete, not to request the network.
+     *                    complete, not to handle the network.
      * @return {@link DownloadRequest}.
      * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
      */
@@ -379,12 +303,11 @@ public class NoHttp {
      * @param requestMethod {@link RequestMethod}.
      * @param fileFolder    folder to save file.
      * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
-     *                      complete, not to request the network.
+     *                      complete, not to handle the network.
      * @return {@link DownloadRequest}.
      * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
      */
-    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder,
-                                                        boolean isDeleteOld) {
+    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, boolean isDeleteOld) {
         return new DownloadRequest(url, requestMethod, fileFolder, true, isDeleteOld);
     }
 
@@ -396,29 +319,27 @@ public class NoHttp {
      * @param fileFolder    folder to save file.
      * @param isRange       whether the breakpoint continuing.
      * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
-     *                      complete, not to request the network.
+     *                      complete, not to handle the network.
      * @return {@link DownloadRequest}.
      * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
      */
-    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder,
-                                                        boolean isRange, boolean isDeleteOld) {
-        return new DownloadRequest(url, requestMethod, fileFolder, true, isDeleteOld);
+    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, boolean isRange, boolean isDeleteOld) {
+        return new DownloadRequest(url, requestMethod, fileFolder, isRange, isDeleteOld);
     }
 
     /**
-     * Create a download object. The request method is {@link RequestMethod#GET}.
+     * Create a download object. The handle method is {@link RequestMethod#GET}.
      *
      * @param url         download address.
      * @param fileFolder  folder to save file.
      * @param filename    filename.
      * @param isRange     whether the breakpoint continuing.
      * @param isDeleteOld find the same when the file is deleted after download, or on behalf of the download is
-     *                    complete, not to request the network.
+     *                    complete, not to handle the network.
      * @return {@link DownloadRequest}.
      * @see #createDownloadRequest(String, RequestMethod, String, String, boolean, boolean)
      */
-    public static DownloadRequest createDownloadRequest(String url, String fileFolder, String filename,
-                                                        boolean isRange, boolean isDeleteOld) {
+    public static DownloadRequest createDownloadRequest(String url, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
         return createDownloadRequest(url, RequestMethod.GET, fileFolder, filename, isRange, isDeleteOld);
     }
 
@@ -431,22 +352,21 @@ public class NoHttp {
      * @param filename      filename.
      * @param isRange       whether the breakpoint continuing.
      * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
-     *                      complete, not to request the network.
+     *                      complete, not to handle the network.
      * @return {@link DownloadRequest}.
      * @see #createDownloadRequest(String, String, String, boolean, boolean)
      */
-    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder,
-                                                        String filename, boolean isRange, boolean isDeleteOld) {
+    public static DownloadRequest createDownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
         return new DownloadRequest(url, requestMethod, fileFolder, filename, isRange, isDeleteOld);
     }
 
     /**
-     * Default thread pool size for request queue.
+     * Default thread pool size for handle queue.
      */
     private static RequestQueue sRequestQueueInstance;
 
     /**
-     * Default thread pool size for request queue.
+     * Default thread pool size for handle queue.
      */
     private static DownloadQueue sDownloadQueueInstance;
 
@@ -479,78 +399,4 @@ public class NoHttp {
             }
         return sDownloadQueueInstance;
     }
-
-    /**
-     * @deprecated use {@link InitializationConfig} instead.
-     */
-    @Deprecated
-    public static final class Config {
-
-        private int mConnectTimeout = 10 * 1000;
-        private int mReadTimeout = 10 * 1000;
-
-        private CookieStore mCookieStore;
-        private CacheStore<CacheEntity> mCacheStore;
-
-        private NetworkExecutor mNetworkExecutor;
-
-        public Config() {
-        }
-
-        /**
-         * Set default connect timeout.
-         *
-         * @param timeout ms.
-         * @return {@link Config}.
-         */
-        public Config setConnectTimeout(int timeout) {
-            mConnectTimeout = timeout;
-            return this;
-        }
-
-        /**
-         * Set default read timeout.
-         *
-         * @param timeout ms.
-         * @return {@link Config}.
-         */
-        public Config setReadTimeout(int timeout) {
-            mReadTimeout = timeout;
-            return this;
-        }
-
-        /**
-         * Sets cookie manager.
-         *
-         * @param cookieStore {@link CookieStore}.
-         * @return {@link Config}.
-         */
-        public Config setCookieStore(CookieStore cookieStore) {
-            this.mCookieStore = cookieStore;
-            return this;
-        }
-
-        /**
-         * Sets cache store.
-         *
-         * @param cacheStore {@link CacheStore}.
-         * @return {@link Config}.
-         */
-        public Config setCacheStore(CacheStore<CacheEntity> cacheStore) {
-            this.mCacheStore = cacheStore;
-            return this;
-        }
-
-        /**
-         * Set the Http request interface, realizes the Http request.
-         *
-         * @param executor {@link NetworkExecutor}.
-         * @return {@link Config}.
-         */
-        public Config setNetworkExecutor(NetworkExecutor executor) {
-            this.mNetworkExecutor = executor;
-            return this;
-        }
-    }
-
 }

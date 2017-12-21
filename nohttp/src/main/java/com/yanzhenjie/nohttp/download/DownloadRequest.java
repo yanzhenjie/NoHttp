@@ -17,20 +17,16 @@ package com.yanzhenjie.nohttp.download;
 
 import com.yanzhenjie.nohttp.BasicRequest;
 import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.able.Queueable;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * <p>
- * File download request based on BasicRequest.
+ * File download handle based on BasicRequest.
  * </p>
  * Created by YanZhenjie on Jul 31, 2015 10:38:10 AM.
  */
-public class DownloadRequest extends BasicRequest<DownloadRequest> implements Queueable {
-
+public class DownloadRequest extends BasicRequest<DownloadRequest> {
     /**
      * Also didn't download to start download again.
      */
@@ -44,14 +40,6 @@ public class DownloadRequest extends BasicRequest<DownloadRequest> implements Qu
      */
     public static final int STATUS_FINISH = 2;
 
-    /**
-     * The callback mark.
-     */
-    private int what;
-    /**
-     * The request of the listener.
-     */
-    private WeakReference<DownloadListener> downloadListener;
     /**
      * File the target folder.
      */
@@ -70,18 +58,13 @@ public class DownloadRequest extends BasicRequest<DownloadRequest> implements Qu
     private final boolean isDeleteOld;
 
     /**
-     * Request queue
-     */
-    private BlockingQueue<?> blockingQueue;
-
-    /**
-     * Create download request.
+     * Create download handle.
      *
      * @param url           url.
      * @param requestMethod {@link RequestMethod}.
      * @param fileFolder    file save folder.
      * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
-     *                      complete, not to request the network.
+     *                      complete, not to handle the network.
      * @see #DownloadRequest(String, RequestMethod, String, String, boolean, boolean)
      */
     public DownloadRequest(String url, RequestMethod requestMethod, String fileFolder, boolean isRange, boolean isDeleteOld) {
@@ -97,7 +80,7 @@ public class DownloadRequest extends BasicRequest<DownloadRequest> implements Qu
      * @param filename      filename.
      * @param isRange       whether the breakpoint continuing.
      * @param isDeleteOld   find the same when the file is deleted after download, or on behalf of the download is
-     *                      complete, not to request the network.
+     *                      complete, not to handle the network.
      * @see #DownloadRequest(String, RequestMethod, String, boolean, boolean)
      */
     public DownloadRequest(String url, RequestMethod requestMethod, String fileFolder, String filename, boolean isRange, boolean isDeleteOld) {
@@ -169,48 +152,5 @@ public class DownloadRequest extends BasicRequest<DownloadRequest> implements Qu
             }
         }
         return STATUS_RESTART;
-    }
-
-    /**
-     * Prepare the callback parameter, while waiting for the response callback with thread.
-     *
-     * @param what             the callback mark.
-     * @param downloadListener {@link DownloadListener}.
-     */
-    public void onPreResponse(int what, DownloadListener downloadListener) {
-        this.what = what;
-        this.downloadListener = new WeakReference<>(downloadListener);
-    }
-
-    /**
-     * The callback mark.
-     *
-     * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
-     * @see #onPreResponse(int, DownloadListener)
-     */
-    public int what() {
-        return what;
-    }
-
-    /**
-     * The request of the listener.
-     *
-     * @return Return when {@link #onPreResponse(int, DownloadListener)} incoming credit.
-     * @see #onPreResponse(int, DownloadListener)
-     */
-    public DownloadListener downloadListener() {
-        if (downloadListener != null)
-            return downloadListener.get();
-        return null;
-    }
-
-    @Override
-    public void setQueue(BlockingQueue<?> queue) {
-        blockingQueue = queue;
-    }
-
-    @Override
-    public boolean inQueue() {
-        return blockingQueue != null && blockingQueue.contains(this);
     }
 }

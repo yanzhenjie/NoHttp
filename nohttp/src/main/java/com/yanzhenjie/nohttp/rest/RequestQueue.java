@@ -15,10 +15,9 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
-import com.yanzhenjie.nohttp.Logger;
-
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,14 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RequestQueue {
 
     private AtomicInteger mInteger = new AtomicInteger();
-    /**
-     * Save un finish task.
-     */
-    private final BlockingQueue<Request<?>> mUnFinishQueue = new LinkedBlockingDeque<>();
-    /**
-     * Save request task.
-     */
+
     private final BlockingQueue<Request<?>> mRequestQueue = new PriorityBlockingQueue<>();
+    private final Map<Request<?>, Messenger<?>> mMessengerMap = new LinkedHashMap<>();
 
     /**
      * Request queue polling thread array.
@@ -48,7 +42,7 @@ public class RequestQueue {
     private RequestDispatcher[] mDispatchers;
 
     /**
-     * Create request queue manager.
+     * Create handle queue manager.
      *
      * @param threadPoolSize number of thread pool.
      */
@@ -57,59 +51,43 @@ public class RequestQueue {
     }
 
     /**
-     * Start polling the request queue, a one of the implementation of the download task, if you have started to poll
+     * Start polling the handle queue, a one of the implementation of the download task, if you have started to poll
      * the download queue, then it will stop all the threads, to re create thread
      * execution.
      */
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            RequestDispatcher networkDispatcher = new RequestDispatcher(mUnFinishQueue, mRequestQueue);
+            RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mMessengerMap);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }
     }
 
     /**
-     * Add a request task to download queue, waiting for execution, if there is no task in the queue or the number of
+     * Add a handle task to download queue, waiting for execution, if there is no task in the queue or the number of
      * tasks is less than the number of thread pool, will be executed immediately.
      *
-     * @param what             the "what" will be the response is returned to you, so you can introduce multiple
-     *                         {@link Request} results in an A with what, please distinguish which is the result of the
-     *                         {@link Request}.
-     * @param request          {@link Request}.
-     * @param responseListener {@link OnResponseListener}.
-     * @param <T>              {@link T}.
+     * @param what     the "what" will be the response is returned to you, so you can introduce multiple
+     *                 {@link Request} results in an A with what, please distinguish which is the result of the
+     *                 {@link Request}.
+     * @param request  {@link Request}.
+     * @param listener {@link OnResponseListener}.
+     * @param <T>      {@link T}.
      */
-    public <T> void add(int what, Request<T> request, OnResponseListener<T> responseListener) {
-        if (request.inQueue())
-            Logger.w("This request has been in the queue");
-        else {
-            request.onPreResponse(what, responseListener);
-
-            request.setQueue(mUnFinishQueue);
-            request.setSequence(mInteger.incrementAndGet());
-            mUnFinishQueue.add(request);
-            mRequestQueue.add(request);
-        }
+    public <T> void add(int what, Request<T> request, OnResponseListener<T> listener) {
+        request.setSequence(mInteger.incrementAndGet());
+        mMessengerMap.put(request, Messenger.newInstance(what, listener));
+        mRequestQueue.add(request);
     }
 
     /**
-     * Don't start return request queue size.
+     * Don't start return handle queue size.
      *
      * @return size.
      */
-    public int unStartSize() {
+    public int size() {
         return mRequestQueue.size();
-    }
-
-    /**
-     * Returns have started but not the end of the request queue size.
-     *
-     * @return size.
-     */
-    public int unFinishSize() {
-        return mUnFinishQueue.size();
     }
 
     /**
@@ -127,19 +105,25 @@ public class RequestQueue {
      * @param sign this sign will be the same as sign's Request, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
-        synchronized (mUnFinishQueue) {
-            for (Request<?> request : mUnFinishQueue)
+        synchronized (mRequestQueue) {
+            for (Request<?> request : mRequestQueue) {
+                mRequestQueue.remove(request);
+                mMessengerMap.remove(request);
                 request.cancelBySign(sign);
+            }
         }
     }
 
     /**
-     * Cancel all requests, Already in the execution of the request can't use this method
+     * Cancel all requests, Already in the execution of the handle can't use this method
      */
     public void cancelAll() {
-        synchronized (mUnFinishQueue) {
-            for (Request<?> request : mUnFinishQueue)
+        synchronized (mRequestQueue) {
+            for (Request<?> request : mRequestQueue) {
+                mRequestQueue.remove(request);
+                mMessengerMap.remove(request);
                 request.cancel();
+            }
         }
     }
 }

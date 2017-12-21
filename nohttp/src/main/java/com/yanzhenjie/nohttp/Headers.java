@@ -214,6 +214,9 @@ public class Headers extends BasicMultiValueMap<String, String> {
      * Format to Hump-shaped words.
      */
     public static String formatKey(String key) {
+        if (TextUtils.isEmpty(key))
+            return "";
+
         key = key.toLowerCase(Locale.ENGLISH);
         String[] words = key.split("-");
 
@@ -241,24 +244,24 @@ public class Headers extends BasicMultiValueMap<String, String> {
 
             @Override
             public List<String> get(Object key) {
-                if (key != null && key instanceof String) {
-                    key = formatKey((String) key);
+                if (key != null) {
+                    key = formatKey(key.toString());
                 }
                 return super.get(key);
             }
 
             @Override
             public List<String> remove(Object key) {
-                if (key != null && key instanceof String) {
-                    key = formatKey((String) key);
+                if (key != null) {
+                    key = formatKey(key.toString());
                 }
                 return super.remove(key);
             }
 
             @Override
             public boolean containsKey(Object key) {
-                if (key != null && key instanceof String) {
-                    key = formatKey((String) key);
+                if (key != null) {
+                    key = formatKey(key.toString());
                 }
                 return super.containsKey(key);
             }
@@ -329,7 +332,7 @@ public class Headers extends BasicMultiValueMap<String, String> {
             List<String> values = entry.getValue();
             JSONArray value = new JSONArray(values);
             try {
-                jsonObject.put(key, value);
+                jsonObject.put(TextUtils.isEmpty(key) ? "" : key, value);
             } catch (JSONException e) {
                 Logger.w(e);
             }

@@ -212,7 +212,7 @@ public final class InitializationConfig {
         }
 
         /**
-         * Add the global request header.
+         * Add the global handle header.
          */
         public Builder addHeader(String key, String value) {
             mHeaders.add(key, value);
@@ -220,7 +220,7 @@ public final class InitializationConfig {
         }
 
         /**
-         * Add the global request param.
+         * Add the global handle param.
          */
         public Builder addParam(String key, String value) {
             mParams.add(key, value);

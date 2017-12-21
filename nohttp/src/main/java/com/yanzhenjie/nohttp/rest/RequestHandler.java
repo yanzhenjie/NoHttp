@@ -38,18 +38,18 @@ import java.io.IOException;
  *
  * @author Yan Zhenjie.
  */
-public class RestProtocol {
+public class RequestHandler {
 
     private CacheStore<CacheEntity> mCacheStore;
 
     private HttpConnection mHttpConnection;
 
-    public RestProtocol(CacheStore<CacheEntity> cache, NetworkExecutor executor) {
+    public RequestHandler(CacheStore<CacheEntity> cache, NetworkExecutor executor) {
         mCacheStore = cache;
         mHttpConnection = new HttpConnection(executor);
     }
 
-    public <T> Response<T> request(ProtocolRequest<?, T> request) {
+    public <T> Response<T> handle(Request<T> request) {
         long startTime = SystemClock.elapsedRealtime();
 
         String cacheKey = request.getCacheKey();
@@ -57,7 +57,7 @@ public class RestProtocol {
         CacheEntity localCache = mCacheStore.get(cacheKey);
 
         Protocol protocol = requestCacheOrNetwork(cacheMode, localCache, request);
-        analysisCacheAndProtocol(cacheKey, cacheMode, localCache, protocol);
+        handleCache(cacheKey, cacheMode, localCache, protocol);
 
         T result = null;
         if (protocol.exception == null) {
@@ -71,7 +71,7 @@ public class RestProtocol {
                 SystemClock.elapsedRealtime() - startTime, protocol.exception);
     }
 
-    private Protocol requestCacheOrNetwork(CacheMode cacheMode, CacheEntity localCache, ProtocolRequest<?, ?> request) {
+    private Protocol requestCacheOrNetwork(CacheMode cacheMode, CacheEntity localCache, Request<?> request) {
         Protocol protocol = null;
         switch (cacheMode) {
             case ONLY_READ_CACHE: {// Only read cache.
@@ -85,11 +85,11 @@ public class RestProtocol {
                 }
                 break;
             }
-            case ONLY_REQUEST_NETWORK: { // Only request network.
+            case ONLY_REQUEST_NETWORK: { // Only handle network.
                 protocol = getHttpProtocol(request);
                 break;
             }
-            case NONE_CACHE_REQUEST_NETWORK: { // CacheStore none request network.
+            case NONE_CACHE_REQUEST_NETWORK: { // CacheStore none handle network.
                 if (localCache != null) {
                     protocol = new Protocol();
                     protocol.headers = localCache.getResponseHeaders();
@@ -128,9 +128,9 @@ public class RestProtocol {
     }
 
     /**
-     * Perform the request before, Handle the cache headers.
+     * Perform the handle before, Handle the cache headers.
      *
-     * @param request     the request object.
+     * @param request     the handle object.
      * @param cacheEntity cached entities.
      */
     private void setRequestCacheHeader(BasicRequest<?> request, CacheEntity cacheEntity) {
@@ -150,9 +150,9 @@ public class RestProtocol {
     }
 
     /**
-     * Handle retries, and complete the request network here.
+     * Handle retries, and complete the handle network here.
      *
-     * @param request request object.
+     * @param request handle object.
      * @return {@link Protocol}.
      */
     private Protocol getHttpProtocol(BasicRequest<?> request) {
@@ -173,20 +173,10 @@ public class RestProtocol {
 
     /**
      * Process the response cache.
-     *
-     * @param cacheKey   cache key.
-     * @param cacheMode  cache mode.
-     * @param localCache cache key.
-     * @param result     {@link Protocol}, Request the server to generate the response entity.
-     * @return {@link RestProtocol}, According to the response headers and local server cache to regenerate the
-     * response entity, you should use this response entity.
      */
-    private void analysisCacheAndProtocol(String cacheKey, CacheMode cacheMode, CacheEntity localCache, Protocol
-            result) {
+    private void handleCache(String cacheKey, CacheMode cacheMode, CacheEntity localCache, Protocol result) {
         if (result.exception == null) {// Successfully.
             int responseCode = result.headers.getResponseCode();
-            if (result.body == null)
-                result.body = new byte[0];
 
             if (responseCode == 304) {
                 if (localCache != null) { // Fix server error for 304.
@@ -199,10 +189,10 @@ public class RestProtocol {
                 if (localCache == null) {
                     switch (cacheMode) {
                         case ONLY_READ_CACHE:// Only read cache.
-                        case ONLY_REQUEST_NETWORK: {// Only request network.
+                        case ONLY_REQUEST_NETWORK: {// Only handle network.
                             break;
                         }
-                        case NONE_CACHE_REQUEST_NETWORK:// CacheStore none request network.
+                        case NONE_CACHE_REQUEST_NETWORK:// CacheStore none handle network.
                         case REQUEST_NETWORK_FAILED_READ_CACHE: {// Request network failed read cache.
                             long localExpire = HeaderUtils.getLocalExpires(result.headers);
                             localCache = new CacheEntity();

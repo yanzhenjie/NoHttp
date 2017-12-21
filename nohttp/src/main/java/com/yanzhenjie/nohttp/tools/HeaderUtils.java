@@ -145,9 +145,9 @@ public class HeaderUtils {
      * @return Time corresponding milliseconds.
      */
     public static long getLocalExpires(Headers responseHeaders) {
-        long now = System.currentTimeMillis();
-        long date = responseHeaders.getDate();
-        long expires = responseHeaders.getExpiration();
+        final long now = System.currentTimeMillis();
+        final long date = responseHeaders.getDate();
+        final long expires = responseHeaders.getExpiration();
 
         long maxAge = 0;
         long staleWhileRevalidate = 0;
@@ -160,20 +160,16 @@ public class HeaderUtils {
                 if ((token.equals("no-cache") || token.equals("no-store"))) {
                     return 0;
                 } else if (token.startsWith("max-age=")) {
-                    try {
-                        maxAge = Long.parseLong(token.substring(8));
-                    } catch (Exception e) {
-                    }
+                    maxAge = Long.parseLong(token.substring(8));
+                } else if (token.startsWith("must-revalidate")) {
+                    return 0;
                 } else if (token.startsWith("stale-while-revalidate=")) {
-                    try {
-                        staleWhileRevalidate = Long.parseLong(token.substring(23));
-                    } catch (Exception e) {
-                    }
+                    staleWhileRevalidate = Long.parseLong(token.substring(23));
                 }
             }
         }
 
-        long localExpire = 0;// Local expires time of cache.
+        long localExpire = now;// Local expires time of cache.
 
         // If must-revalidate, It must be from the server to validate expired.
         // Have CacheControl.
@@ -184,10 +180,9 @@ public class HeaderUtils {
         }
 
         // If the server through control the cache Expires.
-        if ((localExpire == 0 || localExpire == now) && date > 0 && expires >= date) {
+        if (localExpire <= now && expires > date) {
             localExpire = now + (expires - date);
         }
-
         return localExpire;
     }
 

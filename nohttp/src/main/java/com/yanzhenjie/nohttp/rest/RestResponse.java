@@ -30,9 +30,9 @@ import java.util.Set;
 public class RestResponse<T> implements Response<T> {
 
     /**
-     * Corresponding request URL.
+     * Corresponding handle URL.
      */
-    private ProtocolRequest<?, T> request;
+    private Request<T> request;
 
     /**
      * Whether from the cache.
@@ -49,7 +49,7 @@ public class RestResponse<T> implements Response<T> {
      */
     private final T result;
     /**
-     * Millisecond of request.
+     * Millisecond of handle.
      */
     private final long mNetworkMillis;
     /**
@@ -64,10 +64,10 @@ public class RestResponse<T> implements Response<T> {
      * @param isFromCache data is come from cache.
      * @param headers     response header.
      * @param result      result.
-     * @param millis      request time.
+     * @param millis      handle time.
      * @param e           exception.
      */
-    public RestResponse(ProtocolRequest<?, T> request, boolean isFromCache, Headers headers, T result, long millis, Exception e) {
+    public RestResponse(Request<T> request, boolean isFromCache, Headers headers, T result, long millis, Exception e) {
         this.request = request;
         this.isFromCache = isFromCache;
         this.headers = headers;
@@ -77,7 +77,7 @@ public class RestResponse<T> implements Response<T> {
     }
 
     @Override
-    public ProtocolRequest<?, T> request() {
+    public Request<T> request() {
         return request;
     }
 

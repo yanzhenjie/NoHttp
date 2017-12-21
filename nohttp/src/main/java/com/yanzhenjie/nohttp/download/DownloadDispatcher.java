@@ -17,9 +17,9 @@ package com.yanzhenjie.nohttp.download;
 
 import android.os.Process;
 
-import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.Logger;
 
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -32,28 +32,14 @@ import java.util.concurrent.BlockingQueue;
  */
 class DownloadDispatcher extends Thread {
 
-    /**
-     * Un finish task queue.
-     */
-    private final BlockingQueue<DownloadRequest> mUnFinishQueue;
-    /**
-     * Download task queue.
-     */
-    private final BlockingQueue<DownloadRequest> mDownloadQueue;
-    /**
-     * Are you out of this thread.
-     */
+    private final BlockingQueue<DownloadRequest> mRequestQueue;
+    private final Map<DownloadRequest, Messenger> mMessengerMap;
+
     private boolean mQuit = false;
 
-    /**
-     * Create a thread that executes the download queue.
-     *
-     * @param unFinishQueue un finish queue.
-     * @param downloadQueue download queue to be polled.
-     */
-    public DownloadDispatcher(BlockingQueue<DownloadRequest> unFinishQueue, BlockingQueue<DownloadRequest> downloadQueue) {
-        this.mUnFinishQueue = unFinishQueue;
-        this.mDownloadQueue = downloadQueue;
+    public DownloadDispatcher(BlockingQueue<DownloadRequest> requestQueue, Map<DownloadRequest, Messenger> messengerMap) {
+        this.mRequestQueue = requestQueue;
+        this.mMessengerMap = messengerMap;
     }
 
     /**
@@ -70,7 +56,7 @@ class DownloadDispatcher extends Thread {
         while (!mQuit) {
             final DownloadRequest request;
             try {
-                request = mDownloadQueue.take();
+                request = mRequestQueue.take();
             } catch (InterruptedException e) {
                 if (mQuit)
                     return;
@@ -78,50 +64,19 @@ class DownloadDispatcher extends Thread {
             }
 
             if (request.isCanceled()) {
+                mRequestQueue.remove(request);
+                mMessengerMap.remove(request);
                 Logger.d(request.url() + " is canceled.");
                 continue;
             }
 
             request.start();
-            SyncDownloadExecutor.INSTANCE.execute(request.what(), request, new DownloadListener() {
-
-                @Override
-                public void onStart(int what, boolean isResume, long beforeLength, Headers headers, long allCount) {
-                    Messenger.prepare(what, request.downloadListener())
-                            .onStart(isResume, beforeLength, headers, allCount)
-                            .post();
-                }
-
-                @Override
-                public void onDownloadError(int what, Exception exception) {
-                    Messenger.prepare(what, request.downloadListener())
-                            .onError(exception)
-                            .post();
-                }
-
-                @Override
-                public void onProgress(int what, int progress, long fileCount, long speed) {
-                    Messenger.prepare(what, request.downloadListener())
-                            .onProgress(progress, fileCount, speed)
-                            .post();
-                }
-
-                @Override
-                public void onFinish(int what, String filePath) {
-                    Messenger.prepare(what, request.downloadListener())
-                            .onFinish(filePath)
-                            .post();
-                }
-
-                @Override
-                public void onCancel(int what) {
-                    Messenger.prepare(what, request.downloadListener())
-                            .onCancel()
-                            .post();
-                }
-            });
+            SyncDownloadExecutor.INSTANCE.execute(0, request, new ListenerDelegate(request, mMessengerMap));
             request.finish();
-            mUnFinishQueue.remove(request);
+
+            // remove it from queue.
+            mRequestQueue.remove(request);
+            mMessengerMap.remove(request);
         }
     }
 }

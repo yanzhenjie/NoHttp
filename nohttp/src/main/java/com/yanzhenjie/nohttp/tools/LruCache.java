@@ -242,7 +242,7 @@ public class LruCache<K, V> {
      * access the cache while this method is executing.</p>
      * <p>If a value for {@code key} exists in the cache when this method
      * returns, the created value will be released with {@link #entryRemoved}
-     * and discarded. This can occur when multiple threads request the same key
+     * and discarded. This can occur when multiple threads handle the same key
      * at the same time (causing multiple values to be created), or when one
      * thread calls {@link #put} while another is creating a value for the same
      * key.</p>
