@@ -31,15 +31,15 @@ import com.yanzhenjie.nohttp.rest.RequestQueue;
  */
 public class CallServer {
 
-    private static CallServer instance;
+    private static CallServer sInstance;
 
     public static CallServer getInstance() {
-        if (instance == null)
+        if (sInstance == null)
             synchronized (CallServer.class) {
-                if (instance == null)
-                    instance = new CallServer();
+                if (sInstance == null)
+                    sInstance = new CallServer();
             }
-        return instance;
+        return sInstance;
     }
 
     private RequestQueue mRequestQueue;
@@ -55,8 +55,7 @@ public class CallServer {
         mRequestQueue.add(what, request, listener);
     }
 
-    public <T> void request(Activity activity, int what, Request<T> request, HttpListener<T> callback,
-                            boolean canCancel, boolean isLoading) {
+    public <T> void request(Activity activity, int what, Request<T> request, HttpListener<T> callback, boolean canCancel, boolean isLoading) {
         mRequestQueue.add(what, request, new HttpResponseListener<>(activity, request, callback, canCancel, isLoading));
     }
 

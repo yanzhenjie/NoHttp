@@ -18,14 +18,14 @@ package com.yanzhenjie.nohttp.sample.nohttp;
 import com.alibaba.fastjson.JSON;
 import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.rest.RestRequest;
+import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.StringRequest;
 
 /**
  * <p>自定义JavaBean请求。</p>
  * Created by Yan Zhenjie on 2016/10/15.
  */
-public class JavaBeanRequest<T> extends RestRequest<T> {
+public class JavaBeanRequest<T> extends Request<T> {
 
     /**
      * 更多如何请求JavaBean，List，Map等复杂对象，请看这篇博客：

@@ -76,8 +76,6 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
         mQueue = NoHttp.newRequestQueue();
     }
 
-    private Object sign = new Object();
-
     @Override
     public void onClick(View v) {
         // 创建请求对象。
@@ -100,11 +98,11 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
                 // 设置一个tag, 在请求完(失败/成功)时原封不动返回; 多数情况下不需要。
                 .setTag(new Object())
                 // 设置取消标志。
-                .setCancelSign(sign);
+                .setCancelSign(this);
 
 		/*
          * what: 当多个请求同时使用同一个OnResponseListener时用来区分请求, 类似handler的what一样。
-		 * request: 请求对象。
+		 * handle: 请求对象。
 		 * onResponseListener 回调对象，接受请求结果。
 		 */
         mQueue.add(NOHTTP_WHAT_TEST, request, onResponseListener);
@@ -174,8 +172,8 @@ public class OriginalActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     protected void onDestroy() {
-        // 和声明周期绑定，退出时取消这个队列中的所有请求，当然可以在你想取消的时候取消也可以，不一定和声明周期绑定。
-        mQueue.cancelBySign(sign);
+        // 和生命周期绑定，退出时取消这个队列中的所有请求，当然可以在你想取消的时候取消也可以，不一定和声明周期绑定。
+        mQueue.cancelBySign(this);
 
         // 因为回调函数持有了activity，所以退出activity时请停止队列。
         mQueue.stop();

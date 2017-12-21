@@ -59,8 +59,7 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
      * @param canCancel    是否允许用户取消请求.
      * @param isLoading    是否显示dialog.
      */
-    public HttpResponseListener(Activity activity, Request<?> request, HttpListener<T> httpCallback, boolean
-            canCancel, boolean isLoading) {
+    public HttpResponseListener(Activity activity, Request<?> request, HttpListener<T> httpCallback, boolean canCancel, boolean isLoading) {
         this.mActivity = activity;
         this.mRequest = request;
         if (activity != null && isLoading) {
