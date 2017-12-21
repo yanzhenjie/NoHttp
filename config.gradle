@@ -17,8 +17,8 @@ ext {
             sampleMinSdkVersion    : 14,
             sampleTargetSdkVersion : 22,
 
-            versionCode            : 114,
-            versionName            : "1.1.4",
+            versionCode            : 115,
+            versionName            : "1.1.5",
     ]
 
     bintray = [
@@ -40,7 +40,7 @@ ext {
             developerName : 'yanzhenjie',
             developerEmail: 'smallajax@foxmail.com',
 
-            binrayLibrary : "nohttp1",
+            binrayLibrary : "",
             bintrayRepo   : "maven",
             bintrayUser   : 'yolanda',
             bintrayLicense: "Apache-2.0"
@@ -51,8 +51,8 @@ ext {
             okhttpUrl      : 'com.squareup.okhttp3:okhttp-urlconnection:3.8.1',
 
             // nohttp.
-            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.4',
-            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.4',
+            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.5',
+            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.5',
 
             // support.
             appCompat      : 'com.android.support:appcompat-v7:25.3.1',
