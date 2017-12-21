@@ -1,12 +1,9 @@
 ![NoHttp Logo](./image/logo.png)  
 
-我的博客：[http://blog.yanzhenjie.com](http://blog.yanzhenjie.com)，阅读我的最新文章。  
-我的微博：[http://weibo.com/yanzhenjieit](http://weibo.com/yanzhenjieit)，有问题随时沟通。  
-
 使用文档：[http://doc.nohttp.net](http://doc.nohttp.net)  
 测试接口：[http://api.nohttp.net](http://api.nohttp.net)  
 
-欢迎加入QQ技术交流群：[547839514](https://jq.qq.com/?_wv=1027&k=4Abk0YP)  
+QQ技术交流群：[547839514](https://jq.qq.com/?_wv=1027&k=4Abk0YP)  
 
 ----
 
@@ -42,11 +39,11 @@
 ### Gradle
 * 如果使用HttpURLConnection作为网络层
 ```groovy
-compile 'com.yanzhenjie.nohttp:nohttp:1.1.4'
+implementation 'com.yanzhenjie.nohttp:nohttp:1.1.5'
 ```
 * 如果要使用OkHttp作为网络层，请再依赖
 ```groovy
-compile 'com.yanzhenjie.nohttp:okhttp:1.1.4'
+implementation 'com.yanzhenjie.nohttp:okhttp:1.1.5'
 ```
 
 > 如果需要Jar包，可以先Gradle依赖，然后在Gradle的本地缓存文件夹找到jar。
@@ -760,27 +757,15 @@ public void stopDownload() {
 更多的使用请参考sample。
 
 ## 代码混淆
-* 原生NoHttp混淆
-```text
--dontwarn com.yanzhenjie.nohttp.**
--keep class com.yanzhenjie.nohttp.**{*;}
+如果你没有使用Https，NoHttp可以随意混淆，如果使用了Https，请添加如下混淆规则：
 ```
-
-* 如果使用okhttp的版本
-```text
-// nohttp
--dontwarn com.yanzhenjie.nohttp.**
--keep class com.yanzhenjie.nohttp.**{*;}
-
-// okhttp
--dontwarn okhttp3.**
--keep class okhttp3.** {*;} 
--dontwarn okio.**
--keep class okio.** {*;} 
+-keepclassmembers class ** {
+    private javax.net.ssl.SSLSocketFactory delegate;
+}
 ```
 
 ## 关于我
-微信扫一扫下方二维码或者微信加好友搜索**严振杰**即可关注我  
+:smile:关注一下我的微信公众号支持我一波  
 ![微信二维码](http://img.blog.csdn.net/20161020083048694)  
 
 ## License
