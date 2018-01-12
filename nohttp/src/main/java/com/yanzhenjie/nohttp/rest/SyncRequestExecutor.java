@@ -15,6 +15,7 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
+import com.yanzhenjie.nohttp.InitializationConfig;
 import com.yanzhenjie.nohttp.NoHttp;
 
 /**
@@ -30,7 +31,12 @@ public enum SyncRequestExecutor {
     private RequestHandler mRequestHandler;
 
     SyncRequestExecutor() {
-        mRequestHandler = new RequestHandler(NoHttp.getInitializeConfig().getCacheStore(), NoHttp.getInitializeConfig().getNetworkExecutor());
+        InitializationConfig initializationConfig = NoHttp.getInitializeConfig();
+        mRequestHandler = new RequestHandler(
+                initializationConfig.getCacheStore(),
+                initializationConfig.getNetworkExecutor(),
+                initializationConfig.getInterceptor()
+        );
     }
 
     /**
