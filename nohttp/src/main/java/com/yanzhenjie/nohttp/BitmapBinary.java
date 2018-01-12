@@ -30,7 +30,10 @@ import java.io.InputStream;
  * All the methods are called in Son thread.
  * </p>
  * Created in Oct 17, 2015 12:40:54 PM.
+ *
+ * @deprecated use {@link FileBinary} instead.
  */
+@Deprecated
 public class BitmapBinary extends BasicBinary {
 
     private Bitmap mBitmap;

@@ -35,22 +35,22 @@ class Messenger<T> {
     }
 
     void start() {
-        HandlerDelivery.getInstance().post(newPoster(what, listener).start());
+        HandlerDelivery.getInstance().post(Poster.newInstance(what, listener).start());
     }
 
     void response(Response<T> response) {
-        HandlerDelivery.getInstance().post(newPoster(what, listener).response(response));
+        HandlerDelivery.getInstance().post(Poster.newInstance(what, listener).response(response));
     }
 
     void finish() {
-        HandlerDelivery.getInstance().post(newPoster(what, listener).finish());
-    }
-
-    private static <T> Poster<T> newPoster(int what, OnResponseListener<T> listener) {
-        return new Poster<>(what, listener);
+        HandlerDelivery.getInstance().post(Poster.newInstance(what, listener).finish());
     }
 
     private static class Poster<T> implements Runnable {
+
+        private static <T> Poster<T> newInstance(int what, OnResponseListener<T> listener) {
+            return new Poster<>(what, listener);
+        }
 
         private final int what;
         private final OnResponseListener<T> listener;

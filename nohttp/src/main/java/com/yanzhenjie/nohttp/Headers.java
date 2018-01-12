@@ -226,7 +226,9 @@ public class Headers extends BasicMultiValueMap<String, String> {
             String end = word.substring(1, word.length());
             builder.append(first.toUpperCase(Locale.ENGLISH)).append(end).append("-");
         }
-        builder.deleteCharAt(builder.lastIndexOf("-"));
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.lastIndexOf("-"));
+        }
         return builder.toString();
     }
 

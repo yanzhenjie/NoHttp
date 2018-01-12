@@ -319,10 +319,13 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * The real url of Request is: http://www.nohttp.net/xx/oo
      */
     public T path(String value) {
-        if (TextUtils.isEmpty(value)) {
-            if (!url.endsWith("/"))
-                url += "/";
-            url += value;
+        if (value != null) {
+            value = value.trim();
+            if (!TextUtils.isEmpty(value)) {
+                if (!url.endsWith("/"))
+                    url += "/";
+                url += value;
+            }
         }
         return (T) this;
     }
@@ -519,7 +522,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Does it contain a handle header?
      */
     public boolean containsHeader(String key) {
-        return !TextUtils.isEmpty(key) && mHeaders.containsKey(key);
+        return mHeaders.containsKey(key);
     }
 
     /**
@@ -728,8 +731,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Add {@link String} param.
      */
     public T add(String key, String value) {
-        if (!TextUtils.isEmpty(key) && value != null)
-            mParams.add(key, value);
+        if (!TextUtils.isEmpty(key))
+            mParams.add(key, TextUtils.isEmpty(value) ? "" : value);
         return (T) this;
     }
 
@@ -737,8 +740,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Set {@link String} param.
      */
     public T set(String key, String value) {
-        if (!TextUtils.isEmpty(key) && value != null)
-            mParams.set(key, value);
+        if (!TextUtils.isEmpty(key))
+            mParams.set(key, TextUtils.isEmpty(value) ? "" : value);
         return (T) this;
     }
 
@@ -766,8 +769,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, Binary binary) {
         validateMethodForBody("The Binary param");
-        if (!TextUtils.isEmpty(key))
-            mParams.add(key, binary);
+        mParams.add(key, binary);
         return (T) this;
     }
 
@@ -776,8 +778,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T set(String key, Binary binary) {
         validateMethodForBody("The Binary param");
-        if (!TextUtils.isEmpty(key))
-            mParams.set(key, binary);
+        mParams.set(key, binary);
         return (T) this;
     }
 
@@ -786,9 +787,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, List<Binary> binaries) {
         validateMethodForBody("The List<Binary> param");
-        if (!TextUtils.isEmpty(key))
-            for (Binary binary : binaries)
-                mParams.add(key, binary);
+        for (Binary binary : binaries)
+            mParams.add(key, binary);
         return (T) this;
     }
 
@@ -797,11 +797,9 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T set(String key, List<Binary> binaries) {
         validateMethodForBody("The List<Binary> param");
-        if (!TextUtils.isEmpty(key)) {
-            mParams.remove(key);
-            for (Binary binary : binaries)
-                mParams.add(key, binary);
-        }
+        mParams.remove(key);
+        for (Binary binary : binaries)
+            mParams.add(key, binary);
         return (T) this;
     }
 
@@ -812,7 +810,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            if (TextUtils.isEmpty(key) || value == null) continue;
+
+            if (value == null) value = "";
 
             if (value instanceof File) {
                 mParams.add(key, new FileBinary((File) value));
@@ -822,7 +821,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
                 List values = (List) value;
                 for (int i = 0; i < values.size(); i++) {
                     Object o = values.get(i);
-                    if (o == null) continue;
+                    if (o == null) o = "";
 
                     if (o instanceof File) {
                         mParams.add(key, new FileBinary((File) o));
@@ -846,7 +845,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            if (TextUtils.isEmpty(key) || value == null) continue;
+
+            if (value == null) value = "";
 
             if (value instanceof File) {
                 mParams.set(key, new FileBinary((File) value));
@@ -857,7 +857,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
                 List values = (List) value;
                 for (int i = 0; i < values.size(); i++) {
                     Object o = values.get(i);
-                    if (o == null) continue;
+                    if (o == null) o = "";
 
                     if (o instanceof File) {
                         mParams.add(key, new FileBinary((File) o));
@@ -1057,13 +1057,15 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         if (isCanceled()) return;
         Set<String> keys = mParams.keySet();
         for (String key : keys) {
+            if (TextUtils.isEmpty(key)) continue;
+
             List<Object> values = mParams.getValues(key);
             for (Object value : values) {
-                if (value != null && value instanceof String) {
+                if (value instanceof String) {
                     if (!(writer instanceof CounterOutputStream))
                         Logger.i(key + "=" + value);
                     writeFormString(writer, key, (String) value);
-                } else if (value != null && value instanceof Binary) {
+                } else if (value instanceof Binary) {
                     if (!(writer instanceof CounterOutputStream))
                         Logger.i(key + " is Binary");
                     writeFormBinary(writer, key, (Binary) value);
@@ -1197,6 +1199,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
             // cancel file upload
             Set<String> keys = mParams.keySet();
             for (String key : keys) {
+                if (TextUtils.isEmpty(key)) continue;
+
                 List<Object> values = mParams.getValues(key);
                 for (Object value : values)
                     if (value != null && value instanceof Binary)
@@ -1253,6 +1257,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         StringBuilder paramBuilder = new StringBuilder();
         Set<String> keySet = paramMap.keySet();
         for (String key : keySet) {
+            if (TextUtils.isEmpty(key)) continue;
+
             List<Object> values = paramMap.getValues(key);
             for (Object value : values) {
                 if (value != null && value instanceof CharSequence) {
