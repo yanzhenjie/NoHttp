@@ -41,34 +41,50 @@ import java.io.IOException;
 public class RequestHandler {
 
     private CacheStore<CacheEntity> mCacheStore;
-
     private HttpConnection mHttpConnection;
+    private Interceptor mInterceptor;
 
     public RequestHandler(CacheStore<CacheEntity> cache, NetworkExecutor executor) {
-        mCacheStore = cache;
-        mHttpConnection = new HttpConnection(executor);
+        this(cache, new HttpConnection(executor));
+    }
+
+    public RequestHandler(CacheStore<CacheEntity> cache, HttpConnection httpConnection) {
+        this.mCacheStore = cache;
+        this.mHttpConnection = httpConnection;
+    }
+
+    public RequestHandler(CacheStore<CacheEntity> cache, NetworkExecutor executor, Interceptor interceptor) {
+        this.mCacheStore = cache;
+        this.mHttpConnection = new HttpConnection(executor);
+        this.mInterceptor = interceptor;
     }
 
     public <T> Response<T> handle(Request<T> request) {
         long startTime = SystemClock.elapsedRealtime();
 
-        String cacheKey = request.getCacheKey();
-        CacheMode cacheMode = request.getCacheMode();
-        CacheEntity localCache = mCacheStore.get(cacheKey);
+        if (mInterceptor != null) {
+            RequestHandler handler = new RequestHandler(mCacheStore, mHttpConnection);
+            return mInterceptor.intercept(handler, request);
+        } else {
+            String cacheKey = request.getCacheKey();
+            CacheMode cacheMode = request.getCacheMode();
+            CacheEntity localCache = mCacheStore.get(cacheKey);
 
-        Protocol protocol = requestCacheOrNetwork(cacheMode, localCache, request);
-        handleCache(cacheKey, cacheMode, localCache, protocol);
+            Protocol protocol = requestCacheOrNetwork(cacheMode, localCache, request);
+            handleCache(cacheKey, cacheMode, localCache, protocol);
 
-        T result = null;
-        if (protocol.exception == null) {
-            try {
-                result = request.parseResponse(protocol.headers, protocol.body);
-            } catch (Exception e) {
-                protocol.exception = e;
+            T result = null;
+            if (protocol.exception == null) {
+                try {
+                    result = request.parseResponse(protocol.headers, protocol.body);
+                } catch (Exception e) {
+                    protocol.exception = e;
+                }
             }
+
+            return new RestResponse<>(request, protocol.fromCache, protocol.headers, result,
+                    SystemClock.elapsedRealtime() - startTime, protocol.exception);
         }
-        return new RestResponse<>(request, protocol.fromCache, protocol.headers, result,
-                SystemClock.elapsedRealtime() - startTime, protocol.exception);
     }
 
     private Protocol requestCacheOrNetwork(CacheMode cacheMode, CacheEntity localCache, Request<?> request) {
