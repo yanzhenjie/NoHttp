@@ -182,7 +182,7 @@ public class CacheEntity implements BasicEntity {
      * @return the localExpire.
      */
     public String getLocalExpireString() {
-        return Long.toOctalString(localExpire);
+        return Long.toString(localExpire);
     }
 
     /**
