@@ -17,12 +17,12 @@ ext {
             sampleMinSdkVersion    : 14,
             sampleTargetSdkVersion : 22,
 
-            versionCode            : 117,
-            versionName            : "1.1.7",
+            versionCode            : 118,
+            versionName            : "1.1.8",
     ]
 
     bintray = [
-            version       : "1.1.7",
+            version       : "1.1.8",
 
             siteUrl       : 'https://github.com/yanzhenjie/NoHttp',
             gitUrl        : 'git@github.com:yanzhenjie/NoHttp.git',
@@ -51,8 +51,8 @@ ext {
             okhttpUrl      : 'com.squareup.okhttp3:okhttp-urlconnection:3.8.1',
 
             // nohttp.
-            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.7',
-            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.7',
+            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.8',
+            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.8',
 
             // support.
             appCompat      : 'com.android.support:appcompat-v7:25.3.1',
