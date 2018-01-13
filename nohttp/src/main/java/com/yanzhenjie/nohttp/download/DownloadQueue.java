@@ -101,8 +101,10 @@ public class DownloadQueue {
     public void cancelBySign(Object sign) {
         synchronized (mRequestQueue) {
             for (DownloadRequest request : mRequestQueue) {
-                mRequestQueue.remove(request);
-                mMessengerMap.remove(request);
+                if (!request.isStarted()) {
+                    mRequestQueue.remove(request);
+                    mMessengerMap.remove(request);
+                }
                 request.cancelBySign(sign);
             }
         }
@@ -114,8 +116,10 @@ public class DownloadQueue {
     public void cancelAll() {
         synchronized (mRequestQueue) {
             for (DownloadRequest request : mRequestQueue) {
-                mRequestQueue.remove(request);
-                mMessengerMap.remove(request);
+                if (!request.isStarted()) {
+                    mRequestQueue.remove(request);
+                    mMessengerMap.remove(request);
+                }
                 request.cancel();
             }
         }
