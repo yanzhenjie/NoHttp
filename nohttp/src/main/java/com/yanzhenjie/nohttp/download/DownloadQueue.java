@@ -15,7 +15,9 @@
  */
 package com.yanzhenjie.nohttp.download;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -33,6 +35,7 @@ public class DownloadQueue {
 
     private AtomicInteger mInteger = new AtomicInteger();
     private final BlockingQueue<DownloadRequest> mRequestQueue = new PriorityBlockingQueue<>();
+    private final List<DownloadRequest> mRequestList = new ArrayList<>();
     private final Map<DownloadRequest, Messenger> mMessengerMap = new LinkedHashMap<>();
 
     private DownloadDispatcher[] mDispatchers;
@@ -54,7 +57,7 @@ public class DownloadQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mRequestQueue, mMessengerMap);
+            DownloadDispatcher networkDispatcher = new DownloadDispatcher(mRequestQueue, mRequestList, mMessengerMap);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }
@@ -71,6 +74,7 @@ public class DownloadQueue {
     public void add(int what, DownloadRequest request, DownloadListener downloadListener) {
         request.setSequence(mInteger.incrementAndGet());
         mMessengerMap.put(request, Messenger.newInstance(what, downloadListener));
+        mRequestList.add(request);
         mRequestQueue.add(request);
     }
 
@@ -80,7 +84,7 @@ public class DownloadQueue {
      * @return size.
      */
     public int size() {
-        return mRequestQueue.size();
+        return mRequestList.size();
     }
 
     /**
@@ -99,12 +103,8 @@ public class DownloadQueue {
      * @param sign this sign will be the same as sign's DownloadRequest, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
-        synchronized (mRequestQueue) {
-            for (DownloadRequest request : mRequestQueue) {
-                if (!request.isStarted()) {
-                    mRequestQueue.remove(request);
-                    mMessengerMap.remove(request);
-                }
+        synchronized (mRequestList) {
+            for (DownloadRequest request : mRequestList) {
                 request.cancelBySign(sign);
             }
         }
@@ -114,12 +114,8 @@ public class DownloadQueue {
      * Cancel all requests, Already in the execution of the handle can't use this method.
      */
     public void cancelAll() {
-        synchronized (mRequestQueue) {
-            for (DownloadRequest request : mRequestQueue) {
-                if (!request.isStarted()) {
-                    mRequestQueue.remove(request);
-                    mMessengerMap.remove(request);
-                }
+        synchronized (mRequestList) {
+            for (DownloadRequest request : mRequestList) {
                 request.cancel();
             }
         }

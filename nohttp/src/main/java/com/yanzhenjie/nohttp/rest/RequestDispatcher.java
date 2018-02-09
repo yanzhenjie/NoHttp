@@ -19,6 +19,7 @@ import android.os.Process;
 
 import com.yanzhenjie.nohttp.Logger;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -33,6 +34,7 @@ import java.util.concurrent.BlockingQueue;
 public class RequestDispatcher extends Thread {
 
     private final BlockingQueue<Request<?>> mRequestQueue;
+    private final List<Request<?>> mRequestList;
     private final Map<Request<?>, Messenger<?>> mMessengerMap;
 
     /**
@@ -40,8 +42,9 @@ public class RequestDispatcher extends Thread {
      */
     private volatile boolean mQuit = false;
 
-    public RequestDispatcher(BlockingQueue<Request<?>> requestQueue, Map<Request<?>, Messenger<?>> messengerMap) {
+    public RequestDispatcher(BlockingQueue<Request<?>> requestQueue, List<Request<?>> requestList, Map<Request<?>, Messenger<?>> messengerMap) {
         this.mRequestQueue = requestQueue;
+        this.mRequestList = requestList;
         this.mMessengerMap = messengerMap;
     }
 
@@ -71,6 +74,7 @@ public class RequestDispatcher extends Thread {
 
             if (request.isCanceled()) {
                 mRequestQueue.remove(request);
+                mRequestList.remove(request);
                 mMessengerMap.remove(request);
                 Logger.d(request.url() + " is canceled.");
                 continue;
@@ -97,6 +101,7 @@ public class RequestDispatcher extends Thread {
 
             // remove it from queue.
             mRequestQueue.remove(request);
+            mRequestList.remove(request);
             mMessengerMap.remove(request);
         }
     }

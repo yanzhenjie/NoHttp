@@ -15,7 +15,9 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -34,6 +36,7 @@ public class RequestQueue {
     private AtomicInteger mInteger = new AtomicInteger();
 
     private final BlockingQueue<Request<?>> mRequestQueue = new PriorityBlockingQueue<>();
+    private final List<Request<?>> mRequestList = new ArrayList<>();
     private final Map<Request<?>, Messenger<?>> mMessengerMap = new LinkedHashMap<>();
 
     /**
@@ -58,7 +61,7 @@ public class RequestQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mMessengerMap);
+            RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mRequestList, mMessengerMap);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }
@@ -78,6 +81,7 @@ public class RequestQueue {
     public <T> void add(int what, Request<T> request, OnResponseListener<T> listener) {
         request.setSequence(mInteger.incrementAndGet());
         mMessengerMap.put(request, Messenger.newInstance(what, listener));
+        mRequestList.add(request);
         mRequestQueue.add(request);
     }
 
@@ -87,7 +91,7 @@ public class RequestQueue {
      * @return size.
      */
     public int size() {
-        return mRequestQueue.size();
+        return mRequestList.size();
     }
 
     /**
@@ -105,12 +109,8 @@ public class RequestQueue {
      * @param sign this sign will be the same as sign's Request, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
-        synchronized (mRequestQueue) {
-            for (Request<?> request : mRequestQueue) {
-                if (!request.isStarted()) {
-                    mRequestQueue.remove(request);
-                    mMessengerMap.remove(request);
-                }
+        synchronized (mRequestList) {
+            for (Request<?> request : mRequestList) {
                 request.cancelBySign(sign);
             }
         }
@@ -120,12 +120,8 @@ public class RequestQueue {
      * Cancel all requests, Already in the execution of the handle can't use this method
      */
     public void cancelAll() {
-        synchronized (mRequestQueue) {
-            for (Request<?> request : mRequestQueue) {
-                if (!request.isStarted()) {
-                    mRequestQueue.remove(request);
-                    mMessengerMap.remove(request);
-                }
+        synchronized (mRequestList) {
+            for (Request<?> request : mRequestList) {
                 request.cancel();
             }
         }

@@ -19,6 +19,7 @@ import android.os.Process;
 
 import com.yanzhenjie.nohttp.Logger;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -33,12 +34,14 @@ import java.util.concurrent.BlockingQueue;
 class DownloadDispatcher extends Thread {
 
     private final BlockingQueue<DownloadRequest> mRequestQueue;
+    private final List<DownloadRequest> mRequestList;
     private final Map<DownloadRequest, Messenger> mMessengerMap;
 
     private boolean mQuit = false;
 
-    public DownloadDispatcher(BlockingQueue<DownloadRequest> requestQueue, Map<DownloadRequest, Messenger> messengerMap) {
+    public DownloadDispatcher(BlockingQueue<DownloadRequest> requestQueue, List<DownloadRequest> requestList, Map<DownloadRequest, Messenger> messengerMap) {
         this.mRequestQueue = requestQueue;
+        this.mRequestList = requestList;
         this.mMessengerMap = messengerMap;
     }
 
@@ -65,6 +68,7 @@ class DownloadDispatcher extends Thread {
 
             if (request.isCanceled()) {
                 mRequestQueue.remove(request);
+                mRequestList.remove(request);
                 mMessengerMap.remove(request);
                 Logger.d(request.url() + " is canceled.");
                 continue;
@@ -76,6 +80,7 @@ class DownloadDispatcher extends Thread {
 
             // remove it from queue.
             mRequestQueue.remove(request);
+            mRequestList.remove(request);
             mMessengerMap.remove(request);
         }
     }

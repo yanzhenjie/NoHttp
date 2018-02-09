@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 
 import com.yanzhenjie.nohttp.Logger;
@@ -36,6 +37,7 @@ import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Mobile2G;
 import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Mobile3G;
 import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Mobile4G;
 import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Wifi;
+import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Wired;
 
 /**
  * <p>
@@ -48,8 +50,8 @@ import static com.yanzhenjie.nohttp.tools.NetUtils.NetType.Wifi;
 public class NetUtils {
 
     public enum NetType {
-        Any,
         Wifi,
+        Wired,
         Mobile,
         Mobile2G,
         Mobile3G,
@@ -82,17 +84,10 @@ public class NetUtils {
      *
      * @return Available returns true, unavailable returns false.
      */
-    public static boolean isAnyNetworkAvailable() {
-        return isNetworkAvailable(NetType.Any);
-    }
-
-    /**
-     * Check the network is enable.
-     *
-     * @return Available returns true, unavailable returns false.
-     */
     public static boolean isNetworkAvailable() {
-        return isWifiConnected() || isMobileConnected();
+        return isWifiConnected() ||
+                isWiredConnected() ||
+                isMobileConnected();
     }
 
     /**
@@ -102,6 +97,13 @@ public class NetUtils {
      */
     public static boolean isWifiConnected() {
         return isNetworkAvailable(Wifi);
+    }
+
+    /**
+     * To determine whether a wired network is available.
+     */
+    public static boolean isWiredConnected() {
+        return isNetworkAvailable(Wired);
     }
 
     /**
@@ -155,12 +157,15 @@ public class NetUtils {
         if (networkInfo == null) return false;
 
         switch (netType) {
-            case Any: {
-                return isConnected(networkInfo);
-            }
             case Wifi: {
                 if (!isConnected(networkInfo)) return false;
                 return networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            }
+            case Wired: {
+                if (!isConnected(networkInfo)) return false;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
+                    return networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET;
+                return false;
             }
             case Mobile: {
                 if (!isConnected(networkInfo)) return false;
