@@ -15,11 +15,10 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,8 +34,8 @@ public class RequestQueue {
 
     private AtomicInteger mInteger = new AtomicInteger();
 
+    private final BlockingQueue<Request<?>> mUnFinishQueue = new LinkedBlockingDeque<>();
     private final BlockingQueue<Request<?>> mRequestQueue = new PriorityBlockingQueue<>();
-    private final List<Request<?>> mRequestList = new ArrayList<>();
     private final Map<Request<?>, Messenger<?>> mMessengerMap = new LinkedHashMap<>();
 
     /**
@@ -61,7 +60,7 @@ public class RequestQueue {
     public void start() {
         stop();
         for (int i = 0; i < mDispatchers.length; i++) {
-            RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mRequestList, mMessengerMap);
+            RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mUnFinishQueue, mMessengerMap);
             mDispatchers[i] = networkDispatcher;
             networkDispatcher.start();
         }
@@ -81,7 +80,7 @@ public class RequestQueue {
     public <T> void add(int what, Request<T> request, OnResponseListener<T> listener) {
         request.setSequence(mInteger.incrementAndGet());
         mMessengerMap.put(request, Messenger.newInstance(what, listener));
-        mRequestList.add(request);
+        mUnFinishQueue.add(request);
         mRequestQueue.add(request);
     }
 
@@ -89,18 +88,36 @@ public class RequestQueue {
      * Don't start return handle queue size.
      *
      * @return size.
+     * @deprecated use {@link #unStartSize()} instead.
      */
+    @Deprecated
     public int size() {
-        return mRequestList.size();
+        return unStartSize();
+    }
+
+    /**
+     * Don't start return request queue size.
+     *
+     * @return size.
+     */
+    public int unStartSize() {
+        return mRequestQueue.size();
+    }
+
+    /**
+     * Returns have started but not the end of the request queue size.
+     *
+     * @return size.
+     */
+    public int unFinishSize() {
+        return mUnFinishQueue.size();
     }
 
     /**
      * Polling the queue will not be executed, and this will not be canceled.
      */
     public void stop() {
-        for (RequestDispatcher dispatcher : mDispatchers)
-            if (dispatcher != null)
-                dispatcher.quit();
+        for (RequestDispatcher dispatcher : mDispatchers) if (dispatcher != null) dispatcher.quit();
     }
 
     /**
@@ -109,10 +126,8 @@ public class RequestQueue {
      * @param sign this sign will be the same as sign's Request, and if it is the same, then cancel the task.
      */
     public void cancelBySign(Object sign) {
-        synchronized (mRequestList) {
-            for (Request<?> request : mRequestList) {
-                request.cancelBySign(sign);
-            }
+        synchronized (mUnFinishQueue) {
+            for (Request<?> request : mUnFinishQueue) request.cancelBySign(sign);
         }
     }
 
@@ -120,10 +135,8 @@ public class RequestQueue {
      * Cancel all requests, Already in the execution of the handle can't use this method
      */
     public void cancelAll() {
-        synchronized (mRequestList) {
-            for (Request<?> request : mRequestList) {
-                request.cancel();
-            }
+        synchronized (mUnFinishQueue) {
+            for (Request<?> request : mUnFinishQueue) request.cancel();
         }
     }
 }
