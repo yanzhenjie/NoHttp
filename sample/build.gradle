@@ -14,29 +14,29 @@ android {
 }
 
 dependencies {
-    compile rootProject.ext.dependencies.nohttp
-    compile rootProject.ext.dependencies.okhttp
+    implementation rootProject.ext.dependencies.nohttp
+    implementation rootProject.ext.dependencies.okhttp
 
     // support.
-    compile rootProject.ext.dependencies.appCompat
-    compile rootProject.ext.dependencies.design
-    compile rootProject.ext.dependencies.recyclerView
-    compile rootProject.ext.dependencies.cardView
+    implementation rootProject.ext.dependencies.appCompat
+    implementation rootProject.ext.dependencies.design
+    implementation rootProject.ext.dependencies.recyclerView
+    implementation rootProject.ext.dependencies.cardView
 
     // json parser.
-    compile rootProject.ext.dependencies.fastJson
+    implementation rootProject.ext.dependencies.fastJson
 
     // circle image.
-    compile rootProject.ext.dependencies.circleImageView
+    implementation rootProject.ext.dependencies.circleImageView
 
     // image.
-    compile rootProject.ext.dependencies.album
-    compile rootProject.ext.dependencies.durban
+    implementation rootProject.ext.dependencies.album
+    implementation rootProject.ext.dependencies.durban
 
     // statusView
-    compile rootProject.ext.dependencies.statusView
+    implementation rootProject.ext.dependencies.statusView
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 }

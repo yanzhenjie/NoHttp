@@ -11,6 +11,6 @@ android {
 }
 
 dependencies {
-    compile rootProject.ext.dependencies.nohttp
-    compile rootProject.ext.dependencies.okhttpUrl
+    implementation rootProject.ext.dependencies.nohttp
+    api rootProject.ext.dependencies.okhttpUrl
 }
