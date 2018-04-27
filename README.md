@@ -39,11 +39,11 @@ QQ技术交流群：[547839514](https://jq.qq.com/?_wv=1027&k=4Abk0YP)
 ### Gradle
 * 如果使用HttpURLConnection作为网络层
 ```groovy
-implementation 'com.yanzhenjie.nohttp:nohttp:1.1.9'
+implementation 'com.yanzhenjie.nohttp:nohttp:1.1.10'
 ```
 * 如果要使用OkHttp作为网络层，请再依赖
 ```groovy
-implementation 'com.yanzhenjie.nohttp:okhttp:1.1.9'
+implementation 'com.yanzhenjie.nohttp:okhttp:1.1.10'
 ```
 
 > 如果需要Jar包，可以先Gradle依赖，然后在Gradle的本地缓存文件夹找到jar。
