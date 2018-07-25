@@ -15,37 +15,28 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.yanzhenjie.nohttp.CancelerManager;
+import com.yanzhenjie.nohttp.HandlerDelivery;
+
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * <p>
- * Request Queue.
- * </p>
+ * <p> Request Queue. </p>
+ *
  * Created in Oct 19, 2015 8:36:22 AM.
  *
  * @author Yan Zhenjie.
  */
 public class RequestQueue {
 
-    private AtomicInteger mInteger = new AtomicInteger();
-
-    private final BlockingQueue<Request<?>> mUnFinishQueue = new LinkedBlockingDeque<>();
-    private final BlockingQueue<Request<?>> mRequestQueue = new PriorityBlockingQueue<>();
-    private final Map<Request<?>, Messenger<?>> mMessengerMap = new LinkedHashMap<>();
-
-    /**
-     * Request queue polling thread array.
-     */
+    private AtomicInteger mInteger = new AtomicInteger(1);
+    private final BlockingQueue<Work<? extends Request<?>, ?>> mQueue = new PriorityBlockingQueue<>();
+    private final CancelerManager mCancelerManager = new CancelerManager();
     private RequestDispatcher[] mDispatchers;
 
     /**
-     * Create handle queue manager.
-     *
      * @param threadPoolSize number of thread pool.
      */
     public RequestQueue(int threadPoolSize) {
@@ -53,90 +44,162 @@ public class RequestQueue {
     }
 
     /**
-     * Start polling the handle queue, a one of the implementation of the download task, if you have started to poll
-     * the download queue, then it will stop all the threads, to re create thread
-     * execution.
+     * All dispatcher in the boot queue, such as the dispatcher that has already been started in the queue,
+     * will stop all dispatcher first and restart the equal number of dispatcher.
+     *
+     * @see #stop()
      */
     public void start() {
         stop();
+
         for (int i = 0; i < mDispatchers.length; i++) {
-            RequestDispatcher networkDispatcher = new RequestDispatcher(mRequestQueue, mUnFinishQueue, mMessengerMap);
-            mDispatchers[i] = networkDispatcher;
-            networkDispatcher.start();
+            RequestDispatcher dispatcher = new RequestDispatcher(mQueue);
+            mDispatchers[i] = dispatcher;
+            dispatcher.start();
         }
     }
 
     /**
-     * Add a handle task to download queue, waiting for execution, if there is no task in the queue or the number of
-     * tasks is less than the number of thread pool, will be executed immediately.
+     * Add a request to the queue.
      *
-     * @param what     the "what" will be the response is returned to you, so you can introduce multiple
-     *                 {@link Request} results in an A with what, please distinguish which is the result of the
-     *                 {@link Request}.
-     * @param request  {@link Request}.
+     * @param what the {@code what} be returned in the result callback.
+     * @param request {@link Request}.
      * @param listener {@link OnResponseListener}.
-     * @param <T>      {@link T}.
+     * @param <T> {@link T}.
      */
-    public <T> void add(int what, Request<T> request, OnResponseListener<T> listener) {
-        request.setSequence(mInteger.incrementAndGet());
-        mMessengerMap.put(request, Messenger.newInstance(what, listener));
-        mUnFinishQueue.add(request);
-        mRequestQueue.add(request);
+    public <T> void add(int what, final Request<T> request, OnResponseListener<T> listener) {
+        Worker<? extends Request<T>, T> worker = new Worker<>(request);
+        AsyncCallback<T> callback = new AsyncCallback<T>(listener) {
+            @Override
+            public void onFinish(int what) {
+                mCancelerManager.removeCancel(request);
+                super.onFinish(what);
+            }
+        };
+        final Work<? extends Request<T>, T> work = new Work<>(worker, what, callback);
+        work.setSequence(mInteger.incrementAndGet());
+
+        callback.setQueue(mQueue);
+        callback.setWork(work);
+
+        request.setCancelable(work);
+
+        mCancelerManager.addCancel(request, work);
+        mQueue.add(work);
     }
 
     /**
-     * Don't start return handle queue size.
-     *
-     * @return size.
-     * @deprecated use {@link #unStartSize()} instead.
+     * @deprecated use {@link #unFinishSize()} instead.
      */
     @Deprecated
     public int size() {
-        return unStartSize();
+        return unFinishSize();
     }
 
     /**
-     * Don't start return request queue size.
-     *
-     * @return size.
+     * The number of requests that have not been executed yet.
      */
     public int unStartSize() {
-        return mRequestQueue.size();
+        return mQueue.size();
     }
 
     /**
-     * Returns have started but not the end of the request queue size.
-     *
-     * @return size.
+     * The number of all requests, including the request being executed.
      */
     public int unFinishSize() {
-        return mUnFinishQueue.size();
+        return mCancelerManager.size();
     }
 
     /**
-     * Polling the queue will not be executed, and this will not be canceled.
+     * Cancel all requests and stop all dispatchers in the queue.
      */
     public void stop() {
-        for (RequestDispatcher dispatcher : mDispatchers) if (dispatcher != null) dispatcher.quit();
-    }
+        cancelAll();
 
-    /**
-     * All requests for the sign specified in the queue, if you are executing, will interrupt the task
-     *
-     * @param sign this sign will be the same as sign's Request, and if it is the same, then cancel the task.
-     */
-    public void cancelBySign(Object sign) {
-        synchronized (mUnFinishQueue) {
-            for (Request<?> request : mUnFinishQueue) request.cancelBySign(sign);
+        for (RequestDispatcher dispatcher : mDispatchers) {
+            if (dispatcher != null) {
+                dispatcher.quit();
+            }
         }
     }
 
     /**
-     * Cancel all requests, Already in the execution of the handle can't use this method
+     * According to the sign to cancel a task.
+     *
+     * @see CancelerManager#cancel(Object)
+     */
+    public void cancelBySign(Object sign) {
+        mCancelerManager.cancel(sign);
+    }
+
+    /**
+     * Cancel all requests.
      */
     public void cancelAll() {
-        synchronized (mUnFinishQueue) {
-            for (Request<?> request : mUnFinishQueue) request.cancel();
+        mCancelerManager.cancelAll();
+    }
+
+    static class AsyncCallback<T>
+      implements OnResponseListener<T> {
+
+        private final OnResponseListener<T> mCallback;
+        private BlockingQueue<Work<? extends Request<?>, ?>> mQueue;
+        private Work<? extends Request<?>, ?> mWork;
+
+        AsyncCallback(OnResponseListener<T> callback) {
+            this.mCallback = callback;
+        }
+
+        public void setQueue(BlockingQueue<Work<? extends Request<?>, ?>> queue) {
+            this.mQueue = queue;
+        }
+
+        public void setWork(Work<? extends Request<?>, ?> work) {
+            this.mWork = work;
+        }
+
+        @Override
+        public void onStart(final int what) {
+            HandlerDelivery.getInstance().post(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onStart(what);
+                }
+            });
+        }
+
+        @Override
+        public void onSucceed(final int what, final Response<T> response) {
+            HandlerDelivery.getInstance().post(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onSucceed(what, response);
+                }
+            });
+        }
+
+        @Override
+        public void onFailed(final int what, final Response<T> response) {
+            HandlerDelivery.getInstance().post(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onFailed(what, response);
+                }
+            });
+        }
+
+        @Override
+        public void onFinish(final int what) {
+            if (mQueue.contains(mWork)) {
+                mQueue.remove(mWork);
+            }
+
+            HandlerDelivery.getInstance().post(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onFinish(what);
+                }
+            });
         }
     }
 }

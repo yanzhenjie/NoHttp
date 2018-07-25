@@ -15,39 +15,38 @@
  */
 package com.yanzhenjie.nohttp.download;
 
-import android.os.Process;
-
 import com.yanzhenjie.nohttp.Logger;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * <p>
- * Download queue polling thread.
- * </p>
- * Created in Oct 21, 2015 2:46:23 PM.
+ * <p> Download queue polling thread. </p> Created in Oct 21, 2015 2:46:23 PM.
  *
  * @author Yan Zhenjie.
  */
-class DownloadDispatcher extends Thread {
+class DownloadDispatcher
+  extends Thread {
 
-    private final BlockingQueue<DownloadRequest> mRequestQueue;
-    private final List<DownloadRequest> mRequestList;
-    private final Map<DownloadRequest, Messenger> mMessengerMap;
+    private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
+        private final AtomicInteger mCount = new AtomicInteger(1);
 
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "Download #" + mCount.getAndIncrement());
+        }
+    };
+
+    private final Executor mExecutor = Executors.newCachedThreadPool(THREAD_FACTORY);
+    private final BlockingQueue<Work<? extends DownloadRequest>> mQueue;
     private boolean mQuit = false;
 
-    public DownloadDispatcher(BlockingQueue<DownloadRequest> requestQueue, List<DownloadRequest> requestList, Map<DownloadRequest, Messenger> messengerMap) {
-        this.mRequestQueue = requestQueue;
-        this.mRequestList = requestList;
-        this.mMessengerMap = messengerMap;
+    public DownloadDispatcher(BlockingQueue<Work<? extends DownloadRequest>> queue) {
+        this.mQueue = queue;
     }
 
-    /**
-     * Quit this thread.
-     */
     public void quit() {
         mQuit = true;
         interrupt();
@@ -55,33 +54,27 @@ class DownloadDispatcher extends Thread {
 
     @Override
     public void run() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         while (!mQuit) {
-            final DownloadRequest request;
+            final Work<? extends DownloadRequest> work;
             try {
-                request = mRequestQueue.take();
+                work = mQueue.take();
             } catch (InterruptedException e) {
-                if (mQuit)
-                    return;
+                if (mQuit) {
+                    Logger.w("Queue exit, stop blocking.");
+                    break;
+                }
+                Logger.e(e);
                 continue;
             }
 
-            if (request.isCanceled()) {
-                mRequestQueue.remove(request);
-                mRequestList.remove(request);
-                mMessengerMap.remove(request);
-                Logger.d(request.url() + " is canceled.");
-                continue;
+            synchronized (this) {
+                work.setLock(this);
+                mExecutor.execute(work);
+                try {
+                    this.wait();
+                } catch (InterruptedException ignored) {
+                }
             }
-
-            request.start();
-            SyncDownloadExecutor.INSTANCE.execute(0, request, new ListenerDelegate(request, mMessengerMap));
-            request.finish();
-
-            // remove it from queue.
-            mRequestQueue.remove(request);
-            mRequestList.remove(request);
-            mMessengerMap.remove(request);
         }
     }
 }

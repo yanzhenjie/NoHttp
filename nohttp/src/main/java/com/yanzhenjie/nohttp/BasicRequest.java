@@ -46,14 +46,12 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * <p>
- * Request the basics to encapsulate.
- * </p>
- * Created in Nov 4, 2015 8:28:50 AM.
+ * <p> Request the basics to encapsulate. </p> Created in Nov 4, 2015 8:28:50 AM.
  *
  * @author Yan Zhenjie.
  */
-public class BasicRequest<T extends BasicRequest> implements Comparable<BasicRequest>, Startable, Cancelable, Finishable {
+public class BasicRequest<T extends BasicRequest>
+  implements Startable, Cancelable, Finishable {
 
     private final String boundary = createBoundary();
     private final String startBoundary = "--" + boundary;
@@ -63,10 +61,6 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Request priority.
      */
     private Priority mPriority = Priority.DEFAULT;
-    /**
-     * The sequence.
-     */
-    private int sequence;
     /**
      * Target address.
      */
@@ -132,10 +126,6 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     private boolean isFinished = false;
     /**
-     * Has been canceled.
-     */
-    private boolean isCanceled = false;
-    /**
      * Cancel sign.
      */
     private Object mCancelSign;
@@ -143,6 +133,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Tag of handle.
      */
     private Object mTag;
+    private Cancelable mCancelable;
 
     /**
      * Create a handle, RequestMethod is {@link RequestMethod#GET}.
@@ -156,7 +147,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     /**
      * Create a handle.
      *
-     * @param url           handle adress, like: http://www.nohttp.net.
+     * @param url handle adress, like: http://www.nohttp.net.
      * @param requestMethod handle method, like {@link RequestMethod#GET}, {@link RequestMethod#POST}.
      */
     public BasicRequest(String url, RequestMethod requestMethod) {
@@ -198,8 +189,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
             return urlBuilder.toString();
         }
         // form or push params.
-        if (getRequestMethod().allowRequestBody())
-            return urlBuilder.toString();
+        if (getRequestMethod().allowRequestBody()) return urlBuilder.toString();
 
         // third common post.
         buildUrl(urlBuilder);
@@ -322,12 +312,11 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         if (value != null) {
             value = value.trim();
             if (!TextUtils.isEmpty(value)) {
-                if (!url.endsWith("/"))
-                    url += "/";
+                if (!url.endsWith("/")) url += "/";
                 url += value;
             }
         }
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -337,7 +326,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setConnectTimeout(int connectTimeout) {
         mConnectTimeout = connectTimeout;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -354,7 +343,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setReadTimeout(int readTimeout) {
         mReadTimeout = readTimeout;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -368,11 +357,12 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Set the {@link SSLSocketFactory} for this handle.
      *
      * @param socketFactory {@link SSLSocketFactory}, {@link SSLUtils}.
+     *
      * @see SSLUtils
      */
     public T setSSLSocketFactory(SSLSocketFactory socketFactory) {
         mSSLSocketFactory = socketFactory;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -391,7 +381,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setHostnameVerifier(HostnameVerifier hostnameVerifier) {
         mHostnameVerifier = hostnameVerifier;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -413,7 +403,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setProxy(Proxy proxy) {
         this.mProxy = proxy;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -430,7 +420,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setRedirectHandler(RedirectHandler redirectHandler) {
         mRedirectHandler = redirectHandler;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -441,14 +431,14 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     }
 
     /**
-     * Set the handle fails retry count.The default value is 0, that is to say, after the failure will not go to
-     * this to initiate the handle again.
+     * Set the handle fails retry count.The default value is 0, that is to say, after the failure will not go
+     * to this to initiate the handle again.
      *
      * @param count the retry count, the default value is 0.
      */
     public T setRetryCount(int count) {
         this.mRetryCount = count;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -463,28 +453,27 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     /**
      * Add a new key-value header.
      *
-     * @param key   key.
+     * @param key key.
      * @param value value.
      */
     public T addHeader(String key, String value) {
         mHeaders.add(key, value);
-        return (T) this;
+        return (T)this;
     }
 
     /**
      * If there is a key to delete, and then add a new key-value header.
      *
-     * @param key   key.
+     * @param key key.
      * @param value value.
      */
     public T setHeader(String key, String value) {
         mHeaders.set(key, value);
-        return (T) this;
+        return (T)this;
     }
 
     /**
-     * <p>Add a {@link HttpCookie}.</p>
-     * Just like the:
+     * <p>Add a {@link HttpCookie}.</p> Just like the:
      * <pre>
      *     HttpCookie httpCookie = getHttpCookie();
      *     if(httpCookie != null)
@@ -495,9 +484,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * @param cookie {@link HttpCookie}.
      */
     public T addHeader(HttpCookie cookie) {
-        if (cookie != null)
-            mHeaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
-        return (T) this;
+        if (cookie != null) mHeaders.add(Headers.HEAD_KEY_COOKIE, cookie.getName() + "=" + cookie.getValue());
+        return (T)this;
     }
 
     /**
@@ -507,7 +495,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T removeHeader(String key) {
         mHeaders.remove(key);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -515,7 +503,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T removeAllHeader() {
         mHeaders.clear();
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -541,7 +529,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setAccept(String accept) {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT, accept);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -551,7 +539,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setAcceptLanguage(String acceptLanguage) {
         mHeaders.set(Headers.HEAD_KEY_ACCEPT_LANGUAGE, acceptLanguage);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -576,7 +564,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setContentType(String contentType) {
         mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -586,22 +574,21 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public String getContentType() {
         String contentType = mHeaders.getContentType();
-        if (!TextUtils.isEmpty(contentType))
-            return contentType;
+        if (!TextUtils.isEmpty(contentType)) return contentType;
         if (getRequestMethod().allowRequestBody() && isMultipartFormEnable())
             return Headers.HEAD_VALUE_CONTENT_TYPE_FORM_DATA + "; boundary=" + boundary;
-        else
-            return Headers.HEAD_VALUE_CONTENT_TYPE_URLENCODED + "; charset=" + getParamsEncoding();
+        else return Headers.HEAD_VALUE_CONTENT_TYPE_URLENCODED + "; charset=" + getParamsEncoding();
     }
 
     /**
      * Set the UA for client.
      *
-     * @param userAgent such as: {@code Mozilla/5.0 (Android U; Android 5.0) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 Safari/533.1}.
+     * @param userAgent such as: {@code Mozilla/5.0 (Android U; Android 5.0) AppleWebKit/533.1 (KHTML, like
+     *   Gecko) Version/5.0 Safari/533.1}.
      */
     public T setUserAgent(String userAgent) {
         mHeaders.set(Headers.HEAD_KEY_USER_AGENT, userAgent);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -611,18 +598,18 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setParamsEncoding(String encoding) {
         this.mParamEncoding = encoding;
-        return (T) this;
+        return (T)this;
     }
 
     /**
      * Get the params encoding.
      *
      * @return such as {@code utf-8}, default is {@code utf-8}.
+     *
      * @see #setParamsEncoding(String)
      */
     public String getParamsEncoding() {
-        if (TextUtils.isEmpty(mParamEncoding))
-            mParamEncoding = "utf-8";
+        if (TextUtils.isEmpty(mParamEncoding)) mParamEncoding = "utf-8";
         return mParamEncoding;
     }
 
@@ -638,7 +625,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     public T setMultipartFormEnable(boolean enable) {
         validateMethodForBody("Form body");
         isMultipartFormEnable = enable;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -664,8 +651,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         for (String key : keys) {
             List<Object> values = mParams.getValues(key);
             for (Object value : values) {
-                if (value instanceof Binary || value instanceof File)
-                    return true;
+                if (value instanceof Binary || value instanceof File) return true;
             }
         }
         return false;
@@ -676,7 +662,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, int value) {
         add(key, Integer.toString(value));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -684,7 +670,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, long value) {
         add(key, Long.toString(value));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -692,7 +678,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, boolean value) {
         add(key, Boolean.toString(value));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -700,7 +686,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, char value) {
         add(key, String.valueOf(value));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -708,7 +694,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, double value) {
         add(key, Double.toString(value));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -716,7 +702,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, float value) {
         add(key, Float.toString(value));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -724,25 +710,23 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, short value) {
         add(key, Integer.toString(value));
-        return (T) this;
+        return (T)this;
     }
 
     /**
      * Add {@link String} param.
      */
     public T add(String key, String value) {
-        if (!TextUtils.isEmpty(key))
-            mParams.add(key, TextUtils.isEmpty(value) ? "" : value);
-        return (T) this;
+        if (!TextUtils.isEmpty(key)) mParams.add(key, TextUtils.isEmpty(value) ? "" : value);
+        return (T)this;
     }
 
     /**
      * Set {@link String} param.
      */
     public T set(String key, String value) {
-        if (!TextUtils.isEmpty(key))
-            mParams.set(key, TextUtils.isEmpty(value) ? "" : value);
-        return (T) this;
+        if (!TextUtils.isEmpty(key)) mParams.set(key, TextUtils.isEmpty(value) ? "" : value);
+        return (T)this;
     }
 
     /**
@@ -751,8 +735,8 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * @param methodObject message.
      */
     private void validateMethodForBody(String methodObject) {
-        if (!getRequestMethod().allowRequestBody())
-            throw new IllegalArgumentException(methodObject + " only supports these handle methods: POST/PUT/PATCH/DELETE.");
+        if (!getRequestMethod().allowRequestBody()) throw new IllegalArgumentException(
+          methodObject + " only supports these handle methods: POST/PUT/PATCH/DELETE.");
     }
 
     /**
@@ -761,7 +745,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     public T add(String key, File file) {
         validateMethodForBody("The File param");
         add(key, new FileBinary(file));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -770,7 +754,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     public T add(String key, Binary binary) {
         validateMethodForBody("The Binary param");
         mParams.add(key, binary);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -779,7 +763,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     public T set(String key, Binary binary) {
         validateMethodForBody("The Binary param");
         mParams.set(key, binary);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -787,9 +771,10 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T add(String key, List<Binary> binaries) {
         validateMethodForBody("The List<Binary> param");
-        for (Binary binary : binaries)
+        for (Binary binary : binaries) {
             mParams.add(key, binary);
-        return (T) this;
+        }
+        return (T)this;
     }
 
     /**
@@ -798,9 +783,10 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     public T set(String key, List<Binary> binaries) {
         validateMethodForBody("The List<Binary> param");
         mParams.remove(key);
-        for (Binary binary : binaries)
+        for (Binary binary : binaries) {
             mParams.add(key, binary);
-        return (T) this;
+        }
+        return (T)this;
     }
 
     /**
@@ -814,17 +800,17 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
             if (value == null) value = "";
 
             if (value instanceof File) {
-                mParams.add(key, new FileBinary((File) value));
+                mParams.add(key, new FileBinary((File)value));
             } else if (value instanceof Binary) {
                 mParams.add(key, value);
             } else if (value instanceof List) {
-                List values = (List) value;
+                List values = (List)value;
                 for (int i = 0; i < values.size(); i++) {
                     Object o = values.get(i);
                     if (o == null) o = "";
 
                     if (o instanceof File) {
-                        mParams.add(key, new FileBinary((File) o));
+                        mParams.add(key, new FileBinary((File)o));
                     } else if (o instanceof Binary) {
                         mParams.add(key, value);
                     } else {
@@ -835,7 +821,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
                 mParams.add(key, value.toString());
             }
         }
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -849,18 +835,18 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
             if (value == null) value = "";
 
             if (value instanceof File) {
-                mParams.set(key, new FileBinary((File) value));
+                mParams.set(key, new FileBinary((File)value));
             } else if (value instanceof Binary) {
                 mParams.set(key, value);
             } else if (value instanceof List) {
                 mParams.remove(key);
-                List values = (List) value;
+                List values = (List)value;
                 for (int i = 0; i < values.size(); i++) {
                     Object o = values.get(i);
                     if (o == null) o = "";
 
                     if (o instanceof File) {
-                        mParams.add(key, new FileBinary((File) o));
+                        mParams.add(key, new FileBinary((File)o));
                     } else if (o instanceof Binary) {
                         mParams.add(key, value);
                     } else {
@@ -871,7 +857,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
                 mParams.set(key, value.toString());
             }
         }
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -879,7 +865,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T remove(String key) {
         mParams.remove(key);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -887,7 +873,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T removeAll() {
         mParams.clear();
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -902,7 +888,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     /**
      * Validate param null.
      *
-     * @param body        handle body.
+     * @param body handle body.
      * @param contentType content type.
      */
     private void validateParamForBody(Object body, String contentType) {
@@ -920,11 +906,12 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     }
 
     /**
-     * Set the package body, which can be any data stream. But the type of stream must be
-     * {@link ByteArrayInputStream} or {@link FileInputStream}.
+     * Set the package body, which can be any data stream. But the type of stream must be {@link
+     * ByteArrayInputStream} or {@link FileInputStream}.
      *
      * @param requestBody any data stream, you don't need to close it.
      * @param contentType such as: {@code application/json;json}, {@code image/*}.
+     *
      * @see #setDefineRequestBody(String, String)
      * @see #setDefineRequestBodyForJson(JSONObject)
      * @see #setDefineRequestBodyForJson(String)
@@ -936,9 +923,9 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         if (requestBody instanceof ByteArrayInputStream || requestBody instanceof FileInputStream) {
             this.mRequestBody = requestBody;
             mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
-        } else
-            throw new IllegalArgumentException("Can only accept ByteArrayInputStream and FileInputStream type of stream");
-        return (T) this;
+        } else throw new IllegalArgumentException(
+          "Can only accept ByteArrayInputStream and FileInputStream " + "type of stream");
+        return (T)this;
     }
 
     /**
@@ -946,6 +933,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      *
      * @param requestBody string body.
      * @param contentType such as: {@code application/json;json}, {@code image/*}.
+     *
      * @see #setDefineRequestBody(InputStream, String)
      * @see #setDefineRequestBodyForJson(JSONObject)
      * @see #setDefineRequestBodyForJson(String)
@@ -961,13 +949,14 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
             mRequestBody = IOUtils.toInputStream(requestBody);
             mHeaders.set(Headers.HEAD_KEY_CONTENT_TYPE, contentType);
         }
-        return (T) this;
+        return (T)this;
     }
 
     /**
      * Set the handle json body.
      *
      * @param jsonBody json body.
+     *
      * @see #setDefineRequestBody(InputStream, String)
      * @see #setDefineRequestBody(String, String)
      * @see #setDefineRequestBodyForJson(JSONObject)
@@ -975,13 +964,14 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setDefineRequestBodyForJson(String jsonBody) {
         setDefineRequestBody(jsonBody, Headers.HEAD_VALUE_CONTENT_TYPE_JSON);
-        return (T) this;
+        return (T)this;
     }
 
     /**
      * Set the handle json body.
      *
      * @param jsonBody json body.
+     *
      * @see #setDefineRequestBody(InputStream, String)
      * @see #setDefineRequestBody(String, String)
      * @see #setDefineRequestBodyForJson(String)
@@ -989,13 +979,14 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setDefineRequestBodyForJson(JSONObject jsonBody) {
         setDefineRequestBody(jsonBody.toString(), Headers.HEAD_VALUE_CONTENT_TYPE_JSON);
-        return (T) this;
+        return (T)this;
     }
 
     /**
      * Set the handle XML body.
      *
      * @param xmlBody xml body.
+     *
      * @see #setDefineRequestBody(InputStream, String)
      * @see #setDefineRequestBody(String, String)
      * @see #setDefineRequestBody(String, String)
@@ -1003,7 +994,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setDefineRequestBodyForXML(String xmlBody) {
         setDefineRequestBody(xmlBody, Headers.HEAD_VALUE_CONTENT_TYPE_XML);
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -1041,7 +1032,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     private void writeRequestBody(OutputStream writer) throws IOException {
         if (mRequestBody != null) {
             if (writer instanceof CounterOutputStream) {
-                ((CounterOutputStream) writer).writeLength(mRequestBody.available());
+                ((CounterOutputStream)writer).writeLength(mRequestBody.available());
             } else {
                 IOUtils.write(mRequestBody, writer);
                 IOUtils.closeQuietly(mRequestBody);
@@ -1054,7 +1045,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Send form data.
      */
     private void writeFormStreamData(OutputStream writer) throws IOException {
-        if (isCanceled()) return;
+        if (isCancelled()) return;
         Set<String> keys = mParams.keySet();
         for (String key : keys) {
             if (TextUtils.isEmpty(key)) continue;
@@ -1062,13 +1053,11 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
             List<Object> values = mParams.getValues(key);
             for (Object value : values) {
                 if (value instanceof String) {
-                    if (!(writer instanceof CounterOutputStream))
-                        Logger.i(key + "=" + value);
-                    writeFormString(writer, key, (String) value);
+                    if (!(writer instanceof CounterOutputStream)) Logger.i(key + "=" + value);
+                    writeFormString(writer, key, (String)value);
                 } else if (value instanceof Binary) {
-                    if (!(writer instanceof CounterOutputStream))
-                        Logger.i(key + " is Binary");
-                    writeFormBinary(writer, key, (Binary) value);
+                    if (!(writer instanceof CounterOutputStream)) Logger.i(key + " is Binary");
+                    writeFormBinary(writer, key, (Binary)value);
                 }
                 writer.write("\r\n".getBytes());
             }
@@ -1079,12 +1068,13 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     /**
      * Send text data in a form.
      *
-     * @param key   equivalent to form the name of the input label, {@code "Content-Disposition: form-data; name=key"}.
+     * @param key equivalent to form the name of the input label, {@code "Content-Disposition: form-data;
+     *   name=key"}.
      * @param value equivalent to form the value of the input label.
      */
     private void writeFormString(OutputStream writer, String key, String value) throws IOException {
-        String stringFieldBuilder = startBoundary + "\r\n" +
-                "Content-Disposition: form-data; name=\"" + key + "\"\r\n\r\n";
+        String stringFieldBuilder =
+          startBoundary + "\r\n" + "Content-Disposition: form-data; name=\"" + key + "\"\r\n\r\n";
 
         writer.write(stringFieldBuilder.getBytes(getParamsEncoding()));
         writer.write(value.getBytes(getParamsEncoding()));
@@ -1094,13 +1084,13 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * Send binary data in a form.
      */
     private void writeFormBinary(OutputStream writer, String key, Binary value) throws IOException {
-        String binaryFieldBuilder = startBoundary + "\r\n" +
-                "Content-Disposition: form-data; name=\"" + key + "\"; filename=\"" + value.getFileName() + "\"\r\n" +
-                "Content-Type: " + value.getMimeType() + "\r\n\r\n";
+        String binaryFieldBuilder =
+          startBoundary + "\r\n" + "Content-Disposition: form-data; name=\"" + key + "\"; filename=\"" +
+          value.getFileName() + "\"\r\n" + "Content-Type: " + value.getMimeType() + "\r\n\r\n";
         writer.write(binaryFieldBuilder.getBytes());
 
         if (writer instanceof CounterOutputStream) {
-            ((CounterOutputStream) writer).writeLength(value.getLength());
+            ((CounterOutputStream)writer).writeLength(value.getLength());
         } else {
             value.onWriteBinary(writer);
         }
@@ -1113,8 +1103,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         StringBuilder paramBuilder = BasicRequest.buildCommonParams(mParams, getParamsEncoding());
         if (paramBuilder.length() > 0) {
             String params = paramBuilder.toString();
-            if (!(writer instanceof CounterOutputStream))
-                Logger.i("Body: " + params);
+            if (!(writer instanceof CounterOutputStream)) Logger.i("Body: " + params);
             IOUtils.write(params.getBytes(), writer);
         }
     }
@@ -1124,7 +1113,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setTag(Object tag) {
         this.mTag = tag;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -1141,7 +1130,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setPriority(Priority priority) {
         this.mPriority = priority;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -1152,38 +1141,18 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     }
 
     /**
-     * Set the sequence of handle.
-     *
-     * @param sequence sequence code.
+     * @deprecated do not use.
      */
-    public T setSequence(int sequence) {
-        this.sequence = sequence;
-        return (T) this;
-    }
-
-    /**
-     * Get the sequence in the queue, under the condition of two requests as priority.
-     * <pre>
-     *     Calculation method:
-     *     {@code left.sequence-right.sequence} decision to order.
-     * </pre>
-     */
-    public int getSequence() {
-        return this.sequence;
-    }
-
-    @Override
-    public final int compareTo(BasicRequest another) {
-        final Priority me = getPriority();
-        final Priority it = another.getPriority();
-        return me == it ? getSequence() - another.getSequence() : it.ordinal() - me.ordinal();
-    }
-
+    @Deprecated
     @Override
     public void start() {
         this.isStart = true;
     }
 
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
     @Override
     public boolean isStarted() {
         return isStart;
@@ -1191,34 +1160,38 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
 
     @Override
     public void cancel() {
-        if (!isCanceled) {
-            isCanceled = true;
-            if (mRequestBody != null)
-                IOUtils.closeQuietly(mRequestBody);
-
-            // cancel file upload
-            Set<String> keys = mParams.keySet();
-            for (String key : keys) {
-                if (TextUtils.isEmpty(key)) continue;
-
-                List<Object> values = mParams.getValues(key);
-                for (Object value : values)
-                    if (value != null && value instanceof Binary)
-                        ((Binary) value).cancel();
-            }
+        if (mCancelable != null) {
+            mCancelable.cancel();
         }
     }
 
+    /**
+     * @deprecated use {@link #isCancelled()} instead.
+     */
+    @Deprecated
     @Override
     public boolean isCanceled() {
-        return isCanceled;
+        return isCancelled();
     }
 
+    @Override
+    public boolean isCancelled() {
+        return mCancelable != null && mCancelable.isCancelled();
+    }
+
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
     @Override
     public void finish() {
         this.isFinished = true;
     }
 
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
     @Override
     public boolean isFinished() {
         return isFinished;
@@ -1231,7 +1204,11 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      */
     public T setCancelSign(Object sign) {
         this.mCancelSign = sign;
-        return (T) this;
+        return (T)this;
+    }
+
+    public Object getCancelSign() {
+        return mCancelSign;
     }
 
     /**
@@ -1240,8 +1217,13 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
      * @param sign an object that can be null.
      */
     public void cancelBySign(Object sign) {
-        if (mCancelSign == sign || (sign != null && mCancelSign != null && mCancelSign.equals(sign)))
+        if (mCancelSign == sign || (mCancelSign != null && mCancelSign.equals(sign))) {
             cancel();
+        }
+    }
+
+    public void setCancelable(Cancelable cancelable) {
+        this.mCancelable = cancelable;
     }
 
     ////////// static module /////////
@@ -1249,11 +1231,13 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
     /**
      * Split joint non form data.
      *
-     * @param paramMap      param map.
+     * @param paramMap param map.
      * @param encodeCharset charset.
+     *
      * @return string parameter combination, each key value on nails with {@code "&"} space.
      */
-    public static StringBuilder buildCommonParams(MultiValueMap<String, Object> paramMap, String encodeCharset) {
+    public static StringBuilder buildCommonParams(MultiValueMap<String, Object> paramMap,
+                                                  String encodeCharset) {
         StringBuilder paramBuilder = new StringBuilder();
         Set<String> keySet = paramMap.keySet();
         for (String key : keySet) {
@@ -1271,8 +1255,7 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
                 }
             }
         }
-        if (paramBuilder.length() > 0)
-            paramBuilder.deleteCharAt(0);
+        if (paramBuilder.length() > 0) paramBuilder.deleteCharAt(0);
         return paramBuilder;
     }
 
@@ -1286,11 +1269,11 @@ public class BasicRequest<T extends BasicRequest> implements Comparable<BasicReq
         for (int t = 1; t < 12; t++) {
             long time = System.currentTimeMillis() + t;
             if (time % 3L == 0L) {
-                sb.append((char) (int) time % '\t');
+                sb.append((char)(int)time % '\t');
             } else if (time % 3L == 1L) {
-                sb.append((char) (int) (65L + time % 26L));
+                sb.append((char)(int)(65L + time % 26L));
             } else {
-                sb.append((char) (int) (97L + time % 26L));
+                sb.append((char)(int)(97L + time % 26L));
             }
         }
         return sb.toString();

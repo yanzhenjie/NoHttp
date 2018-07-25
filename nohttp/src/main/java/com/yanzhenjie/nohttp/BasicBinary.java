@@ -67,7 +67,7 @@ public abstract class BasicBinary
 
     @Override
     public final long getLength() {
-        if (!isCanceled()) return getBinaryLength();
+        if (!isCancelled()) return getBinaryLength();
         return 0;
     }
 
@@ -95,7 +95,7 @@ public abstract class BasicBinary
 
                 long hasUpCount = 0;
 
-                while (!isCanceled() && (len = inputStream.read(buffer)) != -1) {
+                while (!isCancelled() && (len = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, len);
                     if (totalLength != 0 && mUploadListener != null) {
                         hasUpCount += len;

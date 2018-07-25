@@ -15,42 +15,40 @@
  */
 package com.yanzhenjie.nohttp.rest;
 
-import android.os.Process;
-
 import com.yanzhenjie.nohttp.Logger;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * <p>
- * Request queue polling thread.
- * </p>
+ * <p> Request queue polling thread. </p>
+ *
  * Created in Oct 19, 2015 8:35:35 AM.
  *
  * @author Yan Zhenjie.
  */
-public class RequestDispatcher extends Thread {
+public class RequestDispatcher
+  extends Thread {
 
-    private final BlockingQueue<Request<?>> mRequestQueue;
-    private final BlockingQueue<Request<?>> mUnFinishQueue;
-    private final Map<Request<?>, Messenger<?>> mMessengerMap;
+    private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
+        private final AtomicInteger mCount = new AtomicInteger(1);
 
-    /**
-     * Whether the current handle queue polling thread is out of.
-     */
-    private volatile boolean mQuit = false;
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "Request #" + mCount.getAndIncrement());
+        }
+    };
 
-    public RequestDispatcher(BlockingQueue<Request<?>> requestQueue,BlockingQueue<Request<?>> unFinishQueue, Map<Request<?>, Messenger<?>> messengerMap) {
-        this.mRequestQueue = requestQueue;
-        this.mUnFinishQueue = unFinishQueue;
-        this.mMessengerMap = messengerMap;
+    private final Executor mExecutor = Executors.newCachedThreadPool(THREAD_FACTORY);
+    private final BlockingQueue<Work<? extends Request<?>, ?>> mQueue;
+    private boolean mQuit = false;
+
+    public RequestDispatcher(BlockingQueue<Work<? extends Request<?>, ?>> queue) {
+        this.mQueue = queue;
     }
 
-    /**
-     * Exit polling thread.
-     */
     public void quit() {
         this.mQuit = true;
         interrupt();
@@ -58,11 +56,10 @@ public class RequestDispatcher extends Thread {
 
     @Override
     public void run() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         while (!mQuit) {
-            final Request<?> request;
+            final Work<? extends Request<?>, ?> work;
             try {
-                request = mRequestQueue.take();
+                work = mQueue.take();
             } catch (InterruptedException e) {
                 if (mQuit) {
                     Logger.w("Queue exit, stop blocking.");
@@ -72,37 +69,14 @@ public class RequestDispatcher extends Thread {
                 continue;
             }
 
-            if (request.isCanceled()) {
-                mRequestQueue.remove(request);
-                mUnFinishQueue.remove(request);
-                mMessengerMap.remove(request);
-                Logger.d(request.url() + " is canceled.");
-                continue;
+            synchronized (this) {
+                work.setLock(this);
+                mExecutor.execute(work);
+                try {
+                    this.wait();
+                } catch (InterruptedException ignored) {
+                }
             }
-
-            // start.
-            request.start();
-            mMessengerMap.get(request).start();
-
-            // handle.
-            Response response = SyncRequestExecutor.INSTANCE.execute(request);
-
-            // response.
-            if (request.isCanceled()) {
-                Logger.d(request.url() + " finish, but it's canceled.");
-            } else {
-                // noinspection unchecked
-                mMessengerMap.get(request).response(response);
-            }
-
-            // finish.
-            request.finish();
-            mMessengerMap.get(request).finish();
-
-            // remove it from queue.
-            mRequestQueue.remove(request);
-            mUnFinishQueue.remove(request);
-            mMessengerMap.remove(request);
         }
     }
 }

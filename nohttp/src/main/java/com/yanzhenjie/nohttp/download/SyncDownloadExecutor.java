@@ -18,12 +18,12 @@ package com.yanzhenjie.nohttp.download;
 import com.yanzhenjie.nohttp.NoHttp;
 
 /**
- * <p>Synchronize File Downloader.</p>
- * Created by Yan Zhenjie on 2016/10/12.
+ * <p>Synchronize File Downloader.</p> Created by Yan Zhenjie on 2016/10/12.
  */
 public enum SyncDownloadExecutor {
 
-    INSTANCE, AsyncRequestExecutor;
+    INSTANCE,
+    AsyncRequestExecutor;
 
     private Downloader mDownloader;
 
@@ -34,11 +34,12 @@ public enum SyncDownloadExecutor {
     /**
      * Start a download.
      *
-     * @param what            what.
+     * @param what what.
      * @param downloadRequest {@link DownloadRequest}.
-     * @param listener        accept various download status callback..
+     * @param listener accept various download status callback..
      */
-    public void execute(int what, DownloadRequest downloadRequest, DownloadListener listener) {
+    public void execute(int what, DownloadRequest downloadRequest, DownloadListener listener)
+      throws Exception {
         mDownloader.download(what, downloadRequest, listener);
     }
 }
