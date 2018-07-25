@@ -1,76 +1,64 @@
 ext {
-    plugins = [
-            library    : 'com.android.library',
-            application: 'com.android.application',
-            maven      : 'com.github.dcendents.android-maven',
-            bintray    : 'com.jfrog.bintray'
-    ]
+    plugins = [library    : 'com.android.library',
+               application: 'com.android.application',
+               maven      : 'com.github.dcendents.android-maven',
+               bintray    : 'com.jfrog.bintray']
 
-    android = [
-            applicationId          : "com.yanzhenjie.nohttp.sample",
-            compileSdkVersion      : 27,
-            buildToolsVersion      : "27.0.3",
+    android = [applicationId          : "com.yanzhenjie.nohttp.sample",
+               compileSdkVersion      : 27,
+               buildToolsVersion      : "27.0.3",
 
-            librayMinSdkVersion    : 9,
-            libraryTargetSdkVersion: 27,
+               librayMinSdkVersion    : 9,
+               libraryTargetSdkVersion: 27,
 
-            sampleMinSdkVersion    : 14,
-            sampleTargetSdkVersion : 22,
+               sampleMinSdkVersion    : 14,
+               sampleTargetSdkVersion : 27,
 
-            versionCode            : 120,
-            versionName            : "1.1.10",
-    ]
+               versionCode            : 121,
+               versionName            : "1.1.11",]
 
-    bintray = [
-            version       : "1.1.10",
+    bintray = [version       : "1.1.11",
 
-            siteUrl       : 'https://github.com/yanzhenjie/NoHttp',
-            gitUrl        : 'git@github.com:yanzhenjie/NoHttp.git',
+               siteUrl       : 'https://github.com/yanzhenjie/NoHttp',
+               gitUrl        : 'git@github.com:yanzhenjie/NoHttp.git',
 
-            group         : "com.yanzhenjie.nohttp",
+               group         : "com.yanzhenjie.nohttp",
 
-            packaging     : 'aar',
-            name          : 'NoHttp',
-            description   : 'Synchronous and asynchronous network request framework for Android',
+               packaging     : 'aar',
+               name          : 'NoHttp',
+               description   : 'Synchronous and asynchronous network request framework for Android',
 
-            licenseName   : 'The Apache Software License, Version 2.0',
-            licenseUrl    : 'http://www.apache.org/licenses/LICENSE-2.0.txt',
+               licenseName   : 'The Apache Software License, Version 2.0',
+               licenseUrl    : 'http://www.apache.org/licenses/LICENSE-2.0.txt',
 
-            developerId   : 'yanzhenjie',
-            developerName : 'yanzhenjie',
-            developerEmail: 'smallajax@foxmail.com',
+               developerId   : 'yanzhenjie',
+               developerName : 'yanzhenjie',
+               developerEmail: 'smallajax@foxmail.com',
 
-            binrayLibrary : "",
-            bintrayRepo   : "maven",
-            bintrayUser   : 'yolanda',
-            bintrayLicense: "Apache-2.0"
-    ]
+               binrayLibrary : "",
+               bintrayRepo   : "maven",
+               bintrayUser   : 'yolanda',
+               bintrayLicense: "Apache-2.0"]
 
-    dependencies = [
-            // okhttp.
-            okhttpUrl      : 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0',
+    dependencies = [okhttpUrl          : 'com.squareup.okhttp3:okhttp-urlconnection:3.11.0',
 
-            // nohttp.
-            nohttp         : 'com.yanzhenjie.nohttp:nohttp:1.1.10',
-            okhttp         : 'com.yanzhenjie.nohttp:okhttp:1.1.10',
+                    nohttp             : 'com.yanzhenjie.nohttp:nohttp:1.1.11',
+                    okhttp             : 'com.yanzhenjie.nohttp:okhttp:1.1.11',
 
-            // support.
-            appCompat      : 'com.android.support:appcompat-v7:27.1.1',
-            recyclerView   : 'com.android.support:recyclerview-v7:27.1.1',
-            design         : 'com.android.support:design:27.1.1',
-            cardView       : 'com.android.support:cardview-v7:27.1.1',
+                    junit              : 'junit:junit:4.12',
+                    expressoCore       : 'com.android.support.test.espresso:espresso-core:3.0.2',
 
-            // json parser.
-            fastJson       : 'com.alibaba:fastjson:1.1.68.android',
+                    appCompat          : 'com.android.support:appcompat-v7:27.1.1',
+                    design             : 'com.android.support:design:27.1.1',
+                    cardView           : 'com.android.support:cardview-v7:27.1.1',
+                    recyclerView       : 'com.yanzhenjie:recyclerview-swipe:1.1.4',
 
-            // circle image.
-            circleImageView: 'de.hdodenhof:circleimageview:2.1.0',
+                    fastjson           : 'com.alibaba:fastjson:1.1.68.android',
+                    permission         : 'com.yanzhenjie:permission:2.0.0-rc11',
+                    loading            : 'com.yanzhenjie:loading:1.0.2',
+                    album              : 'com.yanzhenjie:album:2.1.1',
+                    glide              : 'com.github.bumptech.glide:glide:3.8.0',
 
-            // image.
-            album          : 'com.yanzhenjie:album:1.0.6',
-            durban         : 'com.yanzhenjie:durban:1.0.1',
-
-            // statusView
-            statusView     : 'com.yanzhenjie:statusview:1.0.3',
-    ]
+                    butterKnife        : 'com.jakewharton:butterknife:8.8.1',
+                    butterKnifeCompiler: 'com.jakewharton:butterknife-compiler:8.8.1']
 }
