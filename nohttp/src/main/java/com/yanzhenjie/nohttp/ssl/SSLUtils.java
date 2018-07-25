@@ -33,12 +33,14 @@ public class SSLUtils {
     };
 
     public static SSLSocketFactory defaultSSLSocketFactory() {
-        return new CompatSSLSocketFactory();
+        return new TLSSocketFactory();
     }
 
     public static SSLSocketFactory fixSSLLowerThanLollipop(SSLSocketFactory socketFactory) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && !(socketFactory instanceof CompatSSLSocketFactory))
-            socketFactory = new CompatSSLSocketFactory(socketFactory);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP &&
+            !(socketFactory instanceof TLSSocketFactory)) {
+            socketFactory = new TLSSocketFactory(socketFactory);
+        }
         return socketFactory;
     }
 
