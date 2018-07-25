@@ -17,6 +17,7 @@ package com.yanzhenjie.nohttp.able;
 
 /**
  * <p>Cancel interface.</p>
+ *
  * Created in Dec 17, 2015 11:42:10 AM.
  *
  * @author Yan Zhenjie;
@@ -29,10 +30,16 @@ public interface Cancelable {
     void cancel();
 
     /**
+     * @deprecated use {@link #isCancelled()} instead.
+     */
+    @Deprecated
+    boolean isCanceled();
+
+    /**
      * Whether has been cancelled.
      *
      * @return true: canceled, false: there is no cancel.
      */
-    boolean isCanceled();
+    boolean isCancelled();
 
 }

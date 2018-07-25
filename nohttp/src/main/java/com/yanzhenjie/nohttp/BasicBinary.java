@@ -27,14 +27,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * <p>
- * A basic implementation of Binary. All the methods are called in Son thread.
- * </p>
- * Created in Oct 17, 2015 12:40:54 PM.
+ * <p> A basic implementation of Binary. All the methods are called in Son thread. </p> Created in Oct 17,
+ * 2015 12:40:54 PM.
  *
  * @author Yan Zhenjie.
  */
-public abstract class BasicBinary implements Binary, Startable, Finishable {
+public abstract class BasicBinary
+  implements Binary, Startable, Finishable {
 
     private boolean isStarted = false;
 
@@ -58,7 +57,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     /**
      * To monitor file upload progress.
      *
-     * @param what             in {@link OnUploadListener} will return to you.
+     * @param what in {@link OnUploadListener} will return to you.
      * @param mProgressHandler {@link OnUploadListener}.
      */
     public void setUploadListener(int what, OnUploadListener mProgressHandler) {
@@ -68,8 +67,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
 
     @Override
     public final long getLength() {
-        if (!isCanceled())
-            return getBinaryLength();
+        if (!isCanceled()) return getBinaryLength();
         return 0;
     }
 
@@ -79,7 +77,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
 
     @Override
     public void onWriteBinary(OutputStream outputStream) {
-        if (!isCanceled()) {
+        if (!isCancelled()) {
             InputStream inputStream = null;
             try {
                 inputStream = getInputStream();
@@ -101,8 +99,9 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
                     outputStream.write(buffer, 0, len);
                     if (totalLength != 0 && mUploadListener != null) {
                         hasUpCount += len;
-                        int progress = (int) (hasUpCount * 100 / totalLength);
-                        if ((0 == progress % 3 || 0 == progress % 5 || 0 == progress % 7) && oldProgress != progress) {
+                        int progress = (int)(hasUpCount * 100 / totalLength);
+                        if ((0 == progress % 3 || 0 == progress % 5 || 0 == progress % 7) &&
+                            oldProgress != progress) {
                             oldProgress = progress;
                             postProgress(oldProgress);
                         }
@@ -121,8 +120,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
 
     @Override
     public String getFileName() {
-        if (TextUtils.isEmpty(fileName))
-            fileName = Long.toString(System.currentTimeMillis());
+        if (TextUtils.isEmpty(fileName)) fileName = Long.toString(System.currentTimeMillis());
         return fileName;
     }
 
@@ -133,8 +131,7 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
             String extension = MimeTypeMap.getFileExtensionFromUrl(fileName);
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
-        if (TextUtils.isEmpty(mimeType))
-            mimeType = Headers.HEAD_VALUE_CONTENT_TYPE_OCTET_STREAM;
+        if (TextUtils.isEmpty(mimeType)) mimeType = Headers.HEAD_VALUE_CONTENT_TYPE_OCTET_STREAM;
         return mimeType;
     }
 
@@ -187,11 +184,19 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
         HandlerDelivery.getInstance().post(finish);
     }
 
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
     @Override
     public void start() {
         isStarted = true;
     }
 
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
     @Override
     public boolean isStarted() {
         return isStarted;
@@ -206,21 +211,39 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
     }
 
     @Override
-    public boolean isCanceled() {
+    public boolean isCancelled() {
         return isCancel;
     }
 
+    /**
+     * @deprecated use {@link #isCancelled()} instead.
+     */
+    @Deprecated
+    @Override
+    public boolean isCanceled() {
+        return isCancelled();
+    }
+
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
     @Override
     public void finish() {
         isFinish = true;
     }
 
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
     @Override
     public boolean isFinished() {
         return isFinish;
     }
 
-    private class UploadPoster implements Runnable {
+    private class UploadPoster
+      implements Runnable {
 
         private final int what;
         private final OnUploadListener mOnUploadListener;
@@ -266,16 +289,11 @@ public abstract class BasicBinary implements Binary, Startable, Finishable {
         @Override
         public void run() {
             if (mOnUploadListener != null) {
-                if (command == ON_START)
-                    mOnUploadListener.onStart(what);
-                else if (command == ON_FINISH)
-                    mOnUploadListener.onFinish(what);
-                else if (command == ON_PROGRESS)
-                    mOnUploadListener.onProgress(what, progress);
-                else if (command == ON_CANCEL)
-                    mOnUploadListener.onCancel(what);
-                else if (command == ON_ERROR)
-                    mOnUploadListener.onError(what, exception);
+                if (command == ON_START) mOnUploadListener.onStart(what);
+                else if (command == ON_FINISH) mOnUploadListener.onFinish(what);
+                else if (command == ON_PROGRESS) mOnUploadListener.onProgress(what, progress);
+                else if (command == ON_CANCEL) mOnUploadListener.onCancel(what);
+                else if (command == ON_ERROR) mOnUploadListener.onError(what, exception);
             }
         }
 

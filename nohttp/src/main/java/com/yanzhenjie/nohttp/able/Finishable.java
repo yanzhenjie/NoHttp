@@ -17,10 +17,13 @@ package com.yanzhenjie.nohttp.able;
 
 /**
  * <p>Finish interface.</p>
+ *
  * Created in Jan 13, 2016 10:34:48 PM.
  *
  * @author Yan Zhenjie;
+ * @deprecated do not use.
  */
+@Deprecated
 public interface Finishable {
 
     /**

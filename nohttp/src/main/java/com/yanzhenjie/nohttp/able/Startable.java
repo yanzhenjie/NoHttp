@@ -17,10 +17,13 @@ package com.yanzhenjie.nohttp.able;
 
 /**
  * <p>Start interface.</p>
+ *
  * Created in Nov 12, 2015 5:03:54 PM.
  *
  * @author Yan Zhenjie;
+ * @deprecated do not use.
  */
+@Deprecated
 public interface Startable {
 
     /**
