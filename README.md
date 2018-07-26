@@ -1,67 +1,24 @@
-![NoHttp Logo](./image/logo.png)  
+# NoHttp
 
-使用文档：[http://doc.nohttp.net](http://doc.nohttp.net)  
-测试接口：[http://api.nohttp.net](http://api.nohttp.net)  
+QQ技术交流群：[46505645](https://jq.qq.com/?_wv=1027&k=5ImVHCl)
 
-QQ技术交流群：[547839514](https://jq.qq.com/?_wv=1027&k=4Abk0YP)  
+**特别说明**：强烈建议开发者切换到另一个网络框架[Kalle](https://github.com/yanzhenjie/Kalle)，Kalle在架构设计上、Api设计上、功能实现上都更加健壮和完善，文档也比较全面。
 
-----
+Kalle开源地址：[https://github.com/yanzhenjie/Kalle](https://github.com/yanzhenjie/Kalle)  
+Kalle文档地址：[http://yanzhenjie.github.io/Kalle](http://yanzhenjie.github.io/Kalle)
 
-`NoHttp`不绑架任何底层网络框架，比如`OkHttp`、`URLConnection`、`HttpClient`等都可以作为`NoHttp`的底层，`NoHttp`目前提供了基于`OkHttp`的网络层封装和基于`URLConnection`的网络层封装，可以很灵活的切换网络层框架。如果开发者们有兴趣，可以实现一个基于`HttpClient`的`NoHttp`网络层。
+**NoHttp依旧正常维护**，正在使用和即将要使用的同学可以放心使用。
 
-1. 读写SD卡在6.0以上需要运行时权限，安利一个框架：  
-[https://github.com/yanzhenjie/AndPermission](https://github.com/yanzhenjie/AndPermission)  
-2. 结合业务，直接请求JavaBean、List、Map等，安利一篇博文：  
-[http://blog.csdn.net/yanzhenjie1003/article/details/70158030](http://blog.csdn.net/yanzhenjie1003/article/details/70158030)  
-  
-因为本项目是非UI类型的库，感觉光秃秃的，放一个Demo的截图吧：
-  
-<image src="./image/1.gif"/>
-
-## 框架特性
-* 动态配置底层框架为OkHttp、HttpURLConnection
-* 与RxJava完美结合，支持异步请求、支持同步请求
-* 多文件上传，支持大文件上传，表单提交数据
-* 文件下载、上传下载、上传和下载的进度回调、错误回调
-* 支持Json、xml、Map、List的提交
-* 完美的Http缓存模式，可指定缓存到数据库、SD卡，缓存数据已安全加密
-* 自定义Request，直接请求JsonObject、JavaBean等
-* Cookie的持久化自动维持，完全遵守Http协议
-* http 301 302 303 304 307重定向，支持多层嵌套重定向
-* Https、自签名网站Https的访问、支持双向验证
-* 修复Android4.4及以下使用URLConnection和OkHttp时不支持TLSv1.1、TLSv1.2协议的问题
-* 失败重试机制，支持请求优先级
-* GET、POST、PUT、PATCH、HEAD、DELETE、OPTIONS、TRACE等请求协议
-* 异步模块用队列保存请求，平均分配多线程的资源，支持多个请求并发
-* 队列支持取消某个请求、取消指定多个请求、取消所有请求
-
-## 使用方法
-### Gradle
-* 如果使用HttpURLConnection作为网络层
+## 添加依赖
+如果使用HttpURLConnection作为网络层
 ```groovy
-implementation 'com.yanzhenjie.nohttp:nohttp:1.1.10'
+implementation 'com.yanzhenjie.nohttp:nohttp:1.1.11'
 ```
-* 如果要使用OkHttp作为网络层，请再依赖
+
+如果要使用OkHttp作为网络层，请再依赖
 ```groovy
-implementation 'com.yanzhenjie.nohttp:okhttp:1.1.10'
+implementation 'com.yanzhenjie.nohttp:okhttp:1.1.11'
 ```
-
-> 如果需要Jar包，可以先Gradle依赖，然后在Gradle的本地缓存文件夹找到jar。
-
-## 初始化
-NoHttp初始化时分两种情况，最基本的初始化仅仅需要一个Context，高级初始化需要一个Config。
-
-### 事前注意
-**注意1**：无论是初始化时还是为Request设置属性时，对Https
-设置SSLSocketFactory需要注意，如果你需要修复在Android4.x系统中不支持TLSv1.1、TLSv1.2协议的问题，你可以调用：
-```
-SSLSocketFactory socketFactory = ...;
-socketFactory = SSLUtils.fixSSLLowerThanLollipop(socketFactory);
-```
-
-新生成的SSLSocketFactory就是已经修复了在Android4.x系统中不支持TLSv1.1、TLSv1.2协议的问题的对象，直接使用即可。
-
-**注意2**：对于Cookie，NoHttp是按照标准协议来维护的，很多同学会遇到Session的持久化问题（Session是对于服务器来说的，等发送到客户端我们把它称为临时Cookie），这是对Http/Cookie协议不了解的体现，关于Session的持久化问题看这里：[http://doc.nohttp.net/248698](http://doc.nohttp.net/248698)。
 
 ### 一般初始化
 直接初始化后，一切采用默认设置。
@@ -194,7 +151,7 @@ if (response.isSucceed()) {
 ## 异步请求-AsyncRequestExecutor
 ```java
 StringRequest request = new StringRequest("http://api.nohttp.net");
-AsyncRequestExecutor.INSTANCE.execute(0, request, new SimpleResponseListener<String>() {
+Cancelable cancel = AsyncRequestExecutor.INSTANCE.execute(0, request, new SimpleResponseListener<String>() {
     @Override
     public void onSucceed(int what, Response<String> response) {
         // 请求成功。
@@ -205,6 +162,12 @@ AsyncRequestExecutor.INSTANCE.execute(0, request, new SimpleResponseListener<Str
         // 请求失败。
     }
 });
+
+// 如果想取消请求：
+cancel.cancel();
+
+// 判断是否取消：
+boolean isCancelled = cancel.isCancelled();
 ```
 这种方式是基于线程池的，它没有队列的优先级的特点了。
 
@@ -232,7 +195,7 @@ queue.start(); // 开始队列。
 queue.add(what, request, listener);
 
 ...
-// 使用完后需要关闭队列释放CPU：
+// 使用完后需要关闭队列：
 queue.stop();
 ```
 
