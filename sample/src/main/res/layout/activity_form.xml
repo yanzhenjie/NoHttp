@@ -14,40 +14,27 @@
     limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     style="@style/MatchParent"
     android:background="@color/page_background"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar_scroll" />
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/btn_download"
-        style="@style/Button.Primary.WrapContent.WidthMatchParent"
-        android:layout_margin="@dimen/dp_10"
-        android:text="@string/download_start"
-        android:textColor="@color/white" />
-
     <TextView
         android:id="@+id/tv_status"
         style="@style/WrapContent"
-        android:layout_gravity="end"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:layout_marginRight="@dimen/dp_10"
-        android:text="@string/download_status_cancel" />
+        android:layout_margin="@dimen/dp_5"
+        android:text="@string/form_select_tip"
+        android:textColor="@color/font_color_secondary" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="@style/ProgressBar.WrapContentHeight"
-        android:layout_margin="@dimen/dp_10"
-        tools:progress="50" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        style="@style/WrapContent.WidthMatchParent" />
 
-    <TextView
-        android:id="@+id/tv_speed"
-        style="@style/WrapContent"
-        android:layout_gravity="end"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:layout_marginRight="@dimen/dp_10"
-        tools:text="20M/S" />
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_upload"
+        style="@style/Button.Primary.WrapContent.WidthMatchParent"
+        android:layout_margin="@dimen/dp_5"
+        android:text="@string/form_upload" />
 
 </LinearLayout>

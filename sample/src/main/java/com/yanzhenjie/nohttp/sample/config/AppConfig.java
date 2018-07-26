@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Yan Zhenjie
+ * Copyright © 2018 Yan Zhenjie.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,86 +17,148 @@ package com.yanzhenjie.nohttp.sample.config;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
-import com.yanzhenjie.nohttp.sample.Application;
-import com.yanzhenjie.nohttp.sample.util.FileUtil;
+import com.alibaba.fastjson.JSON;
+import com.yanzhenjie.nohttp.sample.App;
+import com.yanzhenjie.nohttp.sample.util.FileUtils;
 import com.yanzhenjie.nohttp.tools.IOUtils;
 
 import java.io.File;
 
 /**
- * Created in Nov 8, 2015 7:48:11 PM.
- *
- * @author Yan Zhenjie.
+ * Created by YanZhenjie on 2018/2/27.
  */
 public class AppConfig {
 
-    private static AppConfig appConfig;
+    private static AppConfig sInstance;
 
-    private SharedPreferences preferences;
+    public static AppConfig get() {
+        if (sInstance == null) synchronized (AppConfig.class) {
+            if (sInstance == null) sInstance = new AppConfig();
+        }
+        return sInstance;
+    }
 
+    private final SharedPreferences mPreferences;
     /**
-     * App根目录.
+     * App root path.
      */
-    public String APP_PATH_ROOT;
+    public final String PATH_APP_ROOT;
+    /**
+     * Download.
+     */
+    public final String PATH_APP_DOWNLOAD;
+    /**
+     * Images.
+     */
+    public final String PATH_APP_IMAGE;
+    /**
+     * Cache root path.
+     */
+    public final String PATH_APP_CACHE;
 
     private AppConfig() {
-        preferences = Application.getInstance().getSharedPreferences("nohttp_sample", Context.MODE_PRIVATE);
+        this.mPreferences = App.get().getSharedPreferences("NoHttp", Context.MODE_PRIVATE);
 
-        APP_PATH_ROOT = FileUtil.getRootPath(Application.getInstance()).getAbsolutePath() + File.separator +
-                "NoHttpSample";
+        this.PATH_APP_ROOT = FileUtils.getAppRootPath(App.get()).getAbsolutePath() + File.separator + "NoHttp";
+        this.PATH_APP_DOWNLOAD = PATH_APP_ROOT + File.separator + "Download";
+        this.PATH_APP_IMAGE = PATH_APP_ROOT + File.separator + "Images";
+        this.PATH_APP_CACHE = PATH_APP_ROOT + File.separator + "Cache";
     }
 
-    public static AppConfig getInstance() {
-        if (appConfig == null)
-            synchronized (AppConfig.class) {
-                if (appConfig == null)
-                    appConfig = new AppConfig();
+    /**
+     * Initialize file system for app.
+     */
+    public void initFileDir() {
+        IOUtils.createFolder(PATH_APP_ROOT);
+        IOUtils.createFolder(PATH_APP_DOWNLOAD);
+        IOUtils.createFolder(PATH_APP_IMAGE);
+        IOUtils.createFolder(PATH_APP_CACHE);
+    }
+
+    public void setStringApply(String key, String value) {
+        mPreferences.edit().putString(key, value).apply();
+    }
+
+    public boolean setStringCommit(String key, String value) {
+        return mPreferences.edit().putString(key, value).commit();
+    }
+
+    public void setBooleanApply(String key, boolean value) {
+        mPreferences.edit().putBoolean(key, value).apply();
+    }
+
+    public boolean setBooleanCommit(String key, boolean value) {
+        return mPreferences.edit().putBoolean(key, value).commit();
+    }
+
+    public void setFloatApply(String key, float value) {
+        mPreferences.edit().putFloat(key, value).apply();
+    }
+
+    public boolean setFloatCommit(String key, float value) {
+        return mPreferences.edit().putFloat(key, value).commit();
+    }
+
+    public void setIntApply(String key, int value) {
+        mPreferences.edit().putInt(key, value).apply();
+    }
+
+    public boolean setIntCommit(String key, int value) {
+        return mPreferences.edit().putInt(key, value).commit();
+    }
+
+    public void setLongApply(String key, long value) {
+        mPreferences.edit().putLong(key, value).apply();
+    }
+
+    public boolean setLongCommit(String key, long value) {
+        return mPreferences.edit().putLong(key, value).commit();
+    }
+
+    public <P extends Parcelable> void setObjectApply(String key, P param) {
+        if (param != null) mPreferences.edit().putString(key, JSON.toJSONString(param)).apply();
+        else mPreferences.edit().putString(key, "").apply();
+    }
+
+    public <P extends Parcelable> boolean setObjectCommit(String key, P param) {
+        if (param != null) return mPreferences.edit().putString(key, JSON.toJSONString(param)).commit();
+        else return mPreferences.edit().putString(key, "").commit();
+    }
+
+    public String getString(String key, String defaultValue) {
+        return mPreferences.getString(key, defaultValue);
+    }
+
+    public Boolean getBoolean(String key, boolean defaultValue) {
+        return mPreferences.getBoolean(key, defaultValue);
+    }
+
+    public float getFloat(String key, float defaultValue) {
+        return mPreferences.getFloat(key, defaultValue);
+    }
+
+    public int getInt(String key, int defaultValue) {
+        return mPreferences.getInt(key, defaultValue);
+    }
+
+    public long getLong(String key, long defaultValue) {
+        return mPreferences.getLong(key, defaultValue);
+    }
+
+    @Nullable
+    public <P extends Parcelable> P getObject(String key, Class<P> pClass) {
+        String jsonObject = getString(key, "");
+        if (!TextUtils.isEmpty(jsonObject)) {
+            try {
+                return JSON.parseObject(jsonObject, pClass);
+            } catch (Exception e) {
+                return null;
             }
-        return appConfig;
-    }
-
-    public void initialize() {
-        IOUtils.createFolder(APP_PATH_ROOT);
-    }
-
-    public void putInt(String key, int value) {
-        preferences.edit().putInt(key, value).commit();
-    }
-
-    public int getInt(String key, int defValue) {
-        return preferences.getInt(key, defValue);
-    }
-
-    public void putString(String key, String value) {
-        preferences.edit().putString(key, value).commit();
-    }
-
-    public String getString(String key, String defValue) {
-        return preferences.getString(key, defValue);
-    }
-
-    public void putBoolean(String key, boolean value) {
-        preferences.edit().putBoolean(key, value).commit();
-    }
-
-    public boolean getBoolean(String key, boolean defValue) {
-        return preferences.getBoolean(key, defValue);
-    }
-
-    public void putLong(String key, long value) {
-        preferences.edit().putLong(key, value).commit();
-    }
-
-    public long getLong(String key, long defValue) {
-        return preferences.getLong(key, defValue);
-    }
-
-    public void putFloat(String key, float value) {
-        preferences.edit().putFloat(key, value).commit();
-    }
-
-    public float getFloat(String key, float defValue) {
-        return preferences.getFloat(key, defValue);
+        }
+        return null;
     }
 }

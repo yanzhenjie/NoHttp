@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    Copyright 2018 Yan Zhenjie.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/MatchParent"
+    android:background="@color/page_background"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_scroll" />
+
+    <LinearLayout style="@style/WrapContent.WidthMatchParent">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_select"
+            style="@style/Button.Primary.WrapContent"
+            android:layout_width="@dimen/dp_0"
+            android:layout_margin="@dimen/dp_5"
+            android:layout_weight="1"
+            android:text="@string/body_select" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_upload"
+            style="@style/Button.Primary.WrapContent"
+            android:layout_width="@dimen/dp_0"
+            android:layout_margin="@dimen/dp_5"
+            android:layout_weight="1"
+            android:text="@string/body_upload" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/WrapContent"
+        android:layout_margin="@dimen/dp_5">
+
+        <TextView
+            android:id="@+id/tv_status"
+            style="@style/WrapContent"
+            android:text="@string/body_status_un_select"
+            android:textColor="@color/font_color_secondary" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_copy"
+            style="@style/Button.Primary.WrapContent.Small"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_marginStart="@dimen/dp_5"
+            android:text="@string/body_copy_path"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_image"
+        style="@style/WrapContent"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/dp_5"
+        tools:src="@mipmap/ic_launcher" />
+
+</LinearLayout>

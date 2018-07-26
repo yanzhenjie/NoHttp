@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-    Copyright © 2018 Yan Zhenjie.
+    Copyright 2018 Yan Zhenjie.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -14,14 +14,24 @@
     limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/MatchParent"
-    android:background="@color/page_background"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/WrapContent.WidthMatchParent"
+    android:background="?selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_10"
+    tools:background="@color/page_background">
 
-    <include layout="@layout/toolbar" />
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/WrapContent"
+        android:textSize="@dimen/sp_18"
+        tools:text="I am nohttp" />
 
-    <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
-        android:id="@+id/recycler_view"
-        style="@style/WrapContent.WidthMatchParent" />
+    <TextView
+        android:id="@+id/tv_content"
+        style="@style/WrapContent"
+        android:textColor="@color/font_color_secondary"
+        tools:text="I am content, " />
 
 </LinearLayout>

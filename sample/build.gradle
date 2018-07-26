@@ -14,29 +14,29 @@ android {
 }
 
 dependencies {
+    testImplementation rootProject.ext.dependencies.junit
+    androidTestImplementation(rootProject.ext.dependencies.expressoCore) {
+        exclude group: "com.android.support", module: "support-annotations"
+    }
+
     implementation rootProject.ext.dependencies.nohttp
     implementation rootProject.ext.dependencies.okhttp
 
-    // support.
     implementation rootProject.ext.dependencies.appCompat
     implementation rootProject.ext.dependencies.design
-    implementation rootProject.ext.dependencies.recyclerView
     implementation rootProject.ext.dependencies.cardView
+    implementation rootProject.ext.dependencies.recyclerView
 
-    // json parser.
-    implementation rootProject.ext.dependencies.fastJson
-
-    // circle image.
-    implementation rootProject.ext.dependencies.circleImageView
-
-    // image.
+    implementation rootProject.ext.dependencies.fastjson
+    implementation rootProject.ext.dependencies.permission
+    implementation rootProject.ext.dependencies.loading
     implementation rootProject.ext.dependencies.album
-    implementation rootProject.ext.dependencies.durban
+    implementation rootProject.ext.dependencies.glide
 
-    // statusView
-    implementation rootProject.ext.dependencies.statusView
+    implementation rootProject.ext.dependencies.butterKnife
+    annotationProcessor rootProject.ext.dependencies.butterKnifeCompiler
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
-    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 }

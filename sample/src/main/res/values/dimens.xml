@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Copyright 2017 Yan Zhenjie
+    Copyright © 2018 Yan Zhenjie.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -31,9 +31,7 @@
     <dimen name="sp_35">35sp</dimen>
     <dimen name="sp_40">40sp</dimen>
 
-    <dimen name="wel_hint_1">20sp</dimen>
-    <dimen name="wel_hint_3">30sp</dimen>
-
+    <dimen name="dp_0">0dp</dimen>
     <dimen name="dp_1">1dp</dimen>
     <dimen name="dp_2">2dp</dimen>
     <dimen name="dp_3">3dp</dimen>
@@ -50,6 +48,7 @@
     <dimen name="dp_40">40dp</dimen>
     <dimen name="dp_45">45dp</dimen>
     <dimen name="dp_50">50dp</dimen>
+    <dimen name="dp_55">55dp</dimen>
     <dimen name="dp_60">60dp</dimen>
     <dimen name="dp_80">80dp</dimen>
     <dimen name="dp_100">100dp</dimen>

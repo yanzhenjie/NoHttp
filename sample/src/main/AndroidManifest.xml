@@ -14,8 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.yanzhenjie.nohttp.sample">
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.yanzhenjie.nohttp.sample">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -24,147 +25,68 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application
-        android:name=".Application"
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme.Main">
+      android:name=".App"
+      android:allowBackup="true"
+      android:icon="@mipmap/ic_launcher"
+      android:label="@string/app_name"
+      android:theme="@style/AppTheme.Main">
+
         <activity
-            android:name=".activity.splash.SplashActivity"
-            android:theme="@style/AppTheme.Splash">
+          android:name=".app.splash.SplashActivity"
+          android:configChanges="keyboardHidden|orientation|screenSize"
+          android:label="@string/app_name"
+          android:screenOrientation="portrait"
+          android:theme="@style/AppTheme.Splash.Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".activity.splash.WelActivity"
-            android:theme="@style/AppTheme.Splash"/>
+          android:name=".app.splash.WelActivity"
+          android:configChanges="keyboardHidden|orientation|screenSize"
+          android:label="@string/app_name"
+          android:screenOrientation="portrait"
+          android:theme="@style/AppTheme.Splash.Main"/>
+
         <activity
-            android:name=".activity.MainActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme.Main.Launcher"
-            android:windowSoftInputMode="stateAlwaysHidden|stateHidden"/>
+          android:name=".app.main.MainPresenter"
+          android:configChanges="keyboardHidden|orientation|screenSize"
+          android:label="@string/app_name"
+          android:launchMode="singleTask"
+          android:screenOrientation="portrait"
+          android:theme="@style/AppTheme.Main.Launcher"/>
+
         <activity
-            android:name=".activity.OriginalActivity"
-            android:label="@string/title_original_activity"
-            android:theme="@style/AppTheme.Main"/>
+          android:name=".app.normal.NormalPresenter"
+          android:configChanges="keyboardHidden|orientation|screenSize"
+          android:label="@string/function_normal"
+          android:launchMode="singleTask"
+          android:screenOrientation="portrait"
+          android:theme="@style/AppTheme.Main.Launcher"/>
+
         <activity
-            android:name=".activity.MethodActivity"
-            android:label="@string/title_method_activity"
-            android:theme="@style/AppTheme.Main"/>
+          android:name=".app.form.FormPresenter"
+          android:configChanges="keyboardHidden|orientation|screenSize"
+          android:label="@string/function_form"
+          android:screenOrientation="portrait"
+          android:theme="@style/AppTheme.Main"/>
+
         <activity
-            android:name=".activity.ImageActivity"
-            android:label="@string/title_image_activity"
-            android:theme="@style/AppTheme.Main"/>
+          android:name=".app.body.BodyPresenter"
+          android:configChanges="keyboardHidden|orientation|screenSize"
+          android:label="@string/function_body"
+          android:screenOrientation="portrait"
+          android:theme="@style/AppTheme.Main"/>
+
         <activity
-            android:name=".activity.json.JsonActivity"
-            android:label="@string/title_json_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.PostBodyActivity"
-            android:label="@string/title_post_body_activity"
-            android:theme="@style/AppTheme.Main"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
-        <activity
-            android:name=".activity.define.DefineRequestActivity"
-            android:label="@string/title_define_request_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cache.CacheActivity"
-            android:label="@string/title_cache_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cache.CacheHttpActivity"
-            android:label="@string/title_cache_http_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cache.CacheRequestFailedReadCacheActivity"
-            android:label="@string/title_cache_request_failed_read_cache_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cache.CacheNoneCacheRequestNetWorkActivity"
-            android:label="@string/title_cache_none_request_network_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cache.CacheOnlyReadCacheActivity"
-            android:label="@string/title_cache_only_read_cache"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cache.CacheOnlyRequestNetworkActivity"
-            android:label="@string/title_cache_only_request_network"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.RedirectActivity"
-            android:label="@string/title_redirect_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.upload.UploadFileActivity"
-            android:label="@string/title_upload_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.upload.UploadSingleFileActivity"
-            android:label="@string/title_upload_single_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.upload.UploadMultiFileActivity"
-            android:label="@string/title_upload_multi_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.upload.UploadFileListActivity"
-            android:label="@string/title_upload_file_list_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.upload.UploadAlbumActivity"
-            android:label="@string/title_upload_album"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.download.DownloadActivity"
-            android:label="@string/title_download_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.download.DownloadSingleFileActivity"
-            android:label="@string/title_download_single_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.download.DownloadFileListActivity"
-            android:label="@string/title_download_list_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cancel.CancelActivity"
-            android:label="@string/title_cancel_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cancel.CancelLinkageActivity"
-            android:label="@string/title_cancel_linkage_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cancel.CancelSignActivity"
-            android:label="@string/title_cancel_sign_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.cancel.CancelAllActivity"
-            android:label="@string/title_cancel_all_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.SyncActivity"
-            android:label="@string/title_sync_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.ProXYActivity"
-            android:label="@string/title_proxy_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name=".activity.HttpsActivity"
-            android:label="@string/title_https_activity"
-            android:theme="@style/AppTheme.Main"/>
-        <activity
-            android:name="com.yanzhenjie.album.AlbumActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden|stateHidden"/>
+          android:name=".app.download.DownloadPresenter"
+          android:configChanges="keyboardHidden|orientation|screenSize"
+          android:label="@string/function_download"
+          android:screenOrientation="portrait"
+          android:theme="@style/AppTheme.Main"/>
+
     </application>
 
 </manifest>

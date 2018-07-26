@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-    Copyright 2017 Yan Zhenjie
+<?xml version="1.0" encoding="utf-8"?><!--
+    Copyright © 2018 Yan Zhenjie.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,21 +21,25 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@null</item>
         <item name="android:windowDisablePreview">true</item>
+        <item name="android:textColor">@color/font_color_primary</item>
+        <item name="android:textSize">@dimen/sp_14</item>
     </style>
 
-    <style name="AppTheme.Main"/>
+    <style name="AppTheme.Main" />
 
-    <style name="AppTheme.Main.Launcher"/>
+    <style name="AppTheme.Main.Launcher" />
 
     <style name="AppTheme.Splash">
         <item name="android:windowDisablePreview">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowBackground">@mipmap/wel</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.Splash.Main" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="MatchParent">
         <item name="android:layout_width">match_parent</item>
@@ -68,42 +71,82 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="WrapContent.AdjustViewBoundsFalse">
-        <item name="android:adjustViewBounds">false</item>
-    </style>
-
-    <style name="ButtonWrapContent" parent="@style/Widget.AppCompat.Button">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
-    </style>
-
-    <style name="WrapContent.WidthMatchParent.RecyclerItem">
-        <item name="cardCornerRadius">@dimen/dp_5</item>
-        <item name="cardElevation">@dimen/dp_5</item>
-        <item name="contentPadding">@dimen/dp_15</item>
-    </style>
-
-    <style name="WrapContent.WidthMatchParent.RecyclerItem.Foreground">
-        <item name="android:foreground">@drawable/selector_recycler_item</item>
-    </style>
-
-    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal"/>
+    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal" />
 
     <style name="ProgressBar.WrapContentHeight">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="ButtonWrapContent.WidthMatch">
+    <!-- Button -->
+    <style name="AppTheme.Button" />
+
+    <style name="AppTheme.Button.Primary">
+        <item name="colorButtonNormal">@color/button_normal</item>
+        <item name="colorControlHighlight">@color/button_pressed</item>
+    </style>
+
+    <style name="Button" parent="@style/Widget.AppCompat.Button" />
+
+    <style name="Button.Primary">
+        <item name="android:theme">@style/AppTheme.Button.Primary</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Button.Primary.WrapContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Button.Primary.WrapContent.WidthMatchParent">
         <item name="android:layout_width">match_parent</item>
     </style>
 
-    <style name="EditTextMd" parent="@style/Widget.AppCompat.EditText">
+    <style name="Button.Primary.WrapContent.Small">
+        <item name="android:layout_height">@dimen/dp_40</item>
+    </style>
+
+    <style name="Button.Primary.Smaller">
+        <item name="android:layout_height">@dimen/dp_40</item>
+        <item name="android:layout_width">@dimen/dp_55</item>
+        <item name="android:padding">@dimen/dp_0</item>
+    </style>
+
+    <style name="AppTheme.Button.Secondary">
+        <item name="colorButtonNormal">@color/white_normal</item>
+        <item name="colorControlHighlight">@color/white_pressed</item>
+    </style>
+
+    <style name="Button.Secondary">
+        <item name="android:theme">@style/AppTheme.Button.Secondary</item>
+        <item name="android:textColor">@color/font_color_primary</item>
+    </style>
+
+    <style name="Button.Secondary.WrapContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Button.Secondary.WrapContent.WidthMatchParent">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="Button.Secondary.WrapContent.Small">
+        <item name="android:layout_height">@dimen/dp_40</item>
+    </style>
+
+    <style name="Button.Secondary.Smaller">
+        <item name="android:layout_height">@dimen/dp_40</item>
+        <item name="android:layout_width">@dimen/dp_55</item>
+        <item name="android:padding">@dimen/dp_0</item>
+    </style>
+
+    <style name="EditText" parent="@style/Widget.AppCompat.EditText">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
     </style>
 
-    <style name="EditTextMd.WidthMatch">
+    <style name="EditText.WidthMatch">
         <item name="android:layout_width">match_parent</item>
     </style>
 
